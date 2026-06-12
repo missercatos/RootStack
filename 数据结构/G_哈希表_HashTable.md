@@ -99,19 +99,20 @@ int main() {
 (2) 冲突解决：链地址法（Separate Chaining）
 每个桶维护一个链表（或其他数据结构），冲突的键值对放入同一桶的链表中。
 
-```
-桶数组:
-+------+
-| idx0 | --> nullptr
-+------+
-| idx1 | --> [key1, val1] --> [key4, val4] --> nullptr (冲突链)
-+------+
-| idx2 | --> [key2, val2] --> nullptr
-+------+
-| idx3 | --> nullptr
-+------+
-| idx4 | --> [key3, val3] --> nullptr
-+------+
+```mermaid
+graph LR
+    subgraph 桶数组
+        idx0["idx0"]
+        idx1["idx1"]
+        idx2["idx2"]
+        idx3["idx3"]
+        idx4["idx4"]
+    end
+    idx0 --- null0["nullptr"]
+    idx1 --> k1["key1, val1"] --> k4["key4, val4"] --> null1["nullptr"]
+    idx2 --> k2["key2, val2"] --> null2["nullptr"]
+    idx3 --- null3["nullptr"]
+    idx4 --> k3["key3, val3"] --> null4["nullptr"]
 ```
 
 (3) 冲突解决：开放地址法（Open Addressing）

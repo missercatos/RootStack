@@ -346,27 +346,15 @@ TCP/IP协议栈是互联网通信的基础。理解分层模型对网络编程�
 
 一、TCP/IP四层模型（从顶到底）
 
-┌───────────────────────────────────────────────┐
-│  应用层 (Application)                          │
-│  HTTP, HTTPS, FTP, SMTP, DNS, WebSocket       │
-│  用户数据在这里产生和消费                        │
-├───────────────────────────────────────────────┤
-│  传输层 (Transport)                            │
-│  TCP (可靠), UDP (不可靠)                       │
-│  端口号标识不同应用，提供端到端通信               │
-├───────────────────────────────────────────────┤
-│  网络层 (Network / Internet)                   │
-│  IP (IPv4, IPv6), ICMP, ARP                   │
-│  IP地址标识网络中的主机，负责数据包的路由转发      │
-├───────────────────────────────────────────────┤
-│  数据链路层 (Link / Network Access)             │
-│  Ethernet, Wi-Fi, PPP                         │
-│  MAC地址标识同一网络中的设备，负责帧的传输         │
-├───────────────────────────────────────────────┤
-│  物理层 (Physical)                             │
-│  双绞线, 光纤, 无线电磁波                      │
-│  比特流的传输介质                               │
-└───────────────────────────────────────────────┘
+```mermaid
+graph TD
+    A["应用层 (Application)<br>HTTP, HTTPS, FTP, SMTP, DNS, WebSocket<br>用户数据在这里产生和消费"]
+    B["传输层 (Transport)<br>TCP (可靠), UDP (不可靠)<br>端口号标识不同应用，提供端到端通信"]
+    C["网络层 (Network / Internet)<br>IP (IPv4, IPv6), ICMP, ARP<br>IP地址标识网络中的主机，负责数据包的路由转发"]
+    D["数据链路层 (Link / Network Access)<br>Ethernet, Wi-Fi, PPP<br>MAC地址标识同一网络中的设备，负责帧的传输"]
+    E["物理层 (Physical)<br>双绞线, 光纤, 无线电磁波<br>比特流的传输介质"]
+    A --> B --> C --> D --> E
+```
 
 二、数据封装过程（封装/解封装）
 
@@ -393,15 +381,17 @@ TCP/IP协议栈是互联网通信的基础。理解分层模型对网络编程�
 
 一、TCP三次握手（建立连接）
 
-   Client                                    Server
-     |                                         |
-     |─────── SYN (seq=x) ───────────────────→| 状态: SYN_SENT → SYN_RCVD
-     |                                         |
-     |←────── SYN+ACK (seq=y, ack=x+1) ───────| 状态: SYN_RCVD → 收到
-     |                                         |
-     |─────── ACK (ack=y+1) ──────────────────→| 状态: ESTABLISHED
-     |                                         |
-     |         ★ 连接已建立 ★                    |
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server
+    Client->>Server: SYN (seq=x)
+    Note right of Server: SYN_SENT → SYN_RCVD
+    Server->>Client: SYN+ACK (seq=y, ack=x+1)
+    Note left of Client: SYN_RCVD → 收到
+    Client->>Server: ACK (ack=y+1)
+    Note over Client,Server: ★ 连接已建立 (ESTABLISHED) ★
+```
 
    每一次握手的作用：
    - 第一次: Client → Server: "我要和你连接"（Client证明自己能发）
@@ -417,17 +407,21 @@ TCP/IP协议栈是互联网通信的基础。理解分层模型对网络编程�
 
 二、TCP四次挥手（释放连接）
 
-   Client                                    Server
-     |                                         |
-     |─────── FIN (seq=m) ────────────────────→| 状态: FIN_WAIT_1
-     |                                         |
-     |←────── ACK (ack=m+1) ──────────────────| 状态: FIN_WAIT_2 / CLOSE_WAIT
-     |                                         |
-     |←────── FIN (seq=n) ────────────────────| 状态: LAST_ACK
-     |                                         |
-     |─────── ACK (ack=n+1) ──────────────────→| 状态: TIME_WAIT / CLOSED
-     |                                         |
-     |  (TIME_WAIT持续2MSL, 约1-4分钟)          |
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server
+    Client->>Server: FIN (seq=m)
+    Note left of Client: FIN_WAIT_1
+    Server->>Client: ACK (ack=m+1)
+    Note left of Client: FIN_WAIT_2
+    Note right of Server: CLOSE_WAIT
+    Server->>Client: FIN (seq=n)
+    Note right of Server: LAST_ACK
+    Client->>Server: ACK (ack=n+1)
+    Note left of Client: TIME_WAIT (2MSL, 约1-4分钟)
+    Note right of Server: CLOSED
+```
 
    为什么是四次而不是三次？
    因为TCP是全双工的——双方都可以独立地发送数据。当一方发送FIN表示
@@ -461,15 +455,11 @@ Socket本质上是一个特殊的文件描述符(FD)。当你调用socket()时�
 - 后端网络协议栈的关联（如TCP层的拥塞控制状态）
 
 内核为每个socket维护两个缓冲区：
-                    ┌─────────────────┐
-  用户态 send() ──→ │ 发送缓冲区       │ ──→ 网络协议栈 → 网卡
-                    │ (SO_SNDBUF)     │
-                    └─────────────────┘
-
-                    ┌─────────────────┐
-  用户态 recv() ←── │ 接收缓冲区       │ ←── 网卡 → 网络协议栈
-                    │ (SO_RCVBUF)     │
-                    └─────────────────┘
+```mermaid
+graph LR
+    send["用户态 send()"] --> sndbuf["发送缓冲区<br>(SO_SNDBUF)"] --> stack1["网络协议栈"] --> nic1["网卡"]
+    nic2["网卡"] --> stack2["网络协议栈"] --> rcvbuf["接收缓冲区<br>(SO_RCVBUF)"] --> recv["用户态 recv()"]
+```
 
 默认缓冲区大小（Linux）：
 - SO_RCVBUF: 通常约 212992 字节 (可通过/proc/sys/net/core/rmem_default查看)
