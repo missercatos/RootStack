@@ -8,31 +8,45 @@
         "type": "tabs",
         "children": [
           {
-            "id": "613999651233cf32",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "容器类/12_unordered_map_multimap.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "12_unordered_map_multimap"
-            }
-          },
-          {
             "id": "69aa7fd8f0cb7fa0",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "05_面向对象(一)类与对象基础.md",
+                "file": "08_面向对象(四)运算符重载.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "05_面向对象(一)类与对象基础"
+              "title": "08_面向对象(四)运算符重载"
+            }
+          },
+          {
+            "id": "cef50a133ae31afd",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "03_指针与引用.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "03_指针与引用"
+            }
+          },
+          {
+            "id": "601f46e3ee6962a9",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "06_面向对象(二)继承.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "06_面向对象(二)继承"
             }
           },
           {
@@ -41,54 +55,58 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "07_面向对象(三)多态与虚函数.md",
+                "file": "11_文件与流.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "07_面向对象(三)多态与虚函数"
+              "title": "11_文件与流"
             }
           },
           {
-            "id": "cb2684c3df6e44de",
+            "id": "b55ecc095b20e5df",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "02_预处理器.md",
+                "file": "08_面向对象(四)运算符重载.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "02_预处理器"
-            }
-          },
-          {
-            "id": "79deeadc83dad237",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "01_命名空间.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "01_命名空间"
+              "title": "08_面向对象(四)运算符重载"
             }
           },
           {
             "id": "a49c78aeb07a298e",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "关系图谱"
+              "type": "markdown",
+              "state": {
+                "file": "算法技巧/双指针.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "双指针"
+            }
+          },
+          {
+            "id": "0cdf19aaafd6f559",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "数据结构/E_红黑树_RedBlackTree.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "E_红黑树_RedBlackTree"
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 6
       }
     ],
     "direction": "vertical"
@@ -228,6 +246,18 @@
               "icon": "lucide-list",
               "title": "大纲"
             }
+          },
+          {
+            "id": "0d306a960461cc6a",
+            "type": "leaf",
+            "state": {
+              "type": "footnotes",
+              "state": {
+                "file": "数据结构/E_红黑树_RedBlackTree.md"
+              },
+              "icon": "lucide-file-signature",
+              "title": "脚注"
+            }
           }
         ]
       }
@@ -244,38 +274,44 @@
       "daily-notes:打开/创建今天的日记": false,
       "templates:插入模板": false,
       "command-palette:打开命令面板": false,
-      "bases:新建数据库": false
+      "bases:新建数据库": false,
+      "publish:发布更改": false,
+      "workspaces:管理工作区布局": false,
+      "audio-recorder:开始/结束录音": false,
+      "random-note:开始漫游笔记": false,
+      "zk-prefixer:创建时间戳笔记": false,
+      "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "69aa7fd8f0cb7fa0",
+  "active": "0cdf19aaafd6f559",
   "lastOpenFiles": [
-    "容器类/13_bitset.md",
-    "容器类/11_unordered_set_multiset.md",
-    "容器类/12_unordered_map_multimap.md",
-    "容器类/09_set_multiset.md",
-    "数据结构/E_红黑树_RedBlackTree.md",
-    "数据结构/G_哈希表_HashTable.md",
-    "05_面向对象(一)类与对象基础.md",
-    "06_面向对象(二)继承.md",
-    "目录.md",
-    "07_面向对象(三)多态与虚函数.md",
-    "04_动态内存.md",
-    "01_命名空间.md",
-    "02_预处理器.md",
-    "03_指针与引用.md",
-    "4.5_struct结构体.md",
-    "汇编基础/ASM_03_C++在汇编层的体现.md",
-    "汇编基础/ASM_02_栈与调用约定.md",
-    "汇编基础/ASM_01_寄存器与指令基础.md",
-    "C兼容/C_03_struct_typedef_宏.md",
-    "C兼容/C_02_指针与内存.md",
-    "C兼容/C_01_C语言速览.md",
-    "汇编基础",
-    "C兼容",
-    "04.5_struct结构体.md",
+    "数据结构/D_链表_LinkedList.md",
+    "数据结构/C_堆_Heap.md",
+    "数据结构/B_栈_Stack.md",
+    "数据结构/K_并查集_UnionFind.md",
+    "数据结构/J_字典树_Trie.md",
+    "数据结构/I_树_Tree_BST_AVL.md",
+    "数据结构/H_图_Graph.md",
+    "数据结构/A_容器_Container.md",
+    "数据结构/O_B树_BTree.md",
+    "数据结构/Q_排序_八大排序_Sorting.md",
+    "数据结构/P_图的高级算法_AdvancedGraph.md",
+    "算法技巧/排序.md",
     "10_异常处理.md",
     "09_函数模板.md",
+    "12_信号处理.md",
+    "11_文件与流.md",
+    "13_多线程.md",
+    "14_Web编程.md",
+    "15_C++标准库.md",
+    "算法技巧/循环.md",
+    "算法技巧/差分.md",
+    "算法技巧/暴力枚举.md",
     "算法技巧/函数结构体.md",
-    "算法技巧/分支.md"
+    "算法技巧/概率.md",
+    "算法技巧/分支.md",
+    "算法技巧/递推递归.md",
+    "汇编基础",
+    "C兼容"
   ]
 }
