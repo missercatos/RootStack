@@ -1,7 +1,22 @@
 
-# RootStack
+<h1 align="center">RootStack</h1>
 
-> 从 C 出发的类百科式技术栈指导库 —— 覆盖 C 语言、C++、数据结构与算法、Linux 系统、系统内核、汇编、Rust，构成完整底层知识体系。
+<p align="center">
+  <em>从 C 出发的类百科式技术栈指导库 —— 覆盖 C 语言、C++、数据结构与算法、Linux 系统、系统内核、汇编、Rust</em>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/C-00599C?style=flat-square&logo=c&logoColor=white" alt="C"/>
+  <img src="https://img.shields.io/badge/C++-00599C?style=flat-square&logo=cplusplus&logoColor=white" alt="C++"/>
+  <img src="https://img.shields.io/badge/Rust-000000?style=flat-square&logo=rust&logoColor=white" alt="Rust"/>
+  <img src="https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black" alt="Linux"/>
+  <img src="https://img.shields.io/badge/Assembly-525252?style=flat-square&logo=assemblermips&logoColor=white" alt="Assembly"/>
+  <img src="https://img.shields.io/badge/数据结构-339933?style=flat-square" alt="数据结构"/>
+  <img src="https://img.shields.io/badge/算法-FF6F00?style=flat-square" alt="算法"/>
+  <img src="https://img.shields.io/badge/版本-0.1.0-blue?style=flat-square" alt="version"/>
+</p>
+
+---
 
 ## 关于本教程
 
