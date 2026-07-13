@@ -1,8 +1,8 @@
-## ==========================================================================
-C++ 数据结构教程 — B树/B+树 (B-Tree / B+ Tree)
-## ==========================================================================
+---
+数据结构教程 — B树/B+树 (B-Tree / B+ Tree)
+---
 
-## 📋 章节概述
+##  章节概述
 
 B树（B-Tree）和B+树（B+ Tree）是为磁盘存储优化的自平衡多路搜索树。与二叉搜索树
 不同，B树的每个节点可以有多个子节点和多个键值，这使得树更加"扁平"，大幅减少了
@@ -13,11 +13,11 @@ PostgreSQL、MongoDB等都使用B+树作为索引结构。本章将从B树的设
 深入B树和B+树的实现原理，全面覆盖分裂、合并等操作，
 最后通过实例和习题巩固所学知识。
 
-> 📌 **底层实现参考**：如果需要深入理解本章数据结构的底层实现（纯C手写、内存布局、指针操作），请参阅 [[../../C语言深化教程/3数据结构/09_高级数据结构|C语言教程: 高级数据结构]]。C教程侧重手动实现与内存本质，本教程侧重STL使用与算法优化，两者互补。
+>  **底层实现参考**：如果需要深入理解本章数据结构的底层实现（纯C手写、内存布局、指针操作），请参阅 [[../../C语言深化教程/3数据结构/09_高级数据结构|C语言教程: 高级数据结构]]。C教程侧重手动实现与内存本质，本教程侧重STL使用与算法优化，两者互补。
 
-## ==========================================================================
-### 📖 第一节: 基础语法 + 计算机底层原理
-## ==========================================================================
+---
+###  第一节: 基础语法 + 计算机底层原理
+---
 
 1.1 为什么需要B树？
 -----------------------
@@ -73,134 +73,137 @@ graph TD
 
 1.3 B树实现
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <algorithm>
+```pseudocode
+STRUCT Node:
+    keys       // 数组: 有序键
+    children   // 数组: 子节点指针
+    isLeaf     // 是否为叶子节点
+    CONSTRUCTOR(leaf=true):
+        isLeaf = leaf
+        keys = EMPTY_LIST
+        children = EMPTY_LIST
+    END CONSTRUCTOR
+END STRUCT
 
-class BTree {
-private:
-    struct Node {
-        std::vector<int> keys;
-        std::vector<Node*> children;
-        bool isLeaf;
+CLASS BTree:
+    root    // 根节点
+    t       // 最小度数 (最小度 t → 键数在 [t-1, 2t-1] 之间)
 
-        Node(bool leaf = true) : isLeaf(leaf) {}
-    };
+    FUNCTION splitChild(parent, idx):
+        child = parent.children[idx]
+        newChild = NEW Node(child.isLeaf)
+        mid = t - 1    // 中间键的索引
 
-    Node* root;
-    int t;
+        // 将 child 的后半部分键移入 newChild
+        FOR i FROM mid + 1 TO LENGTH(child.keys) - 1:
+            APPEND child.keys[i] TO newChild.keys
+        END FOR
 
-    void splitChild(Node* parent, int idx) {
-        Node* child = parent->children[idx];
-        Node* newNode = new Node(child->isLeaf);
+        // 非叶节点还需要移动子节点
+        IF NOT child.isLeaf THEN
+            FOR i FROM t TO LENGTH(child.children) - 1:
+                APPEND child.children[i] TO newChild.children
+            END FOR
+            child.children = child.children[0..t-1]
+        END IF
 
-        int mid = t - 1;
-        for (int i = mid + 1; i < (int)child->keys.size(); ++i)
-            newNode->keys.push_back(child->keys[i]);
+        // 将中间键提升到父节点
+        INSERT child.keys[mid] INTO parent.keys AT idx
+        INSERT newChild INTO parent.children AT idx + 1
+        child.keys = child.keys[0..mid-1]
+    END FUNCTION
 
-        if (!child->isLeaf) {
-            for (int i = t; i < (int)child->children.size(); ++i)
-                newNode->children.push_back(child->children[i]);
-            child->children.resize(t);
-        }
+    FUNCTION insertNonFull(node, key):
+        i = LENGTH(node.keys) - 1
+        IF node.isLeaf THEN
+            // 在叶子中直接插入
+            APPEND 0 TO node.keys    // 扩容
+            WHILE i >= 0 AND key < node.keys[i]:
+                node.keys[i + 1] = node.keys[i]
+                i = i - 1
+            END WHILE
+            node.keys[i + 1] = key
+        ELSE
+            // 找到正确的子节点
+            WHILE i >= 0 AND key < node.keys[i]:
+                i = i - 1
+            END WHILE
+            i = i + 1
+            // 如果子节点已满，先分裂
+            IF LENGTH(node.children[i].keys) == 2 * t - 1 THEN
+                splitChild(node, i)
+                IF key > node.keys[i] THEN i = i + 1
+            END IF
+            insertNonFull(node.children[i], key)
+        END IF
+    END FUNCTION
 
-        parent->keys.insert(parent->keys.begin() + idx, child->keys[mid]);
-        parent->children.insert(parent->children.begin() + idx + 1, newNode);
-        child->keys.resize(mid);
-    }
+    FUNCTION searchNode(node, key):
+        i = 0
+        WHILE i < LENGTH(node.keys) AND key > node.keys[i]:
+            i = i + 1
+        END WHILE
+        IF i < LENGTH(node.keys) AND node.keys[i] == key THEN
+            RETURN TRUE
+        END IF
+        IF node.isLeaf THEN RETURN FALSE
+        RETURN searchNode(node.children[i], key)
+    END FUNCTION
 
-    void insertNonFull(Node* node, int key) {
-        int i = node->keys.size() - 1;
-        if (node->isLeaf) {
-            node->keys.push_back(0);
-            while (i >= 0 && key < node->keys[i]) {
-                node->keys[i + 1] = node->keys[i];
-                i--;
-            }
-            node->keys[i + 1] = key;
-        } else {
-            while (i >= 0 && key < node->keys[i]) i--;
-            i++;
-            if ((int)node->children[i]->keys.size() == 2 * t - 1) {
-                splitChild(node, i);
-                if (key > node->keys[i]) i++;
-            }
-            insertNonFull(node->children[i], key);
-        }
-    }
+    FUNCTION traverse(node):
+        FOR i FROM 0 TO LENGTH(node.keys) - 1:
+            IF NOT node.isLeaf THEN traverse(node.children[i])
+            DISPLAY node.keys[i], " "
+        END FOR
+        IF NOT node.isLeaf THEN traverse(node.children[LENGTH(node.keys)])
+    END FUNCTION
 
-    bool searchNode(Node* node, int key) const {
-        int i = 0;
-        while (i < (int)node->keys.size() && key > node->keys[i]) i++;
-        if (i < (int)node->keys.size() && node->keys[i] == key) return true;
-        if (node->isLeaf) return false;
-        return searchNode(node->children[i], key);
-    }
+    FUNCTION getHeight(node):
+        IF node == NULL THEN RETURN 0
+        IF node.isLeaf THEN RETURN 1
+        RETURN 1 + getHeight(node.children[0])
+    END FUNCTION
 
-    void traverse(Node* node) const {
-        for (int i = 0; i < (int)node->keys.size(); ++i) {
-            if (!node->isLeaf) traverse(node->children[i]);
-            std::cout << node->keys[i] << " ";
-        }
-        if (!node->isLeaf) traverse(node->children[node->keys.size()]);
-    }
+    CONSTRUCTOR(degree):
+        root = NULL
+        t = degree    // 最小度
+    END CONSTRUCTOR
 
-    int getHeight(Node* node) const {
-        if (!node) return 0;
-        if (node->isLeaf) return 1;
-        return 1 + getHeight(node->children[0]);
-    }
+    FUNCTION insert(key):
+        IF root == NULL THEN
+            root = NEW Node(TRUE)
+            APPEND key TO root.keys
+            RETURN
+        END IF
+        IF LENGTH(root.keys) == 2 * t - 1 THEN
+            // 根满了，需要新的根
+            newRoot = NEW Node(FALSE)
+            APPEND root TO newRoot.children
+            splitChild(newRoot, 0)
+            root = newRoot
+        END IF
+        insertNonFull(root, key)
+    END FUNCTION
 
-public:
-    BTree(int degree) : root(nullptr), t(degree) {}
+    FUNCTION search(key):
+        IF root == NULL THEN RETURN FALSE
+        RETURN searchNode(root, key)
+    END FUNCTION
 
-    void insert(int key) {
-        if (!root) {
-            root = new Node(true);
-            root->keys.push_back(key);
-            return;
-        }
-        if ((int)root->keys.size() == 2 * t - 1) {
-            Node* newRoot = new Node(false);
-            newRoot->children.push_back(root);
-            splitChild(newRoot, 0);
-            root = newRoot;
-            insertNonFull(root, key);
-        } else {
-            insertNonFull(root, key);
-        }
-    }
+    FUNCTION traverse():
+        IF root != NULL THEN traverse(root)
+        DISPLAY NEWLINE
+    END FUNCTION
 
-    bool search(int key) const {
-        if (!root) return false;
-        return searchNode(root, key);
-    }
-
-    void traverse() const {
-        if (root) traverse(root);
-        std::cout << std::endl;
-    }
-
-    int height() const { return getHeight(root); }
-};
-
-int main() {
-    BTree bt(3);
-    std::vector<int> keys = {10, 20, 5, 6, 12, 30, 7, 17, 3, 1, 25, 35, 40};
-
-    for (int key : keys)
-        bt.insert(key);
-
-    std::cout << "B树中序遍历: ";
-    bt.traverse();
-    std::cout << "树高: " << bt.height() << std::endl;
-    std::cout << "查找12: " << std::boolalpha << bt.search(12) << std::endl;
-    std::cout << "查找15: " << bt.search(15) << std::endl;
-
-    return 0;
-}
+    FUNCTION height():
+        RETURN getHeight(root)
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 1.4 B+树的特点
 
@@ -217,798 +220,635 @@ B+树的优势：
 
 1.5 B+树实现
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <queue>
+```pseudocode
+STRUCT Node:
+    isLeaf
+    keys       // 数组: 有序键
+    children   // 数组: 子节点指针 (仅内部节点使用)
+    next       // 叶子链表指针 (仅叶子节点使用)
+    CONSTRUCTOR(leaf=false):
+        isLeaf = leaf
+        next = NULL
+        keys = EMPTY_LIST
+        children = EMPTY_LIST
+    END CONSTRUCTOR
+END STRUCT
 
-class BPlusTree {
-private:
-    struct Node {
-        bool isLeaf;
-        std::vector<int> keys;
-        std::vector<Node*> children;
-        Node* next;
+CLASS BPlusTree:
+    root      // 根节点
+    order     // 阶数 (每节点最多 order 个键)
 
-        Node(bool leaf = false) : isLeaf(leaf), next(nullptr) {}
-    };
+    FUNCTION findLeaf(key):
+        curr = root
+        WHILE NOT curr.isLeaf:
+            i = 0
+            WHILE i < LENGTH(curr.keys) AND key >= curr.keys[i]:
+                i = i + 1
+            END WHILE
+            curr = curr.children[i]
+        END WHILE
+        RETURN curr
+    END FUNCTION
 
-    Node* root;
-    int order;
+    FUNCTION insertIntoLeaf(leaf, key):
+        pos = LOWER_BOUND(leaf.keys, key)    // 二分查找插入位置
+        INSERT key INTO leaf.keys AT pos
+    END FUNCTION
 
-    Node* findLeaf(int key) {
-        Node* curr = root;
-        while (!curr->isLeaf) {
-            int i = 0;
-            while (i < (int)curr->keys.size() && key >= curr->keys[i]) i++;
-            curr = curr->children[i];
-        }
-        return curr;
-    }
+    FUNCTION findParent(curr, child):     // 递归查找父节点
+        IF curr.isLeaf OR curr.children[0].isLeaf THEN
+            FOR EACH c IN curr.children:
+                IF c == child THEN RETURN curr
+            END FOR
+            RETURN NULL
+        END IF
+        FOR EACH c IN curr.children:
+            IF c == child THEN RETURN curr
+            result = findParent(c, child)
+            IF result != NULL THEN RETURN result
+        END FOR
+        RETURN NULL
+    END FUNCTION
 
-    void insertIntoLeaf(Node* leaf, int key) {
-        auto pos = std::lower_bound(leaf->keys.begin(), leaf->keys.end(), key);
-        leaf->keys.insert(pos, key);
-    }
+    FUNCTION insertIntoParent(left, key, right):
+        IF left == root THEN
+            newRoot = NEW Node(FALSE)
+            APPEND key TO newRoot.keys
+            APPEND left TO newRoot.children
+            APPEND right TO newRoot.children
+            root = newRoot
+            RETURN
+        END IF
+        parent = findParent(root, left)
+        idx = 0
+        WHILE idx < LENGTH(parent.children) AND parent.children[idx] != left:
+            idx = idx + 1
+        END WHILE
+        INSERT key INTO parent.keys AT idx
+        INSERT right INTO parent.children AT idx + 1
 
-    void insertIntoParent(Node* left, int key, Node* right) {
-        if (left == root) {
-            Node* newRoot = new Node(false);
-            newRoot->keys.push_back(key);
-            newRoot->children.push_back(left);
-            newRoot->children.push_back(right);
-            root = newRoot;
-            return;
-        }
-        Node* parent = findParent(root, left);
-        int idx = 0;
-        while (idx < (int)parent->children.size() && parent->children[idx] != left) idx++;
-        parent->keys.insert(parent->keys.begin() + idx, key);
-        parent->children.insert(parent->children.begin() + idx + 1, right);
+        IF LENGTH(parent.keys) >= order THEN
+            newInternal = NEW Node(FALSE)
+            mid = LENGTH(parent.keys) // 2
+            upKey = parent.keys[mid]
+            FOR i FROM mid + 1 TO LENGTH(parent.keys) - 1:
+                APPEND parent.keys[i] TO newInternal.keys
+            END FOR
+            FOR i FROM mid + 1 TO LENGTH(parent.children) - 1:
+                APPEND parent.children[i] TO newInternal.children
+            END FOR
+            parent.keys = parent.keys[0..mid-1]
+            parent.children = parent.children[0..mid]
+            insertIntoParent(parent, upKey, newInternal)
+        END IF
+    END FUNCTION
 
-        if ((int)parent->keys.size() >= order) {
-            Node* newInternal = new Node(false);
-            int mid = parent->keys.size() / 2;
-            int upKey = parent->keys[mid];
+    CONSTRUCTOR(ord=4):
+        root = NULL
+        order = ord
+    END CONSTRUCTOR
 
-            for (int i = mid + 1; i < (int)parent->keys.size(); ++i)
-                newInternal->keys.push_back(parent->keys[i]);
-            for (int i = mid + 1; i < (int)parent->children.size(); ++i)
-                newInternal->children.push_back(parent->children[i]);
+    FUNCTION insert(key):
+        IF root == NULL THEN
+            root = NEW Node(TRUE)
+            APPEND key TO root.keys
+            RETURN
+        END IF
+        leaf = findLeaf(key)
+        insertIntoLeaf(leaf, key)
+        IF LENGTH(leaf.keys) >= order THEN
+            newLeaf = NEW Node(TRUE)
+            mid = LENGTH(leaf.keys) // 2
+            FOR i FROM mid TO LENGTH(leaf.keys) - 1:
+                APPEND leaf.keys[i] TO newLeaf.keys
+            END FOR
+            leaf.keys = leaf.keys[0..mid-1]
+            newLeaf.next = leaf.next
+            leaf.next = newLeaf
+            insertIntoParent(leaf, newLeaf.keys[0], newLeaf)
+        END IF
+    END FUNCTION
 
-            parent->keys.resize(mid);
-            parent->children.resize(mid + 1);
-            insertIntoParent(parent, upKey, newInternal);
-        }
-    }
+    FUNCTION search(key):
+        IF root == NULL THEN RETURN FALSE
+        leaf = findLeaf(key)
+        RETURN BINARY_SEARCH(leaf.keys, key)
+    END FUNCTION
 
-    Node* findParent(Node* curr, Node* child) {
-        if (curr->isLeaf || curr->children[0]->isLeaf) {
-            for (auto* c : curr->children)
-                if (c == child) return curr;
-            return nullptr;
-        }
-        for (auto* c : curr->children) {
-            if (c == child) return curr;
-            Node* result = findParent(c, child);
-            if (result) return result;
-        }
-        return nullptr;
-    }
+    FUNCTION rangeSearch(low, high):
+        result = EMPTY_LIST
+        IF root == NULL THEN RETURN result
+        leaf = findLeaf(low)
+        WHILE leaf != NULL:
+            FOR EACH k IN leaf.keys:
+                IF k > high THEN RETURN result
+                IF k >= low THEN APPEND k TO result
+            END FOR
+            leaf = leaf.next
+        END WHILE
+        RETURN result
+    END FUNCTION
 
-public:
-    BPlusTree(int ord = 4) : root(nullptr), order(ord) {}
-
-    void insert(int key) {
-        if (!root) {
-            root = new Node(true);
-            root->keys.push_back(key);
-            return;
-        }
-
-        Node* leaf = findLeaf(key);
-        insertIntoLeaf(leaf, key);
-
-        if ((int)leaf->keys.size() >= order) {
-            Node* newLeaf = new Node(true);
-            int mid = leaf->keys.size() / 2;
-
-            for (int i = mid; i < (int)leaf->keys.size(); ++i)
-                newLeaf->keys.push_back(leaf->keys[i]);
-
-            leaf->keys.resize(mid);
-            newLeaf->next = leaf->next;
-            leaf->next = newLeaf;
-
-            insertIntoParent(leaf, newLeaf->keys[0], newLeaf);
-        }
-    }
-
-    bool search(int key) {
-        if (!root) return false;
-        Node* leaf = findLeaf(key);
-        return std::binary_search(leaf->keys.begin(), leaf->keys.end(), key);
-    }
-
-    std::vector<int> rangeSearch(int low, int high) {
-        std::vector<int> result;
-        if (!root) return result;
-        Node* leaf = findLeaf(low);
-        while (leaf) {
-            for (int k : leaf->keys) {
-                if (k > high) return result;
-                if (k >= low) result.push_back(k);
-            }
-            leaf = leaf->next;
-        }
-        return result;
-    }
-
-    void printLeaves() {
-        if (!root) return;
-        Node* curr = root;
-        while (!curr->isLeaf) curr = curr->children[0];
-        while (curr) {
-            std::cout << "[";
-            for (int i = 0; i < (int)curr->keys.size(); ++i) {
-                std::cout << curr->keys[i];
-                if (i < (int)curr->keys.size() - 1) std::cout << ",";
-            }
-            std::cout << "] -> ";
-            curr = curr->next;
-        }
-        std::cout << "NULL" << std::endl;
-    }
-};
-
-int main() {
-    BPlusTree bpt(4);
-    std::vector<int> keys = {5, 15, 25, 35, 45, 10, 20, 30, 40, 50, 3, 8};
-
-    for (int key : keys)
-        bpt.insert(key);
-
-    std::cout << "叶子节点链表: ";
-    bpt.printLeaves();
-
-    std::cout << "查找25: " << std::boolalpha << bpt.search(25) << std::endl;
-    std::cout << "查找22: " << bpt.search(22) << std::endl;
-
-    auto range = bpt.rangeSearch(10, 35);
-    std::cout << "范围[10,35]: ";
-    for (int k : range) std::cout << k << " ";
-    std::cout << std::endl;
-
-    return 0;
-}
+    FUNCTION printLeaves():
+        IF root == NULL THEN RETURN
+        curr = root
+        WHILE NOT curr.isLeaf:
+            curr = curr.children[0]
+        END WHILE
+        WHILE curr != NULL:
+            DISPLAY "["  (curr.keys)  "] -> "
+            curr = curr.next
+        END WHILE
+        DISPLAY "NULL"  NEWLINE
+    END FUNCTION
+END CLASS
 ```
 
-## ==========================================================================
-### 📖 第二节: 所有用法大全
-## ==========================================================================
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
+---
+###  第二节: 实现思路
+---
 
 2.1 B树的删除操作
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <algorithm>
+```pseudocode
+CLASS BTreeWithDelete:
+    root, t
 
-class BTreeWithDelete {
-private:
-    struct Node {
-        std::vector<int> keys;
-        std::vector<Node*> children;
-        bool isLeaf;
-        Node(bool leaf = true) : isLeaf(leaf) {}
-    };
+    FUNCTION findKey(node, key):
+        idx = 0
+        WHILE idx < LENGTH(node.keys) AND node.keys[idx] < key:
+            idx = idx + 1
+        END WHILE
+        RETURN idx
+    END FUNCTION
 
-    Node* root;
-    int t;
+    FUNCTION getPredecessor(node):
+        WHILE NOT node.isLeaf:
+            node = node.children[LENGTH(node.children) - 1]
+        END WHILE
+        RETURN node.keys[LAST]
+    END FUNCTION
 
-    int findKey(Node* node, int key) {
-        int idx = 0;
-        while (idx < (int)node->keys.size() && node->keys[idx] < key) idx++;
-        return idx;
-    }
+    FUNCTION getSuccessor(node):
+        WHILE NOT node.isLeaf:
+            node = node.children[0]
+        END WHILE
+        RETURN node.keys[0]
+    END FUNCTION
 
-    int getPredecessor(Node* node) {
-        while (!node->isLeaf)
-            node = node->children[node->children.size() - 1];
-        return node->keys.back();
-    }
+    FUNCTION merge(node, idx):
+        left = node.children[idx]
+        right = node.children[idx + 1]
+        // 把 父键 + 右节点 合并到左节点
+        APPEND node.keys[idx] TO left.keys
+        FOR EACH k IN right.keys: APPEND k TO left.keys
+        IF NOT left.isLeaf THEN
+            FOR EACH c IN right.children: APPEND c TO left.children
+        END IF
+        REMOVE node.keys[idx] FROM node.keys
+        REMOVE node.children[idx + 1] FROM node.children
+        FREE right
+    END FUNCTION
 
-    int getSuccessor(Node* node) {
-        while (!node->isLeaf)
-            node = node->children[0];
-        return node->keys[0];
-    }
+    FUNCTION borrowFromPrev(node, idx):
+        child = node.children[idx]
+        sibling = node.children[idx - 1]
+        // 父键下沉到 child, sibling 的最大键上升
+        INSERT node.keys[idx - 1] INTO child.keys AT 0
+        node.keys[idx - 1] = sibling.keys[LAST]
+        REMOVE sibling.keys[LAST]
+        IF NOT child.isLeaf THEN
+            INSERT sibling.children[LAST] INTO child.children AT 0
+            REMOVE sibling.children[LAST]
+        END IF
+    END FUNCTION
 
-    void merge(Node* node, int idx) {
-        Node* left = node->children[idx];
-        Node* right = node->children[idx + 1];
+    FUNCTION borrowFromNext(node, idx):
+        child = node.children[idx]
+        sibling = node.children[idx + 1]
+        // 父键下沉到 child, sibling 的最小键上升
+        APPEND node.keys[idx] TO child.keys
+        node.keys[idx] = sibling.keys[0]
+        REMOVE sibling.keys[0]
+        IF NOT child.isLeaf THEN
+            APPEND sibling.children[0] TO child.children
+            REMOVE sibling.children[0]
+        END IF
+    END FUNCTION
 
-        left->keys.push_back(node->keys[idx]);
-        for (int k : right->keys) left->keys.push_back(k);
-        if (!left->isLeaf) {
-            for (Node* c : right->children) left->children.push_back(c);
-        }
+    FUNCTION fill(node, idx):
+        IF idx > 0 AND LENGTH(node.children[idx - 1].keys) >= t THEN
+            borrowFromPrev(node, idx)
+        ELSE IF idx < LENGTH(node.children) - 1 AND
+                 LENGTH(node.children[idx + 1].keys) >= t THEN
+            borrowFromNext(node, idx)
+        ELSE
+            IF idx < LENGTH(node.children) - 1 THEN
+                merge(node, idx)
+            ELSE
+                merge(node, idx - 1)
+            END IF
+        END IF
+    END FUNCTION
 
-        node->keys.erase(node->keys.begin() + idx);
-        node->children.erase(node->children.begin() + idx + 1);
-        delete right;
-    }
+    FUNCTION removeFromNode(node, key):
+        idx = findKey(node, key)
+        IF idx < LENGTH(node.keys) AND node.keys[idx] == key THEN
+            // 在当前节点找到了 key
+            IF node.isLeaf THEN
+                REMOVE node.keys[idx]
+            ELSE IF LENGTH(node.children[idx].keys) >= t THEN
+                pred = getPredecessor(node.children[idx])
+                node.keys[idx] = pred
+                removeFromNode(node.children[idx], pred)
+            ELSE IF LENGTH(node.children[idx + 1].keys) >= t THEN
+                succ = getSuccessor(node.children[idx + 1])
+                node.keys[idx] = succ
+                removeFromNode(node.children[idx + 1], succ)
+            ELSE
+                merge(node, idx)
+                removeFromNode(node.children[idx], key)
+            END IF
+        ELSE
+            // key 在子树中
+            IF node.isLeaf THEN RETURN
+            lastChild = (idx == LENGTH(node.children) - 1)
+            IF LENGTH(node.children[idx].keys) < t THEN
+                fill(node, idx)
+            END IF
+            IF lastChild AND idx > LENGTH(node.children) - 1 THEN
+                removeFromNode(node.children[idx - 1], key)
+            ELSE
+                removeFromNode(node.children[idx], key)
+            END IF
+        END IF
+    END FUNCTION
 
-    void borrowFromPrev(Node* node, int idx) {
-        Node* child = node->children[idx];
-        Node* sibling = node->children[idx - 1];
+    FUNCTION insert(key):    // (略, 同 1.3)
+        ...
+    END FUNCTION
 
-        child->keys.insert(child->keys.begin(), node->keys[idx - 1]);
-        node->keys[idx - 1] = sibling->keys.back();
-        sibling->keys.pop_back();
-
-        if (!child->isLeaf) {
-            child->children.insert(child->children.begin(), sibling->children.back());
-            sibling->children.pop_back();
-        }
-    }
-
-    void borrowFromNext(Node* node, int idx) {
-        Node* child = node->children[idx];
-        Node* sibling = node->children[idx + 1];
-
-        child->keys.push_back(node->keys[idx]);
-        node->keys[idx] = sibling->keys[0];
-        sibling->keys.erase(sibling->keys.begin());
-
-        if (!child->isLeaf) {
-            child->children.push_back(sibling->children[0]);
-            sibling->children.erase(sibling->children.begin());
-        }
-    }
-
-    void fill(Node* node, int idx) {
-        if (idx > 0 && (int)node->children[idx - 1]->keys.size() >= t)
-            borrowFromPrev(node, idx);
-        else if (idx < (int)node->children.size() - 1 &&
-                 (int)node->children[idx + 1]->keys.size() >= t)
-            borrowFromNext(node, idx);
-        else {
-            if (idx < (int)node->children.size() - 1)
-                merge(node, idx);
-            else
-                merge(node, idx - 1);
-        }
-    }
-
-    void removeFromNode(Node* node, int key) {
-        int idx = findKey(node, key);
-
-        if (idx < (int)node->keys.size() && node->keys[idx] == key) {
-            if (node->isLeaf) {
-                node->keys.erase(node->keys.begin() + idx);
-            } else if ((int)node->children[idx]->keys.size() >= t) {
-                int pred = getPredecessor(node->children[idx]);
-                node->keys[idx] = pred;
-                removeFromNode(node->children[idx], pred);
-            } else if ((int)node->children[idx + 1]->keys.size() >= t) {
-                int succ = getSuccessor(node->children[idx + 1]);
-                node->keys[idx] = succ;
-                removeFromNode(node->children[idx + 1], succ);
-            } else {
-                merge(node, idx);
-                removeFromNode(node->children[idx], key);
-            }
-        } else {
-            if (node->isLeaf) return;
-            bool lastChild = (idx == (int)node->children.size() - 1);
-            if ((int)node->children[idx]->keys.size() < t)
-                fill(node, idx);
-            if (lastChild && idx > (int)node->children.size() - 1)
-                removeFromNode(node->children[idx - 1], key);
-            else
-                removeFromNode(node->children[idx], key);
-        }
-    }
-
-    void splitChild(Node* parent, int idx) {
-        Node* child = parent->children[idx];
-        Node* newNode = new Node(child->isLeaf);
-        int mid = t - 1;
-        for (int i = mid + 1; i < (int)child->keys.size(); ++i)
-            newNode->keys.push_back(child->keys[i]);
-        if (!child->isLeaf)
-            for (int i = t; i < (int)child->children.size(); ++i)
-                newNode->children.push_back(child->children[i]);
-        parent->keys.insert(parent->keys.begin() + idx, child->keys[mid]);
-        parent->children.insert(parent->children.begin() + idx + 1, newNode);
-        child->keys.resize(mid);
-        if (!child->isLeaf) child->children.resize(t);
-    }
-
-    void insertNonFull(Node* node, int key) {
-        int i = node->keys.size() - 1;
-        if (node->isLeaf) {
-            node->keys.push_back(0);
-            while (i >= 0 && key < node->keys[i]) {
-                node->keys[i + 1] = node->keys[i]; i--;
-            }
-            node->keys[i + 1] = key;
-        } else {
-            while (i >= 0 && key < node->keys[i]) i--;
-            i++;
-            if ((int)node->children[i]->keys.size() == 2*t-1) {
-                splitChild(node, i);
-                if (key > node->keys[i]) i++;
-            }
-            insertNonFull(node->children[i], key);
-        }
-    }
-
-public:
-    BTreeWithDelete(int degree) : root(nullptr), t(degree) {}
-
-    void insert(int key) {
-        if (!root) { root = new Node(true); root->keys.push_back(key); return; }
-        if ((int)root->keys.size() == 2*t-1) {
-            Node* s = new Node(false);
-            s->children.push_back(root);
-            splitChild(s, 0);
-            root = s;
-        }
-        insertNonFull(root, key);
-    }
-
-    void remove(int key) {
-        if (!root) return;
-        removeFromNode(root, key);
-        if (root->keys.empty()) {
-            Node* old = root;
-            root = root->isLeaf ? nullptr : root->children[0];
-            delete old;
-        }
-    }
-
-    void traverse(Node* node) {
-        if (!node) return;
-        for (int i = 0; i < (int)node->keys.size(); ++i) {
-            if (!node->isLeaf) traverse(node->children[i]);
-            std::cout << node->keys[i] << " ";
-        }
-        if (!node->isLeaf) traverse(node->children[node->keys.size()]);
-    }
-
-    void print() { traverse(root); std::cout << std::endl; }
-};
-
-int main() {
-    BTreeWithDelete bt(3);
-    for (int k : {1,3,7,10,11,13,14,15,18,16,19,24,25,26,21,4,5,20,22,2})
-        bt.insert(k);
-
-    std::cout << "插入后: "; bt.print();
-    bt.remove(6);
-    bt.remove(13);
-    bt.remove(7);
-    std::cout << "删除6,13,7后: "; bt.print();
-    return 0;
-}
+    FUNCTION remove(key):
+        IF root == NULL THEN RETURN
+        removeFromNode(root, key)
+        // 删除后根变空: 子节点成为新根
+        IF LENGTH(root.keys) == 0 THEN
+            old = root
+            root = IF root.isLeaf THEN NULL ELSE root.children[0]
+            FREE old
+        END IF
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.2 磁盘IO模拟
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <unordered_map>
+```pseudocode
+STRUCT DiskPage:
+    pageId
+    keys          // 数组
+    childPageIds  // 数组: 子页面 ID
+    isLeaf
+    values        // 数组: 值 (仅叶子)
+END STRUCT
 
-class DiskBTree {
-private:
-    struct DiskPage {
-        int pageId;
-        std::vector<int> keys;
-        std::vector<int> childPageIds;
-        bool isLeaf;
-        std::vector<std::string> values;
-    };
+CLASS DiskBTree:
+    disk         // 哈希表: pageId → DiskPage (模拟磁盘)
+    nextPageId = 0
+    rootPageId = -1
+    order
+    ioCount = 0
 
-    std::unordered_map<int, DiskPage> disk;
-    int nextPageId = 0;
-    int rootPageId = -1;
-    int order;
-    int ioCount = 0;
+    FUNCTION readPage(pageId):    // 模拟一次磁盘读取
+        ioCount = ioCount + 1
+        RETURN disk[pageId]
+    END FUNCTION
 
-    DiskPage& readPage(int pageId) {
-        ioCount++;
-        return disk[pageId];
-    }
+    FUNCTION allocatePage():
+        id = nextPageId
+        nextPageId = nextPageId + 1
+        disk[id] = {id, [], [], TRUE, []}
+        RETURN id
+    END FUNCTION
 
-    int allocatePage() {
-        int id = nextPageId++;
-        disk[id] = {id, {}, {}, true, {}};
-        return id;
-    }
+    CONSTRUCTOR(ord=100):
+        order = ord
+    END CONSTRUCTOR
 
-public:
-    DiskBTree(int ord = 100) : order(ord) {}
+    FUNCTION insert(key, value):    // 简化演示
+        IF rootPageId == -1 THEN
+            rootPageId = allocatePage()
+            page = readPage(rootPageId)
+            APPEND key TO page.keys
+            APPEND value TO page.values
+            RETURN
+        END IF
+        ioCount = 0
+        rootPage = readPage(rootPageId)
+        DISPLAY "插入", key, "需要", ioCount, "次IO (简化演示)"
+    END FUNCTION
 
-    void insert(int key, const std::string& value) {
-        if (rootPageId == -1) {
-            rootPageId = allocatePage();
-            auto& page = readPage(rootPageId);
-            page.keys.push_back(key);
-            page.values.push_back(value);
-            return;
-        }
-        ioCount = 0;
-        auto& rootPage = readPage(rootPageId);
-        std::cout << "插入" << key << "需要" << ioCount << "次IO (简化演示)" << std::endl;
-    }
+    FUNCTION search(key):
+        ioCount = 0
+        IF rootPageId == -1 THEN RETURN ""
+        currentPageId = rootPageId
+        WHILE TRUE:
+            page = readPage(currentPageId)
+            i = 0
+            WHILE i < LENGTH(page.keys) AND key > page.keys[i]:
+                i = i + 1
+            END WHILE
+            IF i < LENGTH(page.keys) AND page.keys[i] == key THEN
+                DISPLAY "查找", key, "需要", ioCount, "次磁盘IO"
+                RETURN IF EMPTY(page.values) THEN "" ELSE page.values[i]
+            END IF
+            IF page.isLeaf THEN BREAK
+            currentPageId = page.childPageIds[i]
+        END WHILE
+        RETURN ""
+    END FUNCTION
+END CLASS
 
-    std::string search(int key) {
-        ioCount = 0;
-        if (rootPageId == -1) return "";
-
-        int currentPageId = rootPageId;
-        while (true) {
-            auto& page = readPage(currentPageId);
-            int i = 0;
-            while (i < (int)page.keys.size() && key > page.keys[i]) i++;
-            if (i < (int)page.keys.size() && page.keys[i] == key) {
-                std::cout << "查找" << key << "需要" << ioCount << "次磁盘IO" << std::endl;
-                return page.values.empty() ? "" : page.values[i];
-            }
-            if (page.isLeaf) break;
-            currentPageId = page.childPageIds[i];
-        }
-        return "";
-    }
-
-    int getIOCount() const { return ioCount; }
-};
-
-int main() {
-    DiskBTree db(100);
-    std::cout << "=== 磁盘B树IO模拟 ===" << std::endl;
-    std::cout << "阶数=100时:" << std::endl;
-    std::cout << "  100个键: 树高1, 查找需1次IO" << std::endl;
-    std::cout << "  10000个键: 树高2, 查找需2次IO" << std::endl;
-    std::cout << "  1000000个键: 树高3, 查找需3次IO" << std::endl;
-    std::cout << "  对比二叉树: 1000000个键需约20次IO" << std::endl;
-    return 0;
-}
+// 复杂度分析输出:
+阶数 = 100:
+  100 个键:    树高 1, 查找需 1 次 IO
+  10000 个键:  树高 2, 查找需 2 次 IO
+  1000000 个键: 树高 3, 查找需 3 次 IO
+  对比二叉树:  1000000 个键需约 20 次 IO
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.3 B+树索引模拟（数据库场景）
 
-```cpp
-#include <iostream>
-#include <string>
-#include <vector>
-#include <map>
+```pseudocode
+STRUCT Record:
+    id, name, age, salary
+END STRUCT
 
-class DatabaseIndex {
-private:
-    struct Record {
-        int id;
-        std::string name;
-        int age;
-        double salary;
-    };
+CLASS DatabaseIndex:
+    primaryIndex    // 有序映射: id → Record
+    nameIndex       // 多重映射: name → id
+    ageIndex        // 多重映射: age → id
 
-    std::map<int, Record> primaryIndex;
-    std::multimap<std::string, int> nameIndex;
-    std::multimap<int, int> ageIndex;
+    FUNCTION insertRecord(id, name, age, salary):
+        primaryIndex[id] = {id, name, age, salary}
+        INSERT (name, id) INTO nameIndex
+        INSERT (age, id) INTO ageIndex
+    END FUNCTION
 
-public:
-    void insertRecord(int id, const std::string& name, int age, double salary) {
-        primaryIndex[id] = {id, name, age, salary};
-        nameIndex.insert({name, id});
-        ageIndex.insert({age, id});
-    }
+    FUNCTION findById(id):
+        IF primaryIndex CONTAINS id THEN RETURN primaryIndex[id]
+        RETURN NULL
+    END FUNCTION
 
-    Record* findById(int id) {
-        auto it = primaryIndex.find(id);
-        if (it != primaryIndex.end()) return &it->second;
-        return nullptr;
-    }
+    FUNCTION findByName(name):
+        results = EMPTY_LIST
+        range = nameIndex.EQUAL_RANGE(name)
+        FOR EACH (key, id) IN range:
+            APPEND primaryIndex[id] TO results
+        END FOR
+        RETURN results
+    END FUNCTION
 
-    std::vector<Record*> findByName(const std::string& name) {
-        std::vector<Record*> results;
-        auto range = nameIndex.equal_range(name);
-        for (auto it = range.first; it != range.second; ++it)
-            results.push_back(&primaryIndex[it->second]);
-        return results;
-    }
+    FUNCTION findByAgeRange(minAge, maxAge):
+        results = EMPTY_LIST
+        low = ageIndex.LOWER_BOUND(minAge)
+        high = ageIndex.UPPER_BOUND(maxAge)
+        FOR EACH (key, id) IN [low, high):
+            APPEND primaryIndex[id] TO results
+        END FOR
+        RETURN results
+    END FUNCTION
 
-    std::vector<Record*> findByAgeRange(int minAge, int maxAge) {
-        std::vector<Record*> results;
-        auto low = ageIndex.lower_bound(minAge);
-        auto high = ageIndex.upper_bound(maxAge);
-        for (auto it = low; it != high; ++it)
-            results.push_back(&primaryIndex[it->second]);
-        return results;
-    }
+    FUNCTION printRecord(r):
+        DISPLAY "ID=", r.id, " 姓名=", r.name, " 年龄=", r.age, " 薪资=", r.salary
+    END FUNCTION
+END CLASS
 
-    void printRecord(const Record& r) {
-        std::cout << "  ID=" << r.id << " 姓名=" << r.name
-                  << " 年龄=" << r.age << " 薪资=" << r.salary << std::endl;
-    }
-};
-
-int main() {
-    DatabaseIndex db;
-    db.insertRecord(1, "张三", 28, 15000);
-    db.insertRecord(2, "李四", 35, 25000);
-    db.insertRecord(3, "王五", 22, 8000);
-    db.insertRecord(4, "张三", 30, 18000);
-    db.insertRecord(5, "赵六", 28, 12000);
-
-    std::cout << "按ID查找(3):" << std::endl;
-    auto* r = db.findById(3);
-    if (r) db.printRecord(*r);
-
-    std::cout << "按姓名查找(张三):" << std::endl;
-    auto nameResults = db.findByName("张三");
-    for (auto* rec : nameResults) db.printRecord(*rec);
-
-    std::cout << "按年龄范围查找[25,30]:" << std::endl;
-    auto ageResults = db.findByAgeRange(25, 30);
-    for (auto* rec : ageResults) db.printRecord(*rec);
-
-    return 0;
-}
+// 使用示例:
+db = DatabaseIndex()
+db.insertRecord(1, "张三", 28, 15000)
+db.insertRecord(2, "李四", 35, 25000)
+db.insertRecord(3, "王五", 22, 8000)
+db.insertRecord(4, "张三", 30, 18000)
+db.insertRecord(5, "赵六", 28, 12000)
+// 按 ID 查找, 按姓名查找, 按年龄范围查找
 ```
 
-## ==========================================================================
-### 📖 第三节: 实用案例
-## ==========================================================================
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
+---
+###  第三节: 应用场景
+---
 
 3.1 案例一：简易文件系统目录结构
 
-```cpp
-#include <iostream>
-#include <string>
-#include <map>
-#include <vector>
+```pseudocode
+STRUCT DirEntry:
+    name      // 字符串
+    isDir     // 是否为目录
+    size      // 文件大小 (目录为 0)
+    children  // 有序映射: name → DirEntry 指针
+    CONSTRUCTOR(n, dir, s=0):
+        name = n; isDir = dir; size = s
+    END CONSTRUCTOR
+END STRUCT
 
-class SimpleFileSystem {
-private:
-    struct DirEntry {
-        std::string name;
-        bool isDir;
-        int size;
-        std::map<std::string, DirEntry*> children;
+CLASS SimpleFileSystem:
+    root    // DirEntry: "/"
 
-        DirEntry(const std::string& n, bool dir, int s = 0)
-            : name(n), isDir(dir), size(s) {}
-    };
+    FUNCTION navigate(path):
+        IF path == "/" THEN RETURN root
+        curr = root
+        tokens = SPLIT(path, '/')
+        FOR EACH token IN tokens (skip first):
+            IF token IS EMPTY THEN CONTINUE
+            IF curr.children CONTAINS token THEN
+                curr = curr.children[token]
+            ELSE
+                RETURN NULL
+            END IF
+        END FOR
+        RETURN curr
+    END FUNCTION
 
-    DirEntry* root;
+    CONSTRUCTOR():
+        root = NEW DirEntry("/", TRUE)
+    END CONSTRUCTOR
 
-    DirEntry* navigate(const std::string& path) {
-        if (path == "/") return root;
-        DirEntry* curr = root;
-        std::string token;
-        for (int i = 1; i <= (int)path.size(); ++i) {
-            if (i == (int)path.size() || path[i] == '/') {
-                if (!token.empty()) {
-                    if (curr->children.count(token))
-                        curr = curr->children[token];
-                    else return nullptr;
-                    token.clear();
-                }
-            } else {
-                token += path[i];
-            }
-        }
-        return curr;
-    }
+    FUNCTION mkdir(path, name):
+        dir = navigate(path)
+        IF dir == NULL OR NOT dir.isDir THEN RETURN FALSE
+        IF dir.children CONTAINS name THEN RETURN FALSE
+        dir.children[name] = NEW DirEntry(name, TRUE)
+        RETURN TRUE
+    END FUNCTION
 
-public:
-    SimpleFileSystem() { root = new DirEntry("/", true); }
+    FUNCTION createFile(path, name, size):
+        dir = navigate(path)
+        IF dir == NULL OR NOT dir.isDir THEN RETURN FALSE
+        dir.children[name] = NEW DirEntry(name, FALSE, size)
+        RETURN TRUE
+    END FUNCTION
 
-    bool mkdir(const std::string& path, const std::string& name) {
-        DirEntry* dir = navigate(path);
-        if (!dir || !dir->isDir) return false;
-        if (dir->children.count(name)) return false;
-        dir->children[name] = new DirEntry(name, true);
-        return true;
-    }
-
-    bool createFile(const std::string& path, const std::string& name, int size) {
-        DirEntry* dir = navigate(path);
-        if (!dir || !dir->isDir) return false;
-        dir->children[name] = new DirEntry(name, false, size);
-        return true;
-    }
-
-    void ls(const std::string& path) {
-        DirEntry* dir = navigate(path);
-        if (!dir || !dir->isDir) { std::cout << "路径无效" << std::endl; return; }
-        std::cout << path << " 目录内容:" << std::endl;
-        for (auto& [name, entry] : dir->children) {
-            std::cout << "  " << (entry->isDir ? "[DIR] " : "[FILE] ")
-                      << name;
-            if (!entry->isDir) std::cout << " (" << entry->size << "B)";
-            std::cout << std::endl;
-        }
-    }
-};
-
-int main() {
-    SimpleFileSystem fs;
-    fs.mkdir("/", "home");
-    fs.mkdir("/", "etc");
-    fs.mkdir("/home", "user");
-    fs.createFile("/home/user", "hello.cpp", 1024);
-    fs.createFile("/home/user", "data.txt", 2048);
-    fs.createFile("/etc", "config.ini", 512);
-
-    fs.ls("/");
-    std::cout << std::endl;
-    fs.ls("/home/user");
-
-    return 0;
-}
+    FUNCTION ls(path):
+        dir = navigate(path)
+        IF dir == NULL OR NOT dir.isDir THEN
+            DISPLAY "路径无效"
+            RETURN
+        END IF
+        DISPLAY path, " 目录内容:"
+        FOR EACH (name, entry) IN dir.children:
+            IF entry.isDir THEN
+                DISPLAY "  [DIR] ", name
+            ELSE
+                DISPLAY "  [FILE] ", name, " (", entry.size, "B)"
+            END IF
+        END FOR
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 3.2 案例二：数据库页面缓存（Buffer Pool）
 
-```cpp
-#include <iostream>
-#include <unordered_map>
-#include <list>
+```pseudocode
+STRUCT Page:
+    pageId
+    data       // 数组: 页面数据
+    dirty = FALSE
+END STRUCT
 
-class BufferPool {
-private:
-    struct Page {
-        int pageId;
-        std::vector<int> data;
-        bool dirty = false;
-    };
+CLASS BufferPool:
+    capacity      // 缓冲池容量（页数）
+    lruList       // 双端队列: 最近使用顺序
+    lruMap        // 哈希表: pageId → lruList 中的位置
+    pages         // 哈希表: pageId → Page
+    diskReads = 0
+    diskWrites = 0
 
-    int capacity;
-    std::list<int> lruList;
-    std::unordered_map<int, std::list<int>::iterator> lruMap;
-    std::unordered_map<int, Page> pages;
-    int diskReads = 0;
-    int diskWrites = 0;
+    FUNCTION evict():
+        victimId = lruList[LAST]
+        POP lruList[LAST]
+        REMOVE lruMap[victimId]
+        IF pages[victimId].dirty THEN
+            diskWrites = diskWrites + 1
+            DISPLAY "  [写回] 页", victimId, "写入磁盘"
+        END IF
+        REMOVE pages[victimId]
+    END FUNCTION
 
-    void evict() {
-        int victimId = lruList.back();
-        lruList.pop_back();
-        lruMap.erase(victimId);
-        if (pages[victimId].dirty) {
-            diskWrites++;
-            std::cout << "  [写回] 页" << victimId << "写入磁盘" << std::endl;
-        }
-        pages.erase(victimId);
-    }
+    CONSTRUCTOR(cap):
+        capacity = cap
+    END CONSTRUCTOR
 
-public:
-    BufferPool(int cap) : capacity(cap) {}
+    FUNCTION getPage(pageId):
+        IF pages CONTAINS pageId THEN
+            // 缓存命中，移到 LRU 最前
+            REMOVE pageId FROM lruList
+            PUSH pageId TO FRONT OF lruList
+            UPDATE lruMap[pageId]
+            RETURN pages[pageId]
+        END IF
+        // 缓存未命中
+        IF LENGTH(pages) >= capacity THEN evict()
+        diskReads = diskReads + 1
+        pages[pageId] = {pageId, ARRAY of 100 elements, FALSE}
+        PUSH pageId TO FRONT OF lruList
+        UPDATE lruMap[pageId]
+        DISPLAY "  [读取] 页", pageId, "从磁盘加载"
+        RETURN pages[pageId]
+    END FUNCTION
 
-    Page& getPage(int pageId) {
-        if (pages.count(pageId)) {
-            lruList.erase(lruMap[pageId]);
-            lruList.push_front(pageId);
-            lruMap[pageId] = lruList.begin();
-            return pages[pageId];
-        }
+    FUNCTION markDirty(pageId):
+        IF pages CONTAINS pageId THEN
+            pages[pageId].dirty = TRUE
+        END IF
+    END FUNCTION
 
-        if ((int)pages.size() >= capacity) evict();
-
-        diskReads++;
-        pages[pageId] = {pageId, std::vector<int>(100, pageId), false};
-        lruList.push_front(pageId);
-        lruMap[pageId] = lruList.begin();
-        std::cout << "  [读取] 页" << pageId << "从磁盘加载" << std::endl;
-        return pages[pageId];
-    }
-
-    void markDirty(int pageId) {
-        if (pages.count(pageId))
-            pages[pageId].dirty = true;
-    }
-
-    void printStats() {
-        std::cout << "缓存命中率: "
-                  << (1.0 - (double)diskReads / (diskReads + (int)pages.size())) * 100
-                  << "%" << std::endl;
-        std::cout << "磁盘读: " << diskReads << ", 磁盘写: " << diskWrites << std::endl;
-    }
-};
-
-int main() {
-    BufferPool pool(3);
-
-    std::cout << "模拟B+树索引查询 (缓冲池大小=3页):" << std::endl;
-    pool.getPage(1);
-    pool.getPage(5);
-    pool.getPage(3);
-    pool.getPage(5);
-    pool.markDirty(5);
-    pool.getPage(8);
-
-    std::cout << std::endl;
-    pool.printStats();
-    return 0;
-}
+    FUNCTION printStats():
+        totalAccesses = diskReads + LENGTH(pages)
+        hitRate = (1.0 - diskReads / totalAccesses) * 100
+        DISPLAY "缓存命中率: ", hitRate, "%"
+        DISPLAY "磁盘读: ", diskReads, ", 磁盘写: ", diskWrites
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 3.3 案例三：键值存储引擎
 
-```cpp
-#include <iostream>
-#include <string>
-#include <map>
-#include <fstream>
-#include <sstream>
+```pseudocode
+CLASS KVStore:
+    memtable       // 有序映射: key → value (内存中的 B+树或跳表)
+    memtableLimit  // 内存表大小上限
+    sstableCount = 0
 
-class KVStore {
-private:
-    std::map<std::string, std::string> memtable;
-    int memtableLimit;
-    int sstableCount = 0;
+    FUNCTION flushToSSTable():
+        filename = "sstable_" + STRING(sstableCount) + ".dat"
+        sstableCount = sstableCount + 1
+        DISPLAY "  [Flush] 内存表写入 ", filename, " (", LENGTH(memtable), "条记录)"
+        memtable = EMPTY_MAP
+    END FUNCTION
 
-    void flushToSSTable() {
-        std::string filename = "sstable_" + std::to_string(sstableCount++) + ".dat";
-        std::cout << "  [Flush] 内存表写入 " << filename
-                  << " (" << memtable.size() << "条记录)" << std::endl;
-        memtable.clear();
-    }
+    CONSTRUCTOR(limit=4):
+        memtableLimit = limit
+    END CONSTRUCTOR
 
-public:
-    KVStore(int limit = 4) : memtableLimit(limit) {}
+    FUNCTION put(key, value):
+        memtable[key] = value
+        DISPLAY "PUT ", key, "=", value
+        IF LENGTH(memtable) >= memtableLimit THEN
+            flushToSSTable()
+        END IF
+    END FUNCTION
 
-    void put(const std::string& key, const std::string& value) {
-        memtable[key] = value;
-        std::cout << "PUT " << key << "=" << value << std::endl;
-        if ((int)memtable.size() >= memtableLimit) {
-            flushToSSTable();
-        }
-    }
+    FUNCTION get(key):
+        IF memtable CONTAINS key THEN
+            DISPLAY "GET ", key, " -> ", memtable[key], " (从内存)"
+            RETURN memtable[key]
+        END IF
+        DISPLAY "GET ", key, " -> 需查询SSTable文件"
+        RETURN ""
+    END FUNCTION
 
-    std::string get(const std::string& key) {
-        auto it = memtable.find(key);
-        if (it != memtable.end()) {
-            std::cout << "GET " << key << " -> " << it->second << " (从内存)" << std::endl;
-            return it->second;
-        }
-        std::cout << "GET " << key << " -> 需查询SSTable文件" << std::endl;
-        return "";
-    }
-
-    void scan(const std::string& start, const std::string& end) {
-        std::cout << "SCAN [" << start << ", " << end << "]:" << std::endl;
-        auto low = memtable.lower_bound(start);
-        auto high = memtable.upper_bound(end);
-        for (auto it = low; it != high; ++it)
-            std::cout << "  " << it->first << " = " << it->second << std::endl;
-    }
-};
-
-int main() {
-    KVStore store(4);
-
-    store.put("apple", "red");
-    store.put("banana", "yellow");
-    store.put("cherry", "red");
-    store.get("banana");
-    store.put("date", "brown");
-    store.put("elderberry", "purple");
-    store.get("apple");
-    store.scan("banana", "date");
-
-    return 0;
-}
+    FUNCTION scan(start, end):
+        DISPLAY "SCAN [", start, ", ", end, "]:"
+        low = memtable.LOWER_BOUND(start)
+        high = memtable.UPPER_BOUND(end)
+        FOR EACH (k, v) IN [low, high):
+            DISPLAY "  ", k, " = ", v
+        END FOR
+    END FUNCTION
+END CLASS
 ```
 
-## ==========================================================================
-### 📖 第四节: 课后习题
-## ==========================================================================
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
+---
+###  第四节: 课后习题
+---
 
 1. 基础题：实现一棵3阶B树，支持插入和查找操作，并在每次插入后打印树的结构。
 
@@ -1025,27 +865,27 @@ int main() {
    - 支持等值查询和范围查询
    - 模拟磁盘页面读取计数
 
-## ==========================================================================
+---
 
 
-## --------------------------------------------------------------------------
-## 🔗 知识网络
-## --------------------------------------------------------------------------
+***
+##  知识网络
+***
 
 - **上一章**: [[E_红黑树_RedBlackTree]] | **下一章**: [[P_图的高级算法_AdvancedGraph]] | **返回**: [[DSA学习路线]] (Phase 5 选修)
 - **算法技巧**: [[../算法技巧/二分查找]]
 - **相关**: [[数据库原理]] | [[文件系统]] | [[数据结构/E_红黑树_RedBlackTree]]
 
-## ==========================================================================
+---
 ## 章节测试
-## ==========================================================================
+---
 
 ### 判断题
 
 > [!question] 判断题 1
 > B树是一种二叉搜索树的推广。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1054,8 +894,8 @@ int main() {
 
 > [!question] 判断题 2
 > B+树的所有数据都存储在叶子节点中。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1064,8 +904,8 @@ int main() {
 
 > [!question] 判断题 3
 > B树中所有叶子节点在同一层。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1074,8 +914,8 @@ int main() {
 
 > [!question] 判断题 4
 > m阶B树中每个节点最多有m-1个键。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1084,8 +924,8 @@ int main() {
 
 > [!question] 判断题 5
 > B+树比B树更适合范围查询。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1094,8 +934,8 @@ int main() {
 
 > [!question] 判断题 6
 > B树节点分裂时，中间键上升到父节点。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1104,8 +944,8 @@ int main() {
 
 > [!question] 判断题 7
 > MySQL的InnoDB引擎使用B树（而非B+树）作为索引。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -1114,8 +954,8 @@ int main() {
 
 > [!question] 判断题 8
 > B树的高度为O(log_m n)，其中m是阶数，n是键的数量。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1124,8 +964,8 @@ int main() {
 
 > [!question] 判断题 9
 > B树删除操作可能导致树高度减少。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1134,8 +974,8 @@ int main() {
 
 > [!question] 判断题 10
 > 对于存储1亿条记录的B+树（阶数1000），树高约为3层。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确

@@ -1,5 +1,5 @@
 ## ==========================================================================
-C++ 数据结构教程 — 哈希表 (Hash Table)
+数据结构教程 — 哈希表 (Hash Table)
 ## ==========================================================================
 
 ## 📋 章节概述
@@ -28,41 +28,41 @@ unordered_multiset 的底层实现。它在缓存系统、数据库索引、密�
 
 最简单的哈希表示例（使用标准库）：
 
-```cpp
-#include <iostream>
-#include <unordered_map>
-#include <unordered_set>
-#include <string>
-
-int main() {
+```pseudocode
+FUNCTION main() {
     // unordered_map (哈希表)
-    std::unordered_map<std::string, int> phone_book;
+    unordered_map<string, int> phone_book;
 
     phone_book["Alice"] = 123456;
     phone_book["Bob"] = 789012;
     phone_book["Charlie"] = 345678;
 
-    std::cout << "Alice的电话: " << phone_book["Alice"] << std::endl;
+    PRINT "Alice的电话: " + phone_book["Alice"] + NEWLINE;
 
     // 查找
-    auto it = phone_book.find("David");
+    it = phone_book.find("David");
     if (it == phone_book.end()) {
-        std::cout << "David不在电话簿中" << std::endl;
+        PRINT "David不在电话簿中" + NEWLINE;
     }
 
     // unordered_set (哈希集合)
-    std::unordered_set<int> numbers = {3, 1, 4, 1, 5, 9};
+    unordered_set<int> numbers = {3, 1, 4, 1, 5, 9};
 
     numbers.insert(2);
     numbers.erase(1);
 
     if (numbers.find(4) != numbers.end()) {
-        std::cout << "4在集合中" << std::endl;
+        PRINT "4在集合中" + NEWLINE;
     }
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 1.2 哈希表的底层原理
 -----------------------
@@ -75,28 +75,30 @@ int main() {
 - 分布均匀（将键均匀映射到整个表范围）
 - 确定性（相同键总产生相同哈希值）
 
-```cpp
-#include <iostream>
-#include <functional>
-
-int main() {
+```pseudocode
+FUNCTION main() {
     // C++标准哈希函数
-    std::hash<int> int_hash;
-    std::hash<std::string> str_hash;
-    std::hash<double> double_hash;
+    hash<int> int_hash;
+    hash<string> str_hash;
+    hash<double> double_hash;
 
-    std::cout << "hash(42) = " << int_hash(42) << std::endl;
-    std::cout << "hash(\"hello\") = " << str_hash("hello") << std::endl;
-    std::cout << "hash(3.14) = " << double_hash(3.14) << std::endl;
+    PRINT "hash(42) = " + int_hash(42) + NEWLINE;
+    PRINT "hash(\"hello\") = " + str_hash("hello") + NEWLINE;
+    PRINT "hash(3.14) = " + double_hash(3.14) + NEWLINE;
 
     // 模运算得到数组索引
     size_t table_size = 100;
     size_t index = int_hash(42) % table_size;
-    std::cout << "42的桶索引: " << index << std::endl;
+    PRINT "42的桶索引: " + index + NEWLINE;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 (2) 冲突解决：链地址法（Separate Chaining）
 每个桶维护一个链表（或其他数据结构），冲突的键值对放入同一桶的链表中。
@@ -126,58 +128,52 @@ graph LR
 1.3 手动实现哈希表（链地址法）
 -----------------------------------
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <list>
-#include <functional>
-
-template<typename Key, typename Value>
-class HashMap {
-private:
-    struct Entry {
+```pseudocode
+CLASS HashMap {
+PRIVATE:
+    STRUCT Entry {
         Key key;
         Value value;
-        Entry(const Key& k, const Value& v) : key(k), value(v) {}
+        Entry(Key k, Value v) : key(k), value(v) {}
     };
 
-    std::vector<std::list<Entry>> buckets;
+    vector<list<Entry>> buckets;
     size_t num_elements;
     float max_load_factor;
 
-    std::hash<Key> hasher;
+    hash<Key> hasher;
 
-    size_t getBucketIndex(const Key& key) const {
+    FUNCTION getBucketIndex(Key key) {
         return hasher(key) % buckets.size();
     }
 
-    void rehash(size_t new_bucket_count) {
-        std::vector<std::list<Entry>> old_buckets = std::move(buckets);
+    FUNCTION rehash(size_t new_bucket_count) {
+        vector<list<Entry>> old_buckets = MOVE(buckets);
         buckets.resize(new_bucket_count);
         num_elements = 0;
 
-        for (auto& bucket : old_buckets) {
-            for (auto& entry : bucket) {
+        for ( bucket : old_buckets) {
+            for ( entry : bucket) {
                 insert(entry.key, entry.value);
             }
         }
     }
 
-public:
+PUBLIC:
     HashMap(size_t initial_size = 16)
         : buckets(initial_size), num_elements(0), max_load_factor(0.75) {}
 
-    void insert(const Key& key, const Value& value) {
+    FUNCTION insert(Key key, Value value) {
         // 检查负载因子，需要时扩容
-        if ((float)(num_elements + 1) / buckets.size() > max_load_factor) {
+        if ((num_elements + 1) / buckets.size() > max_load_factor) {
             rehash(buckets.size() * 2);
         }
 
         size_t index = getBucketIndex(key);
-        auto& bucket = buckets[index];
+         bucket = buckets[index];
 
         // 检查key是否已存在
-        for (auto& entry : bucket) {
+        for ( entry : bucket) {
             if (entry.key == key) {
                 entry.value = value;  // 更新
                 return;
@@ -188,31 +184,31 @@ public:
         ++num_elements;
     }
 
-    bool find(const Key& key, Value& out_value) const {
+    FUNCTION find(Key key, Value out_value) {
         size_t index = getBucketIndex(key);
-        const auto& bucket = buckets[index];
+         bucket = buckets[index];
 
-        for (const auto& entry : bucket) {
+        for ( entry : bucket) {
             if (entry.key == key) {
                 out_value = entry.value;
-                return true;
+                return TRUE;
             }
         }
-        return false;
+        return FALSE;
     }
 
-    Value& operator[](const Key& key) {
+    Value operator[](Key key) {
         size_t index = getBucketIndex(key);
-        auto& bucket = buckets[index];
+         bucket = buckets[index];
 
-        for (auto& entry : bucket) {
+        for ( entry : bucket) {
             if (entry.key == key) {
                 return entry.value;
             }
         }
 
         // key不存在，插入默认值
-        if ((float)(num_elements + 1) / buckets.size() > max_load_factor) {
+        if ((num_elements + 1) / buckets.size() > max_load_factor) {
             rehash(buckets.size() * 2);
             index = getBucketIndex(key);
         }
@@ -222,40 +218,40 @@ public:
         return buckets[index].back().value;
     }
 
-    bool erase(const Key& key) {
+    FUNCTION erase(Key key) {
         size_t index = getBucketIndex(key);
-        auto& bucket = buckets[index];
+         bucket = buckets[index];
 
-        for (auto it = bucket.begin(); it != bucket.end(); ++it) {
+        for (it = bucket.begin(); it != bucket.end(); ++it) {
             if (it->key == key) {
                 bucket.erase(it);
                 --num_elements;
-                return true;
+                return TRUE;
             }
         }
-        return false;
+        return FALSE;
     }
 
-    size_t size() const { return num_elements; }
-    bool empty() const { return num_elements == 0; }
+    FUNCTION size() { return num_elements; }
+    FUNCTION empty() { return num_elements == 0; }
 
-    void print() const {
-        std::cout << "哈希表 (size=" << num_elements
-                  << ", buckets=" << buckets.size() << "):" << std::endl;
+    FUNCTION print() {
+        PRINT "哈希表 (size=" + num_elements
+                  << ", buckets=" << buckets.size() << "):" + NEWLINE;
         for (size_t i = 0; i < buckets.size(); ++i) {
             if (!buckets[i].empty()) {
-                std::cout << "  bucket[" << i << "]: ";
-                for (const auto& entry : buckets[i]) {
-                    std::cout << "[" << entry.key << ":" << entry.value << "] ";
+                PRINT "  bucket[" + i + "]: ";
+                for ( entry : buckets[i]) {
+                    PRINT "[" + entry.key + ":" + entry.value + "] ";
                 }
-                std::cout << std::endl;
+                PRINT endl;
             }
         }
     }
 };
 
-int main() {
-    HashMap<std::string, int> scores(8);
+FUNCTION main() {
+    HashMap<string, int> scores(8);
 
     scores["Alice"] = 95;
     scores["Bob"] = 87;
@@ -267,16 +263,21 @@ int main() {
 
     int score;
     if (scores.find("Bob", score)) {
-        std::cout << "Bob的成绩: " << score << std::endl;
+        PRINT "Bob的成绩: " + score + NEWLINE;
     }
 
     scores.erase("David");
-    std::cout << "删除David后: ";
+    PRINT "删除David后: ";
     scores.print();
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 1.4 哈希表的时间复杂度与空间复杂度
 ---------------------------------------
@@ -296,44 +297,40 @@ int main() {
 1.5 哈希函数的设计
 ---------------------
 
-```cpp
-#include <iostream>
-#include <string>
-#include <functional>
-
+```pseudocode
 // 自定义哈希函数示例
-struct Student {
-    std::string name;
+STRUCT Student {
+    string name;
     int id;
     int grade;
 
-    bool operator==(const Student& other) const {
+    bool operator==(Student other) {
         return id == other.id;
     }
 };
 
 // 方式1：自定义哈希函数对象
-struct StudentHash {
-    size_t operator()(const Student& s) const {
-        // 使用std::hash的组合哈希
-        return std::hash<std::string>()(s.name) ^
-               (std::hash<int>()(s.id) << 1) ^
-               (std::hash<int>()(s.grade) << 2);
+STRUCT StudentHash {
+    FUNCTION operator()(Student s) {
+        // 使用hash的组合哈希
+        return hash<string>()(s.name) ^
+               (hash<int>()(s.id) << 1) ^
+               (hash<int>()(s.grade) << 2);
     }
 };
 
-// 方式2：特化std::hash
+// 方式2：特化hash
 namespace std {
-    template<>
-    struct hash<Student> {
-        size_t operator()(const Student& s) const {
+
+    STRUCT hash<Student> {
+        FUNCTION operator()(Student s) {
             return hash<int>()(s.id);
         }
     };
 }
 
 // 常用字符串哈希函数示例：BKDR Hash
-size_t bkdrHash(const std::string& str) {
+FUNCTION bkdrHash(string str) {
     size_t hash = 0;
     size_t seed = 131;  // 31, 131, 1313, 13131, 131313
     for (char c : str) {
@@ -342,38 +339,39 @@ size_t bkdrHash(const std::string& str) {
     return hash;
 }
 
-int main() {
-    std::cout << "BKDR哈希 \"hello\": " << bkdrHash("hello") << std::endl;
-    std::cout << "BKDR哈希 \"world\": " << bkdrHash("world") << std::endl;
+FUNCTION main() {
+    PRINT "BKDR哈希 \"hello\": " + bkdrHash("hello") + NEWLINE;
+    PRINT "BKDR哈希 \"world\": " + bkdrHash("world") + NEWLINE;
 
     // 使用自定义哈希函数
-    std::unordered_set<Student, StudentHash> students;
+    unordered_set<Student, StudentHash> students;
     students.insert({"Alice", 1001, 3});
     students.insert({"Bob", 1002, 2});
 
-    std::cout << "学生人数: " << students.size() << std::endl;
+    PRINT "学生人数: " + students.size() + NEWLINE;
 
     return 0;
 }
+
 ```
 
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
 
 ## ==========================================================================
-### 📖 第二节: 所有用法大全
+### 📖 第二节: 实现思路
 ## ==========================================================================
 
-2.1 std::unordered_map
+2.1 unordered_map
 --------------------------
 
-```cpp
-#include <iostream>
-#include <unordered_map>
-#include <string>
-
-int main() {
+```pseudocode
+FUNCTION main() {
     // 构造
-    std::unordered_map<std::string, int> m1;
-    std::unordered_map<std::string, int> m2 = {
+    unordered_map<string, int> m1;
+    unordered_map<string, int> m2 = {
         {"apple", 5}, {"banana", 3}, {"cherry", 8}
     };
 
@@ -384,31 +382,31 @@ int main() {
     m1.insert({{"grape", 7}, {"honeydew", 1}});  // 批量插入
 
     // 访问
-    std::cout << "apple: " << m2["apple"] << std::endl;
-    std::cout << "banana: " << m2.at("banana") << std::endl;
+    PRINT "apple: " + m2["apple"] + NEWLINE;
+    PRINT "banana: " + m2.at("banana") + NEWLINE;
     // m2.at("unknown");  // 抛出out_of_range
 
     // 查找
-    auto it = m2.find("cherry");
+    it = m2.find("cherry");
     if (it != m2.end()) {
-        std::cout << "找到: " << it->first << " -> " << it->second << std::endl;
+        PRINT "找到: " + it->first + " -> " + it->second + NEWLINE;
     }
 
     // 计数
-    std::cout << "apple出现次数: " << m2.count("apple") << std::endl;
+    PRINT "apple出现次数: " + m2.count("apple") + NEWLINE;
 
     // 删除
     m2.erase("banana");
 
     // 桶接口
-    std::cout << "桶数: " << m2.bucket_count() << std::endl;
-    std::cout << "负载因子: " << m2.load_factor() << std::endl;
-    std::cout << "最大负载因子: " << m2.max_load_factor() << std::endl;
+    PRINT "桶数: " + m2.bucket_count() + NEWLINE;
+    PRINT "负载因子: " + m2.load_factor() + NEWLINE;
+    PRINT "最大负载因子: " + m2.max_load_factor() + NEWLINE;
 
     // 查看每个桶的元素数
     for (size_t i = 0; i < m2.bucket_count(); ++i) {
-        std::cout << "桶 " << i << ": " << m2.bucket_size(i) << "个元素"
-                  << std::endl;
+        PRINT "桶 " + i + ": " + m2.bucket_size(i) + "个元素"
+                  + NEWLINE;
     }
 
     // 重新哈希
@@ -416,31 +414,32 @@ int main() {
     m2.reserve(200);     // 预留空间（等价于设置桶数量使得负载因子合理）
 
     // 遍历
-    for (const auto& [key, value] : m2) {
-        std::cout << key << " -> " << value << std::endl;
+    for ( [key, value] : m2) {
+        PRINT key + " -> " + value + NEWLINE;
     }
 
     return 0;
 }
+
 ```
 
-2.2 std::unordered_set
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
+2.2 unordered_set
 --------------------------
 
-```cpp
-#include <iostream>
-#include <unordered_set>
-#include <string>
-
-int main() {
-    std::unordered_set<int> s = {5, 3, 1, 3, 2, 5};
+```pseudocode
+FUNCTION main() {
+    unordered_set<int> s = {5, 3, 1, 3, 2, 5};
 
     // 插入
-    auto [it, inserted] = s.insert(4);
-    std::cout << "插入4: " << (inserted ? "成功" : "已存在") << std::endl;
+    [it, inserted] = s.insert(4);
+    PRINT "插入4: " + (inserted ? "成功" : "已存在") + NEWLINE;
 
-    std::tie(it, inserted) = s.insert(3);
-    std::cout << "插入3: " << (inserted ? "成功" : "已存在") << std::endl;
+    tie(it, inserted) = s.insert(3);
+    PRINT "插入3: " + (inserted ? "成功" : "已存在") + NEWLINE;
 
     // 批量插入
     s.insert({7, 8, 9});
@@ -450,41 +449,41 @@ int main() {
 
     // 查找
     if (s.find(5) != s.end()) {
-        std::cout << "5在集合中" << std::endl;
+        PRINT "5在集合中" + NEWLINE;
     }
 
     // 桶接口
-    std::cout << "桶数: " << s.bucket_count() << std::endl;
-    std::cout << "负载因子: " << s.load_factor() << std::endl;
+    PRINT "桶数: " + s.bucket_count() + NEWLINE;
+    PRINT "负载因子: " + s.load_factor() + NEWLINE;
 
     // 查看元素在哪个桶
     for (int x : {4, 5, 7}) {
-        std::cout << x << " 在桶 " << s.bucket(x) << std::endl;
+        PRINT x + " 在桶 " + s.bucket(x) + NEWLINE;
     }
 
     // 遍历（无序）
-    for (int x : s) std::cout << x << " ";
-    std::cout << std::endl;
+    for (int x : s) PRINT x + " ";
+    PRINT endl;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.3 自定义哈希与比较
 --------------------------
 
-```cpp
-#include <iostream>
-#include <unordered_map>
-#include <unordered_set>
-#include <string>
-
-struct Person {
-    std::string first_name;
-    std::string last_name;
+```pseudocode
+STRUCT Person {
+    string first_name;
+    string last_name;
     int age;
 
-    bool operator==(const Person& other) const {
+    bool operator==(Person other) {
         return first_name == other.first_name &&
                last_name == other.last_name &&
                age == other.age;
@@ -492,110 +491,108 @@ struct Person {
 };
 
 // 组合哈希函数
-struct PersonHash {
-    size_t operator()(const Person& p) const {
-        size_t h1 = std::hash<std::string>()(p.first_name);
-        size_t h2 = std::hash<std::string>()(p.last_name);
-        size_t h3 = std::hash<int>()(p.age);
+STRUCT PersonHash {
+    FUNCTION operator()(Person p) {
+        size_t h1 = hash<string>()(p.first_name);
+        size_t h2 = hash<string>()(p.last_name);
+        size_t h3 = hash<int>()(p.age);
 
         // 使用boost的hash_combine思路
         return h1 ^ (h2 << 7) ^ (h3 << 15) ^ (h2 >> 3) ^ (h3 >> 5);
     }
 };
 
-int main() {
-    std::unordered_set<Person, PersonHash> people;
+FUNCTION main() {
+    unordered_set<Person, PersonHash> people;
 
     people.insert({"Alice", "Smith", 25});
     people.insert({"Bob", "Jones", 30});
     people.insert({"Alice", "Smith", 25});  // 重复，不会插入
 
-    std::cout << "人数: " << people.size() << std::endl;
+    PRINT "人数: " + people.size() + NEWLINE;
 
     // 自定义默认值（用于operator[]）
-    std::unordered_map<std::string, int> word_count;
+    unordered_map<string, int> word_count;
     word_count["hello"]++;  // hello不存在时，插入{hello, 0}然后++
     word_count["world"]++;
     word_count["hello"]++;
     // 利用operator[]的默认构造特性实现计数
 
-    for (const auto& [word, count] : word_count) {
-        std::cout << word << ": " << count << std::endl;
+    for ( [word, count] : word_count) {
+        PRINT word + ": " + count + NEWLINE;
     }
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.4 哈希表与其他容器的对比
 ------------------------------
 
-```cpp
-#include <iostream>
-#include <unordered_map>
-#include <map>
-#include <vector>
-#include <string>
-#include <chrono>
-
+```pseudocode
 // 性能对比：unordered_map vs map
-int main() {
-    const int N = 100000;
+FUNCTION main() {
+    int N = 100000;
 
-    std::unordered_map<int, int> umap;
-    std::map<int, int> rbtree;
+    unordered_map<int, int> umap;
+    map<int, int> rbtree;
 
     // 插入性能对比
-    auto start = std::chrono::high_resolution_clock::now();
+    start = chrono::high_resolution_clock::now();
     for (int i = 0; i < N; ++i) {
         umap[i] = i * 2;
     }
-    auto umap_time = std::chrono::high_resolution_clock::now() - start;
+    umap_time = chrono::high_resolution_clock::now() - start;
 
-    start = std::chrono::high_resolution_clock::now();
+    start = chrono::high_resolution_clock::now();
     for (int i = 0; i < N; ++i) {
         rbtree[i] = i * 2;
     }
-    auto rbtree_time = std::chrono::high_resolution_clock::now() - start;
+    rbtree_time = chrono::high_resolution_clock::now() - start;
 
-    std::cout << "unordered_map 插入" << N << "个: "
-              << std::chrono::duration_cast<std::chrono::milliseconds>(
-                     umap_time).count() << "ms" << std::endl;
-    std::cout << "map 插入" << N << "个: "
-              << std::chrono::duration_cast<std::chrono::milliseconds>(
-                     rbtree_time).count() << "ms" << std::endl;
+    PRINT "unordered_map 插入" + N + "个: "
+              << chrono::duration_cast<chrono::milliseconds>(
+                     umap_time).count() << "ms" + NEWLINE;
+    PRINT "map 插入" + N + "个: "
+              << chrono::duration_cast<chrono::milliseconds>(
+                     rbtree_time).count() << "ms" + NEWLINE;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 
 ## ==========================================================================
-### 📖 第三节: 实用案例
+### 📖 第三节: 应用场景
 ## ==========================================================================
 
 案例一：缓存系统（LRU Cache 的哈希表实现）
 ---------------------------------------------------
 
-```cpp
-#include <iostream>
-#include <unordered_map>
-#include <list>
-#include <string>
-
-class LRUCache {
-private:
+```pseudocode
+CLASS LRUCache {
+PRIVATE:
     int capacity;
-    std::list<std::pair<std::string, std::string>> items;
-    std::unordered_map<std::string,
-                       std::list<std::pair<std::string, std::string>>::iterator>
+    list<pair<string, string>> items;
+    unordered_map<string,
+                       list<pair<string, string>>::iterator>
         cache;
 
-public:
+PUBLIC:
     LRUCache(int cap) : capacity(cap) {}
 
-    std::string get(const std::string& key) {
-        auto it = cache.find(key);
+    FUNCTION get(string key) {
+        it = cache.find(key);
         if (it == cache.end()) return "";
 
         // 移到头部（最近使用）
@@ -603,8 +600,8 @@ public:
         return it->second->second;
     }
 
-    void put(const std::string& key, const std::string& value) {
-        auto it = cache.find(key);
+    FUNCTION put(string key, string value) {
+        it = cache.find(key);
         if (it != cache.end()) {
             it->second->second = value;
             items.splice(items.begin(), items, it->second);
@@ -613,7 +610,7 @@ public:
 
         if (items.size() >= capacity) {
             // 淘汰最久未使用
-            std::string old_key = items.back().first;
+            string old_key = items.back().first;
             cache.erase(old_key);
             items.pop_back();
         }
@@ -622,16 +619,16 @@ public:
         cache[key] = items.begin();
     }
 
-    void print() const {
-        std::cout << "缓存 (最近->最久): ";
-        for (const auto& [k, v] : items) {
-            std::cout << "[" << k << ":" << v << "] ";
+    FUNCTION print() {
+        PRINT "缓存 (最近->最久): ";
+        for ( [k, v] : items) {
+            PRINT "[" + k + ":" + v + "] ";
         }
-        std::cout << std::endl;
+        PRINT endl;
     }
 };
 
-int main() {
+FUNCTION main() {
     LRUCache cache(3);
 
     cache.put("A", "Apple");
@@ -639,7 +636,7 @@ int main() {
     cache.put("C", "Cherry");
     cache.print();
 
-    std::cout << "get(B): " << cache.get("B") << std::endl;
+    PRINT "get(B): " + cache.get("B") + NEWLINE;
     cache.print();
 
     cache.put("D", "Date");  // 淘汰最久未使用的A
@@ -650,38 +647,36 @@ int main() {
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 
 案例二：词频统计器
 -------------------------
 
-```cpp
-#include <iostream>
-#include <unordered_map>
-#include <string>
-#include <sstream>
-#include <vector>
-#include <algorithm>
+```pseudocode
+CLASS WordCounter {
+PRIVATE:
+    unordered_map<string, int> frequency;
 
-class WordCounter {
-private:
-    std::unordered_map<std::string, int> frequency;
-
-public:
-    void processText(const std::string& text) {
-        std::istringstream iss(text);
-        std::string word;
+PUBLIC:
+    FUNCTION processText(string text) {
+        istringstream iss(text);
+        string word;
 
         while (iss >> word) {
             // 清理标点符号
-            word.erase(std::remove_if(word.begin(), word.end(),
-                         [](char c) { return std::ispunct(c); }),
+            word.erase(remove_if(word.begin(), word.end(),
+                         [](char c) { return ispunct(c); }),
                        word.end());
 
             // 转小写
-            std::transform(word.begin(), word.end(), word.begin(),
-                           [](char c) { return std::tolower(c); });
+            transform(word.begin(), word.end(), word.begin(),
+                           [](char c) { return tolower(c); });
 
             if (!word.empty()) {
                 ++frequency[word];  // 自动初始化为0然后++
@@ -689,80 +684,79 @@ public:
         }
     }
 
-    int getCount(const std::string& word) const {
-        auto it = frequency.find(word);
+    FUNCTION getCount(string word) {
+        it = frequency.find(word);
         return it != frequency.end() ? it->second : 0;
     }
 
-    std::vector<std::pair<std::string, int>> getTopK(int k) const {
-        std::vector<std::pair<std::string, int>> sorted(
+    vector<pair<string, int>> getTopK(int k) {
+        vector<pair<string, int>> sorted(
             frequency.begin(), frequency.end());
 
-        std::partial_sort(sorted.begin(),
-                          sorted.begin() + std::min(k, (int)sorted.size()),
+        partial_sort(sorted.begin(),
+                          sorted.begin() + MIN(k, sorted.size()),
                           sorted.end(),
-                          [](const auto& a, const auto& b) {
+                          []( a,  b) {
                               return a.second > b.second;
                           });
 
-        if (sorted.size() > (size_t)k) sorted.resize(k);
+        if (sorted.size() > k) sorted.resize(k);
         return sorted;
     }
 
-    void printAll() const {
-        std::vector<std::pair<std::string, int>> items(
+    FUNCTION printAll() {
+        vector<pair<string, int>> items(
             frequency.begin(), frequency.end());
-        std::sort(items.begin(), items.end(),
-                  [](const auto& a, const auto& b) {
+        SORT(items.begin(), items.end(),
+                  []( a,  b) {
                       return a.second > b.second;
                   });
 
-        for (const auto& [word, count] : items) {
-            std::cout << word << ": " << count << std::endl;
+        for ( [word, count] : items) {
+            PRINT word + ": " + count + NEWLINE;
         }
     }
 };
 
-int main() {
+FUNCTION main() {
     WordCounter wc;
 
-    std::string text =
+    string text =
         "The quick brown fox jumps over the lazy dog. "
         "The dog barks at the fox. "
         "The quick brown fox is quick and brown.";
 
     wc.processText(text);
 
-    std::cout << "=== 词频统计 ===" << std::endl;
+    PRINT "=== 词频统计 ===" + NEWLINE;
     wc.printAll();
 
-    std::cout << "\n=== Top 5 ===" << std::endl;
-    for (const auto& [word, count] : wc.getTopK(5)) {
-        std::cout << word << ": " << count << std::endl;
+    PRINT "\n=== Top 5 ===" + NEWLINE;
+    for ( [word, count] : wc.getTopK(5)) {
+        PRINT word + ": " + count + NEWLINE;
     }
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 
 案例三：URL去重爬虫
 -------------------------
 
-```cpp
-#include <iostream>
-#include <unordered_set>
-#include <string>
-#include <queue>
-#include <vector>
-
-class WebCrawler {
-private:
-    std::unordered_set<std::string> visited_urls;
-    std::queue<std::string> url_queue;
+```pseudocode
+CLASS WebCrawler {
+PRIVATE:
+    unordered_set<string> visited_urls;
+    queue<string> url_queue;
 
     // 模拟从页面提取链接
-    std::vector<std::string> extractLinks(const std::string& url) {
+    vector<string> extractLinks(string url) {
         // 实际场景中会解析HTML
         return {
             url + "/page1",
@@ -771,12 +765,12 @@ private:
         };
     }
 
-public:
-    void crawl(const std::string& start_url, int max_pages = 10) {
+PUBLIC:
+    FUNCTION crawl(string start_url, int max_pages = 10) {
         url_queue.push(start_url);
 
-        while (!url_queue.empty() && visited_urls.size() < (size_t)max_pages) {
-            std::string url = url_queue.front();
+        while (!url_queue.empty() && visited_urls.size() < max_pages) {
+            string url = url_queue.front();
             url_queue.pop();
 
             // 检查是否已访问（O(1)）
@@ -785,38 +779,43 @@ public:
             }
 
             visited_urls.insert(url);
-            std::cout << "爬取: " << url
+            PRINT "爬取: " + url
                       << " (已访问: " << visited_urls.size() << ")"
-                      << std::endl;
+                      + NEWLINE;
 
             // 提取链接
-            for (const auto& link : extractLinks(url)) {
+            for ( link : extractLinks(url)) {
                 if (visited_urls.find(link) == visited_urls.end()) {
                     url_queue.push(link);
                 }
             }
         }
 
-        std::cout << "\n爬取完成! 共访问 " << visited_urls.size() << " 个页面"
-                  << std::endl;
+        PRINT "\n爬取完成! 共访问 " + visited_urls.size() + " 个页面"
+                  + NEWLINE;
     }
 
-    bool hasVisited(const std::string& url) const {
+    FUNCTION hasVisited(string url) {
         return visited_urls.find(url) != visited_urls.end();
     }
 };
 
-int main() {
+FUNCTION main() {
     WebCrawler crawler;
     crawler.crawl("https://example.com", 8);
 
-    std::cout << "\n是否访问过example.com/page1? "
+    PRINT "\n是否访问过example.com/page1? "
               << (crawler.hasVisited("https://example.com/page1") ? "是" : "否")
-              << std::endl;
+              + NEWLINE;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 
 ## ==========================================================================
@@ -899,14 +898,14 @@ int main() {
 > > **解析**: 负载因子 = 元素数量 / 桶数量。负载因子越大冲突越多，性能下降。unordered_map默认负载因子上限为1.0，超过时自动rehash扩容。
 
 > [!question] 判断题 5
-> std::unordered_map 中的元素是按key排序存储的 （ ）
+> unordered_map 中的元素是按key排序存储的 （ ）
 > - [ ] ✅ 正确
 > - [ ] ❌ 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
 > > 
-> > **解析**: unordered_map基于哈希表，元素的存储位置由哈希函数决定，不保证任何顺序。需要有序容器应使用std::map。
+> > **解析**: unordered_map基于哈希表，元素的存储位置由哈希函数决定，不保证任何顺序。需要有序容器应使用map。
 
 > [!question] 判断题 6
 > 开放地址法中，删除元素时可以直接将该位置标记为空 （ ）
@@ -973,7 +972,7 @@ int main() {
 > > **解析**: 链地址法、开放地址法（线性探测/二次探测）、双重哈希法都是哈希冲突解决方案。二叉搜索树是独立的数据结构，不属于哈希冲突解决方法。
 
 > [!question] 选择题 2
-> std::unordered_map 默认的最大负载因子是？
+> unordered_map 默认的最大负载因子是？
 > - [ ] A. 0.5
 > - [ ] B. 0.75
 > - [ ] C. 1.0
@@ -982,7 +981,7 @@ int main() {
 > > [!success]- 点击查看答案
 > > 正确答案: C
 > > 
-> > **解析**: C++ std::unordered_map的默认最大负载因子为1.0。当load_factor()超过max_load_factor()时，自动触发rehash扩容。Java HashMap默认为0.75。
+> > **解析**: C++ unordered_map的默认最大负载因子为1.0。当load_factor()超过max_load_factor()时，自动触发rehash扩容。Java HashMap默认为0.75。
 
 > [!question] 选择题 3
 > 以下哪个操作在unordered_map上的平均时间复杂度不是O(1)？
@@ -1069,16 +1068,16 @@ int main() {
 > > **解析**: 一致性哈希将数据和节点映射到一个环上。节点增减时，只有环上相邻区间的数据需要迁移，实现了最小化数据迁移，广泛用于分布式缓存系统。
 
 > [!question] 选择题 10
-> C++ std::hash 对于以下哪种类型没有内置特化？
+> C++ hash 对于以下哪种类型没有内置特化？
 > - [ ] A. int
-> - [ ] B. std::string
-> - [ ] C. std::vector<int>
+> - [ ] B. string
+> - [ ] C. vector<int>
 > - [ ] D. double
 >
 > > [!success]- 点击查看答案
 > > 正确答案: C
 > > 
-> > **解析**: std::hash对基本类型（int, double等）和std::string有内置特化，但对std::vector等容器没有内置的哈希函数。使用vector作为key时需要自定义哈希。
+> > **解析**: hash对基本类型（int, double等）和string有内置特化，但对vector等容器没有内置的哈希函数。使用vector作为key时需要自定义哈希。
 
 ---
 
@@ -1096,7 +1095,7 @@ int main() {
 > 4. 支持自定义哈希函数（模板参数）
 > 5. 统计冲突次数和最长链表长度
 >
-> **提示**: 每个桶用std::list或自定义链表存储pair<K,V>
+> **提示**: 每个桶用list或自定义链表存储pair<K,V>
 
 > [!note] 编程题 2：字符串哈希实现与应用
 > **要求**：
@@ -1141,5 +1140,5 @@ int main() {
 ## --------------------------------------------------------------------------
 
 - **上一章**: [[Q_排序_八大排序_Sorting]] | **下一章**: [[C_堆_Heap]] | **返回**: [[DSA学习路线]]
-- **相关容器**: [[容器类/11_unordered_set_multiset]] | [[容器类/12_unordered_map_multimap]]
+- **相关容器**: [[容器库/11_unordered_set_multiset]] | [[容器库/12_unordered_map_multimap]]
 - **算法技巧**: [[../算法技巧/下标技巧]]

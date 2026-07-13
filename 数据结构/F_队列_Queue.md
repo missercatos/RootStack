@@ -1,8 +1,8 @@
-## ==========================================================================
-C++ 数据结构教程 — 队列 (Queue)
-## ==========================================================================
+---
+数据结构教程 — 队列 (Queue)
+---
 
-## 📋 章节概述
+##  章节概述
 
 队列（Queue）是一种受限的线性数据结构，它遵循"先进先出"（FIFO, First In First
 Out）的原则。元素只能从一端（队尾）插入，从另一端（队首）删除。
@@ -10,11 +10,11 @@ Out）的原则。元素只能从一端（队尾）插入，从另一端（队�
 队列在计算机科学中应用广泛：CPU任务调度、IO缓冲区、广度优先搜索（BFS）、
 消息队列、打印任务队列、生产者消费者模型等。
 
-> 📌 **底层实现参考**：如果需要深入理解本章数据结构的底层实现（纯C手写、内存布局、指针操作），请参阅 [[../../C语言深化教程/3数据结构/04_队列|C语言教程: 队列]]。C教程侧重手动实现与内存本质，本教程侧重STL使用与算法优化，两者互补。
+>  **底层实现参考**：如果需要深入理解本章数据结构的底层实现（纯C手写、内存布局、指针操作），请参阅 [[../../C语言深化教程/3数据结构/04_队列|C语言教程: 队列]]。C教程侧重手动实现与内存本质，本教程侧重STL使用与算法优化，两者互补。
 
-## ==========================================================================
-### 📖 第一节: 基础语法 + 计算机底层原理
-## ==========================================================================
+---
+###  第一节: 基础语法 + 计算机底层原理
+---
 
 1.1 队列的基本概念
 --------------------
@@ -29,39 +29,40 @@ Out）的原则。元素只能从一端（队尾）插入，从另一端（队�
 
 最基础的队列使用示例：
 
-```cpp
-#include <iostream>
-#include <queue>
-
-int main() {
-    std::queue<int> q;
+```pseudocode
+FUNCTION main()
+    q = NEW Queue()
 
     // 入队
-    q.push(10);
-    q.push(20);
-    q.push(30);
+    q.push(10)
+    q.push(20)
+    q.push(30)
 
     // 访问队首和队尾
-    std::cout << "队首: " << q.front() << std::endl;  // 10
-    std::cout << "队尾: " << q.back() << std::endl;   // 30
+    PRINT "队首: ", q.front()    // 10
+    PRINT "队尾: ", q.back()     // 30
 
     // 出队
-    q.pop();
-    std::cout << "出队后队首: " << q.front() << std::endl;  // 20
+    q.pop()
+    PRINT "出队后队首: ", q.front()  // 20
 
     // 大小
-    std::cout << "队列大小: " << q.size() << std::endl;
+    PRINT "队列大小: ", q.size()
 
     // 遍历并清空
-    while (!q.empty()) {
-        std::cout << q.front() << " ";
-        q.pop();
-    }
-    std::cout << std::endl;
-
-    return 0;
-}
+    WHILE NOT q.empty():
+        PRINT q.front(), " "
+        q.pop()
+    END WHILE
+    PRINT newline
+END FUNCTION
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/04_队列]]
+- C++ STL 参考: [[../../cpp教程/容器库/05_queue]]
+---
 
 1.2 队列的底层原理：数组实现 vs 链表实现
 -----------------------------------------------
@@ -70,7 +71,7 @@ int main() {
 - 避免假溢出（假溢出指数组前面有空位但tail到了末尾）
 - 通过取模运算实现循环
 
-```cpp
+```pseudocode
 // 假溢出示意
 // 队列 [_, _, _, _, _, _, _, _]
 //       ↑              ↑
@@ -78,160 +79,171 @@ int main() {
 // 前面都出队了，但tail已到末尾，无法再入队
 // 循环队列解决此问题：tail重新回到前面
 
-#include <iostream>
-#include <stdexcept>
+CLASS CircularQueue(MAX_SIZE):
+    data = NEW ARRAY[MAX_SIZE]
+    head = 0     // 队首位置
+    tail = 0     // 队尾位置（下一个插入的位置）
+    count = 0    // 当前元素个数
 
-template<typename T, size_t MAX_SIZE = 10>
-class CircularQueue {
-private:
-    T data[MAX_SIZE];
-    size_t head;  // 队首位置
-    size_t tail;  // 队尾位置（下一个插入的位置）
-    size_t count; // 当前元素个数
+FUNCTION push(value):
+    IF count >= MAX_SIZE:
+        THROW "队列已满"
+    END IF
+    data[tail] = value
+    tail = (tail + 1) MOD MAX_SIZE
+    count = count + 1
+END FUNCTION
 
-public:
-    CircularQueue() : head(0), tail(0), count(0) {}
+FUNCTION pop():
+    IF count == 0:
+        THROW "队列为空"
+    END IF
+    head = (head + 1) MOD MAX_SIZE
+    count = count - 1
+END FUNCTION
 
-    void push(const T& value) {
-        if (count >= MAX_SIZE) {
-            throw std::overflow_error("队列已满");
-        }
-        data[tail] = value;
-        tail = (tail + 1) % MAX_SIZE;
-        ++count;
-    }
+FUNCTION front():
+    IF count == 0:
+        THROW "队列为空"
+    END IF
+    RETURN data[head]
+END FUNCTION
 
-    void pop() {
-        if (count == 0) {
-            throw std::underflow_error("队列为空");
-        }
-        head = (head + 1) % MAX_SIZE;
-        --count;
-    }
+FUNCTION empty():
+    RETURN count == 0
+END FUNCTION
 
-    T& front() {
-        if (count == 0) throw std::underflow_error("队列为空");
-        return data[head];
-    }
+FUNCTION size():
+    RETURN count
+END FUNCTION
 
-    bool empty() const { return count == 0; }
-    size_t size() const { return count; }
+FUNCTION print():
+    idx = head
+    FOR i = 0 TO count - 1:
+        PRINT data[idx], " "
+        idx = (idx + 1) MOD MAX_SIZE
+    END FOR
+    PRINT "(size=", count, ")"
+END FUNCTION
 
-    void print() const {
-        size_t idx = head;
-        for (size_t i = 0; i < count; ++i) {
-            std::cout << data[idx] << " ";
-            idx = (idx + 1) % MAX_SIZE;
-        }
-        std::cout << "(size=" << count << ")" << std::endl;
-    }
-};
+FUNCTION main()
+    cq = NEW CircularQueue(5)
 
-int main() {
-    CircularQueue<int, 5> cq;
+    cq.push(10)
+    cq.push(20)
+    cq.push(30)
+    cq.print()
 
-    cq.push(10);
-    cq.push(20);
-    cq.push(30);
-    cq.print();
+    cq.pop()
+    cq.pop()
+    cq.push(40)
+    cq.push(50)
+    cq.push(60)
+    cq.print()
 
-    cq.pop();
-    cq.pop();
-    cq.push(40);
-    cq.push(50);
-    cq.push(60);
-    cq.print();
-
-    std::cout << "队首: " << cq.front() << std::endl;
-
-    return 0;
-}
+    PRINT "队首: ", cq.front()
+END FUNCTION
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/04_队列]]
+- C++ STL 参考: [[../../cpp教程/容器库/05_queue]]
+---
 
 链表实现队列：
 
-```cpp
-#include <iostream>
-#include <stdexcept>
+```pseudocode
+STRUCT Node:
+    data: T
+    next: pointer to Node
+END STRUCT
 
-template<typename T>
-class LinkedQueue {
-private:
-    struct Node {
-        T data;
-        Node* next;
-        Node(const T& val) : data(val), next(nullptr) {}
-    };
+CLASS LinkedQueue:
+    head = NULL   // 队首（出队端）
+    tail = NULL   // 队尾（入队端）
+    count = 0
 
-    Node* head;  // 队首（出队端）
-    Node* tail;  // 队尾（入队端）
-    size_t count;
+FUNCTION destructor():
+    WHILE head != NULL:
+        temp = head
+        head = head.next
+        DELETE temp
+    END WHILE
+END FUNCTION
 
-public:
-    LinkedQueue() : head(nullptr), tail(nullptr), count(0) {}
+FUNCTION push(value):
+    new_node = NEW Node(value)
+    IF tail != NULL:
+        tail.next = new_node
+    ELSE:
+        head = new_node
+    END IF
+    tail = new_node
+    count = count + 1
+END FUNCTION
 
-    ~LinkedQueue() {
-        while (head) {
-            Node* temp = head;
-            head = head->next;
-            delete temp;
-        }
-    }
+FUNCTION pop():
+    IF head == NULL:
+        THROW "队列为空"
+    END IF
+    temp = head
+    head = head.next
+    IF head == NULL:
+        tail = NULL
+    END IF
+    DELETE temp
+    count = count - 1
+END FUNCTION
 
-    void push(const T& value) {
-        Node* new_node = new Node(value);
-        if (tail) {
-            tail->next = new_node;
-        } else {
-            head = new_node;
-        }
-        tail = new_node;
-        ++count;
-    }
+FUNCTION front():
+    IF head == NULL:
+        THROW "队列为空"
+    END IF
+    RETURN head.data
+END FUNCTION
 
-    void pop() {
-        if (!head) throw std::underflow_error("队列为空");
-        Node* temp = head;
-        head = head->next;
-        if (!head) tail = nullptr;
-        delete temp;
-        --count;
-    }
+FUNCTION back():
+    IF tail == NULL:
+        THROW "队列为空"
+    END IF
+    RETURN tail.data
+END FUNCTION
 
-    T& front() {
-        if (!head) throw std::underflow_error("队列为空");
-        return head->data;
-    }
+FUNCTION empty():
+    RETURN count == 0
+END FUNCTION
 
-    T& back() {
-        if (!tail) throw std::underflow_error("队列为空");
-        return tail->data;
-    }
+FUNCTION size():
+    RETURN count
+END FUNCTION
 
-    bool empty() const { return count == 0; }
-    size_t size() const { return count; }
-};
+FUNCTION main()
+    lq = NEW LinkedQueue()
 
-int main() {
-    LinkedQueue<int> lq;
+    FOR i = 1 TO 5:
+        lq.push(i * 10)
+    END FOR
+    PRINT "队首: ", lq.front(), ", 队尾: ", lq.back()
 
-    for (int i = 1; i <= 5; ++i) lq.push(i * 10);
-    std::cout << "队首: " << lq.front() << ", 队尾: " << lq.back() << std::endl;
-
-    while (!lq.empty()) {
-        std::cout << lq.front() << " ";
-        lq.pop();
-    }
-    std::cout << std::endl;
-
-    return 0;
-}
+    WHILE NOT lq.empty():
+        PRINT lq.front(), " "
+        lq.pop()
+    END WHILE
+    PRINT newline
+END FUNCTION
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/04_队列]]
+- C++ STL 参考: [[../../cpp教程/容器库/05_queue]]
+---
 
 1.3 双端队列（Deque）的底层原理
 ------------------------------------
 
-deque（double-ended queue）是两端都可以插入和删除的队列。标准库的std::deque
+deque（double-ended queue）是两端都可以插入和删除的队列。标准实现通常
 采用"分段连续存储"结构：
 
 ```mermaid
@@ -254,428 +266,404 @@ graph TD
 当在一端插入时，如果当前缓冲区已满，就分配一个新的缓冲区。
 
 
-## ==========================================================================
-### 📖 第二节: 所有用法大全
-## ==========================================================================
+---
+###  第二节: 实现变体
+---
 
-2.1 std::queue —— 队列容器适配器
+2.1 队列容器适配器
 -------------------------------------
 
-```cpp
-#include <iostream>
-#include <queue>
-#include <list>
-#include <deque>
+队列可以基于不同的底层容器实现：
 
-int main() {
-    // 默认底层容器 deque
-    std::queue<int> q1;
+```pseudocode
+FUNCTION main()
+    // 默认底层容器：双端队列（deque）
+    q1 = NEW Queue()
 
-    // 使用 list 作为底层容器
-    std::queue<int, std::list<int>> q2;
+    // 使用链表作为底层容器
+    q2 = NEW Queue(container = LinkedList)
 
     // 从已有容器构造
-    std::deque<int> deq = {1, 2, 3, 4, 5};
-    std::queue<int> q3(deq);  // 1在队首，5在队尾
+    ARRAY deq = [1, 2, 3, 4, 5]
+    q3 = NEW Queue(deq)  // 1在队首，5在队尾
 
     // 核心操作
-    std::queue<int> q;
-    q.push(100);
-    q.push(200);
-    q.emplace(300);  // C++11就地构造
+    q = NEW Queue()
+    q.push(100)
+    q.push(200)
 
-    std::cout << "size: " << q.size() << std::endl;
-    std::cout << "front: " << q.front() << std::endl;  // 100
-    std::cout << "back: " << q.back() << std::endl;    // 300
+    PRINT "size: ", q.size()
+    PRINT "front: ", q.front()  // 100
+    PRINT "back: ", q.back()    // 200
 
-    q.pop();  // 弹出队首
-    std::cout << "after pop, front: " << q.front() << std::endl;  // 200
+    q.pop()  // 弹出队首
+    PRINT "after pop, front: ", q.front()  // 200
 
     // 交换
-    std::queue<int> other;
-    other.push(999);
-    q.swap(other);
+    other = NEW Queue()
+    other.push(999)
+    SWAP(q, other)
 
     // 关系运算符（逐个比较元素）
-    std::queue<int> a, b;
-    a.push(1); a.push(2);
-    b.push(1); b.push(2);
-    std::cout << "a == b: " << (a == b) << std::endl;
-    a.push(3);
-    b.push(4);
-    std::cout << "a < b: " << (a < b) << std::endl;  // 1,2,3 < 1,2,4
-
-    return 0;
-}
+    a = NEW Queue()
+    b = NEW Queue()
+    a.push(1); a.push(2)
+    b.push(1); b.push(2)
+    PRINT "a == b: ", (a == b)      // TRUE
+    a.push(3)
+    b.push(4)
+    PRINT "a < b: ", (a < b)        // TRUE (1,2,3 < 1,2,4)
+END FUNCTION
 ```
 
-2.2 std::deque —— 双端队列
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/04_队列]]
+- C++ STL 参考: [[../../cpp教程/容器库/05_queue]]
+---
+
+2.2 双端队列（Deque）
 -------------------------------
 
-```cpp
-#include <iostream>
-#include <deque>
-#include <algorithm>
-
-int main() {
-    std::deque<int> dq = {10, 20, 30};
+```pseudocode
+FUNCTION main()
+    dq = NEW Deque()
+    dq.push_back(10)
+    dq.push_back(20)
+    dq.push_back(30)
 
     // 两端操作
-    dq.push_front(5);
-    dq.push_back(35);
-    dq.pop_front();
-    dq.pop_back();
+    dq.push_front(5)
+    dq.push_back(35)
+    dq.pop_front()
+    dq.pop_back()
 
-    // 插入（deque支持随机访问迭代器，但中间插入较慢）
-    dq.insert(dq.begin() + 1, 15);
-    dq.emplace(dq.end() - 1, 25);
+    // 插入（deque支持随机访问，但中间插入较慢）
+    dq.insert(1, 15)
+    dq.insert(LENGTH(dq) - 1, 25)
 
     // 随机访问
-    std::cout << "dq[0]: " << dq[0] << std::endl;
-    std::cout << "dq.at(2): " << dq.at(2) << std::endl;
+    PRINT "dq[0]: ", dq[0]
+    PRINT "dq.at(2): ", dq.at(2)
 
     // resize
-    dq.resize(10, -1);  // 扩展到10个，新元素填-1
-    dq.resize(5);       // 缩小到5个
+    dq.resize(10, -1)  // 扩展到10个，新元素填-1
+    dq.resize(5)       // 缩小到5个
 
     // 遍历
-    for (int x : dq) std::cout << x << " ";
-    std::cout << std::endl;
+    FOR EACH x IN dq:
+        PRINT x, " "
+    END FOR
+    PRINT newline
 
     // 算法支持
-    std::sort(dq.begin(), dq.end());
-    auto it = std::find(dq.begin(), dq.end(), 25);
-
-    return 0;
-}
+    dq.sort()
+    it = dq.find(25)
+END FUNCTION
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/04_队列]]
+- C++ STL 参考: [[../../cpp教程/容器库/05_queue]]
+---
 
 2.3 优先队列（Priority Queue）的队列视角
 ----------------------------------------------
 
-```cpp
-#include <iostream>
-#include <queue>
-#include <vector>
-#include <functional>
+```pseudocode
+STRUCT Patient:
+    name: string
+    severity: integer       // 病情严重程度（越大越优先）
+    arrival_time: integer   // 到达时间
+END STRUCT
 
-struct Patient {
-    std::string name;
-    int severity;      // 病情严重程度（越大越优先）
-    int arrival_time;  // 到达时间
+// 比较器：严重程度高者优先；相同则先到者优先
+FUNCTION compare_patient(a, b):
+    IF a.severity != b.severity:
+        RETURN a.severity < b.severity
+    END IF
+    RETURN a.arrival_time > b.arrival_time
+END FUNCTION
 
-    bool operator<(const Patient& other) const {
-        // 严重程度高者优先；相同则先到者优先
-        if (severity != other.severity)
-            return severity < other.severity;
-        return arrival_time > other.arrival_time;
-    }
-};
+FUNCTION main()
+    er_queue = NEW PriorityQueue(compare_patient)
 
-int main() {
-    std::priority_queue<Patient> er_queue;
+    er_queue.push(Patient("张三", 5, 1))
+    er_queue.push(Patient("李四", 8, 2))    // 更严重
+    er_queue.push(Patient("王五", 8, 3))    // 同样严重但到得晚
+    er_queue.push(Patient("赵六", 3, 4))
 
-    er_queue.push({"张三", 5, 1});
-    er_queue.push({"李四", 8, 2});    // 更严重
-    er_queue.push({"王五", 8, 3});    // 同样严重但到得晚
-    er_queue.push({"赵六", 3, 4});
-
-    std::cout << "急诊顺序:" << std::endl;
-    while (!er_queue.empty()) {
-        auto p = er_queue.top();
-        std::cout << "  " << p.name << " (严重程度:" << p.severity
-                  << ", 到达:" << p.arrival_time << ")" << std::endl;
-        er_queue.pop();
-    }
-
-    return 0;
-}
+    PRINT "急诊顺序:"
+    WHILE NOT er_queue.empty():
+        p = er_queue.top()
+        PRINT "  ", p.name, " (严重程度:", p.severity,
+              ", 到达:", p.arrival_time, ")"
+        er_queue.pop()
+    END WHILE
+END FUNCTION
 ```
 
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/04_队列]]
+- C++ STL 参考: [[../../cpp教程/容器库/05_queue]]
+---
 
-## ==========================================================================
-### 📖 第三节: 实用案例
-## ==========================================================================
+
+---
+###  第三节: 应用场景
+---
 
 案例一：广度优先搜索（BFS）—— 社交网络好友推荐
 -------------------------------------------------------
 
-```cpp
-#include <iostream>
-#include <queue>
-#include <vector>
-#include <unordered_set>
-#include <unordered_map>
+```pseudocode
+CLASS SocialGraph:
+    friends = NEW Map(string -> List of string)
 
-class SocialGraph {
-private:
-    std::unordered_map<std::string, std::vector<std::string>> friends;
+FUNCTION add_friendship(a, b):
+    friends[a].APPEND(b)
+    friends[b].APPEND(a)
+END FUNCTION
 
-public:
-    void addFriendship(const std::string& a, const std::string& b) {
-        friends[a].push_back(b);
-        friends[b].push_back(a);
-    }
+// 使用BFS找指定用户的好友推荐（好友的好友，且不是直接好友）
+FUNCTION recommend_friends(user, max_depth):
+    q = NEW Queue()   // 存储 (人名, 距离)
+    visited = NEW Set()
+    recommendations = NEW Map(string -> integer)
 
-    // 使用BFS找指定用户的好友推荐（好友的好友，且不是直接好友）
-    std::vector<std::string> recommendFriends(const std::string& user,
-                                               int max_depth = 2) {
-        std::queue<std::pair<std::string, int>> q;  // (人名, 距离)
-        std::unordered_set<std::string> visited;
-        std::unordered_map<std::string, int> recommendations;
+    // 标记自己为已访问
+    visited.ADD(user)
+    // 标记所有直接好友为已访问
+    FOR EACH f IN friends[user]:
+        visited.ADD(f)
+    END FOR
 
-        // 标记自己为已访问
-        visited.insert(user);
-        // 标记所有直接好友为已访问
-        for (const auto& f : friends[user]) {
-            visited.insert(f);
-        }
+    // 将直接好友加入队列
+    FOR EACH f IN friends[user]:
+        q.push((f, 1))
+    END FOR
 
-        // 将直接好友加入队列
-        for (const auto& f : friends[user]) {
-            q.push({f, 1});
-        }
+    WHILE NOT q.empty():
+        (person, depth) = q.front()
+        q.pop()
 
-        while (!q.empty()) {
-            auto [person, depth] = q.front();
-            q.pop();
+        IF depth >= max_depth:
+            CONTINUE
+        END IF
 
-            if (depth >= max_depth) continue;
+        FOR EACH fof IN friends[person]:
+            IF fof NOT IN visited:
+                visited.ADD(fof)
+                recommendations[fof] = depth + 1
+                q.push((fof, depth + 1))
+            END IF
+        END FOR
+    END WHILE
 
-            for (const auto& fof : friends[person]) {
-                if (visited.find(fof) == visited.end()) {
-                    visited.insert(fof);
-                    recommendations[fof] = depth + 1;
-                    q.push({fof, depth + 1});
-                }
-            }
-        }
+    // 按推荐度排序
+    sorted = SORT(recommendations, by_value ASC)
+    result = NEW ARRAY
+    FOR EACH (name, dist) IN sorted:
+        result.APPEND(name)
+    END FOR
+    RETURN result
+END FUNCTION
 
-        // 按推荐度排序
-        std::vector<std::pair<std::string, int>> sorted(
-            recommendations.begin(), recommendations.end());
-        std::sort(sorted.begin(), sorted.end(),
-                  [](const auto& a, const auto& b) {
-                      return a.second < b.second;
-                  });
+FUNCTION main()
+    sg = NEW SocialGraph()
 
-        std::vector<std::string> result;
-        for (const auto& [name, dist] : sorted) {
-            result.push_back(name);
-        }
-        return result;
-    }
-};
+    sg.add_friendship("Alice", "Bob")
+    sg.add_friendship("Alice", "Charlie")
+    sg.add_friendship("Bob", "David")
+    sg.add_friendship("Bob", "Eve")
+    sg.add_friendship("Charlie", "Frank")
+    sg.add_friendship("David", "Grace")
+    sg.add_friendship("Eve", "Grace")
 
-int main() {
-    SocialGraph sg;
-
-    sg.addFriendship("Alice", "Bob");
-    sg.addFriendship("Alice", "Charlie");
-    sg.addFriendship("Bob", "David");
-    sg.addFriendship("Bob", "Eve");
-    sg.addFriendship("Charlie", "Frank");
-    sg.addFriendship("David", "Grace");
-    sg.addFriendship("Eve", "Grace");
-
-    std::cout << "Alice的好友推荐: ";
-    for (const auto& name : sg.recommendFriends("Alice")) {
-        std::cout << name << " ";
-    }
-    std::cout << std::endl;
-
-    return 0;
-}
+    PRINT "Alice的好友推荐: "
+    FOR EACH name IN sg.recommend_friends("Alice"):
+        PRINT name, " "
+    END FOR
+    PRINT newline
+END FUNCTION
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/04_队列]]
+- C++ STL 参考: [[../../cpp教程/容器库/05_queue]]
+---
 
 
 案例二：消息队列（生产者-消费者模型）
 ---------------------------------------------
 
-```cpp
-#include <iostream>
-#include <queue>
-#include <string>
-#include <mutex>
-#include <condition_variable>
-#include <thread>
-#include <chrono>
+```pseudocode
+CLASS ThreadSafeQueue(max_size):
+    q = NEW Queue()
+    mtx = NEW Mutex()
+    cv = NEW ConditionVariable()
+    max_size = max_size
 
-template<typename T>
-class ThreadSafeQueue {
-private:
-    std::queue<T> q;
-    mutable std::mutex mtx;
-    std::condition_variable cv;
-    size_t max_size;
+FUNCTION push(item):
+    LOCK mtx
+    WHILE q.size() >= max_size:
+        cv.WAIT(mtx)
+    END WHILE
+    q.push(item)
+    cv.NOTIFY_ALL()
+    UNLOCK mtx
+END FUNCTION
 
-public:
-    ThreadSafeQueue(size_t max = 100) : max_size(max) {}
+FUNCTION pop():
+    LOCK mtx
+    WHILE q.empty():
+        cv.WAIT(mtx)
+    END WHILE
+    item = q.front()
+    q.pop()
+    cv.NOTIFY_ALL()
+    UNLOCK mtx
+    RETURN item
+END FUNCTION
 
-    void push(const T& item) {
-        std::unique_lock<std::mutex> lock(mtx);
-        cv.wait(lock, [this]() { return q.size() < max_size; });
-        q.push(item);
-        cv.notify_all();
-    }
+FUNCTION try_pop(item, timeout_ms):
+    LOCK mtx
+    IF NOT cv.WAIT_FOR(mtx, timeout_ms, FUNCTION(): RETURN NOT q.empty()):
+        UNLOCK mtx
+        RETURN FALSE
+    END IF
+    item = q.front()
+    q.pop()
+    cv.NOTIFY_ALL()
+    UNLOCK mtx
+    RETURN TRUE
+END FUNCTION
 
-    T pop() {
-        std::unique_lock<std::mutex> lock(mtx);
-        cv.wait(lock, [this]() { return !q.empty(); });
-        T item = q.front();
-        q.pop();
-        cv.notify_all();
-        return item;
-    }
+FUNCTION size():
+    LOCK mtx
+    result = q.size()
+    UNLOCK mtx
+    RETURN result
+END FUNCTION
 
-    bool try_pop(T& item, int timeout_ms = 100) {
-        std::unique_lock<std::mutex> lock(mtx);
-        if (!cv.wait_for(lock, std::chrono::milliseconds(timeout_ms),
-                         [this]() { return !q.empty(); })) {
-            return false;
-        }
-        item = q.front();
-        q.pop();
-        cv.notify_all();
-        return true;
-    }
+FUNCTION producer(queue, id):
+    FOR i = 0 TO 4:
+        msg = "生产者" + STRING(id) + " 的消息 #" + STRING(i)
+        queue.push(msg)
+        PRINT "[生产] ", msg
+        SLEEP(100 * id)
+    END FOR
+END FUNCTION
 
-    size_t size() const {
-        std::lock_guard<std::mutex> lock(mtx);
-        return q.size();
-    }
-};
+FUNCTION consumer(queue, id):
+    FOR i = 0 TO 4:
+        msg = queue.pop()
+        PRINT "[消费", id, "] ", msg
+        SLEEP(150)
+    END FOR
+END FUNCTION
 
-void producer(ThreadSafeQueue<std::string>& queue, int id) {
-    for (int i = 0; i < 5; ++i) {
-        std::string msg = "生产者" + std::to_string(id) +
-                          " 的消息 #" + std::to_string(i);
-        queue.push(msg);
-        std::cout << "[生产] " << msg << std::endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds(100 * id));
-    }
-}
-
-void consumer(ThreadSafeQueue<std::string>& queue, int id) {
-    for (int i = 0; i < 5; ++i) {
-        std::string msg = queue.pop();
-        std::cout << "[消费" << id << "] " << msg << std::endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds(150));
-    }
-}
-
-int main() {
-    ThreadSafeQueue<std::string> queue(5);
-
-    std::thread p1(producer, std::ref(queue), 1);
-    std::thread p2(producer, std::ref(queue), 2);
-    std::thread c1(consumer, std::ref(queue), 1);
-    std::thread c2(consumer, std::ref(queue), 2);
-
-    p1.join();
-    p2.join();
-    c1.join();
-    c2.join();
-
-    std::cout << "队列处理完毕" << std::endl;
-
-    return 0;
-}
+// 多线程协作示意：
+//   创建 queue(5)
+//   启动 producer(queue, 1)  在独立线程
+//   启动 producer(queue, 2)  在独立线程
+//   启动 consumer(queue, 1)  在独立线程
+//   启动 consumer(queue, 2)  在独立线程
+//   等待所有线程完成
+//   PRINT "队列处理完毕"
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/04_队列]]
+- C++ STL 参考: [[../../cpp教程/容器库/05_queue]]
+---
 
 
 案例三：银行叫号系统
 ---------------------------
 
-```cpp
-#include <iostream>
-#include <queue>
-#include <string>
-#include <vector>
-#include <random>
+```pseudocode
+STRUCT Customer:
+    number: integer
+    service_type: string   // 存款、取款、理财等
+    arrival_time: integer
+END STRUCT
 
-class BankQueue {
-private:
-    struct Customer {
-        int number;
-        std::string service_type;  // 存款、取款、理财等
-        int arrival_time;
-    };
+CLASS BankQueue:
+    normal_queue = NEW Queue()
+    vip_queue = NEW Queue()
+    counter = 0
 
-    std::queue<Customer> normal_queue;
-    std::queue<Customer> vip_queue;
-    int counter = 0;
+FUNCTION take_number(service_type, is_vip):
+    counter = counter + 1
+    c = Customer(counter, service_type, counter)
 
-public:
-    int takeNumber(const std::string& service_type, bool is_vip = false) {
-        int num = ++counter;
-        Customer c{num, service_type, counter};
+    IF is_vip:
+        vip_queue.push(c)
+        PRINT "VIP客户 ", counter, " 取号 (", service_type, ")"
+    ELSE:
+        normal_queue.push(c)
+        PRINT "普通客户 ", counter, " 取号 (", service_type, ")"
+    END IF
+    RETURN counter
+END FUNCTION
 
-        if (is_vip) {
-            vip_queue.push(c);
-            std::cout << "VIP客户 " << num << " 取号 (" << service_type << ")"
-                      << std::endl;
-        } else {
-            normal_queue.push(c);
-            std::cout << "普通客户 " << num << " 取号 (" << service_type << ")"
-                      << std::endl;
-        }
-        return num;
-    }
+FUNCTION call_next():
+    IF NOT vip_queue.empty():
+        c = vip_queue.front()
+        vip_queue.pop()
+        PRINT ">>> 请VIP ", c.number, " 号到VIP窗口办理 (", c.service_type, ")"
+    ELSE IF NOT normal_queue.empty():
+        c = normal_queue.front()
+        normal_queue.pop()
+        PRINT ">>> 请 ", c.number, " 号到普通窗口办理 (", c.service_type, ")"
+    ELSE:
+        PRINT "当前无等待客户"
+    END IF
+END FUNCTION
 
-    void callNext() {
-        Customer c;
-        if (!vip_queue.empty()) {
-            c = vip_queue.front();
-            vip_queue.pop();
-            std::cout << ">>> 请VIP " << c.number << " 号到VIP窗口办理 ("
-                      << c.service_type << ")" << std::endl;
-        } else if (!normal_queue.empty()) {
-            c = normal_queue.front();
-            normal_queue.pop();
-            std::cout << ">>> 请 " << c.number << " 号到普通窗口办理 ("
-                      << c.service_type << ")" << std::endl;
-        } else {
-            std::cout << "当前无等待客户" << std::endl;
-        }
-    }
+FUNCTION print_status():
+    PRINT "当前排队情况:"
+    PRINT "  VIP队列: ", vip_queue.size(), "人"
+    PRINT "  普通队列: ", normal_queue.size(), "人"
+    PRINT "  总等待人数: ", vip_queue.size() + normal_queue.size()
+END FUNCTION
 
-    void printStatus() const {
-        std::cout << "\n当前排队情况:" << std::endl;
-        std::cout << "  VIP队列: " << vip_queue.size() << "人" << std::endl;
-        std::cout << "  普通队列: " << normal_queue.size() << "人" << std::endl;
-        std::cout << "  总等待人数: " << (vip_queue.size() + normal_queue.size())
-                  << std::endl;
-    }
-};
+FUNCTION main()
+    bq = NEW BankQueue()
 
-int main() {
-    BankQueue bq;
+    bq.take_number("存款", FALSE)
+    bq.take_number("取款", FALSE)
+    bq.take_number("理财", TRUE)   // VIP
+    bq.take_number("转账", FALSE)
+    bq.take_number("开户", TRUE)   // VIP
 
-    bq.takeNumber("存款");
-    bq.takeNumber("取款");
-    bq.takeNumber("理财", true);  // VIP
-    bq.takeNumber("转账");
-    bq.takeNumber("开户", true);  // VIP
+    bq.print_status()
 
-    bq.printStatus();
-
-    std::cout << "\n开始叫号:" << std::endl;
-    bq.callNext();  // VIP优先
-    bq.callNext();
-    bq.callNext();
-    bq.callNext();
-    bq.callNext();
-    bq.callNext();  // 空
-
-    return 0;
-}
+    PRINT "开始叫号:"
+    bq.call_next()  // VIP优先
+    bq.call_next()
+    bq.call_next()
+    bq.call_next()
+    bq.call_next()
+    bq.call_next()  // 空
+END FUNCTION
 ```
 
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/04_队列]]
+- C++ STL 参考: [[../../cpp教程/容器库/05_queue]]
+---
 
-## ==========================================================================
-### 📖 第四节: 课后习题
-## ==========================================================================
+
+---
+###  第四节: 课后习题
+---
 
 1. 基础题：手动实现一个循环队列。
    - 使用定长数组实现
@@ -704,17 +692,17 @@ int main() {
    - 支持多生产者多消费者（MPMC）
    - 验证无锁队列的正确性和性能优势
 
-## ==========================================================================
+---
 
 
-## ==========================================================================
-### 📝 章节测试
-## ==========================================================================
+---
+###  章节测试
+---
 
 > [!question] 判断题 1
 > 队列是一种先进先出（FIFO）的数据结构 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -722,19 +710,19 @@ int main() {
 > > **解析**: 队列遵循FIFO（First In First Out）原则，最先入队的元素最先出队，就像现实中的排队一样。
 
 > [!question] 判断题 2
-> std::queue 默认使用 std::vector 作为底层容器 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> 默认的队列适配器使用动态数组（vector）作为底层容器 （ ）
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
 > > 
-> > **解析**: std::queue 默认使用 std::deque 作为底层容器。deque支持两端高效操作，适合队列的front弹出和back插入。
+> > **解析**: 标准队列适配器默认使用双端队列（deque）作为底层容器。deque支持两端高效操作，适合队列的front弹出和back插入。
 
 > [!question] 判断题 3
 > 循环队列使用数组实现时，可以避免"假溢出"问题 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -743,8 +731,8 @@ int main() {
 
 > [!question] 判断题 4
 > 双端队列（deque）既可以当栈使用，也可以当队列使用 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -753,8 +741,8 @@ int main() {
 
 > [!question] 判断题 5
 > BFS（广度优先搜索）使用栈作为辅助数据结构 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -762,19 +750,19 @@ int main() {
 > > **解析**: BFS使用队列作为辅助数据结构，先发现的节点先处理（层序遍历）。DFS才使用栈（或递归）。
 
 > [!question] 判断题 6
-> std::queue 的 pop() 操作会返回被弹出的队首元素 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> 队列的 pop() 操作会返回被弹出的队首元素 （ ）
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
 > > 
-> > **解析**: 与std::stack类似，std::queue的pop()返回void，只负责删除队首元素。需要先用front()获取队首元素，再调用pop()删除。
+> > **解析**: 与栈类似，队列的pop()通常返回void（或不返回值），只负责删除队首元素。需要先用front()获取队首元素，再调用pop()删除。
 
 > [!question] 判断题 7
 > 单调队列可以在O(n)时间内解决滑动窗口最大值问题 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -783,8 +771,8 @@ int main() {
 
 > [!question] 判断题 8
 > 循环队列中判断队满的条件是 front == rear （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -793,8 +781,8 @@ int main() {
 
 > [!question] 判断题 9
 > 优先队列本质上是一个队列，遵循先进先出原则 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -803,8 +791,8 @@ int main() {
 
 > [!question] 判断题 10
 > 使用两个栈可以模拟一个队列，使得入队和出队的均摊时间复杂度都为O(1) （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -850,7 +838,7 @@ int main() {
 > > **解析**: DFS使用栈（或递归）而不是队列。BFS、层序遍历和Kahn拓扑排序都使用队列。
 
 > [!question] 选择题 4
-> std::deque 内部使用什么存储结构？
+> 双端队列（deque）内部使用什么存储结构？
 > - [ ] A. 单一连续数组
 > - [ ] B. 链表
 > - [ ] C. 分段连续的缓冲区 + 中控器（map）
@@ -935,11 +923,11 @@ int main() {
 
 ---
 
-### 💻 编程大题
+###  编程大题
 
 > [!note] 编程题 1：实现一个循环队列（支持动态扩容）
 > **要求**：
-> 1. 使用数组实现循环队列 `CircularQueue<T>`
+> 1. 使用数组实现循环队列 `CircularQueue`
 > 2. 支持操作：push, pop, front, back, empty, size, full
 > 3. 初始容量为8，队满时自动扩容为2倍
 > 4. 扩容时正确处理元素的搬迁（注意循环排列）
@@ -975,7 +963,7 @@ int main() {
 >
 > **提示**: 使用时间驱动模拟，每个时间单位检查是否有新进程到达
 
-### 🔗 推荐练习题（洛谷）
+###  推荐练习题（洛谷）
 
 | 题号 | 题目 | 难度 | 知识点 |
 |------|------|------|--------|
@@ -984,10 +972,10 @@ int main() {
 
 ---
 
-## --------------------------------------------------------------------------
-## 🔗 知识网络
-## --------------------------------------------------------------------------
+***
+##  知识网络
+***
 
 - **上一章**: [[B_栈_Stack]] | **下一章**: [[Q_排序_八大排序_Sorting]] | **返回**: [[DSA学习路线]]
-- **相关容器**: [[容器类/05_queue]]
+- **相关容器**: [[容器库/05_queue]]
 - **算法技巧**: [[../算法技巧/搜索]] | [[../算法技巧/滑动窗口]]

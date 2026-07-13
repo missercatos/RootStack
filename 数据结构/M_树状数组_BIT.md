@@ -1,8 +1,8 @@
-## ==========================================================================
-C++ 数据结构教程 — 树状数组 (Binary Indexed Tree)
-## ==========================================================================
+---
+数据结构教程 — 树状数组 (Binary Indexed Tree)
+---
 
-## 📋 章节概述
+##  章节概述
 
 树状数组（Binary Indexed Tree，简称BIT），又称Fenwick Tree，是一种用于高效
 处理前缀和查询和单点修改的数据结构。它利用二进制的性质将数组划分为若干区间，
@@ -12,11 +12,11 @@ C++ 数据结构教程 — 树状数组 (Binary Indexed Tree)
 本章将从树状数组的二进制原理讲起，深入lowbit运算的本质，
 全面覆盖各种应用场景，最后通过实例和习题巩固所学知识。
 
-> 📌 **底层实现参考**：如果需要深入理解本章数据结构的底层实现（纯C手写、内存布局、指针操作），请参阅 [[../../C语言深化教程/3数据结构/09_高级数据结构|C语言教程: 高级数据结构]]。C教程侧重手动实现与内存本质，本教程侧重STL使用与算法优化，两者互补。
+>  **底层实现参考**：如果需要深入理解本章数据结构的底层实现（纯C手写、内存布局、指针操作），请参阅 [[../../C语言深化教程/3数据结构/09_高级数据结构|C语言教程: 高级数据结构]]。C教程侧重手动实现与内存本质，本教程侧重STL使用与算法优化，两者互补。
 
-## ==========================================================================
-### 📖 第一节: 基础语法 + 计算机底层原理
-## ==========================================================================
+---
+###  第一节: 基础语法 + 计算机底层原理
+---
 
 1.1 树状数组的基本概念
 -----------------------
@@ -74,566 +74,541 @@ graph TD
 
 1.3 标准实现
 
-```cpp
-#include <iostream>
-#include <vector>
+```pseudocode
+CLASS BIT:
+    tree    // 数组（长度 n+1），存储树状数组节点值
+    n       // 数组长度
 
-class BIT {
-private:
-    std::vector<long long> tree;
-    int n;
+    FUNCTION lowbit(x):
+        RETURN x & (-x)
+    END FUNCTION
 
-    int lowbit(int x) { return x & (-x); }
+    CONSTRUCTOR(size):
+        n = size
+        tree = ARRAY of size n + 1, filled with 0
+    END CONSTRUCTOR
 
-public:
-    BIT(int size) : n(size), tree(size + 1, 0) {}
+    CONSTRUCTOR(arr):
+        n = LENGTH(arr)
+        tree = ARRAY of size n + 1, filled with 0
+        FOR i FROM 0 TO n - 1:
+            update(i + 1, arr[i])
+        END FOR
+    END CONSTRUCTOR
 
-    BIT(const std::vector<int>& arr) : n(arr.size()), tree(arr.size() + 1, 0) {
-        for (int i = 0; i < n; ++i)
-            update(i + 1, arr[i]);
-    }
+    FUNCTION update(pos, delta):
+        WHILE pos <= n:
+            tree[pos] = tree[pos] + delta
+            pos = pos + lowbit(pos)
+        END WHILE
+    END FUNCTION
 
-    void update(int pos, long long delta) {
-        for (; pos <= n; pos += lowbit(pos))
-            tree[pos] += delta;
-    }
+    FUNCTION prefixSum(pos):
+        sum = 0
+        WHILE pos > 0:
+            sum = sum + tree[pos]
+            pos = pos - lowbit(pos)
+        END WHILE
+        RETURN sum
+    END FUNCTION
 
-    long long prefixSum(int pos) {
-        long long sum = 0;
-        for (; pos > 0; pos -= lowbit(pos))
-            sum += tree[pos];
-        return sum;
-    }
+    FUNCTION rangeSum(l, r):
+        RETURN prefixSum(r) - prefixSum(l - 1)
+    END FUNCTION
+END CLASS
 
-    long long rangeSum(int l, int r) {
-        return prefixSum(r) - prefixSum(l - 1);
-    }
-};
-
-int main() {
-    std::vector<int> arr = {1, 3, 5, 7, 9, 11};
-    BIT bit(arr);
-
-    std::cout << "前缀和[1,4]: " << bit.prefixSum(4) << std::endl;
-    std::cout << "区间和[2,5]: " << bit.rangeSum(2, 5) << std::endl;
-
-    bit.update(3, 5);
-    std::cout << "位置3加5后，区间和[2,5]: " << bit.rangeSum(2, 5) << std::endl;
-
-    return 0;
-}
+// 使用示例:
+arr = [1, 3, 5, 7, 9, 11]
+bit = BIT(arr)
+DISPLAY bit.prefixSum(4)    // 前缀和[1,4]
+DISPLAY bit.rangeSum(2, 5)  // 区间和[2,5]
+bit.update(3, 5)
+DISPLAY bit.rangeSum(2, 5)  // 修改后的区间和
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 1.4 O(n)建树优化
 
-```cpp
-#include <iostream>
-#include <vector>
+```pseudocode
+CLASS BITFast:
+    tree    // 数组
+    n       // 长度
 
-class BITFast {
-private:
-    std::vector<long long> tree;
-    int n;
-    int lowbit(int x) { return x & (-x); }
+    FUNCTION lowbit(x):
+        RETURN x & (-x)
+    END FUNCTION
 
-public:
-    BITFast(const std::vector<int>& arr) : n(arr.size()), tree(arr.size() + 1, 0) {
-        for (int i = 1; i <= n; ++i) {
-            tree[i] += arr[i - 1];
-            int parent = i + lowbit(i);
-            if (parent <= n)
-                tree[parent] += tree[i];
-        }
-    }
+    CONSTRUCTOR(arr):
+        n = LENGTH(arr)
+        tree = ARRAY of size n + 1, filled with 0
+        FOR i FROM 1 TO n:
+            tree[i] = tree[i] + arr[i - 1]
+            parent = i + lowbit(i)
+            IF parent <= n THEN
+                tree[parent] = tree[parent] + tree[i]
+            END IF
+        END FOR
+    END CONSTRUCTOR
 
-    void update(int pos, long long delta) {
-        for (; pos <= n; pos += lowbit(pos))
-            tree[pos] += delta;
-    }
+    FUNCTION update(pos, delta):
+        WHILE pos <= n:
+            tree[pos] = tree[pos] + delta
+            pos = pos + lowbit(pos)
+        END WHILE
+    END FUNCTION
 
-    long long prefixSum(int pos) {
-        long long sum = 0;
-        for (; pos > 0; pos -= lowbit(pos))
-            sum += tree[pos];
-        return sum;
-    }
+    FUNCTION prefixSum(pos):
+        sum = 0
+        WHILE pos > 0:
+            sum = sum + tree[pos]
+            pos = pos - lowbit(pos)
+        END WHILE
+        RETURN sum
+    END FUNCTION
 
-    long long rangeSum(int l, int r) {
-        return prefixSum(r) - prefixSum(l - 1);
-    }
-};
-
-int main() {
-    std::vector<int> arr = {3, 1, 4, 1, 5, 9, 2, 6};
-    BITFast bit(arr);
-    std::cout << "前缀和[1,5]: " << bit.prefixSum(5) << std::endl;
-    std::cout << "区间和[3,7]: " << bit.rangeSum(3, 7) << std::endl;
-    return 0;
-}
+    FUNCTION rangeSum(l, r):
+        RETURN prefixSum(r) - prefixSum(l - 1)
+    END FUNCTION
+END CLASS
 ```
 
-## ==========================================================================
-### 📖 第二节: 所有用法大全
-## ==========================================================================
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
+---
+###  第二节: 实现思路
+---
 
 2.1 区间修改 + 单点查询（差分树状数组）
 
-```cpp
-#include <iostream>
-#include <vector>
+```pseudocode
+CLASS BITRangeUpdate:
+    tree    // 差分数组的 BIT
+    n       // 长度
 
-class BITRangeUpdate {
-private:
-    std::vector<long long> tree;
-    int n;
-    int lowbit(int x) { return x & (-x); }
+    FUNCTION lowbit(x):
+        RETURN x & (-x)
+    END FUNCTION
 
-    void add(int pos, long long val) {
-        for (; pos <= n; pos += lowbit(pos))
-            tree[pos] += val;
-    }
+    FUNCTION add(pos, val):
+        WHILE pos <= n:
+            tree[pos] = tree[pos] + val
+            pos = pos + lowbit(pos)
+        END WHILE
+    END FUNCTION
 
-    long long query(int pos) {
-        long long sum = 0;
-        for (; pos > 0; pos -= lowbit(pos))
-            sum += tree[pos];
-        return sum;
-    }
+    FUNCTION query(pos):
+        sum = 0
+        WHILE pos > 0:
+            sum = sum + tree[pos]
+            pos = pos - lowbit(pos)
+        END WHILE
+        RETURN sum
+    END FUNCTION
 
-public:
-    BITRangeUpdate(int size) : n(size), tree(size + 1, 0) {}
+    CONSTRUCTOR(size):
+        n = size
+        tree = ARRAY of size n + 1, filled with 0
+    END CONSTRUCTOR
 
-    void rangeAdd(int l, int r, long long val) {
-        add(l, val);
-        add(r + 1, -val);
-    }
+    FUNCTION rangeAdd(l, r, val):
+        add(l, val)
+        add(r + 1, -val)    // 差分: diff[l] += val, diff[r+1] -= val
+    END FUNCTION
 
-    long long pointQuery(int pos) {
-        return query(pos);
-    }
-};
-
-int main() {
-    BITRangeUpdate bit(6);
-    bit.rangeAdd(2, 5, 3);
-    bit.rangeAdd(3, 6, 2);
-
-    for (int i = 1; i <= 6; ++i)
-        std::cout << "位置" << i << ": " << bit.pointQuery(i) << " ";
-    std::cout << std::endl;
-    return 0;
-}
+    FUNCTION pointQuery(pos):
+        RETURN query(pos)    // 单点查询 = 差分前缀和
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.2 区间修改 + 区间查询
 
-```cpp
-#include <iostream>
-#include <vector>
+```pseudocode
+CLASS BITRangeAll:
+    tree1, tree2    // 两个 BIT 数组，分别维护 diff[i] 和 i * diff[i]
+    n               // 长度
 
-class BITRangeAll {
-private:
-    std::vector<long long> tree1, tree2;
-    int n;
-    int lowbit(int x) { return x & (-x); }
+    FUNCTION lowbit(x):
+        RETURN x & (-x)
+    END FUNCTION
 
-    void add(std::vector<long long>& t, int pos, long long val) {
-        for (; pos <= n; pos += lowbit(pos))
-            t[pos] += val;
-    }
+    FUNCTION add(t, pos, val):    // t 是 tree1 或 tree2 的引用
+        WHILE pos <= n:
+            t[pos] = t[pos] + val
+            pos = pos + lowbit(pos)
+        END WHILE
+    END FUNCTION
 
-    long long sum(std::vector<long long>& t, int pos) {
-        long long s = 0;
-        for (; pos > 0; pos -= lowbit(pos))
-            s += t[pos];
-        return s;
-    }
+    FUNCTION sum(t, pos):
+        s = 0
+        WHILE pos > 0:
+            s = s + t[pos]
+            pos = pos - lowbit(pos)
+        END WHILE
+        RETURN s
+    END FUNCTION
 
-public:
-    BITRangeAll(int size) : n(size), tree1(size + 1, 0), tree2(size + 1, 0) {}
+    CONSTRUCTOR(size):
+        n = size
+        tree1 = ARRAY of size n + 1, filled with 0
+        tree2 = ARRAY of size n + 1, filled with 0
+    END CONSTRUCTOR
 
-    BITRangeAll(const std::vector<int>& arr) : n(arr.size()), tree1(arr.size()+1, 0), tree2(arr.size()+1, 0) {
-        for (int i = 1; i <= n; ++i)
-            rangeAdd(i, i, arr[i-1]);
-    }
+    CONSTRUCTOR(arr):
+        n = LENGTH(arr)
+        tree1 = ARRAY of size n + 1, filled with 0
+        tree2 = ARRAY of size n + 1, filled with 0
+        FOR i FROM 1 TO n:
+            rangeAdd(i, i, arr[i - 1])
+        END FOR
+    END CONSTRUCTOR
 
-    void rangeAdd(int l, int r, long long val) {
-        add(tree1, l, val);
-        add(tree1, r + 1, -val);
-        add(tree2, l, val * (l - 1));
-        add(tree2, r + 1, -val * r);
-    }
+    FUNCTION rangeAdd(l, r, val):
+        add(tree1, l, val)
+        add(tree1, r + 1, -val)
+        add(tree2, l, val * (l - 1))
+        add(tree2, r + 1, -val * r)
+    END FUNCTION
 
-    long long prefixSum(int pos) {
-        return sum(tree1, pos) * pos - sum(tree2, pos);
-    }
+    FUNCTION prefixSum(pos):
+        // 前缀和 = sum(tree1,pos) * pos - sum(tree2,pos)
+        RETURN sum(tree1, pos) * pos - sum(tree2, pos)
+    END FUNCTION
 
-    long long rangeSum(int l, int r) {
-        return prefixSum(r) - prefixSum(l - 1);
-    }
-};
-
-int main() {
-    std::vector<int> arr = {1, 2, 3, 4, 5};
-    BITRangeAll bit(arr);
-
-    std::cout << "区间和[1,5]: " << bit.rangeSum(1, 5) << std::endl;
-    bit.rangeAdd(2, 4, 3);
-    std::cout << "[2,4]加3后，区间和[1,5]: " << bit.rangeSum(1, 5) << std::endl;
-    std::cout << "区间和[2,4]: " << bit.rangeSum(2, 4) << std::endl;
-    return 0;
-}
+    FUNCTION rangeSum(l, r):
+        RETURN prefixSum(r) - prefixSum(l - 1)
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.3 二维树状数组
 
-```cpp
-#include <iostream>
-#include <vector>
+```pseudocode
+CLASS BIT2D:
+    tree      // 二维数组，matrix[r+1][c+1]
+    rows, cols
 
-class BIT2D {
-private:
-    std::vector<std::vector<long long>> tree;
-    int rows, cols;
-    int lowbit(int x) { return x & (-x); }
+    FUNCTION lowbit(x):
+        RETURN x & (-x)
+    END FUNCTION
 
-public:
-    BIT2D(int r, int c) : rows(r), cols(c), tree(r + 1, std::vector<long long>(c + 1, 0)) {}
+    CONSTRUCTOR(r, c):
+        rows = r; cols = c
+        tree = 2D ARRAY of size (r + 1) × (c + 1), filled with 0
+    END CONSTRUCTOR
 
-    void update(int x, int y, long long val) {
-        for (int i = x; i <= rows; i += lowbit(i))
-            for (int j = y; j <= cols; j += lowbit(j))
-                tree[i][j] += val;
-    }
+    FUNCTION update(x, y, val):
+        FOR i FROM x TO rows STEP lowbit(i):
+            FOR j FROM y TO cols STEP lowbit(j):
+                tree[i][j] = tree[i][j] + val
+            END FOR
+        END FOR
+    END FUNCTION
 
-    long long query(int x, int y) {
-        long long sum = 0;
-        for (int i = x; i > 0; i -= lowbit(i))
-            for (int j = y; j > 0; j -= lowbit(j))
-                sum += tree[i][j];
-        return sum;
-    }
+    FUNCTION query(x, y):    // 前缀矩阵和 [1..x][1..y]
+        sum = 0
+        FOR i FROM x DOWNTO 1 STEP lowbit(i):
+            FOR j FROM y DOWNTO 1 STEP lowbit(j):
+                sum = sum + tree[i][j]
+            END FOR
+        END FOR
+        RETURN sum
+    END FUNCTION
 
-    long long rangeQuery(int x1, int y1, int x2, int y2) {
-        return query(x2, y2) - query(x1-1, y2) - query(x2, y1-1) + query(x1-1, y1-1);
-    }
-};
-
-int main() {
-    BIT2D bit(4, 4);
-    bit.update(1, 1, 3);
-    bit.update(2, 2, 5);
-    bit.update(3, 3, 7);
-    bit.update(2, 3, 1);
-
-    std::cout << "矩形[1,1]到[3,3]的和: " << bit.rangeQuery(1, 1, 3, 3) << std::endl;
-    std::cout << "矩形[2,2]到[3,3]的和: " << bit.rangeQuery(2, 2, 3, 3) << std::endl;
-    return 0;
-}
+    FUNCTION rangeQuery(x1, y1, x2, y2):
+        // 容斥原理:
+        RETURN query(x2, y2) - query(x1 - 1, y2) - query(x2, y1 - 1) + query(x1 - 1, y1 - 1)
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.4 树状数组求第k小（权值树状数组）
 
-```cpp
-#include <iostream>
-#include <vector>
+```pseudocode
+CLASS BITKth:
+    tree    // 数组
+    n       // 值域大小
 
-class BITKth {
-private:
-    std::vector<int> tree;
-    int n;
-    int lowbit(int x) { return x & (-x); }
+    FUNCTION lowbit(x):
+        RETURN x & (-x)
+    END FUNCTION
 
-public:
-    BITKth(int maxVal) : n(maxVal), tree(maxVal + 1, 0) {}
+    CONSTRUCTOR(maxVal):
+        n = maxVal
+        tree = ARRAY of size maxVal + 1, filled with 0
+    END CONSTRUCTOR
 
-    void add(int val, int delta = 1) {
-        for (int i = val; i <= n; i += lowbit(i))
-            tree[i] += delta;
-    }
+    FUNCTION add(val, delta=1):
+        FOR i FROM val TO n STEP lowbit(i):
+            tree[i] = tree[i] + delta
+        END FOR
+    END FUNCTION
 
-    int kth(int k) {
-        int pos = 0;
-        for (int i = __lg(n); i >= 0; --i) {
-            int next = pos + (1 << i);
-            if (next <= n && tree[next] < k) {
-                k -= tree[next];
-                pos = next;
-            }
-        }
-        return pos + 1;
-    }
+    FUNCTION kth(k):    // 查找第 k 小的值（倍增法）
+        pos = 0
+        FOR i FROM FLOOR_LOG2(n) DOWNTO 0:
+            next = pos + (1 << i)
+            IF next <= n AND tree[next] < k THEN
+                k = k - tree[next]
+                pos = next
+            END IF
+        END FOR
+        RETURN pos + 1
+    END FUNCTION
 
-    int countLess(int val) {
-        int sum = 0;
-        for (int i = val - 1; i > 0; i -= lowbit(i))
-            sum += tree[i];
-        return sum;
-    }
-};
-
-int main() {
-    BITKth bit(100);
-    bit.add(5);
-    bit.add(3);
-    bit.add(8);
-    bit.add(1);
-    bit.add(12);
-
-    std::cout << "第1小: " << bit.kth(1) << std::endl;
-    std::cout << "第3小: " << bit.kth(3) << std::endl;
-    std::cout << "第5小: " << bit.kth(5) << std::endl;
-
-    bit.add(3, -1);
-    std::cout << "删除3后，第2小: " << bit.kth(2) << std::endl;
-    return 0;
-}
+    FUNCTION countLess(val):
+        sum = 0
+        FOR i FROM val - 1 DOWNTO 1 STEP lowbit(i):
+            sum = sum + tree[i]
+        END FOR
+        RETURN sum
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.5 树状数组求逆序对
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <algorithm>
+```pseudocode
+CLASS InversionBIT:
+    tree    // BIT 数组
+    n       // 值域大小
 
-class InversionBIT {
-private:
-    std::vector<int> tree;
-    int n;
-    int lowbit(int x) { return x & (-x); }
+    FUNCTION lowbit(x):
+        RETURN x & (-x)
+    END FUNCTION
 
-    void update(int pos) {
-        for (; pos <= n; pos += lowbit(pos))
-            tree[pos]++;
-    }
+    FUNCTION update(pos):
+        WHILE pos <= n:
+            tree[pos] = tree[pos] + 1
+            pos = pos + lowbit(pos)
+        END WHILE
+    END FUNCTION
 
-    int query(int pos) {
-        int sum = 0;
-        for (; pos > 0; pos -= lowbit(pos))
-            sum += tree[pos];
-        return sum;
-    }
+    FUNCTION query(pos):
+        sum = 0
+        WHILE pos > 0:
+            sum = sum + tree[pos]
+            pos = pos - lowbit(pos)
+        END WHILE
+        RETURN sum
+    END FUNCTION
 
-public:
-    long long count(std::vector<int>& arr) {
-        std::vector<int> sorted = arr;
-        std::sort(sorted.begin(), sorted.end());
-        sorted.erase(std::unique(sorted.begin(), sorted.end()), sorted.end());
-        n = sorted.size();
-        tree.assign(n + 1, 0);
-
-        long long inversions = 0;
-        for (int i = (int)arr.size() - 1; i >= 0; --i) {
-            int rank = std::lower_bound(sorted.begin(), sorted.end(), arr[i]) - sorted.begin() + 1;
-            inversions += query(rank - 1);
-            update(rank);
-        }
-        return inversions;
-    }
-};
-
-int main() {
-    std::vector<int> arr = {5, 3, 2, 4, 1};
-    InversionBIT ib;
-    std::cout << "逆序对数: " << ib.count(arr) << std::endl;
-    return 0;
-}
+    FUNCTION count(arr):
+        sorted = SORT(UNIQUE(arr))
+        n = LENGTH(sorted)
+        tree = ARRAY of size n + 1, filled with 0
+        inversions = 0
+        FOR i FROM LENGTH(arr) - 1 DOWNTO 0:
+            rank = LOWER_BOUND(sorted, arr[i]) + 1
+            inversions = inversions + query(rank - 1)
+            update(rank)
+        END FOR
+        RETURN inversions
+    END FUNCTION
+END CLASS
 ```
 
-## ==========================================================================
-### 📖 第三节: 实用案例
-## ==========================================================================
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
+---
+###  第三节: 应用场景
+---
 
 3.1 案例一：动态排名系统
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <algorithm>
+```pseudocode
+CLASS DynamicRanking:
+    tree       // BIT 数组（权值 BIT）
+    maxScore   // 分数上限
 
-class DynamicRanking {
-private:
-    std::vector<int> tree;
-    int maxScore;
-    int lowbit(int x) { return x & (-x); }
+    FUNCTION lowbit(x):
+        RETURN x & (-x)
+    END FUNCTION
 
-    void add(int pos, int val) {
-        for (; pos <= maxScore; pos += lowbit(pos))
-            tree[pos] += val;
-    }
+    FUNCTION add(pos, val):
+        WHILE pos <= maxScore:
+            tree[pos] = tree[pos] + val
+            pos = pos + lowbit(pos)
+        END WHILE
+    END FUNCTION
 
-    int sum(int pos) {
-        int s = 0;
-        for (; pos > 0; pos -= lowbit(pos))
-            s += tree[pos];
-        return s;
-    }
+    FUNCTION sum(pos):
+        s = 0
+        WHILE pos > 0:
+            s = s + tree[pos]
+            pos = pos - lowbit(pos)
+        END WHILE
+        RETURN s
+    END FUNCTION
 
-public:
-    DynamicRanking(int maxS) : maxScore(maxS), tree(maxS + 1, 0) {}
+    CONSTRUCTOR(maxS):
+        maxScore = maxS
+        tree = ARRAY of size maxS + 1, filled with 0
+    END CONSTRUCTOR
 
-    void addScore(int score) { add(score, 1); }
-    void removeScore(int score) { add(score, -1); }
-    void updateScore(int oldScore, int newScore) {
-        removeScore(oldScore);
-        addScore(newScore);
-    }
+    FUNCTION addScore(score):
+        add(score, 1)
+    END FUNCTION
 
-    int getRank(int score) {
-        return sum(maxScore) - sum(score) + 1;
-    }
+    FUNCTION removeScore(score):
+        add(score, -1)
+    END FUNCTION
 
-    int getPercentile(int score) {
-        int total = sum(maxScore);
-        if (total == 0) return 0;
-        int below = sum(score - 1);
-        return below * 100 / total;
-    }
-};
+    FUNCTION updateScore(oldScore, newScore):
+        removeScore(oldScore)
+        addScore(newScore)
+    END FUNCTION
 
-int main() {
-    DynamicRanking ranking(1000);
-    ranking.addScore(850);
-    ranking.addScore(720);
-    ranking.addScore(900);
-    ranking.addScore(650);
-    ranking.addScore(780);
+    FUNCTION getRank(score):
+        RETURN sum(maxScore) - sum(score) + 1
+    END FUNCTION
 
-    std::cout << "850分的排名: " << ranking.getRank(850) << std::endl;
-    std::cout << "720分的百分位: " << ranking.getPercentile(720) << "%" << std::endl;
-
-    ranking.updateScore(720, 920);
-    std::cout << "720改为920后，850分的排名: " << ranking.getRank(850) << std::endl;
-
-    return 0;
-}
+    FUNCTION getPercentile(score):
+        total = sum(maxScore)
+        IF total == 0 THEN RETURN 0
+        below = sum(score - 1)
+        RETURN below * 100 / total
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 3.2 案例二：区间频次统计
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <algorithm>
+```pseudocode
+CLASS FrequencyCounter:
+    bit       // 26 个 BIT（对每个字母 a-z 各一个）
+    n         // 字符串长度
+    alphaSize = 26
 
-class FrequencyCounter {
-private:
-    std::vector<std::vector<int>> bit;
-    int n, alphaSize;
-    int lowbit(int x) { return x & (-x); }
+    FUNCTION lowbit(x):
+        RETURN x & (-x)
+    END FUNCTION
 
-    void update(int charIdx, int pos, int val) {
-        for (; pos <= n; pos += lowbit(pos))
-            bit[charIdx][pos] += val;
-    }
+    FUNCTION update(charIdx, pos, val):
+        WHILE pos <= n:
+            bit[charIdx][pos] = bit[charIdx][pos] + val
+            pos = pos + lowbit(pos)
+        END WHILE
+    END FUNCTION
 
-    int query(int charIdx, int pos) {
-        int sum = 0;
-        for (; pos > 0; pos -= lowbit(pos))
-            sum += bit[charIdx][pos];
-        return sum;
-    }
+    FUNCTION query(charIdx, pos):
+        sum = 0
+        WHILE pos > 0:
+            sum = sum + bit[charIdx][pos]
+            pos = pos - lowbit(pos)
+        END WHILE
+        RETURN sum
+    END FUNCTION
 
-public:
-    FrequencyCounter(const std::string& s) : n(s.size()), alphaSize(26) {
-        bit.assign(alphaSize, std::vector<int>(n + 1, 0));
-        for (int i = 0; i < n; ++i)
-            update(s[i] - 'a', i + 1, 1);
-    }
+    CONSTRUCTOR(s):
+        n = LENGTH(s)
+        bit = ARRAY of size alphaSize × (n + 1), filled with 0
+        FOR i FROM 0 TO n - 1:
+            idx = s[i] - 'a'
+            update(idx, i + 1, 1)
+        END FOR
+    END CONSTRUCTOR
 
-    int countChar(char c, int l, int r) {
-        int idx = c - 'a';
-        return query(idx, r) - query(idx, l - 1);
-    }
+    FUNCTION countChar(c, l, r):
+        idx = c - 'a'
+        RETURN query(idx, r) - query(idx, l - 1)
+    END FUNCTION
 
-    void changeChar(int pos, char oldC, char newC) {
-        update(oldC - 'a', pos, -1);
-        update(newC - 'a', pos, 1);
-    }
-};
-
-int main() {
-    std::string s = "abracadabra";
-    FrequencyCounter fc(s);
-
-    std::cout << "区间[1,5]中'a'的个数: " << fc.countChar('a', 1, 5) << std::endl;
-    std::cout << "区间[1,11]中'a'的个数: " << fc.countChar('a', 1, 11) << std::endl;
-
-    fc.changeChar(3, 'r', 'a');
-    std::cout << "修改后区间[1,5]中'a'的个数: " << fc.countChar('a', 1, 5) << std::endl;
-    return 0;
-}
+    FUNCTION changeChar(pos, oldC, newC):
+        update(oldC - 'a', pos, -1)
+        update(newC - 'a', pos, 1)
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 3.3 案例三：星空问题（二维偏序统计）
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <algorithm>
+```pseudocode
+STRUCT Star:
+    x, y
+    level = 0
+END STRUCT
 
-struct Star {
-    int x, y;
-    int level = 0;
-};
+CLASS StarLevel:
+    tree    // BIT
+    n       // 坐标上限
 
-class StarLevel {
-private:
-    std::vector<int> tree;
-    int n;
-    int lowbit(int x) { return x & (-x); }
+    FUNCTION lowbit(x):
+        RETURN x & (-x)
+    END FUNCTION
 
-    void update(int pos) {
-        for (; pos <= n; pos += lowbit(pos))
-            tree[pos]++;
-    }
+    FUNCTION update(pos):
+        WHILE pos <= n:
+            tree[pos] = tree[pos] + 1
+            pos = pos + lowbit(pos)
+        END WHILE
+    END FUNCTION
 
-    int query(int pos) {
-        int sum = 0;
-        for (; pos > 0; pos -= lowbit(pos))
-            sum += tree[pos];
-        return sum;
-    }
+    FUNCTION query(pos):
+        sum = 0
+        WHILE pos > 0:
+            sum = sum + tree[pos]
+            pos = pos - lowbit(pos)
+        END WHILE
+        RETURN sum
+    END FUNCTION
 
-public:
-    std::vector<int> solve(std::vector<Star>& stars) {
-        n = 32001;
-        tree.assign(n + 1, 0);
-        std::vector<int> levels(stars.size(), 0);
-
-        std::sort(stars.begin(), stars.end(), [](const Star& a, const Star& b) {
-            return a.y < b.y || (a.y == b.y && a.x < b.x);
-        });
-
-        for (int i = 0; i < (int)stars.size(); ++i) {
-            levels[i] = query(stars[i].x + 1);
-            update(stars[i].x + 1);
-        }
-
-        std::vector<int> count(stars.size(), 0);
-        for (int lv : levels)
-            count[lv]++;
-        return count;
-    }
-};
-
-int main() {
-    std::vector<Star> stars = {{1,1},{5,1},{7,1},{3,3},{5,5}};
-    StarLevel sl;
-    auto counts = sl.solve(stars);
-
-    for (int i = 0; i < (int)counts.size(); ++i) {
-        if (counts[i] > 0)
-            std::cout << "等级" << i << "的星星: " << counts[i] << "颗" << std::endl;
-    }
-    return 0;
-}
+    FUNCTION solve(stars):
+        n = 32001
+        tree = ARRAY of size n + 1, filled with 0
+        SORT stars BY y ASC, then x ASC     // 按 y 升序，y 相同按 x 升序
+        levels = ARRAY of size LENGTH(stars), filled with 0
+        FOR i FROM 0 TO LENGTH(stars) - 1:
+            levels[i] = query(stars[i].x + 1)
+            update(stars[i].x + 1)
+        END FOR
+        count = ARRAY of size LENGTH(stars), filled with 0
+        FOR EACH lv IN levels:
+            count[lv] = count[lv] + 1
+        END FOR
+        RETURN count
+    END FUNCTION
+END CLASS
 ```
 
-## ==========================================================================
-### 📖 第四节: 课后习题
-## ==========================================================================
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
+---
+###  第四节: 课后习题
+---
 
 1. 基础题：实现支持单点修改和区间和查询的树状数组。
 
@@ -645,27 +620,27 @@ int main() {
    - [P3374 树状数组1](https://www.luogu.com.cn/problem/P3374)（单点修改+区间查询）
    - [P3368 树状数组2](https://www.luogu.com.cn/problem/P3368)（区间修改+单点查询）
 
-## ==========================================================================
+---
 
 
-## --------------------------------------------------------------------------
-## 🔗 知识网络
-## --------------------------------------------------------------------------
+***
+##  知识网络
+***
 
 - **上一章**: [[L_线段树_SegmentTree]] | **下一章**: [[N_跳表_SkipList]] | **返回**: [[DSA学习路线]] (Phase 5 选修)
 - **算法技巧**: [[../算法技巧/优化]] | [[../算法技巧/前缀和]]
 - **相关**: [[数据结构/L_线段树_SegmentTree]] | [[算法技巧/前缀和]] | [[逆序对]]
 
-## ==========================================================================
+---
 ## 章节测试
-## ==========================================================================
+---
 
 ### 判断题
 
 > [!question] 判断题 1
 > 树状数组的lowbit(x)等于x的二进制表示中最低位1所代表的值。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -674,8 +649,8 @@ int main() {
 
 > [!question] 判断题 2
 > 树状数组可以在O(log n)时间内查询任意区间[l,r]的和。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -684,8 +659,8 @@ int main() {
 
 > [!question] 判断题 3
 > 树状数组能够直接支持区间最大值查询。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -694,8 +669,8 @@ int main() {
 
 > [!question] 判断题 4
 > 树状数组的下标必须从1开始。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -704,8 +679,8 @@ int main() {
 
 > [!question] 判断题 5
 > 树状数组的建树可以优化到O(n)时间。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -714,8 +689,8 @@ int main() {
 
 > [!question] 判断题 6
 > 二维树状数组的单次操作时间复杂度为O(log²n)。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -724,8 +699,8 @@ int main() {
 
 > [!question] 判断题 7
 > 树状数组可以通过差分技巧实现区间修改+单点查询。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -734,8 +709,8 @@ int main() {
 
 > [!question] 判断题 8
 > 树状数组的功能是线段树的严格子集。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -744,8 +719,8 @@ int main() {
 
 > [!question] 判断题 9
 > 权值树状数组可以在O(log n)时间内查询第k小元素。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -754,8 +729,8 @@ int main() {
 
 > [!question] 判断题 10
 > 树状数组的update操作是从低位向高位传播（pos += lowbit(pos)）。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确

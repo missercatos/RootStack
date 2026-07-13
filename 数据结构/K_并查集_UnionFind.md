@@ -1,5 +1,5 @@
 ## ==========================================================================
-C++ 数据结构教程 — 并查集 (Union-Find)
+数据结构教程 — 并查集 (Union-Find)
 ## ==========================================================================
 
 ## 📋 章节概述
@@ -54,81 +54,84 @@ graph TD
 
 1.2 基本实现（无优化）
 
-```cpp
-#include <iostream>
-#include <vector>
+```pseudocode
+CLASS NaiveUnionFind {
+PRIVATE:
+    vector<int> parent;
 
-class NaiveUnionFind {
-private:
-    std::vector<int> parent;
-
-public:
+PUBLIC:
     NaiveUnionFind(int n) : parent(n) {
         for (int i = 0; i < n; ++i)
             parent[i] = i;
     }
 
-    int find(int x) {
+    FUNCTION find(int x) {
         while (parent[x] != x)
             x = parent[x];
         return x;
     }
 
-    void unite(int x, int y) {
+    FUNCTION unite(int x, int y) {
         int rootX = find(x);
         int rootY = find(y);
         if (rootX != rootY)
             parent[rootX] = rootY;
     }
 
-    bool connected(int x, int y) {
+    FUNCTION connected(int x, int y) {
         return find(x) == find(y);
     }
 };
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 1.3 路径压缩优化
 
 路径压缩的核心思想：在Find操作时，将路径上所有节点直接连接到根节点，使得后续查找更快。
 
-```cpp
-int find(int x) {
+```pseudocode
+FUNCTION find(int x) {
     if (parent[x] != x)
         parent[x] = find(parent[x]);
     return parent[x];
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 1.4 按秩合并优化
 
 按秩合并的思想：将较矮的树连接到较高的树下面，避免树退化为链表。
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <numeric>
-
-class UnionFind {
-private:
-    std::vector<int> parent;
-    std::vector<int> rank;
+```pseudocode
+CLASS UnionFind {
+PRIVATE:
+    vector<int> parent;
+    vector<int> rank;
     int count;
 
-public:
+PUBLIC:
     UnionFind(int n) : parent(n), rank(n, 0), count(n) {
-        std::iota(parent.begin(), parent.end(), 0);
+        IOTA(parent.begin(), parent.end(), 0);
     }
 
-    int find(int x) {
+    FUNCTION find(int x) {
         if (parent[x] != x)
             parent[x] = find(parent[x]);
         return parent[x];
     }
 
-    bool unite(int x, int y) {
+    FUNCTION unite(int x, int y) {
         int rootX = find(x);
         int rootY = find(y);
-        if (rootX == rootY) return false;
+        if (rootX == rootY) return FALSE;
 
         if (rank[rootX] < rank[rootY])
             parent[rootX] = rootY;
@@ -139,17 +142,17 @@ public:
             rank[rootX]++;
         }
         count--;
-        return true;
+        return TRUE;
     }
 
-    bool connected(int x, int y) {
+    FUNCTION connected(int x, int y) {
         return find(x) == find(y);
     }
 
-    int getCount() const { return count; }
+    FUNCTION getCount() { return count; }
 };
 
-int main() {
+FUNCTION main() {
     UnionFind uf(10);
 
     uf.unite(0, 1);
@@ -157,90 +160,92 @@ int main() {
     uf.unite(1, 3);
     uf.unite(5, 6);
 
-    std::cout << std::boolalpha;
-    std::cout << "0和3连通: " << uf.connected(0, 3) << std::endl;
-    std::cout << "0和5连通: " << uf.connected(0, 5) << std::endl;
-    std::cout << "连通分量数: " << uf.getCount() << std::endl;
+    PRINT boolalpha;
+    PRINT "0和3连通: " + uf.connected(0, 3) + NEWLINE;
+    PRINT "0和5连通: " + uf.connected(0, 5) + NEWLINE;
+    PRINT "连通分量数: " + uf.getCount() + NEWLINE;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 1.5 按大小合并（另一种优化策略）
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <numeric>
-
-class UnionFindBySize {
-private:
-    std::vector<int> parent;
-    std::vector<int> size;
+```pseudocode
+CLASS UnionFindBySize {
+PRIVATE:
+    vector<int> parent;
+    vector<int> size;
     int count;
 
-public:
+PUBLIC:
     UnionFindBySize(int n) : parent(n), size(n, 1), count(n) {
-        std::iota(parent.begin(), parent.end(), 0);
+        IOTA(parent.begin(), parent.end(), 0);
     }
 
-    int find(int x) {
+    FUNCTION find(int x) {
         if (parent[x] != x)
             parent[x] = find(parent[x]);
         return parent[x];
     }
 
-    bool unite(int x, int y) {
+    FUNCTION unite(int x, int y) {
         int rootX = find(x);
         int rootY = find(y);
-        if (rootX == rootY) return false;
+        if (rootX == rootY) return FALSE;
 
-        if (size[rootX] < size[rootY]) std::swap(rootX, rootY);
+        if (size[rootX] < size[rootY]) SWAP(rootX, rootY);
         parent[rootY] = rootX;
         size[rootX] += size[rootY];
         count--;
-        return true;
+        return TRUE;
     }
 
-    bool connected(int x, int y) { return find(x) == find(y); }
-    int getSize(int x) { return size[find(x)]; }
-    int getCount() const { return count; }
+    FUNCTION connected(int x, int y) { return find(x) == find(y); }
+    FUNCTION getSize(int x) { return size[find(x)]; }
+    FUNCTION getCount() { return count; }
 };
+
 ```
 
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
 ## ==========================================================================
-### 📖 第二节: 所有用法大全
+### 📖 第二节: 实现思路
 ## ==========================================================================
 
 2.1 带权并查集
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <numeric>
+```pseudocode
+CLASS WeightedUnionFind {
+PRIVATE:
+    vector<int> parent;
+    vector<int> rank;
+    vector<long long> weight;
 
-class WeightedUnionFind {
-private:
-    std::vector<int> parent;
-    std::vector<int> rank;
-    std::vector<long long> weight;
-
-public:
+PUBLIC:
     WeightedUnionFind(int n) : parent(n), rank(n, 0), weight(n, 0) {
-        std::iota(parent.begin(), parent.end(), 0);
+        IOTA(parent.begin(), parent.end(), 0);
     }
 
-    std::pair<int, long long> find(int x) {
+    pair<int, long long> find(int x) {
         if (parent[x] == x) return {x, 0};
-        auto [root, w] = find(parent[x]);
+        [root, w] = find(parent[x]);
         parent[x] = root;
         weight[x] += w;
         return {root, weight[x]};
     }
 
-    bool unite(int x, int y, long long w) {
-        auto [rootX, wx] = find(x);
-        auto [rootY, wy] = find(y);
+    FUNCTION unite(int x, int y, long long w) {
+        [rootX, wx] = find(x);
+        [rootY, wy] = find(y);
         if (rootX == rootY) return (wx - wy) == w;
 
         if (rank[rootX] < rank[rootY]) {
@@ -254,74 +259,74 @@ public:
             weight[rootY] = wx - wy - w;
             rank[rootX]++;
         }
-        return true;
+        return TRUE;
     }
 
     long long query(int x, int y) {
-        auto [rootX, wx] = find(x);
-        auto [rootY, wy] = find(y);
+        [rootX, wx] = find(x);
+        [rootY, wy] = find(y);
         if (rootX != rootY) return LLONG_MAX;
         return wx - wy;
     }
 };
 
-int main() {
+FUNCTION main() {
     WeightedUnionFind wuf(5);
     wuf.unite(0, 1, 3);
     wuf.unite(1, 2, 5);
     wuf.unite(3, 4, 2);
 
-    std::cout << "0到2的距离: " << wuf.query(0, 2) << std::endl;
-    std::cout << "0到4的距离: " << (wuf.query(0, 4) == LLONG_MAX ? -1 : wuf.query(0, 4)) << std::endl;
+    PRINT "0到2的距离: " + wuf.query(0, 2) + NEWLINE;
+    PRINT "0到4的距离: " + (wuf.query(0, 4) == LLONG_MAX ? -1 : wuf.query(0, 4)) + NEWLINE;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.2 可撤销并查集（不使用路径压缩）
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <stack>
-#include <numeric>
-
-class RollbackUnionFind {
-private:
-    std::vector<int> parent;
-    std::vector<int> rank;
-    std::stack<std::tuple<int, int, int, int>> history;
+```pseudocode
+CLASS RollbackUnionFind {
+PRIVATE:
+    vector<int> parent;
+    vector<int> rank;
+    stack<tuple<int, int, int, int>> history;
     int count;
 
-public:
+PUBLIC:
     RollbackUnionFind(int n) : parent(n), rank(n, 0), count(n) {
-        std::iota(parent.begin(), parent.end(), 0);
+        IOTA(parent.begin(), parent.end(), 0);
     }
 
-    int find(int x) {
+    FUNCTION find(int x) {
         while (parent[x] != x)
             x = parent[x];
         return x;
     }
 
-    bool unite(int x, int y) {
+    FUNCTION unite(int x, int y) {
         int rootX = find(x);
         int rootY = find(y);
         if (rootX == rootY) {
             history.push({-1, -1, -1, count});
-            return false;
+            return FALSE;
         }
-        if (rank[rootX] < rank[rootY]) std::swap(rootX, rootY);
+        if (rank[rootX] < rank[rootY]) SWAP(rootX, rootY);
         history.push({rootY, parent[rootY], rank[rootX], count});
         parent[rootY] = rootX;
         if (rank[rootX] == rank[rootY]) rank[rootX]++;
         count--;
-        return true;
+        return TRUE;
     }
 
-    void rollback() {
+    FUNCTION rollback() {
         if (history.empty()) return;
-        auto [node, oldParent, oldRank, oldCount] = history.top();
+        [node, oldParent, oldRank, oldCount] = history.top();
         history.pop();
         if (node == -1) return;
         parent[node] = oldParent;
@@ -329,58 +334,57 @@ public:
         count = oldCount;
     }
 
-    bool connected(int x, int y) { return find(x) == find(y); }
-    int getCount() const { return count; }
+    FUNCTION connected(int x, int y) { return find(x) == find(y); }
+    FUNCTION getCount() { return count; }
 };
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.3 并查集求连通分量
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <unordered_map>
-#include <unordered_set>
-#include <numeric>
+```pseudocode
+CLASS ConnectedComponents {
+PRIVATE:
+    vector<int> parent;
+    vector<int> rank;
 
-class ConnectedComponents {
-private:
-    std::vector<int> parent;
-    std::vector<int> rank;
-
-public:
+PUBLIC:
     ConnectedComponents(int n) : parent(n), rank(n, 0) {
-        std::iota(parent.begin(), parent.end(), 0);
+        IOTA(parent.begin(), parent.end(), 0);
     }
 
-    int find(int x) {
+    FUNCTION find(int x) {
         if (parent[x] != x)
             parent[x] = find(parent[x]);
         return parent[x];
     }
 
-    void unite(int x, int y) {
+    FUNCTION unite(int x, int y) {
         int rootX = find(x);
         int rootY = find(y);
         if (rootX == rootY) return;
-        if (rank[rootX] < rank[rootY]) std::swap(rootX, rootY);
+        if (rank[rootX] < rank[rootY]) SWAP(rootX, rootY);
         parent[rootY] = rootX;
         if (rank[rootX] == rank[rootY]) rank[rootX]++;
     }
 
-    std::vector<std::vector<int>> getComponents(int n) {
-        std::unordered_map<int, std::vector<int>> groups;
+    vector<vector<int>> getComponents(int n) {
+        unordered_map<int, vector<int>> groups;
         for (int i = 0; i < n; ++i)
             groups[find(i)].push_back(i);
 
-        std::vector<std::vector<int>> result;
-        for (auto& [root, members] : groups)
-            result.push_back(std::move(members));
+        vector<vector<int>> result;
+        for ( [root, members] : groups)
+            result.push_back(MOVE(members));
         return result;
     }
 };
 
-int main() {
+FUNCTION main() {
     int n = 7;
     ConnectedComponents cc(n);
     cc.unite(0, 1);
@@ -388,126 +392,127 @@ int main() {
     cc.unite(3, 4);
     cc.unite(5, 6);
 
-    auto components = cc.getComponents(n);
-    std::cout << "连通分量数: " << components.size() << std::endl;
-    for (int i = 0; i < (int)components.size(); ++i) {
-        std::cout << "分量" << i << ": ";
+    components = cc.getComponents(n);
+    PRINT "连通分量数: " + components.size() + NEWLINE;
+    for (int i = 0; i < components.size(); ++i) {
+        PRINT "分量" + i + ": ";
         for (int v : components[i])
-            std::cout << v << " ";
-        std::cout << std::endl;
+            PRINT v + " ";
+        PRINT endl;
     }
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.4 并查集判环
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <numeric>
+```pseudocode
+CLASS CycleDetector {
+PRIVATE:
+    vector<int> parent;
+    vector<int> rank;
 
-class CycleDetector {
-private:
-    std::vector<int> parent;
-    std::vector<int> rank;
-
-public:
+PUBLIC:
     CycleDetector(int n) : parent(n), rank(n, 0) {
-        std::iota(parent.begin(), parent.end(), 0);
+        IOTA(parent.begin(), parent.end(), 0);
     }
 
-    int find(int x) {
+    FUNCTION find(int x) {
         if (parent[x] != x)
             parent[x] = find(parent[x]);
         return parent[x];
     }
 
-    bool addEdge(int u, int v) {
+    FUNCTION addEdge(int u, int v) {
         int rootU = find(u);
         int rootV = find(v);
-        if (rootU == rootV) return true;
-        if (rank[rootU] < rank[rootV]) std::swap(rootU, rootV);
+        if (rootU == rootV) return TRUE;
+        if (rank[rootU] < rank[rootV]) SWAP(rootU, rootV);
         parent[rootV] = rootU;
         if (rank[rootU] == rank[rootV]) rank[rootU]++;
-        return false;
+        return FALSE;
     }
 };
 
-int main() {
+FUNCTION main() {
     CycleDetector cd(5);
-    std::vector<std::pair<int,int>> edges = {{0,1},{1,2},{2,3},{3,0},{3,4}};
+    vector<pair<int,int>> edges = {{0,1},{1,2},{2,3},{3,0},{3,4}};
 
-    for (auto [u, v] : edges) {
+    for ([u, v] : edges) {
         if (cd.addEdge(u, v)) {
-            std::cout << "边(" << u << "," << v << ")形成了环!" << std::endl;
+            PRINT "边(" + u + "," + v + ")形成了环!" + NEWLINE;
         }
     }
     return 0;
 }
+
 ```
 
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
 ## ==========================================================================
-### 📖 第三节: 实用案例
+### 📖 第三节: 应用场景
 ## ==========================================================================
 
 3.1 案例一：Kruskal最小生成树
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <numeric>
-
-class KruskalMST {
-private:
-    struct Edge {
+```pseudocode
+CLASS KruskalMST {
+PRIVATE:
+    STRUCT Edge {
         int u, v, weight;
-        bool operator<(const Edge& other) const { return weight < other.weight; }
+        bool operator<(Edge other) { return weight < other.weight; }
     };
 
-    std::vector<int> parent, rank_;
+    vector<int> parent, rank_;
 
-    int find(int x) {
+    FUNCTION find(int x) {
         if (parent[x] != x)
             parent[x] = find(parent[x]);
         return parent[x];
     }
 
-    bool unite(int x, int y) {
+    FUNCTION unite(int x, int y) {
         int rootX = find(x), rootY = find(y);
-        if (rootX == rootY) return false;
-        if (rank_[rootX] < rank_[rootY]) std::swap(rootX, rootY);
+        if (rootX == rootY) return FALSE;
+        if (rank_[rootX] < rank_[rootY]) SWAP(rootX, rootY);
         parent[rootY] = rootX;
         if (rank_[rootX] == rank_[rootY]) rank_[rootX]++;
-        return true;
+        return TRUE;
     }
 
-public:
-    std::pair<int, std::vector<Edge>> solve(int n, std::vector<Edge>& edges) {
+PUBLIC:
+    pair<int, vector<Edge>> solve(int n, vector<Edge> edges) {
         parent.resize(n);
         rank_.assign(n, 0);
-        std::iota(parent.begin(), parent.end(), 0);
+        IOTA(parent.begin(), parent.end(), 0);
 
-        std::sort(edges.begin(), edges.end());
+        SORT(edges.begin(), edges.end());
 
         int totalWeight = 0;
-        std::vector<Edge> mst;
+        vector<Edge> mst;
 
-        for (auto& edge : edges) {
+        for ( edge : edges) {
             if (unite(edge.u, edge.v)) {
                 totalWeight += edge.weight;
                 mst.push_back(edge);
-                if ((int)mst.size() == n - 1) break;
+                if (mst.size() == n - 1) break;
             }
         }
         return {totalWeight, mst};
     }
 };
 
-int main() {
+FUNCTION main() {
     KruskalMST kruskal;
-    std::vector<KruskalMST::Edge> edges;
+    vector<KruskalMST::Edge> edges;
 
     int n = 6;
     edges.push_back({0, 1, 4});
@@ -520,58 +525,57 @@ int main() {
 
     // 需要将Edge定义移到外部或使用公有结构
     // 此处简化演示
-    auto [weight, mst] = kruskal.solve(n, edges);
-    std::cout << "最小生成树总权重: " << weight << std::endl;
-    std::cout << "选择的边: " << std::endl;
-    for (auto& e : mst)
-        std::cout << "  " << e.u << " - " << e.v << " (权重" << e.weight << ")" << std::endl;
+    [weight, mst] = kruskal.solve(n, edges);
+    PRINT "最小生成树总权重: " + weight + NEWLINE;
+    PRINT "选择的边: " + NEWLINE;
+    for ( e : mst)
+        PRINT "  " + e.u + " - " + e.v + " (权重" + e.weight + ")" + NEWLINE;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 3.2 案例二：社交网络朋友圈
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include <numeric>
-
-class FriendCircle {
-private:
-    std::vector<int> parent;
-    std::vector<int> size;
+```pseudocode
+CLASS FriendCircle {
+PRIVATE:
+    vector<int> parent;
+    vector<int> size;
     int groupCount;
 
-    int find(int x) {
+    FUNCTION find(int x) {
         if (parent[x] != x)
             parent[x] = find(parent[x]);
         return parent[x];
     }
 
-public:
+PUBLIC:
     FriendCircle(int n) : parent(n), size(n, 1), groupCount(n) {
-        std::iota(parent.begin(), parent.end(), 0);
+        IOTA(parent.begin(), parent.end(), 0);
     }
 
-    void makeFriend(int a, int b) {
+    FUNCTION makeFriend(int a, int b) {
         int ra = find(a), rb = find(b);
         if (ra == rb) return;
-        if (size[ra] < size[rb]) std::swap(ra, rb);
+        if (size[ra] < size[rb]) SWAP(ra, rb);
         parent[rb] = ra;
         size[ra] += size[rb];
         groupCount--;
     }
 
-    bool areFriends(int a, int b) { return find(a) == find(b); }
-    int getCircleSize(int a) { return size[find(a)]; }
-    int getGroupCount() const { return groupCount; }
+    FUNCTION areFriends(int a, int b) { return find(a) == find(b); }
+    FUNCTION getCircleSize(int a) { return size[find(a)]; }
+    FUNCTION getGroupCount() { return groupCount; }
 };
 
-int main() {
-    std::vector<std::string> names = {"Alice", "Bob", "Charlie", "David", "Eve", "Frank"};
+FUNCTION main() {
+    vector<string> names = {"Alice", "Bob", "Charlie", "David", "Eve", "Frank"};
     FriendCircle fc(names.size());
 
     fc.makeFriend(0, 1);  // Alice - Bob
@@ -579,74 +583,80 @@ int main() {
     fc.makeFriend(1, 2);  // Bob - Charlie (合并两个圈子)
     fc.makeFriend(4, 5);  // Eve - Frank
 
-    std::cout << "朋友圈数量: " << fc.getGroupCount() << std::endl;
-    std::cout << "Alice的圈子大小: " << fc.getCircleSize(0) << std::endl;
-    std::cout << "Alice和David是朋友: " << std::boolalpha << fc.areFriends(0, 3) << std::endl;
-    std::cout << "Alice和Eve是朋友: " << fc.areFriends(0, 4) << std::endl;
+    PRINT "朋友圈数量: " + fc.getGroupCount() + NEWLINE;
+    PRINT "Alice的圈子大小: " + fc.getCircleSize(0) + NEWLINE;
+    PRINT "Alice和David是朋友: " + boolalpha + fc.areFriends(0, 3) + NEWLINE;
+    PRINT "Alice和Eve是朋友: " + fc.areFriends(0, 4) + NEWLINE;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 3.3 案例三：动态连通性（在线判断）
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <numeric>
-
-class DynamicConnectivity {
-private:
-    std::vector<int> parent;
-    std::vector<int> size;
+```pseudocode
+CLASS DynamicConnectivity {
+PRIVATE:
+    vector<int> parent;
+    vector<int> size;
     int components;
 
-public:
+PUBLIC:
     DynamicConnectivity(int n) : parent(n), size(n, 1), components(n) {
-        std::iota(parent.begin(), parent.end(), 0);
+        IOTA(parent.begin(), parent.end(), 0);
     }
 
-    int find(int x) {
+    FUNCTION find(int x) {
         if (parent[x] != x)
             parent[x] = find(parent[x]);
         return parent[x];
     }
 
-    void connect(int x, int y) {
+    FUNCTION connect(int x, int y) {
         int rx = find(x), ry = find(y);
         if (rx == ry) return;
-        if (size[rx] < size[ry]) std::swap(rx, ry);
+        if (size[rx] < size[ry]) SWAP(rx, ry);
         parent[ry] = rx;
         size[rx] += size[ry];
         components--;
     }
 
-    bool isConnected(int x, int y) { return find(x) == find(y); }
-    int componentCount() const { return components; }
-    int componentSize(int x) { return size[find(x)]; }
-    bool isFullyConnected() const { return components == 1; }
+    FUNCTION isConnected(int x, int y) { return find(x) == find(y); }
+    FUNCTION componentCount() { return components; }
+    FUNCTION componentSize(int x) { return size[find(x)]; }
+    FUNCTION isFullyConnected() { return components == 1; }
 };
 
-int main() {
+FUNCTION main() {
     int n = 8;
     DynamicConnectivity dc(n);
 
-    std::vector<std::pair<int,int>> connections = {
+    vector<pair<int,int>> connections = {
         {0, 1}, {2, 3}, {4, 5}, {6, 7},
         {0, 2}, {4, 6}, {0, 4}
     };
 
-    for (auto [u, v] : connections) {
+    for ([u, v] : connections) {
         dc.connect(u, v);
-        std::cout << "连接 " << u << "-" << v
+        PRINT "连接 " + u + "-" + v
                   << " | 分量数: " << dc.componentCount()
-                  << " | 全连通: " << std::boolalpha << dc.isFullyConnected()
-                  << std::endl;
+                  << " | 全连通: " << boolalpha << dc.isFullyConnected()
+                  + NEWLINE;
     }
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 ## ==========================================================================
 ### 📖 第四节: 课后习题

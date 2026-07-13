@@ -1,22 +1,22 @@
-## ==========================================================================
-C++ 数据结构教程 — 图的高级算法 (Advanced Graph Algorithms)
-## ==========================================================================
+---
+数据结构教程 — 图的高级算法 (Advanced Graph Algorithms)
+---
 
-## 📋 章节概述
+##  章节概述
 
 本章介绍图论中的高级算法，包括拓扑排序、强连通分量（Tarjan算法）、
 全源最短路径（Floyd-Warshall）、含负权边的单源最短路径（Bellman-Ford）
 以及网络流算法。这些算法是图论的精华，在编译器依赖分析、社交网络分析、
 路由协议、物流优化等领域有广泛应用。
 
-本章将从每个算法的核心思想讲起，给出完整的C++实现，
+本章将从每个算法的核心思想讲起，给出完整的伪代码实现，
 通过实际案例展示算法的应用场景，最后通过习题巩固所学知识。
 
-> 📌 **底层实现参考**：如果需要深入理解本章数据结构的底层实现（纯C手写、内存布局、指针操作），请参阅 [[../../C语言深化教程/3数据结构/08_图|C语言教程: 图]]。C教程侧重手动实现与内存本质，本教程侧重STL使用与算法优化，两者互补。
+>  **底层实现参考**：如果需要深入理解本章数据结构的底层实现（纯C手写、内存布局、指针操作），请参阅 [[../../C语言深化教程/3数据结构/08_图|C语言教程: 图]]。C教程侧重手动实现与内存本质，本教程侧重STL使用与算法优化，两者互补。
 
-## ==========================================================================
-### 📖 第一节: 基础语法 + 计算机底层原理
-## ==========================================================================
+---
+###  第一节: 基础语法 + 计算机底层原理
+---
 
 1.1 拓扑排序（Topological Sort）
 ----------------------------------
@@ -46,102 +46,89 @@ graph LR
 
 **Kahn算法（BFS）实现：**
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <queue>
+```pseudocode
+CLASS TopologicalSort:
+    V       // 顶点数
+    adj     // 邻接表: adj[u] = [v1, v2, ...]
 
-class TopologicalSort {
-private:
-    int V;
-    std::vector<std::vector<int>> adj;
+    CONSTRUCTOR(v):
+        V = v
+        adj = ARRAY of size V, each an EMPTY_LIST
+    END CONSTRUCTOR
 
-public:
-    TopologicalSort(int v) : V(v), adj(v) {}
+    FUNCTION addEdge(u, v):
+        APPEND v TO adj[u]
+    END FUNCTION
 
-    void addEdge(int u, int v) { adj[u].push_back(v); }
+    FUNCTION kahnSort():
+        inDegree = ARRAY of size V, filled with 0
+        FOR u FROM 0 TO V - 1:
+            FOR EACH v IN adj[u]:
+                inDegree[v] = inDegree[v] + 1
+            END FOR
+        END FOR
 
-    std::vector<int> kahnSort() {
-        std::vector<int> inDegree(V, 0);
-        for (int u = 0; u < V; ++u)
-            for (int v : adj[u])
-                inDegree[v]++;
+        q = EMPTY_QUEUE
+        FOR i FROM 0 TO V - 1:
+            IF inDegree[i] == 0 THEN
+                ENQUEUE i TO q
+            END IF
+        END FOR
 
-        std::queue<int> q;
-        for (int i = 0; i < V; ++i)
-            if (inDegree[i] == 0)
-                q.push(i);
+        result = EMPTY_LIST
+        WHILE NOT q IS EMPTY:
+            u = DEQUEUE(q)
+            APPEND u TO result
+            FOR EACH v IN adj[u]:
+                inDegree[v] = inDegree[v] - 1
+                IF inDegree[v] == 0 THEN
+                    ENQUEUE v TO q
+                END IF
+            END FOR
+        END WHILE
 
-        std::vector<int> result;
-        while (!q.empty()) {
-            int u = q.front(); q.pop();
-            result.push_back(u);
-            for (int v : adj[u]) {
-                if (--inDegree[v] == 0)
-                    q.push(v);
-            }
-        }
+        IF LENGTH(result) != V THEN
+            DISPLAY "图中存在环，无法拓扑排序!"
+            RETURN EMPTY_LIST
+        END IF
+        RETURN result
+    END FUNCTION
 
-        if ((int)result.size() != V) {
-            std::cout << "图中存在环，无法拓扑排序!" << std::endl;
-            return {};
-        }
-        return result;
-    }
+    FUNCTION dfsSort():
+        order = EMPTY_LIST
+        state = ARRAY of size V, filled with 0  // 0=未访问, 1=访问中, 2=已完成
+        hasCycle = FALSE
+        FOR i FROM 0 TO V - 1:
+            IF state[i] == 0 THEN
+                dfs(i, state, order, hasCycle)
+            END IF
+            IF hasCycle THEN BREAK
+        END FOR
+        IF hasCycle THEN RETURN EMPTY_LIST
+        REVERSE order
+        RETURN order
+    END FUNCTION
 
-    std::vector<int> dfsSort() {
-        std::vector<int> order;
-        std::vector<int> state(V, 0);
-        bool hasCycle = false;
-
-        for (int i = 0; i < V && !hasCycle; ++i)
-            if (state[i] == 0)
-                dfs(i, state, order, hasCycle);
-
-        if (hasCycle) return {};
-        std::reverse(order.begin(), order.end());
-        return order;
-    }
-
-private:
-    void dfs(int u, std::vector<int>& state, std::vector<int>& order, bool& hasCycle) {
-        if (hasCycle) return;
-        state[u] = 1;
-        for (int v : adj[u]) {
-            if (state[v] == 1) { hasCycle = true; return; }
-            if (state[v] == 0) dfs(v, state, order, hasCycle);
-        }
-        state[u] = 2;
-        order.push_back(u);
-    }
-};
-
-int main() {
-    TopologicalSort ts(6);
-    ts.addEdge(5, 2);
-    ts.addEdge(5, 0);
-    ts.addEdge(4, 0);
-    ts.addEdge(4, 1);
-    ts.addEdge(2, 3);
-    ts.addEdge(3, 1);
-
-    auto order = ts.kahnSort();
-    std::cout << "拓扑排序(Kahn): ";
-    for (int v : order) std::cout << v << " ";
-    std::cout << std::endl;
-
-    TopologicalSort ts2(6);
-    ts2.addEdge(5, 2); ts2.addEdge(5, 0); ts2.addEdge(4, 0);
-    ts2.addEdge(4, 1); ts2.addEdge(2, 3); ts2.addEdge(3, 1);
-
-    auto order2 = ts2.dfsSort();
-    std::cout << "拓扑排序(DFS): ";
-    for (int v : order2) std::cout << v << " ";
-    std::cout << std::endl;
-
-    return 0;
-}
+    FUNCTION dfs(u, state, order, hasCycle):    // 私有
+        IF hasCycle THEN RETURN
+        state[u] = 1
+        FOR EACH v IN adj[u]:
+            IF state[v] == 1 THEN
+                hasCycle = TRUE; RETURN
+            END IF
+            IF state[v] == 0 THEN
+                dfs(v, state, order, hasCycle)
+            END IF
+        END FOR
+        state[u] = 2
+        APPEND u TO order
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 | 图算法 | 用途 | 时间复杂度 | 适用条件 |
 |--------|------|-----------|---------|
@@ -179,96 +166,80 @@ graph LR
 > 上图有三个 SCC: {0,1,2} 互相可达, {3,4} 互相可达, {5} 孤立。
 > Tarjan 一次 DFS 即可找出所有分量, dfn 和 low 是关键。
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <stack>
-#include <algorithm>
+```pseudocode
+CLASS TarjanSCC:
+    V           // 顶点数
+    adj         // 邻接表
+    dfn, low    // 数组: 时间戳
+    sccId       // 数组: 每个节点所属 SCC 编号
+    onStack     // 数组: 是否在栈上
+    stk         // 栈
+    timer = 0
+    sccCount = 0
 
-class TarjanSCC {
-private:
-    int V;
-    std::vector<std::vector<int>> adj;
-    std::vector<int> dfn, low, sccId;
-    std::vector<bool> onStack;
-    std::stack<int> stk;
-    int timer = 0;
-    int sccCount = 0;
+    FUNCTION dfs(u):
+        timer = timer + 1
+        dfn[u] = low[u] = timer
+        PUSH u TO stk
+        onStack[u] = TRUE
 
-    void dfs(int u) {
-        dfn[u] = low[u] = ++timer;
-        stk.push(u);
-        onStack[u] = true;
+        FOR EACH v IN adj[u]:
+            IF dfn[v] == 0 THEN
+                dfs(v)
+                low[u] = MIN(low[u], low[v])
+            ELSE IF onStack[v] THEN
+                low[u] = MIN(low[u], dfn[v])
+            END IF
+        END FOR
 
-        for (int v : adj[u]) {
-            if (dfn[v] == 0) {
-                dfs(v);
-                low[u] = std::min(low[u], low[v]);
-            } else if (onStack[v]) {
-                low[u] = std::min(low[u], dfn[v]);
-            }
-        }
+        IF dfn[u] == low[u] THEN
+            sccCount = sccCount + 1
+            WHILE TRUE:
+                v = POP(stk)
+                onStack[v] = FALSE
+                sccId[v] = sccCount
+                IF v == u THEN BREAK
+            END WHILE
+        END IF
+    END FUNCTION
 
-        if (dfn[u] == low[u]) {
-            sccCount++;
-            while (true) {
-                int v = stk.top(); stk.pop();
-                onStack[v] = false;
-                sccId[v] = sccCount;
-                if (v == u) break;
-            }
-        }
-    }
+    CONSTRUCTOR(v):
+        V = v
+        adj = ARRAY of size V, each an EMPTY_LIST
+        dfn = ARRAY of size V, filled with 0
+        low = ARRAY of size V, filled with 0
+        sccId = ARRAY of size V, filled with 0
+        onStack = ARRAY of size V, filled with FALSE
+    END CONSTRUCTOR
 
-public:
-    TarjanSCC(int v) : V(v), adj(v), dfn(v, 0), low(v, 0), sccId(v, 0), onStack(v, false) {}
+    FUNCTION addEdge(u, v):
+        APPEND v TO adj[u]
+    END FUNCTION
 
-    void addEdge(int u, int v) { adj[u].push_back(v); }
+    FUNCTION solve():
+        FOR i FROM 0 TO V - 1:
+            IF dfn[i] == 0 THEN dfs(i)
+        END FOR
+        RETURN sccCount
+    END FUNCTION
 
-    int solve() {
-        for (int i = 0; i < V; ++i)
-            if (dfn[i] == 0)
-                dfs(i);
-        return sccCount;
-    }
+    FUNCTION getSCCId(u):
+        RETURN sccId[u]
+    END FUNCTION
 
-    int getSCCId(int u) const { return sccId[u]; }
-    int getSCCCount() const { return sccCount; }
-
-    std::vector<std::vector<int>> getComponents() {
-        std::vector<std::vector<int>> components(sccCount);
-        for (int i = 0; i < V; ++i)
-            components[sccId[i] - 1].push_back(i);
-        return components;
-    }
-};
-
-int main() {
-    TarjanSCC tarjan(8);
-    tarjan.addEdge(0, 1);
-    tarjan.addEdge(1, 2);
-    tarjan.addEdge(2, 0);
-    tarjan.addEdge(2, 3);
-    tarjan.addEdge(3, 4);
-    tarjan.addEdge(4, 5);
-    tarjan.addEdge(5, 3);
-    tarjan.addEdge(6, 5);
-    tarjan.addEdge(6, 7);
-    tarjan.addEdge(7, 6);
-
-    int count = tarjan.solve();
-    std::cout << "强连通分量数: " << count << std::endl;
-
-    auto components = tarjan.getComponents();
-    for (int i = 0; i < count; ++i) {
-        std::cout << "SCC " << i + 1 << ": ";
-        for (int v : components[i]) std::cout << v << " ";
-        std::cout << std::endl;
-    }
-
-    return 0;
-}
+    FUNCTION getComponents():
+        components = ARRAY of size sccCount, each an EMPTY_LIST
+        FOR i FROM 0 TO V - 1:
+            APPEND i TO components[sccId[i] - 1]
+        END FOR
+        RETURN components
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 1.3 Floyd-Warshall（全源最短路径）
 -------------------------------------
@@ -281,98 +252,77 @@ Floyd-Warshall算法计算图中所有顶点对之间的最短路径。
 空间复杂度：O(V²)
 适用：稠密图、顶点数不大（V ≤ 500）、可处理负权边（但不含负权环）
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <climits>
-#include <iomanip>
+```pseudocode
+CLASS FloydWarshall:
+    V        // 顶点数
+    dist     // 二维数组: dist[i][j] = i到j的最短距离
+    next     // 二维数组: next[i][j] = i到j路径中i的下一个节点
+    INF = 10^18
 
-class FloydWarshall {
-private:
-    int V;
-    std::vector<std::vector<long long>> dist;
-    std::vector<std::vector<int>> next;
-    static constexpr long long INF = 1e18;
+    CONSTRUCTOR(v):
+        V = v
+        dist = 2D ARRAY of size V × V, filled with INF
+        next = 2D ARRAY of size V × V, filled with -1
+        FOR i FROM 0 TO V - 1:
+            dist[i][i] = 0
+            next[i][i] = i
+        END FOR
+    END CONSTRUCTOR
 
-public:
-    FloydWarshall(int v) : V(v), dist(v, std::vector<long long>(v, INF)),
-                           next(v, std::vector<int>(v, -1)) {
-        for (int i = 0; i < V; ++i) {
-            dist[i][i] = 0;
-            next[i][i] = i;
-        }
-    }
+    FUNCTION addEdge(u, v, w):
+        dist[u][v] = w
+        next[u][v] = v
+    END FUNCTION
 
-    void addEdge(int u, int v, long long w) {
-        dist[u][v] = w;
-        next[u][v] = v;
-    }
+    FUNCTION solve():
+        FOR k FROM 0 TO V - 1:
+            FOR i FROM 0 TO V - 1:
+                FOR j FROM 0 TO V - 1:
+                    IF dist[i][k] != INF AND dist[k][j] != INF AND
+                       dist[i][k] + dist[k][j] < dist[i][j] THEN
+                        dist[i][j] = dist[i][k] + dist[k][j]
+                        next[i][j] = next[i][k]
+                    END IF
+                END FOR
+            END FOR
+        END FOR
+        // 检测负权环: 对角线上出现负值
+        FOR i FROM 0 TO V - 1:
+            IF dist[i][i] < 0 THEN RETURN FALSE
+        END FOR
+        RETURN TRUE
+    END FUNCTION
 
-    bool solve() {
-        for (int k = 0; k < V; ++k) {
-            for (int i = 0; i < V; ++i) {
-                for (int j = 0; j < V; ++j) {
-                    if (dist[i][k] != INF && dist[k][j] != INF &&
-                        dist[i][k] + dist[k][j] < dist[i][j]) {
-                        dist[i][j] = dist[i][k] + dist[k][j];
-                        next[i][j] = next[i][k];
-                    }
-                }
-            }
-        }
-        for (int i = 0; i < V; ++i)
-            if (dist[i][i] < 0) return false;
-        return true;
-    }
+    FUNCTION getDistance(u, v):
+        RETURN dist[u][v]
+    END FUNCTION
 
-    long long getDistance(int u, int v) const { return dist[u][v]; }
+    FUNCTION getPath(u, v):
+        IF next[u][v] == -1 THEN RETURN EMPTY_LIST
+        path = [u]
+        WHILE u != v:
+            u = next[u][v]
+            APPEND u TO path
+        END WHILE
+        RETURN path
+    END FUNCTION
 
-    std::vector<int> getPath(int u, int v) const {
-        if (next[u][v] == -1) return {};
-        std::vector<int> path = {u};
-        while (u != v) {
-            u = next[u][v];
-            path.push_back(u);
-        }
-        return path;
-    }
-
-    void printDistMatrix() const {
-        std::cout << "距离矩阵:" << std::endl;
-        for (int i = 0; i < V; ++i) {
-            for (int j = 0; j < V; ++j) {
-                if (dist[i][j] == INF) std::cout << std::setw(5) << "INF";
-                else std::cout << std::setw(5) << dist[i][j];
-            }
-            std::cout << std::endl;
-        }
-    }
-};
-
-int main() {
-    FloydWarshall fw(4);
-    fw.addEdge(0, 1, 3);
-    fw.addEdge(0, 3, 7);
-    fw.addEdge(1, 0, 8);
-    fw.addEdge(1, 2, 2);
-    fw.addEdge(2, 0, 5);
-    fw.addEdge(2, 3, 1);
-    fw.addEdge(3, 0, 2);
-
-    if (fw.solve()) {
-        fw.printDistMatrix();
-
-        std::cout << "\n0到3的最短路径: ";
-        auto path = fw.getPath(0, 3);
-        for (int v : path) std::cout << v << " ";
-        std::cout << "\n距离: " << fw.getDistance(0, 3) << std::endl;
-    } else {
-        std::cout << "存在负权环!" << std::endl;
-    }
-
-    return 0;
-}
+    FUNCTION printDistMatrix():
+        DISPLAY "距离矩阵:"
+        FOR i FROM 0 TO V - 1:
+            FOR j FROM 0 TO V - 1:
+                IF dist[i][j] == INF THEN DISPLAY "  INF"
+                ELSE DISPLAY format(dist[i][j], width=5)
+            END FOR
+            DISPLAY NEWLINE
+        END FOR
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 1.4 Bellman-Ford（含负权边的单源最短路径）
 --------------------------------------------
@@ -384,780 +334,658 @@ Bellman-Ford算法可处理含负权边的图，并能检测负权环。
 时间复杂度：O(VE)
 适用：含负权边的图、判断负权环
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <climits>
+```pseudocode
+STRUCT Edge:
+    from, to
+    weight
+END STRUCT
 
-class BellmanFord {
-private:
-    struct Edge {
-        int from, to;
-        long long weight;
-    };
+CLASS BellmanFord:
+    V        // 顶点数
+    edges    // 边列表
+    dist     // 数组: 从源点到各点的最短距离
+    parent   // 数组: 最短路径树中的父节点
+    INF = 10^18
 
-    int V;
-    std::vector<Edge> edges;
-    std::vector<long long> dist;
-    std::vector<int> parent;
-    static constexpr long long INF = 1e18;
+    CONSTRUCTOR(v):
+        V = v
+        dist = ARRAY of size V, filled with INF
+        parent = ARRAY of size V, filled with -1
+    END CONSTRUCTOR
 
-public:
-    BellmanFord(int v) : V(v), dist(v, INF), parent(v, -1) {}
+    FUNCTION addEdge(u, v, w):
+        APPEND {u, v, w} TO edges
+    END FUNCTION
 
-    void addEdge(int u, int v, long long w) {
-        edges.push_back({u, v, w});
-    }
+    FUNCTION solve(src):
+        dist[src] = 0
+        // V-1 轮松弛
+        FOR i FROM 0 TO V - 2:
+            updated = FALSE
+            FOR EACH e IN edges:
+                IF dist[e.from] != INF AND dist[e.from] + e.weight < dist[e.to] THEN
+                    dist[e.to] = dist[e.from] + e.weight
+                    parent[e.to] = e.from
+                    updated = TRUE
+                END IF
+            END FOR
+            IF NOT updated THEN BREAK   // 提前终止优化
+        END FOR
+        // 第 V 轮检测负权环
+        FOR EACH e IN edges:
+            IF dist[e.from] != INF AND dist[e.from] + e.weight < dist[e.to] THEN
+                RETURN FALSE    // 存在负权环
+            END IF
+        END FOR
+        RETURN TRUE
+    END FUNCTION
 
-    bool solve(int src) {
-        dist[src] = 0;
+    FUNCTION getDistance(v):
+        RETURN dist[v]
+    END FUNCTION
 
-        for (int i = 0; i < V - 1; ++i) {
-            bool updated = false;
-            for (const auto& e : edges) {
-                if (dist[e.from] != INF && dist[e.from] + e.weight < dist[e.to]) {
-                    dist[e.to] = dist[e.from] + e.weight;
-                    parent[e.to] = e.from;
-                    updated = true;
-                }
-            }
-            if (!updated) break;
-        }
-
-        for (const auto& e : edges) {
-            if (dist[e.from] != INF && dist[e.from] + e.weight < dist[e.to])
-                return false;
-        }
-        return true;
-    }
-
-    long long getDistance(int v) const { return dist[v]; }
-
-    std::vector<int> getPath(int v) const {
-        std::vector<int> path;
-        for (int curr = v; curr != -1; curr = parent[curr])
-            path.push_back(curr);
-        std::reverse(path.begin(), path.end());
-        return path;
-    }
-};
-
-int main() {
-    BellmanFord bf(5);
-    bf.addEdge(0, 1, 6);
-    bf.addEdge(0, 3, 7);
-    bf.addEdge(1, 2, 5);
-    bf.addEdge(1, 3, 8);
-    bf.addEdge(1, 4, -4);
-    bf.addEdge(2, 1, -2);
-    bf.addEdge(3, 2, -3);
-    bf.addEdge(3, 4, 9);
-    bf.addEdge(4, 0, 2);
-    bf.addEdge(4, 2, 7);
-
-    if (bf.solve(0)) {
-        for (int i = 0; i < 5; ++i) {
-            std::cout << "0到" << i << "的最短距离: " << bf.getDistance(i);
-            auto path = bf.getPath(i);
-            std::cout << " 路径: ";
-            for (int v : path) std::cout << v << " ";
-            std::cout << std::endl;
-        }
-    } else {
-        std::cout << "图中存在负权环!" << std::endl;
-    }
-
-    return 0;
-}
+    FUNCTION getPath(v):
+        path = EMPTY_LIST
+        curr = v
+        WHILE curr != -1:
+            APPEND curr TO BEGINNING OF path
+            curr = parent[curr]
+        END WHILE
+        RETURN path
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 1.5 SPFA算法（Bellman-Ford的队列优化）
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <climits>
+```pseudocode
+CLASS SPFA:
+    V        // 顶点数
+    adj      // 邻接表: adj[u] = [(v, w), ...]
+    dist     // 数组
+    cnt      // 数组: cnt[u] = 节点u入队次数（检测负环用）
+    inQueue  // 数组: 是否在队列中
+    INF = 10^18
 
-class SPFA {
-private:
-    int V;
-    std::vector<std::vector<std::pair<int, long long>>> adj;
-    std::vector<long long> dist;
-    std::vector<int> cnt;
-    std::vector<bool> inQueue;
-    static constexpr long long INF = 1e18;
+    CONSTRUCTOR(v):
+        V = v
+        adj = ARRAY of size V, each an EMPTY_LIST
+        dist = ARRAY of size V, filled with INF
+        cnt = ARRAY of size V, filled with 0
+        inQueue = ARRAY of size V, filled with FALSE
+    END CONSTRUCTOR
 
-public:
-    SPFA(int v) : V(v), adj(v), dist(v, INF), cnt(v, 0), inQueue(v, false) {}
+    FUNCTION addEdge(u, v, w):
+        APPEND (v, w) TO adj[u]
+    END FUNCTION
 
-    void addEdge(int u, int v, long long w) {
-        adj[u].emplace_back(v, w);
-    }
+    FUNCTION solve(src):
+        dist[src] = 0
+        q = EMPTY_QUEUE
+        ENQUEUE src TO q
+        inQueue[src] = TRUE
 
-    bool solve(int src) {
-        dist[src] = 0;
-        std::queue<int> q;
-        q.push(src);
-        inQueue[src] = true;
+        WHILE NOT q IS EMPTY:
+            u = DEQUEUE(q)
+            inQueue[u] = FALSE
+            FOR EACH (v, w) IN adj[u]:
+                IF dist[u] + w < dist[v] THEN
+                    dist[v] = dist[u] + w
+                    IF NOT inQueue[v] THEN
+                        ENQUEUE v TO q
+                        inQueue[v] = TRUE
+                        cnt[v] = cnt[v] + 1
+                        IF cnt[v] >= V THEN
+                            RETURN FALSE    // 负权环
+                        END IF
+                    END IF
+                END IF
+            END FOR
+        END WHILE
+        RETURN TRUE
+    END FUNCTION
 
-        while (!q.empty()) {
-            int u = q.front(); q.pop();
-            inQueue[u] = false;
-
-            for (auto [v, w] : adj[u]) {
-                if (dist[u] + w < dist[v]) {
-                    dist[v] = dist[u] + w;
-                    if (!inQueue[v]) {
-                        q.push(v);
-                        inQueue[v] = true;
-                        if (++cnt[v] >= V) return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
-    long long getDistance(int v) const { return dist[v]; }
-};
-
-int main() {
-    SPFA spfa(5);
-    spfa.addEdge(0, 1, 6);
-    spfa.addEdge(0, 3, 7);
-    spfa.addEdge(1, 2, 5);
-    spfa.addEdge(1, 4, -4);
-    spfa.addEdge(2, 1, -2);
-    spfa.addEdge(3, 2, -3);
-    spfa.addEdge(3, 4, 9);
-
-    if (spfa.solve(0)) {
-        for (int i = 0; i < 5; ++i)
-            std::cout << "0到" << i << ": " << spfa.getDistance(i) << std::endl;
-    }
-    return 0;
-}
+    FUNCTION getDistance(v):
+        RETURN dist[v]
+    END FUNCTION
+END CLASS
 ```
 
-## ==========================================================================
-### 📖 第二节: 所有用法大全
-## ==========================================================================
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
+---
+###  第二节: 实现思路
+---
 
 2.1 缩点（SCC + DAG上DP）
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <stack>
-#include <queue>
-#include <algorithm>
+```pseudocode
+CLASS SCCContraction:
+    V, adj
+    dfn, low, sccId, onStack, stk
+    timer = 0, sccCount = 0
 
-class SCCContraction {
-private:
-    int V;
-    std::vector<std::vector<int>> adj;
-    std::vector<int> dfn, low, sccId;
-    std::vector<bool> onStack;
-    std::stack<int> stk;
-    int timer = 0, sccCount = 0;
+    FUNCTION tarjan(u):    // (同上 1.2)
+        ...    // 略，见 1.2 TarjanSCC
+    END FUNCTION
 
-    void tarjan(int u) {
-        dfn[u] = low[u] = ++timer;
-        stk.push(u); onStack[u] = true;
-        for (int v : adj[u]) {
-            if (!dfn[v]) { tarjan(v); low[u] = std::min(low[u], low[v]); }
-            else if (onStack[v]) low[u] = std::min(low[u], dfn[v]);
-        }
-        if (dfn[u] == low[u]) {
-            sccCount++;
-            while (true) {
-                int v = stk.top(); stk.pop();
-                onStack[v] = false; sccId[v] = sccCount - 1;
-                if (v == u) break;
-            }
-        }
-    }
+    CONSTRUCTOR(v):
+        V = v
+        adj = ARRAY of size V, each an EMPTY_LIST
+        ... (初始化数组)
+    END CONSTRUCTOR
 
-public:
-    SCCContraction(int v) : V(v), adj(v), dfn(v, 0), low(v, 0), sccId(v, 0), onStack(v, false) {}
+    FUNCTION addEdge(u, v):
+        APPEND v TO adj[u]
+    END FUNCTION
 
-    void addEdge(int u, int v) { adj[u].push_back(v); }
+    FUNCTION solve(weights):    // weights[i] = 节点 i 的权值
+        FOR i FROM 0 TO V - 1:
+            IF dfn[i] == 0 THEN tarjan(i)
+        END FOR
 
-    long long solve(const std::vector<int>& weights) {
-        for (int i = 0; i < V; ++i)
-            if (!dfn[i]) tarjan(i);
+        // 计算每个 SCC 的总权值
+        sccWeight = ARRAY of size sccCount, filled with 0
+        FOR i FROM 0 TO V - 1:
+            sccWeight[sccId[i]] = sccWeight[sccId[i]] + weights[i]
+        END FOR
 
-        std::vector<long long> sccWeight(sccCount, 0);
-        for (int i = 0; i < V; ++i)
-            sccWeight[sccId[i]] += weights[i];
+        // 建 DAG (缩点图)
+        dag = ARRAY of size sccCount, each an EMPTY_LIST
+        inDegree = ARRAY of size sccCount, filled with 0
+        FOR u FROM 0 TO V - 1:
+            FOR EACH v IN adj[u]:
+                IF sccId[u] != sccId[v] THEN
+                    APPEND sccId[v] TO dag[sccId[u]]
+                    inDegree[sccId[v]] = inDegree[sccId[v]] + 1
+                END IF
+            END FOR
+        END FOR
 
-        std::vector<std::vector<int>> dag(sccCount);
-        std::vector<int> inDegree(sccCount, 0);
-        for (int u = 0; u < V; ++u)
-            for (int v : adj[u])
-                if (sccId[u] != sccId[v]) {
-                    dag[sccId[u]].push_back(sccId[v]);
-                    inDegree[sccId[v]]++;
-                }
+        // 拓扑排序 + DP 求最长路径
+        dp = ARRAY of size sccCount, filled with 0
+        q = EMPTY_QUEUE
+        FOR i FROM 0 TO sccCount - 1:
+            dp[i] = sccWeight[i]
+            IF inDegree[i] == 0 THEN
+                ENQUEUE i TO q
+            END IF
+        END FOR
 
-        std::vector<long long> dp(sccCount, 0);
-        std::queue<int> q;
-        for (int i = 0; i < sccCount; ++i) {
-            dp[i] = sccWeight[i];
-            if (inDegree[i] == 0) q.push(i);
-        }
+        WHILE NOT q IS EMPTY:
+            u = DEQUEUE(q)
+            FOR EACH v IN dag[u]:
+                dp[v] = MAX(dp[v], dp[u] + sccWeight[v])
+                inDegree[v] = inDegree[v] - 1
+                IF inDegree[v] == 0 THEN
+                    ENQUEUE v TO q
+                END IF
+            END FOR
+        END WHILE
 
-        while (!q.empty()) {
-            int u = q.front(); q.pop();
-            for (int v : dag[u]) {
-                dp[v] = std::max(dp[v], dp[u] + sccWeight[v]);
-                if (--inDegree[v] == 0) q.push(v);
-            }
-        }
-
-        return *std::max_element(dp.begin(), dp.end());
-    }
-};
-
-int main() {
-    SCCContraction sc(6);
-    sc.addEdge(0, 1); sc.addEdge(1, 2); sc.addEdge(2, 0);
-    sc.addEdge(2, 3); sc.addEdge(3, 4); sc.addEdge(4, 5); sc.addEdge(5, 3);
-
-    std::vector<int> weights = {1, 2, 3, 4, 5, 6};
-    std::cout << "缩点后DAG上最长路径权重和: " << sc.solve(weights) << std::endl;
-    return 0;
-}
+        RETURN MAX(dp)
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.2 网络流（Dinic算法/最大流）
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <algorithm>
-#include <climits>
+```pseudocode
+STRUCT Edge:
+    to        // 目标节点
+    rev       // 反向边在 graph[to] 中的索引
+    cap       // 剩余容量
+END STRUCT
 
-class Dinic {
-private:
-    struct Edge {
-        int to, rev;
-        long long cap;
-    };
+CLASS Dinic:
+    V        // 顶点数
+    graph    // 邻接表: graph[u] = [Edge, Edge, ...]
+    level    // 层次数组 (BFS 分层层号)
+    iter     // 当前弧优化数组
 
-    int V;
-    std::vector<std::vector<Edge>> graph;
-    std::vector<int> level, iter;
+    FUNCTION bfs(s, t):
+        level = ARRAY of size V, filled with -1
+        q = EMPTY_QUEUE
+        level[s] = 0
+        ENQUEUE s TO q
+        WHILE NOT q IS EMPTY:
+            u = DEQUEUE(q)
+            FOR EACH e IN graph[u]:
+                IF e.cap > 0 AND level[e.to] < 0 THEN
+                    level[e.to] = level[u] + 1
+                    ENQUEUE e.to TO q
+                END IF
+            END FOR
+        END WHILE
+        RETURN level[t] >= 0
+    END FUNCTION
 
-    bool bfs(int s, int t) {
-        level.assign(V, -1);
-        std::queue<int> q;
-        level[s] = 0;
-        q.push(s);
-        while (!q.empty()) {
-            int u = q.front(); q.pop();
-            for (auto& e : graph[u]) {
-                if (e.cap > 0 && level[e.to] < 0) {
-                    level[e.to] = level[u] + 1;
-                    q.push(e.to);
-                }
-            }
-        }
-        return level[t] >= 0;
-    }
+    FUNCTION dfs(u, t, f):
+        IF u == t THEN RETURN f
+        FOR i FROM iter[u] TO LENGTH(graph[u]) - 1:
+            iter[u] = i    // 当前弧优化
+            e = graph[u][i]
+            IF e.cap > 0 AND level[e.to] == level[u] + 1 THEN
+                d = dfs(e.to, t, MIN(f, e.cap))
+                IF d > 0 THEN
+                    e.cap = e.cap - d
+                    graph[e.to][e.rev].cap = graph[e.to][e.rev].cap + d
+                    RETURN d
+                END IF
+            END IF
+        END FOR
+        RETURN 0
+    END FUNCTION
 
-    long long dfs(int u, int t, long long f) {
-        if (u == t) return f;
-        for (int& i = iter[u]; i < (int)graph[u].size(); ++i) {
-            Edge& e = graph[u][i];
-            if (e.cap > 0 && level[e.to] == level[u] + 1) {
-                long long d = dfs(e.to, t, std::min(f, e.cap));
-                if (d > 0) {
-                    e.cap -= d;
-                    graph[e.to][e.rev].cap += d;
-                    return d;
-                }
-            }
-        }
-        return 0;
-    }
+    CONSTRUCTOR(v):
+        V = v
+        graph = ARRAY of size V, each an EMPTY_LIST
+        level = ARRAY of size V
+        iter = ARRAY of size V
+    END CONSTRUCTOR
 
-public:
-    Dinic(int v) : V(v), graph(v), level(v), iter(v) {}
+    FUNCTION addEdge(from, to, cap):
+        // 正向边
+        forward = Edge(to, LENGTH(graph[to]), cap)
+        // 反向边 (初始容量 0)
+        backward = Edge(from, LENGTH(graph[from]), 0)
+        APPEND forward TO graph[from]
+        APPEND backward TO graph[to]
+    END FUNCTION
 
-    void addEdge(int from, int to, long long cap) {
-        graph[from].push_back({to, (int)graph[to].size(), cap});
-        graph[to].push_back({from, (int)graph[from].size() - 1, 0});
-    }
-
-    long long maxFlow(int s, int t) {
-        long long flow = 0;
-        while (bfs(s, t)) {
-            iter.assign(V, 0);
-            long long d;
-            while ((d = dfs(s, t, LLONG_MAX)) > 0)
-                flow += d;
-        }
-        return flow;
-    }
-};
-
-int main() {
-    Dinic dinic(6);
-    dinic.addEdge(0, 1, 16);
-    dinic.addEdge(0, 2, 13);
-    dinic.addEdge(1, 2, 10);
-    dinic.addEdge(1, 3, 12);
-    dinic.addEdge(2, 1, 4);
-    dinic.addEdge(2, 4, 14);
-    dinic.addEdge(3, 2, 9);
-    dinic.addEdge(3, 5, 20);
-    dinic.addEdge(4, 3, 7);
-    dinic.addEdge(4, 5, 4);
-
-    std::cout << "最大流: " << dinic.maxFlow(0, 5) << std::endl;
-    return 0;
-}
+    FUNCTION maxFlow(s, t):
+        flow = 0
+        WHILE bfs(s, t):
+            iter = ARRAY of size V, filled with 0
+            WHILE TRUE:
+                d = dfs(s, t, POSITIVE_INFINITY)
+                IF d == 0 THEN BREAK
+                flow = flow + d
+            END WHILE
+        END WHILE
+        RETURN flow
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.3 最小费用最大流
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <climits>
+```pseudocode
+STRUCT Edge:
+    to, rev
+    cap       // 容量
+    cost      // 单位费用
+END STRUCT
 
-class MCMF {
-private:
-    struct Edge {
-        int to, rev;
-        long long cap, cost;
-    };
+CLASS MCMF:
+    V, graph
+    dist      // 最短路距离
+    prevv     // 增广路前驱节点
+    preve     // 增广路前驱边索引
+    inQueue   // 数组: 是否在队列中
 
-    int V;
-    std::vector<std::vector<Edge>> graph;
-    std::vector<long long> dist;
-    std::vector<int> prevv, preve;
-    std::vector<bool> inQueue;
+    FUNCTION spfa(s, t):
+        dist = ARRAY of size V, filled with POSITIVE_INFINITY
+        inQueue = ARRAY of size V, filled with FALSE
+        dist[s] = 0
+        q = EMPTY_QUEUE
+        ENQUEUE s TO q; inQueue[s] = TRUE
+        WHILE NOT q IS EMPTY:
+            u = DEQUEUE(q); inQueue[u] = FALSE
+            FOR i FROM 0 TO LENGTH(graph[u]) - 1:
+                e = graph[u][i]
+                IF e.cap > 0 AND dist[u] + e.cost < dist[e.to] THEN
+                    dist[e.to] = dist[u] + e.cost
+                    prevv[e.to] = u
+                    preve[e.to] = i
+                    IF NOT inQueue[e.to] THEN
+                        ENQUEUE e.to TO q
+                        inQueue[e.to] = TRUE
+                    END IF
+                END IF
+            END FOR
+        END WHILE
+        RETURN dist[t] != POSITIVE_INFINITY
+    END FUNCTION
 
-    bool spfa(int s, int t) {
-        dist.assign(V, LLONG_MAX);
-        inQueue.assign(V, false);
-        dist[s] = 0;
-        std::queue<int> q;
-        q.push(s); inQueue[s] = true;
+    CONSTRUCTOR(v):
+        V = v
+        graph = ARRAY of size V, each an EMPTY_LIST
+        prevv = ARRAY of size V
+        preve = ARRAY of size V
+    END CONSTRUCTOR
 
-        while (!q.empty()) {
-            int u = q.front(); q.pop(); inQueue[u] = false;
-            for (int i = 0; i < (int)graph[u].size(); ++i) {
-                auto& e = graph[u][i];
-                if (e.cap > 0 && dist[u] + e.cost < dist[e.to]) {
-                    dist[e.to] = dist[u] + e.cost;
-                    prevv[e.to] = u;
-                    preve[e.to] = i;
-                    if (!inQueue[e.to]) { q.push(e.to); inQueue[e.to] = true; }
-                }
-            }
-        }
-        return dist[t] != LLONG_MAX;
-    }
+    FUNCTION addEdge(from, to, cap, cost):
+        APPEND Edge(to, LENGTH(graph[to]), cap, cost) TO graph[from]
+        APPEND Edge(from, LENGTH(graph[from]) - 1, 0, -cost) TO graph[to]
+    END FUNCTION
 
-public:
-    MCMF(int v) : V(v), graph(v), prevv(v), preve(v) {}
-
-    void addEdge(int from, int to, long long cap, long long cost) {
-        graph[from].push_back({to, (int)graph[to].size(), cap, cost});
-        graph[to].push_back({from, (int)graph[from].size() - 1, 0, -cost});
-    }
-
-    std::pair<long long, long long> solve(int s, int t) {
-        long long totalFlow = 0, totalCost = 0;
-        while (spfa(s, t)) {
-            long long d = LLONG_MAX;
-            for (int v = t; v != s; v = prevv[v])
-                d = std::min(d, graph[prevv[v]][preve[v]].cap);
-            for (int v = t; v != s; v = prevv[v]) {
-                graph[prevv[v]][preve[v]].cap -= d;
-                graph[graph[prevv[v]][preve[v]].to][graph[prevv[v]][preve[v]].rev].cap += d;
-            }
-            totalFlow += d;
-            totalCost += d * dist[t];
-        }
-        return {totalFlow, totalCost};
-    }
-};
-
-int main() {
-    MCMF mcmf(4);
-    mcmf.addEdge(0, 1, 2, 1);
-    mcmf.addEdge(0, 2, 1, 2);
-    mcmf.addEdge(1, 2, 1, 1);
-    mcmf.addEdge(1, 3, 1, 3);
-    mcmf.addEdge(2, 3, 2, 1);
-
-    auto [flow, cost] = mcmf.solve(0, 3);
-    std::cout << "最大流: " << flow << std::endl;
-    std::cout << "最小费用: " << cost << std::endl;
-    return 0;
-}
+    FUNCTION solve(s, t):
+        totalFlow = 0, totalCost = 0
+        WHILE spfa(s, t):
+            d = POSITIVE_INFINITY
+            FOR v FROM t DOWNTO s FOLLOWING prevv:
+                d = MIN(d, graph[prevv[v]][preve[v]].cap)
+            END FOR
+            FOR v FROM t DOWNTO s FOLLOWING prevv:
+                e = graph[prevv[v]][preve[v]]
+                e.cap = e.cap - d
+                revEdge = graph[e.to][e.rev]
+                revEdge.cap = revEdge.cap + d
+            END FOR
+            totalFlow = totalFlow + d
+            totalCost = totalCost + d * dist[t]
+        END WHILE
+        RETURN (totalFlow, totalCost)
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.4 割点和桥（无向图）
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <algorithm>
+```pseudocode
+CLASS CutVerticesAndBridges:
+    V, adj
+    dfn, low       // 时间戳数组
+    isCut          // 布尔数组: isCut[i] = 节点i是否为割点
+    bridges        // 列表: 存储桥边 (u, v)
+    timer = 0
 
-class CutVerticesAndBridges {
-private:
-    int V;
-    std::vector<std::vector<int>> adj;
-    std::vector<int> dfn, low;
-    std::vector<bool> isCut;
-    std::vector<std::pair<int,int>> bridges;
-    int timer = 0;
+    FUNCTION dfs(u, parent):
+        timer = timer + 1
+        dfn[u] = low[u] = timer
+        childCount = 0
 
-    void dfs(int u, int parent) {
-        dfn[u] = low[u] = ++timer;
-        int childCount = 0;
+        FOR EACH v IN adj[u]:
+            IF v == parent THEN CONTINUE
+            IF dfn[v] == 0 THEN    // 树边
+                childCount = childCount + 1
+                dfs(v, u)
+                low[u] = MIN(low[u], low[v])
+                // 根节点: ≥2 个子树才是割点
+                IF parent == -1 AND childCount > 1 THEN
+                    isCut[u] = TRUE
+                END IF
+                // 非根节点: low[v] >= dfn[u] 才是割点
+                IF parent != -1 AND low[v] >= dfn[u] THEN
+                    isCut[u] = TRUE
+                END IF
+                // 桥: low[v] > dfn[u]
+                IF low[v] > dfn[u] THEN
+                    APPEND (u, v) TO bridges
+                END IF
+            ELSE    // 回边
+                low[u] = MIN(low[u], dfn[v])
+            END IF
+        END FOR
+    END FUNCTION
 
-        for (int v : adj[u]) {
-            if (v == parent) continue;
-            if (!dfn[v]) {
-                childCount++;
-                dfs(v, u);
-                low[u] = std::min(low[u], low[v]);
-                if (parent == -1 && childCount > 1) isCut[u] = true;
-                if (parent != -1 && low[v] >= dfn[u]) isCut[u] = true;
-                if (low[v] > dfn[u]) bridges.emplace_back(u, v);
-            } else {
-                low[u] = std::min(low[u], dfn[v]);
-            }
-        }
-    }
+    CONSTRUCTOR(v):
+        V = v
+        adj = ARRAY of size V, each an EMPTY_LIST
+        dfn = ARRAY of size V, filled with 0
+        low = ARRAY of size V, filled with 0
+        isCut = ARRAY of size V, filled with FALSE
+    END CONSTRUCTOR
 
-public:
-    CutVerticesAndBridges(int v) : V(v), adj(v), dfn(v, 0), low(v, 0), isCut(v, false) {}
+    FUNCTION addEdge(u, v):
+        APPEND v TO adj[u]; APPEND u TO adj[v]    // 无向图
+    END FUNCTION
 
-    void addEdge(int u, int v) { adj[u].push_back(v); adj[v].push_back(u); }
+    FUNCTION solve():
+        FOR i FROM 0 TO V - 1:
+            IF dfn[i] == 0 THEN dfs(i, -1)
+        END FOR
+    END FUNCTION
 
-    void solve() {
-        for (int i = 0; i < V; ++i)
-            if (!dfn[i]) dfs(i, -1);
-    }
+    FUNCTION getCutVertices():
+        cuts = EMPTY_LIST
+        FOR i FROM 0 TO V - 1:
+            IF isCut[i] THEN APPEND i TO cuts
+        END FOR
+        RETURN cuts
+    END FUNCTION
 
-    std::vector<int> getCutVertices() {
-        std::vector<int> cuts;
-        for (int i = 0; i < V; ++i)
-            if (isCut[i]) cuts.push_back(i);
-        return cuts;
-    }
-
-    std::vector<std::pair<int,int>> getBridges() { return bridges; }
-};
-
-int main() {
-    CutVerticesAndBridges cvb(7);
-    cvb.addEdge(0, 1); cvb.addEdge(1, 2); cvb.addEdge(2, 0);
-    cvb.addEdge(2, 3); cvb.addEdge(3, 4); cvb.addEdge(4, 5); cvb.addEdge(5, 3);
-    cvb.addEdge(3, 6);
-
-    cvb.solve();
-
-    auto cuts = cvb.getCutVertices();
-    std::cout << "割点: ";
-    for (int v : cuts) std::cout << v << " ";
-    std::cout << std::endl;
-
-    auto bridges = cvb.getBridges();
-    std::cout << "桥: ";
-    for (auto [u, v] : bridges) std::cout << "(" << u << "," << v << ") ";
-    std::cout << std::endl;
-
-    return 0;
-}
+    FUNCTION getBridges():
+        RETURN bridges
+    END FUNCTION
+END CLASS
 ```
 
-## ==========================================================================
-### 📖 第三节: 实用案例
-## ==========================================================================
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
+---
+###  第三节: 应用场景
+---
 
 3.1 案例一：课程安排系统（拓扑排序）
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <string>
-#include <queue>
-#include <unordered_map>
+```pseudocode
+CLASS CourseScheduler:
+    courseId       // 哈希表: 课程名 → 编号
+    courseName     // 数组: 编号 → 课程名
+    adj            // 邻接表
+    credits        // 数组: 学分
+    n = 0
 
-class CourseScheduler {
-private:
-    std::unordered_map<std::string, int> courseId;
-    std::vector<std::string> courseName;
-    std::vector<std::vector<int>> adj;
-    std::vector<int> credits;
-    int n = 0;
+    FUNCTION getId(name):
+        IF NOT courseId CONTAINS name THEN
+            courseId[name] = n
+            n = n + 1
+            APPEND name TO courseName
+            APPEND EMPTY_LIST TO adj
+            APPEND 0 TO credits
+        END IF
+        RETURN courseId[name]
+    END FUNCTION
 
-    int getId(const std::string& name) {
-        if (courseId.find(name) == courseId.end()) {
-            courseId[name] = n++;
-            courseName.push_back(name);
-            adj.push_back({});
-            credits.push_back(0);
-        }
-        return courseId[name];
-    }
+    FUNCTION addCourse(name, credit, prereqs):
+        id = getId(name)
+        credits[id] = credit
+        FOR EACH prereq IN prereqs:
+            pid = getId(prereq)
+            APPEND id TO adj[pid]    // prereq → course 的边
+        END FOR
+    END FUNCTION
 
-public:
-    void addCourse(const std::string& name, int credit, const std::vector<std::string>& prereqs) {
-        int id = getId(name);
-        credits[id] = credit;
-        for (const auto& prereq : prereqs) {
-            int pid = getId(prereq);
-            adj[pid].push_back(id);
-        }
-    }
+    FUNCTION schedule():
+        inDeg = ARRAY of size n, filled with 0
+        FOR u FROM 0 TO n - 1:
+            FOR EACH v IN adj[u]:
+                inDeg[v] = inDeg[v] + 1
+            END FOR
+        END FOR
 
-    std::vector<std::vector<std::string>> schedule() {
-        std::vector<int> inDeg(n, 0);
-        for (int u = 0; u < n; ++u)
-            for (int v : adj[u]) inDeg[v]++;
+        semesters = EMPTY_LIST
+        taken = ARRAY of size n, filled with FALSE
 
-        std::vector<std::vector<std::string>> semesters;
-        std::vector<bool> taken(n, false);
+        WHILE TRUE:
+            available = EMPTY_LIST
+            FOR i FROM 0 TO n - 1:
+                IF NOT taken[i] AND inDeg[i] == 0 THEN
+                    APPEND i TO available
+                END IF
+            END FOR
+            IF available IS EMPTY THEN BREAK
 
-        while (true) {
-            std::vector<int> available;
-            for (int i = 0; i < n; ++i)
-                if (!taken[i] && inDeg[i] == 0)
-                    available.push_back(i);
-            if (available.empty()) break;
-
-            std::vector<std::string> semester;
-            for (int id : available) {
-                taken[id] = true;
-                semester.push_back(courseName[id]);
-                for (int v : adj[id]) inDeg[v]--;
-            }
-            semesters.push_back(semester);
-        }
-        return semesters;
-    }
-};
-
-int main() {
-    CourseScheduler cs;
-    cs.addCourse("高等数学", 5, {});
-    cs.addCourse("线性代数", 3, {});
-    cs.addCourse("C语言", 4, {});
-    cs.addCourse("数据结构", 4, {"C语言"});
-    cs.addCourse("概率论", 3, {"高等数学"});
-    cs.addCourse("离散数学", 3, {"高等数学", "线性代数"});
-    cs.addCourse("算法设计", 3, {"数据结构", "离散数学"});
-    cs.addCourse("操作系统", 4, {"数据结构"});
-    cs.addCourse("计算机网络", 3, {"数据结构"});
-    cs.addCourse("编译原理", 3, {"数据结构", "离散数学"});
-
-    auto plan = cs.schedule();
-    for (int i = 0; i < (int)plan.size(); ++i) {
-        std::cout << "第" << i + 1 << "学期: ";
-        for (const auto& c : plan[i]) std::cout << c << " ";
-        std::cout << std::endl;
-    }
-    return 0;
-}
+            semester = EMPTY_LIST
+            FOR EACH id IN available:
+                taken[id] = TRUE
+                APPEND courseName[id] TO semester
+                FOR EACH v IN adj[id]:
+                    inDeg[v] = inDeg[v] - 1
+                END FOR
+            END FOR
+            APPEND semester TO semesters
+        END WHILE
+        RETURN semesters
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 3.2 案例二：社交网络影响力分析（SCC）
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <stack>
-#include <algorithm>
-#include <string>
+```pseudocode
+CLASS SocialInfluence:
+    V, adj, names
+    dfn, low, sccId, onStack, stk
+    timer = 0, sccCount = 0
 
-class SocialInfluence {
-private:
-    int V;
-    std::vector<std::vector<int>> adj;
-    std::vector<std::string> names;
-    std::vector<int> dfn, low, sccId;
-    std::vector<bool> onStack;
-    std::stack<int> stk;
-    int timer = 0, sccCount = 0;
+    FUNCTION tarjan(u):    // (标准 Tarjan, 略)
+        ...
+    END FUNCTION
 
-    void tarjan(int u) {
-        dfn[u] = low[u] = ++timer;
-        stk.push(u); onStack[u] = true;
-        for (int v : adj[u]) {
-            if (!dfn[v]) { tarjan(v); low[u] = std::min(low[u], low[v]); }
-            else if (onStack[v]) low[u] = std::min(low[u], dfn[v]);
-        }
-        if (dfn[u] == low[u]) {
-            sccCount++;
-            while (true) {
-                int v = stk.top(); stk.pop();
-                onStack[v] = false; sccId[v] = sccCount - 1;
-                if (v == u) break;
-            }
-        }
-    }
+    CONSTRUCTOR(n):
+        V = LENGTH(n); names = n
+        adj = ARRAY of size V, each an EMPTY_LIST
+        ... (初始化 dfn, low, sccId, onStack)
+    END CONSTRUCTOR
 
-public:
-    SocialInfluence(const std::vector<std::string>& n)
-        : V(n.size()), adj(n.size()), names(n), dfn(n.size(), 0),
-          low(n.size(), 0), sccId(n.size(), 0), onStack(n.size(), false) {}
+    FUNCTION addFollow(u, v):
+        APPEND v TO adj[u]    // u 关注 v
+    END FUNCTION
 
-    void addFollow(int u, int v) { adj[u].push_back(v); }
+    FUNCTION analyze():
+        FOR i FROM 0 TO V - 1:
+            IF dfn[i] == 0 THEN tarjan(i)
+        END FOR
 
-    void analyze() {
-        for (int i = 0; i < V; ++i)
-            if (!dfn[i]) tarjan(i);
+        groups = ARRAY of size sccCount, each an EMPTY_LIST
+        FOR i FROM 0 TO V - 1:
+            APPEND i TO groups[sccId[i]]
+        END FOR
 
-        std::vector<std::vector<int>> groups(sccCount);
-        for (int i = 0; i < V; ++i) groups[sccId[i]].push_back(i);
+        DISPLAY "互相关注的社交圈:"
+        FOR i FROM 0 TO sccCount - 1:
+            IF LENGTH(groups[i]) > 1 THEN
+                DISPLAY "  圈子", i+1, ": ", names OF groups[i]
+            END IF
+        END FOR
 
-        std::cout << "互相关注的社交圈:" << std::endl;
-        for (int i = 0; i < sccCount; ++i) {
-            if (groups[i].size() > 1) {
-                std::cout << "  圈子" << i + 1 << ": ";
-                for (int v : groups[i]) std::cout << names[v] << " ";
-                std::cout << "(规模=" << groups[i].size() << ")" << std::endl;
-            }
-        }
-
-        std::vector<int> outDeg(sccCount, 0);
-        for (int u = 0; u < V; ++u)
-            for (int v : adj[u])
-                if (sccId[u] != sccId[v]) outDeg[sccId[u]]++;
-
-        std::cout << "核心影响力圈(出度最大的SCC):" << std::endl;
-        int maxOut = *std::max_element(outDeg.begin(), outDeg.end());
-        for (int i = 0; i < sccCount; ++i) {
-            if (outDeg[i] == maxOut && groups[i].size() > 1) {
-                std::cout << "  ";
-                for (int v : groups[i]) std::cout << names[v] << " ";
-                std::cout << std::endl;
-            }
-        }
-    }
-};
-
-int main() {
-    std::vector<std::string> users = {"Alice", "Bob", "Charlie", "David", "Eve", "Frank"};
-    SocialInfluence si(users);
-    si.addFollow(0, 1); si.addFollow(1, 2); si.addFollow(2, 0);
-    si.addFollow(2, 3); si.addFollow(3, 4); si.addFollow(4, 3);
-    si.addFollow(4, 5);
-
-    si.analyze();
-    return 0;
-}
+        // 找出出度最大的 SCC（核心影响力圈）
+        outDeg = ARRAY of size sccCount, filled with 0
+        FOR u FROM 0 TO V - 1:
+            FOR EACH v IN adj[u]:
+                IF sccId[u] != sccId[v] THEN
+                    outDeg[sccId[u]] = outDeg[sccId[u]] + 1
+                END IF
+            END FOR
+        END FOR
+        maxOut = MAX(outDeg)
+        DISPLAY "核心影响力圈(出度最大的SCC):"
+        FOR i FROM 0 TO sccCount - 1:
+            IF outDeg[i] == maxOut AND LENGTH(groups[i]) > 1 THEN
+                DISPLAY names OF groups[i]
+            END IF
+        END FOR
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 3.3 案例三：物流配送网络优化（网络流）
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <string>
-#include <climits>
-#include <algorithm>
+```pseudocode
+STRUCT Edge:
+    to, rev
+    cap, cost
+END STRUCT
 
-class LogisticsNetwork {
-private:
-    struct Edge {
-        int to, rev;
-        int cap, cost;
-    };
+CLASS LogisticsNetwork:
+    V, graph, nodeNames
 
-    int V;
-    std::vector<std::vector<Edge>> graph;
-    std::vector<std::string> nodeNames;
+    FUNCTION addEdgeInternal(from, to, cap, cost):
+        APPEND Edge(to, LENGTH(graph[to]), cap, cost) TO graph[from]
+        APPEND Edge(from, LENGTH(graph[from]) - 1, 0, -cost) TO graph[to]
+    END FUNCTION
 
-    void addEdgeInternal(int from, int to, int cap, int cost) {
-        graph[from].push_back({to, (int)graph[to].size(), cap, cost});
-        graph[to].push_back({from, (int)graph[from].size() - 1, 0, -cost});
-    }
+    CONSTRUCTOR(names):
+        V = LENGTH(names)
+        graph = ARRAY of size V, each an EMPTY_LIST
+        nodeNames = names
+    END CONSTRUCTOR
 
-public:
-    LogisticsNetwork(const std::vector<std::string>& names)
-        : V(names.size()), graph(names.size()), nodeNames(names) {}
+    FUNCTION addRoute(from, to, capacity, unitCost):
+        addEdgeInternal(from, to, capacity, unitCost)
+    END FUNCTION
 
-    void addRoute(int from, int to, int capacity, int unitCost) {
-        addEdgeInternal(from, to, capacity, unitCost);
-    }
+    FUNCTION optimize(source, sink):
+        totalFlow = 0, totalCost = 0
+        WHILE TRUE:
+            dist = ARRAY of size V, filled with INF
+            prevv = ARRAY of size V, filled with -1
+            preve = ARRAY of size V, filled with -1
+            inq = ARRAY of size V, filled with FALSE
+            dist[source] = 0
+            q = EMPTY_QUEUE; ENQUEUE source; inq[source] = TRUE
 
-    void optimize(int source, int sink) {
-        long long totalFlow = 0, totalCost = 0;
+            WHILE NOT q IS EMPTY:
+                u = DEQUEUE(q); inq[u] = FALSE
+                FOR i FROM 0 TO LENGTH(graph[u]) - 1:
+                    e = graph[u][i]
+                    IF e.cap > 0 AND dist[u] + e.cost < dist[e.to] THEN
+                        dist[e.to] = dist[u] + e.cost
+                        prevv[e.to] = u; preve[e.to] = i
+                        IF NOT inq[e.to] THEN ENQUEUE e.to; inq[e.to] = TRUE
+                    END IF
+                END FOR
+            END WHILE
 
-        while (true) {
-            std::vector<long long> dist(V, LLONG_MAX);
-            std::vector<int> prevv(V, -1), preve(V, -1);
-            std::vector<bool> inq(V, false);
-            dist[source] = 0;
-            std::queue<int> q;
-            q.push(source); inq[source] = true;
+            IF dist[sink] == INF THEN BREAK    // 无可增广路
 
-            while (!q.empty()) {
-                int u = q.front(); q.pop(); inq[u] = false;
-                for (int i = 0; i < (int)graph[u].size(); ++i) {
-                    auto& e = graph[u][i];
-                    if (e.cap > 0 && dist[u] + e.cost < dist[e.to]) {
-                        dist[e.to] = dist[u] + e.cost;
-                        prevv[e.to] = u; preve[e.to] = i;
-                        if (!inq[e.to]) { q.push(e.to); inq[e.to] = true; }
-                    }
-                }
-            }
+            d = INF
+            FOR v FROM sink DOWNTO source FOLLOWING prevv:
+                d = MIN(d, graph[prevv[v]][preve[v]].cap)
+            END FOR
+            FOR v FROM sink DOWNTO source FOLLOWING prevv:
+                e = graph[prevv[v]][preve[v]]
+                e.cap = e.cap - d
+                graph[e.to][e.rev].cap = graph[e.to][e.rev].cap + d
+            END FOR
+            totalFlow = totalFlow + d
+            totalCost = totalCost + d * dist[sink]
+        END WHILE
 
-            if (dist[sink] == LLONG_MAX) break;
-
-            int d = INT_MAX;
-            for (int v = sink; v != source; v = prevv[v])
-                d = std::min(d, graph[prevv[v]][preve[v]].cap);
-            for (int v = sink; v != source; v = prevv[v]) {
-                graph[prevv[v]][preve[v]].cap -= d;
-                graph[graph[prevv[v]][preve[v]].to][graph[prevv[v]][preve[v]].rev].cap += d;
-            }
-            totalFlow += d;
-            totalCost += (long long)d * dist[sink];
-        }
-
-        std::cout << "=== 物流配送优化结果 ===" << std::endl;
-        std::cout << "最大配送量: " << totalFlow << "单位" << std::endl;
-        std::cout << "最小总运输成本: " << totalCost << std::endl;
-    }
-};
-
-int main() {
-    std::vector<std::string> nodes = {"仓库", "分拣A", "分拣B", "配送站1", "配送站2", "客户"};
-    LogisticsNetwork ln(nodes);
-
-    ln.addRoute(0, 1, 10, 2);
-    ln.addRoute(0, 2, 8, 3);
-    ln.addRoute(1, 3, 6, 4);
-    ln.addRoute(1, 4, 5, 2);
-    ln.addRoute(2, 3, 4, 1);
-    ln.addRoute(2, 4, 7, 3);
-    ln.addRoute(3, 5, 9, 2);
-    ln.addRoute(4, 5, 8, 3);
-
-    ln.optimize(0, 5);
-    return 0;
-}
+        DISPLAY "最大配送量: ", totalFlow, "单位"
+        DISPLAY "最小总运输成本: ", totalCost
+    END FUNCTION
+END CLASS
 ```
 
-## ==========================================================================
-### 📖 第四节: 课后习题
-## ==========================================================================
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
+---
+###  第四节: 课后习题
+---
 
 1. 基础题：实现拓扑排序的两种方法（BFS的Kahn算法和DFS方法），并判断图中是否有环。
 
@@ -1175,27 +1003,27 @@ int main() {
    - [P4779 单源最短路径](https://www.luogu.com.cn/problem/P4779)（最短路）
    - [P3387 缩点](https://www.luogu.com.cn/problem/P3387)（Tarjan+DAG上DP）
 
-## ==========================================================================
+---
 
 
-## --------------------------------------------------------------------------
-## 🔗 知识网络
-## --------------------------------------------------------------------------
+***
+##  知识网络
+***
 
 - **上一章**: [[K_并查集_UnionFind]] | **返回**: [[DSA学习路线]]
 - **相关结构**: [[H_图_Graph]]
 - **算法技巧**: [[../算法技巧/图]] | [[../算法技巧/连通性]] | [[../算法技巧/动态规划]]
 
-## ==========================================================================
+---
 ## 章节测试
-## ==========================================================================
+---
 
 ### 判断题
 
 > [!question] 判断题 1
 > 拓扑排序只能用于有向无环图（DAG）。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1204,8 +1032,8 @@ int main() {
 
 > [!question] 判断题 2
 > 一个DAG的拓扑排序结果是唯一的。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -1214,8 +1042,8 @@ int main() {
 
 > [!question] 判断题 3
 > Tarjan算法的时间复杂度为O(V+E)。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1224,8 +1052,8 @@ int main() {
 
 > [!question] 判断题 4
 > Floyd-Warshall算法不能处理含负权边的图。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -1234,8 +1062,8 @@ int main() {
 
 > [!question] 判断题 5
 > Bellman-Ford算法可以检测图中是否存在负权环。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1244,8 +1072,8 @@ int main() {
 
 > [!question] 判断题 6
 > Dinic算法的时间复杂度为O(V²E)。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1254,8 +1082,8 @@ int main() {
 
 > [!question] 判断题 7
 > 最大流最小割定理指出：网络的最大流等于最小割的容量。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1264,8 +1092,8 @@ int main() {
 
 > [!question] 判断题 8
 > SPFA算法在最坏情况下的时间复杂度为O(VE)，与Bellman-Ford相同。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1274,8 +1102,8 @@ int main() {
 
 > [!question] 判断题 9
 > 强连通分量内的任意两个顶点之间都存在路径。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1284,8 +1112,8 @@ int main() {
 
 > [!question] 判断题 10
 > 缩点后的图一定是DAG。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确

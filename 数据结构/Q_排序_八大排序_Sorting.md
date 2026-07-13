@@ -1,6 +1,6 @@
-## ==========================================================================
-C++ 数据结构教程 — 八大排序算法 (8 Major Sorting Algorithms)
-## ==========================================================================
+---
+数据结构教程 — 八大排序算法 (8 Major Sorting Algorithms)
+---
 
 ## 章节概述
 
@@ -8,7 +8,7 @@ C++ 数据结构教程 — 八大排序算法 (8 Major Sorting Algorithms)
 最基础、最重要的算法之一，广泛应用于数据库索引、搜索引擎、数据压缩、图形渲染等场景。
 
 本章从零开始，逐一讲解八大经典排序算法。每种算法都配有数学复杂度分析、Mermaid流程图
-演示和完整可运行的C++代码，帮助初学者真正理解每种算法的运作原理。
+演示和完整可运行的伪代码，帮助初学者真正理解每种算法的运作原理。
 
 > **前置知识**：需要掌握数组基础、循环、函数与递归。算法技巧目录中的
 > [[../../算法技巧/排序|排序]] 含有洛谷 OJ 练习题，建议学完本章后去刷题巩固。
@@ -27,9 +27,9 @@ C++ 数据结构教程 — 八大排序算法 (8 Major Sorting Algorithms)
 > **稳定性说明**：稳定排序保证相等元素的原始相对顺序不变。例如按成绩排序时，同分同学的
 > 原顺序会被保留。不稳定排序不提供此保证。
 
-## ==========================================================================
+---
 ### 第一节: 排序基础概念与准备工作
-## ==========================================================================
+---
 
 1.1 什么是排序
 ---------------
@@ -57,28 +57,34 @@ flowchart LR
 1.3 本章使用的测试数组与辅助函数
 ---------------------------------
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <algorithm>
-using namespace std;
+```pseudocode
+FUNCTION printArray(arr, msg=""):
+    IF msg IS NOT EMPTY THEN
+        DISPLAY msg, ": "
+    END IF
+    FOR EACH x IN arr:
+        DISPLAY x, " "
+    END FOR
+    DISPLAY NEWLINE
+END FUNCTION
 
-void printArray(const vector<int>& arr, const string& msg = "") {
-    if (!msg.empty()) cout << msg << ": ";
-    for (int x : arr) cout << x << " ";
-    cout << endl;
-}
-
-bool isSorted(const vector<int>& arr) {
-    for (size_t i = 1; i < arr.size(); i++)
-        if (arr[i] < arr[i - 1]) return false;
-    return true;
-}
+FUNCTION isSorted(arr):
+    FOR i FROM 1 TO LENGTH(arr) - 1:
+        IF arr[i] < arr[i - 1] THEN
+            RETURN FALSE
+        END IF
+    END FOR
+    RETURN TRUE
+END FUNCTION
 ```
 
-## ==========================================================================
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
+---
 ### 第二节: 冒泡排序 — 相邻比较，大的往后沉
-## ==========================================================================
+---
 
 2.1 排序原理
 -------------
@@ -183,28 +189,32 @@ j=0:  比较 arr[0]=1 和 arr[1]=2
 2.3 核心代码
 -------------
 
-```cpp
-void bubbleSort(vector<int>& arr) {
-    int n = arr.size();
-    for (int i = 0; i < n - 1; i++) {        // 外层: n-1 轮
-        bool swapped = false;                  // 本轮是否发生过交换
-        for (int j = 0; j < n - 1 - i; j++) {  // 内层: 比较相邻元素
-            if (arr[j] > arr[j + 1]) {
-                swap(arr[j], arr[j + 1]);      // 大的往后移
-                swapped = true;
-            }
-        }
-        if (!swapped) break;  // 本轮无交换 → 已有序, 提前结束
-    }
-}
+```pseudocode
+FUNCTION bubbleSort(arr):
+    n = LENGTH(arr)
+    FOR i FROM 0 TO n - 2:                     // 外层: n-1 轮
+        swapped = FALSE                         // 本轮是否发生过交换
+        FOR j FROM 0 TO n - 2 - i:              // 内层: 比较相邻元素
+            IF arr[j] > arr[j + 1] THEN
+                SWAP(arr[j], arr[j + 1])        // 大的往后移
+                swapped = TRUE
+            END IF
+        END FOR
+        IF NOT swapped THEN BREAK               // 本轮无交换 → 已有序, 提前结束
+    END FOR
+END FUNCTION
 ```
 
 | 代码行 | 作用 |
 |--------|------|
-| `for (int i = 0; i < n-1; i++)` | 控制轮数，共 n-1 轮 |
+| `FOR i FROM 0 TO n-2` | 控制轮数，共 n-1 轮 |
 | `n - 1 - i` | 每轮比较范围缩小 1，因为右侧已有 i 个元素归位 |
-| `if (arr[j] > arr[j+1])` | 相邻比较，左边大于右边才交换 |
+| `IF arr[j] > arr[j+1]` | 相邻比较，左边大于右边才交换 |
 | `swapped` 标志 | 本轮无交换说明已有序，提前退出，最好情况 O(n) |
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.4 复杂度分析
 ---------------
@@ -219,9 +229,9 @@ void bubbleSort(vector<int>& arr) {
 > **数学推导**（最坏情况比较次数）：第 1 轮比较 n-1 次，第 2 轮比较 n-2 次，...，
 > 第 n-1 轮比较 1 次。总和 = (n-1)+(n-2)+...+1 = n(n-1)/2 = O(n^2)。
 
-## ==========================================================================
+---
 ### 第三节: 选择排序 — 每轮选最小，放到最前面
-## ==========================================================================
+---
 
 3.1 排序原理
 -------------
@@ -340,30 +350,34 @@ minIdx == i, 不需要交换
 3.3 核心代码
 -------------
 
-```cpp
-void selectionSort(vector<int>& arr) {
-    int n = arr.size();
-    for (int i = 0; i < n - 1; i++) {       // 外层: n-1 轮
-        int minIdx = i;                       // 假设当前位是最小的
-        for (int j = i + 1; j < n; j++) {     // 在未排序区找真正的最小值
-            if (arr[j] < arr[minIdx]) {
-                minIdx = j;                   // 更新最小值位置
-            }
-        }
-        if (minIdx != i) {                    // 如果最小值不在当前位置
-            swap(arr[i], arr[minIdx]);        // 把最小值交换到前方
-        }
-    }
-}
+```pseudocode
+FUNCTION selectionSort(arr):
+    n = LENGTH(arr)
+    FOR i FROM 0 TO n - 2:                     // 外层: n-1 轮
+        minIdx = i                              // 假设当前位是最小的
+        FOR j FROM i + 1 TO n - 1:              // 在未排序区找真正的最小值
+            IF arr[j] < arr[minIdx] THEN
+                minIdx = j                      // 更新最小值位置
+            END IF
+        END FOR
+        IF minIdx != i THEN                     // 如果最小值不在当前位置
+            SWAP(arr[i], arr[minIdx])           // 把最小值交换到前方
+        END IF
+    END FOR
+END FUNCTION
 ```
 
 | 代码行 | 作用 |
 |--------|------|
-| `for (int i = 0; i < n-1; i++)` | 每轮确定一个元素的位置，共 n-1 轮 |
+| `FOR i FROM 0 TO n-2` | 每轮确定一个元素的位置，共 n-1 轮 |
 | `minIdx = i` | 先假设未排序区的第一个就是最小值 |
-| `for (int j = i+1; j < n; j++)` | 扫描剩余未排序元素 |
-| `if (arr[j] < arr[minIdx])` | 找到更小的就更新 minIdx |
-| `swap(arr[i], arr[minIdx])` | 每轮最多交换一次 |
+| `FOR j FROM i+1 TO n-1` | 扫描剩余未排序元素 |
+| `IF arr[j] < arr[minIdx]` | 找到更小的就更新 minIdx |
+| `SWAP(arr[i], arr[minIdx])` | 每轮最多交换一次 |
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 3.4 复杂度分析
 ---------------
@@ -379,9 +393,9 @@ void selectionSort(vector<int>& arr) {
 > 选择排序与冒泡排序同为 O(n^2)，但选择排序的交换次数只有 O(n)，
 > 因此在对写操作代价高的场景（如 Flash 存储）更有优势。
 
-## ==========================================================================
+---
 ### 第四节: 插入排序 — 像理扑克牌一样，逐张插入
-## ==========================================================================
+---
 
 4.1 排序原理
 -------------
@@ -422,7 +436,7 @@ flowchart TD
 
 j=0: arr[0]=5 > 3 → 把5往后挪一位
      数组变为: [ 5   5 | 8   1   2 ]
-               (3被覆盖了, 但存在key变量中)
+              (3被覆盖了, 但存在key变量中)
 
 j=-1: j<0, 循环停止
 
@@ -452,15 +466,15 @@ j=1: arr[1]=5 < 8 → 不需要挪动, 直接停止
 
 j=2: arr[2]=8 > 1 → 把8往后挪一位
      数组变为: [ 3   5   8   8 | 2 ]
-     (索引3变成了8)
+    (索引3变成了8)
 
 j=1: arr[1]=5 > 1 → 把5往后挪一位
      数组变为: [ 3   5   5   8 | 2 ]
-     (索引2变成了5)
+    (索引2变成了5)
 
 j=0: arr[0]=3 > 1 → 把3往后挪一位
      数组变为: [ 3   3   5   8 | 2 ]
-     (索引1变成了3)
+    (索引1变成了3)
 
 j=-1: j<0, 循环停止
 
@@ -501,27 +515,31 @@ j=0: arr[0]=1 < 2 → 1 不大于 2, 停止
 4.3 核心代码
 -------------
 
-```cpp
-void insertionSort(vector<int>& arr) {
-    int n = arr.size();
-    for (int i = 1; i < n; i++) {           // 从第2个元素开始
-        int key = arr[i];                     // 保存当前要插入的值
-        int j = i - 1;                        // 从已排序区末尾开始比较
-        while (j >= 0 && arr[j] > key) {      // 比 key 大的元素
-            arr[j + 1] = arr[j];              // 统统往后挪一位
-            j--;                              // 继续向前找位置
-        }
-        arr[j + 1] = key;                     // key 归位
-    }
-}
+```pseudocode
+FUNCTION insertionSort(arr):
+    n = LENGTH(arr)
+    FOR i FROM 1 TO n - 1:                    // 从第2个元素开始
+        key = arr[i]                           // 保存当前要插入的值
+        j = i - 1                              // 从已排序区末尾开始比较
+        WHILE j >= 0 AND arr[j] > key:         // 比 key 大的元素
+            arr[j + 1] = arr[j]                // 统统往后挪一位
+            j = j - 1                           // 继续向前找位置
+        END WHILE
+        arr[j + 1] = key                       // key 归位
+    END FOR
+END FUNCTION
 ```
 
 | 代码行 | 作用 |
 |--------|------|
-| `int key = arr[i]` | 保存当前元素，因为挪位时会覆盖它 |
-| `while (j >= 0 && arr[j] > key)` | 在已排序区从后往前找插入位置 |
+| `key = arr[i]` | 保存当前元素，因为挪位时会覆盖它 |
+| `WHILE j >= 0 AND arr[j] > key` | 在已排序区从后往前找插入位置 |
 | `arr[j + 1] = arr[j]` | 比 key 大的元素统统向后挪一位 |
 | `arr[j + 1] = key` | 循环结束后 j 停在 ≤key 的位置，插在它后面 |
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 4.4 复杂度分析
 ---------------
@@ -535,11 +553,11 @@ void insertionSort(vector<int>& arr) {
 
 > **小数据王者**：虽然插入排序也是 O(n^2)，但在数据量小（n < 50）时，
 > 它的常数因子极小（连续内存挪动很快），实际运行速度往往超过快速排序。
-> C++ 标准库的 std::sort 在子数组小于 16 个元素时会切换到插入排序。
+> 工业级排序实现在子数组小于 16 个元素时通常切换到插入排序。
 
-## ==========================================================================
+---
 ### 第五节: 希尔排序 — 分组跳跃，大步快跑
-## ==========================================================================
+---
 
 5.1 排序原理
 -------------
@@ -619,36 +637,42 @@ flowchart TD
 5.3 核心代码
 -------------
 
-```cpp
-void shellSort(vector<int>& arr) {
-    int n = arr.size();
+```pseudocode
+FUNCTION shellSort(arr):
+    n = LENGTH(arr)
     // 使用 Knuth 间隔序列: 1, 4, 13, 40, 121, ...
-    int gap = 1;
-    while (gap < n / 3) gap = 3 * gap + 1;
+    gap = 1
+    WHILE gap < n // 3:
+        gap = 3 * gap + 1
+    END WHILE
 
-    while (gap > 0) {
+    WHILE gap > 0:
         // 对每个分组进行插入排序
-        for (int i = gap; i < n; i++) {
-            int temp = arr[i];
-            int j = i;
+        FOR i FROM gap TO n - 1:
+            temp = arr[i]
+            j = i
             // 在当前分组内向前找插入位置
-            while (j >= gap && arr[j - gap] > temp) {
-                arr[j] = arr[j - gap];
-                j -= gap;
-            }
-            arr[j] = temp;
-        }
-        gap = (gap - 1) / 3;  // 缩小间隔
-    }
-}
+            WHILE j >= gap AND arr[j - gap] > temp:
+                arr[j] = arr[j - gap]
+                j = j - gap
+            END WHILE
+            arr[j] = temp
+        END FOR
+        gap = (gap - 1) // 3    // 缩小间隔 (Knuth 递推)
+    END WHILE
+END FUNCTION
 ```
 
 | 代码行 | 作用 |
 |--------|------|
-| `while (gap < n/3) gap = 3*gap+1` | 计算最大初始 gap (Knuth 序列) |
-| `for (int i = gap; i < n; i++)` | 对每个分组逐元素插入排序 |
+| `WHILE gap < n//3: gap = 3*gap+1` | 计算最大初始 gap (Knuth 序列) |
+| `FOR i FROM gap TO n-1` | 对每个分组逐元素插入排序 |
 | `arr[j - gap] > temp` | 在当前分组内比较 (跨 gap 比较) |
-| `gap = (gap - 1) / 3` | Knuth 序列逆推, 逐步缩小间隔 |
+| `gap = (gap - 1) // 3` | Knuth 序列逆推, 逐步缩小间隔 |
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 | 情况 | 时间复杂度 | 说明 |
 |------|-----------|------|
@@ -658,9 +682,9 @@ void shellSort(vector<int>& arr) {
 | 空间 | O(1) | 原地排序 |
 | 稳定性 | 不稳定 | 分组排序会打乱相等元素的相对顺序 |
 
-## ==========================================================================
+---
 ### 第六节: 归并排序 — 分而治之，合二为一
-## ==========================================================================
+---
 
 6.1 排序原理
 -------------
@@ -741,45 +765,58 @@ graph TD
 6.3 核心代码
 -------------
 
-```cpp
+```pseudocode
 // 合并两个有序子数组 arr[left..mid] 和 arr[mid+1..right]
-void merge(vector<int>& arr, int left, int mid, int right) {
-    vector<int> temp(right - left + 1);   // 临时数组存合并结果
-    int i = left;      // 左子数组指针
-    int j = mid + 1;   // 右子数组指针
-    int k = 0;         // 临时数组指针
+FUNCTION merge(arr, left, mid, right):
+    temp = ARRAY of size (right - left + 1)    // 临时数组存合并结果
+    i = left       // 左子数组指针
+    j = mid + 1    // 右子数组指针
+    k = 0          // 临时数组指针
 
     // 两边都有元素时, 取较小者
-    while (i <= mid && j <= right) {
-        if (arr[i] <= arr[j])
-            temp[k++] = arr[i++];   // 左边的小(或相等), 取左边
-        else
-            temp[k++] = arr[j++];   // 右边的小, 取右边
-    }
+    WHILE i <= mid AND j <= right:
+        IF arr[i] <= arr[j] THEN
+            temp[k] = arr[i]    // 左边的小(或相等), 取左边
+            i = i + 1
+        ELSE
+            temp[k] = arr[j]    // 右边的小, 取右边
+            j = j + 1
+        END IF
+        k = k + 1
+    END WHILE
     // 把剩余元素直接追加
-    while (i <= mid) temp[k++] = arr[i++];
-    while (j <= right) temp[k++] = arr[j++];
+    WHILE i <= mid:
+        temp[k] = arr[i]; i = i + 1; k = k + 1
+    END WHILE
+    WHILE j <= right:
+        temp[k] = arr[j]; j = j + 1; k = k + 1
+    END WHILE
 
     // 复制回原数组
-    for (int p = 0; p < k; p++)
-        arr[left + p] = temp[p];
-}
+    FOR p FROM 0 TO k - 1:
+        arr[left + p] = temp[p]
+    END FOR
+END FUNCTION
 
-void mergeSort(vector<int>& arr, int left, int right) {
-    if (left >= right) return;            // 子数组长度 ≤1, 无需排序
-    int mid = left + (right - left) / 2;   // 防止溢出的写法
-    mergeSort(arr, left, mid);             // 递归排左边
-    mergeSort(arr, mid + 1, right);        // 递归排右边
-    merge(arr, left, mid, right);          // 合并左右
-}
+FUNCTION mergeSort(arr, left, right):
+    IF left >= right THEN RETURN             // 子数组长度 ≤1, 无需排序
+    mid = left + (right - left) // 2          // 防止溢出的写法
+    mergeSort(arr, left, mid)                 // 递归排左边
+    mergeSort(arr, mid + 1, right)            // 递归排右边
+    merge(arr, left, mid, right)              // 合并左右
+END FUNCTION
 ```
 
 | 代码行 | 作用 |
 |--------|------|
-| `if (left >= right) return` | 递归终止条件：子数组 ≤1 个元素 |
-| `mid = left + (right-left)/2` | 防溢出计算中点 (等价于 (left+right)/2) |
+| `IF left >= right THEN RETURN` | 递归终止条件：子数组 ≤1 个元素 |
+| `mid = left + (right-left)//2` | 防溢出计算中点 (等价于 (left+right)//2) |
 | `arr[i] <= arr[j]` | <= 保证稳定性（相等时取左边，保持原顺序） |
-| `temp[k++] = arr[i++]` | 后置++：先赋值，再移动指针 |
+| `temp[k] = arr[i]; i = i + 1; k = k + 1` | 后置递增：先赋值，再移动指针 |
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 6.4 复杂度分析
 ---------------
@@ -796,9 +833,9 @@ void mergeSort(vector<int>& arr, int left, int right) {
 > T(n) = 2T(n/2) + O(n)，其中 O(n) 是合并开销。
 > 由主定理，a=2, b=2, d=1, log_b(a)=1=d，故 T(n) = O(n log n)。
 
-## ==========================================================================
+---
 ### 第七节: 快速排序 — 选基准、分左右、递归排
-## ==========================================================================
+---
 
 7.1 排序原理
 -------------
@@ -831,7 +868,7 @@ flowchart TD
        i = 0  (指向"下一个小于pivot的元素应该放的位置")
 
 当前数组: [ 5   3   8   1 | 2 ]
-              i             pivot
+             i             pivot
 ```
 
 ```text
@@ -839,17 +876,17 @@ flowchart TD
 扫描 j=1: arr[1]=3, 3 >= 2 → 不动, i 仍为 0
 扫描 j=2: arr[2]=8, 8 >= 2 → 不动, i 仍为 0
 扫描 j=3: arr[3]=1, 1 < 2  → swap(arr[i],arr[j]), 即 swap(arr[0],arr[3])
-          i=0, j=3 → 交换 arr[0] 的 5 和 arr[3] 的 1
-          数组变为: [ 1   3   8   5 | 2 ]
-          i 移到 1
+         i=0, j=3 → 交换 arr[0] 的 5 和 arr[3] 的 1
+         数组变为: [ 1   3   8   5 | 2 ]
+         i 移到 1
 
 扫描完毕 (j>=high, 跳出循环)
 
 最后一步: swap(arr[i], arr[high])
-          即 swap(arr[1], arr[4]) → 交换 3 和 2
-          数组变为: [ 1 | 2 | 8   5   3 ]
-                       ↑    ↑
-                      左边  pivot归位
+         即 swap(arr[1], arr[4]) → 交换 3 和 2
+         数组变为: [ 1 | 2 | 8   5   3 ]
+                      ↑    ↑
+                     左边  pivot归位
 
 pivot=2 已归位到索引 1。
 左边 [1] 只有一个元素, 递归结束。
@@ -879,36 +916,40 @@ pivot=2 已归位到索引 1。
 7.3 核心代码
 -------------
 
-```cpp
-int partition(vector<int>& arr, int low, int high) {
-    int pivot = arr[high];          // 选最右元素为基准
-    int i = low;                    // i: 小于区的右边界
+```pseudocode
+FUNCTION partition(arr, low, high):
+    pivot = arr[high]                         // 选最右元素为基准
+    i = low                                   // i: 小于区的右边界
 
-    for (int j = low; j < high; j++) {
-        if (arr[j] < pivot) {        // 发现一个小于 pivot 的元素
-            swap(arr[i], arr[j]);    // 交换到小于区
-            i++;                     // 小于区扩大
-        }
-    }
-    swap(arr[i], arr[high]);         // pivot 归位到正确位置
-    return i;                        // 返回 pivot 的最终位置
-}
+    FOR j FROM low TO high - 1:
+        IF arr[j] < pivot THEN                // 发现一个小于 pivot 的元素
+            SWAP(arr[i], arr[j])              // 交换到小于区
+            i = i + 1                         // 小于区扩大
+        END IF
+    END FOR
+    SWAP(arr[i], arr[high])                   // pivot 归位到正确位置
+    RETURN i                                  // 返回 pivot 的最终位置
+END FUNCTION
 
-void quickSort(vector<int>& arr, int low, int high) {
-    if (low < high) {
-        int p = partition(arr, low, high);   // 分区, p 是 pivot 位置
-        quickSort(arr, low, p - 1);          // 排左边
-        quickSort(arr, p + 1, high);         // 排右边
-    }
-}
+FUNCTION quickSort(arr, low, high):
+    IF low < high THEN
+        p = partition(arr, low, high)         // 分区, p 是 pivot 位置
+        quickSort(arr, low, p - 1)            // 排左边
+        quickSort(arr, p + 1, high)           // 排右边
+    END IF
+END FUNCTION
 ```
 
 | 代码行 | 作用 |
 |--------|------|
-| `int pivot = arr[high]` | 选最右为基准（简单但有序时会退化，见下方优化） |
-| `if (arr[j] < pivot)` | 发现小于 pivot 的，交换到前面 |
-| `swap(arr[i], arr[high])` | 最终把 pivot 放到正确位置 |
-| `return i` | pivot 的最终位置，左右子数组以此为界 |
+| `pivot = arr[high]` | 选最右为基准（简单但有序时会退化，见下方优化） |
+| `IF arr[j] < pivot` | 发现小于 pivot 的，交换到前面 |
+| `SWAP(arr[i], arr[high])` | 最终把 pivot 放到正确位置 |
+| `RETURN i` | pivot 的最终位置，左右子数组以此为界 |
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 7.4 复杂度分析与优化
 ---------------------
@@ -927,22 +968,26 @@ void quickSort(vector<int>& arr, int low, int high) {
 7.5 优化：三数取中选 pivot
 ----------------------------
 
-```cpp
-int medianOfThree(vector<int>& arr, int low, int high) {
-    int mid = low + (high - low) / 2;
+```pseudocode
+FUNCTION medianOfThree(arr, low, high):
+    mid = low + (high - low) // 2
     // 三数排序: 确保 arr[low] <= arr[mid] <= arr[high]
-    if (arr[low] > arr[mid])  swap(arr[low], arr[mid]);
-    if (arr[low] > arr[high]) swap(arr[low], arr[high]);
-    if (arr[mid] > arr[high]) swap(arr[mid], arr[high]);
+    IF arr[low] > arr[mid] THEN SWAP(arr[low], arr[mid])
+    IF arr[low] > arr[high] THEN SWAP(arr[low], arr[high])
+    IF arr[mid] > arr[high] THEN SWAP(arr[mid], arr[high])
     // 把中位数换到最右作为 pivot
-    swap(arr[mid], arr[high]);
-    return arr[high];
-}
+    SWAP(arr[mid], arr[high])
+    RETURN arr[high]
+END FUNCTION
 ```
 
-## ==========================================================================
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
+---
 ### 第八节: 堆排序 — 借助完全二叉树的力量
-## ==========================================================================
+---
 
 8.1 排序原理
 -------------
@@ -1030,43 +1075,50 @@ largest(3) != i(1) → 交换 arr[1] 和 arr[3]
 8.4 核心代码
 -------------
 
-```cpp
-void heapify(vector<int>& arr, int n, int i) {
-    int largest = i;                     // 假设当前节点最大
-    int left = 2 * i + 1;                // 左孩子
-    int right = 2 * i + 2;               // 右孩子
+```pseudocode
+FUNCTION heapify(arr, n, i):
+    largest = i                              // 假设当前节点最大
+    left = 2 * i + 1                         // 左孩子
+    right = 2 * i + 2                        // 右孩子
 
-    if (left < n && arr[left] > arr[largest])
-        largest = left;                   // 左孩子更大
-    if (right < n && arr[right] > arr[largest])
-        largest = right;                  // 右孩子更大
+    IF left < n AND arr[left] > arr[largest] THEN
+        largest = left                       // 左孩子更大
+    END IF
+    IF right < n AND arr[right] > arr[largest] THEN
+        largest = right                      // 右孩子更大
+    END IF
 
-    if (largest != i) {                   // 如果最大不是当前节点
-        swap(arr[i], arr[largest]);       // 交换, 把大值"浮"上来
-        heapify(arr, n, largest);          // 递归调整受影响的子树
-    }
-}
+    IF largest != i THEN                     // 如果最大不是当前节点
+        SWAP(arr[i], arr[largest])           // 交换, 把大值"浮"上来
+        heapify(arr, n, largest)             // 递归调整受影响的子树
+    END IF
+END FUNCTION
 
-void heapSort(vector<int>& arr) {
-    int n = arr.size();
+FUNCTION heapSort(arr):
+    n = LENGTH(arr)
     // 步骤1: 建堆 (自底向上, 从最后一个非叶节点开始)
-    for (int i = n / 2 - 1; i >= 0; i--)
-        heapify(arr, n, i);
+    FOR i FROM n // 2 - 1 DOWNTO 0:
+        heapify(arr, n, i)
+    END FOR
 
     // 步骤2: 逐一提取最大值
-    for (int i = n - 1; i > 0; i--) {
-        swap(arr[0], arr[i]);             // 最大值移到末尾
-        heapify(arr, i, 0);               // 对剩余堆重新调整
-    }
-}
+    FOR i FROM n - 1 DOWNTO 1:
+        SWAP(arr[0], arr[i])                 // 最大值移到末尾
+        heapify(arr, i, 0)                   // 对剩余堆重新调整
+    END FOR
+END FUNCTION
 ```
 
 | 代码行 | 作用 |
 |--------|------|
-| `for (int i = n/2-1; i >= 0; i--)` | 从最后一个非叶节点开始建堆 |
+| `FOR i FROM n//2-1 DOWNTO 0` | 从最后一个非叶节点开始建堆 |
 | `heapify(arr, n, i)` | 确保以 i 为根的子树满足最大堆 |
-| `swap(arr[0], arr[i])` | 将当前堆的最大值（根）移到已排序区间 |
+| `SWAP(arr[0], arr[i])` | 将当前堆的最大值（根）移到已排序区间 |
 | `heapify(arr, i, 0)` | 把新的根下沉到正确位置，恢复堆性质 |
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 8.5 复杂度分析
 ---------------
@@ -1081,9 +1133,9 @@ void heapSort(vector<int>& arr) {
 > **建堆 O(n) 证明概要**：树有 log n 层，第 h 层最多有 n/2^(h+1) 个节点，
 > 每个下沉最多 h 层。总下沉次数 = sum(h * n/2^(h+1)) <= n = O(n)。
 
-## ==========================================================================
+---
 ### 第九节: 基数排序 — 不比较大小，按位排序
-## ==========================================================================
+---
 
 9.1 排序原理
 -------------
@@ -1172,49 +1224,60 @@ flowchart TD
 9.3 核心代码
 -------------
 
-```cpp
+```pseudocode
 // 对 exp 位做稳定计数排序
-void countingSortByDigit(vector<int>& arr, int exp) {
-    int n = arr.size();
-    vector<int> output(n);
-    int count[10] = {0};                  // 计数数组, 每位 0-9
+FUNCTION countingSortByDigit(arr, exp):
+    n = LENGTH(arr)
+    output = ARRAY of size n
+    count = ARRAY[0..9] filled with 0       // 计数数组, 每位 0-9
 
     // 步骤1: 统计每个数字出现的次数
-    for (int i = 0; i < n; i++)
-        count[(arr[i] / exp) % 10]++;
+    FOR i FROM 0 TO n - 1:
+        digit = (arr[i] // exp) MOD 10
+        count[digit] = count[digit] + 1
+    END FOR
 
     // 步骤2: 前缀和 → count[i] 表示数字 i 应放的最后一个位置 +1
-    for (int i = 1; i < 10; i++)
-        count[i] += count[i - 1];
+    FOR i FROM 1 TO 9:
+        count[i] = count[i] + count[i - 1]
+    END FOR
 
     // 步骤3: 从后往前遍历 → 保证稳定性
-    for (int i = n - 1; i >= 0; i--) {
-        int digit = (arr[i] / exp) % 10;
-        output[count[digit] - 1] = arr[i];   // 放入正确位置
-        count[digit]--;                       // 该数字的计数减 1
-    }
+    FOR i FROM n - 1 DOWNTO 0:
+        digit = (arr[i] // exp) MOD 10
+        output[count[digit] - 1] = arr[i]   // 放入正确位置
+        count[digit] = count[digit] - 1     // 该数字的计数减 1
+    END FOR
 
     // 步骤4: 复制回原数组
-    for (int i = 0; i < n; i++)
-        arr[i] = output[i];
-}
+    FOR i FROM 0 TO n - 1:
+        arr[i] = output[i]
+    END FOR
+END FUNCTION
 
-void radixSort(vector<int>& arr) {
-    if (arr.empty()) return;
-    int maxVal = *max_element(arr.begin(), arr.end());
+FUNCTION radixSort(arr):
+    IF LENGTH(arr) == 0 THEN RETURN
+    maxVal = MAX(arr)
     // 从个位开始, 逐位计数排序
-    for (int exp = 1; maxVal / exp > 0; exp *= 10)
-        countingSortByDigit(arr, exp);
-}
+    exp = 1
+    WHILE maxVal // exp > 0:
+        countingSortByDigit(arr, exp)
+        exp = exp * 10
+    END WHILE
+END FUNCTION
 ```
 
 | 代码行 | 作用 |
 |--------|------|
-| `(arr[i] / exp) % 10` | 提取第 exp 位的数字 |
-| `count[(arr[i]/exp)%10]++` | 统计该位 0-9 各出现多少次 |
-| `count[i] += count[i-1]` | 前缀和, count[i] 变成 ≤i 的元素总数 |
-| `for (int i = n-1; i >= 0; i--)` | 倒序遍历, 保证稳定性 |
+| `(arr[i] // exp) MOD 10` | 提取第 exp 位的数字 |
+| `count[digit] = count[digit] + 1` | 统计该位 0-9 各出现多少次 |
+| `count[i] = count[i] + count[i-1]` | 前缀和, count[i] 变成 ≤i 的元素总数 |
+| `FOR i FROM n-1 DOWNTO 0` | 倒序遍历, 保证稳定性 |
 | `output[count[digit]-1] = arr[i]` | 把元素放到排序后的正确位置 |
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 9.4 复杂度分析
 ---------------
@@ -1230,9 +1293,9 @@ void radixSort(vector<int>& arr) {
 > 当 k 较小（相对于 n）时，基数排序可以突破比较排序的 O(n log n) 下界。
 > 但它只适用于整数（或可映射为整数的数据），对浮点数需要特殊处理。
 
-## ==========================================================================
+---
 ### 第十节: 八大排序综合对比与选型指南
-## ==========================================================================
+---
 
 10.1 综合对比表
 ----------------
@@ -1267,16 +1330,16 @@ flowchart TD
 10.3 C++ 标准库的做法
 ----------------------
 
-C++ `std::sort` 采用的是**内省排序（Introsort）**——结合了快速排序、堆排序和插入排序：
+工业级排序实现通常采用**内省排序（Introsort）**, 结合快速排序、堆排序和插入排序：
 - 默认使用快速排序
-- 递归深度超过 2*log2(n) 时自动切换为堆排序，避免 O(n^2) 退化
+- 递归深度超过 2*log2(n) 时自动切换为堆排序, 避免 O(n^2) 退化
 - 子数组长度小于阈值（通常 16）时切换为插入排序
 
-由此可见，在工程中不需要手写排序——`std::sort` 已经是经过高度优化的工业级实现。
+由此可见, 在工程中可以直接使用标准库的排序实现, 但手写排序有助于理解算法本质。
 
-## ==========================================================================
+---
 ### 第十一节: 章节练习
-## ==========================================================================
+---
 
 11.1 判断题
 ------------
@@ -1356,11 +1419,14 @@ C++ `std::sort` 采用的是**内省排序（Introsort）**——结合了快速
 
 > [!question] 选择题 4
 > 以下代码是什么排序？
-> ```cpp
-> for (int i = 0; i < n-1; i++)
->     for (int j = 0; j < n-1-i; j++)
->         if (a[j] > a[j+1])
->             swap(a[j], a[j+1]);
+> ```pseudocode
+> FOR i FROM 0 TO n-2:
+>     FOR j FROM 0 TO n-2-i:
+>         IF a[j] > a[j+1] THEN
+>             SWAP(a[j], a[j+1])
+>         END IF
+>     END FOR
+> END FOR
 > ```
 > - [ ] A. 选择排序
 > - [ ] B. 插入排序
@@ -1435,7 +1501,7 @@ C++ `std::sort` 采用的是**内省排序（Introsort）**——结合了快速
 
 **练习 1：排序性能测试器**
 
-对每种排序算法，分别测试 n=100, 1000, 10000, 100000 的随机数组，用 `<chrono>` 记录运行时间，
+对每种排序算法，分别测试 n=100, 1000, 10000, 100000 的随机数组，记录运行时间，
 制成性能对比表，验证理论复杂度的正确性。
 
 **练习 2：稳定快速排序**
@@ -1453,14 +1519,14 @@ C++ `std::sort` 采用的是**内省排序（Introsort）**——结合了快速
 **练习 4：外部排序**
 
 当数据量超过内存时（如 1GB 的整数文件，只有 100MB 内存），如何完成排序？
-简述原理（归并排序天然适合外排），并用 C++ 文件流模拟。
+简述原理（归并排序天然适合外排），并用语言提供的文件流模拟。
 
-## --------------------------------------------------------------------------
+***
 ## 知识网络
-## --------------------------------------------------------------------------
+***
 
 - **下一章**: [[G_哈希表_HashTable]] | **返回**: [[DSA学习路线]]
 - **相关结构**: [[C_堆_Heap]] (堆排序), [[G_哈希表_HashTable]] (基数排序计数)
 - **算法技巧**: [[../算法技巧/排序]] | [[../算法技巧/二分查找]] | [[../算法技巧/递推递归]] | [[../算法技巧/暴力枚举]]
-- **实用参考**: [cppreference: std::sort](https://en.cppreference.com/w/cpp/algorithm/sort)
+- **实用参考**: 各大语言的排序文档 (C: qsort, C++: std::sort, Python: sorted)
 - **练习平台**: [洛谷 P1177 快速排序](https://www.luogu.com.cn/problem/P1177)

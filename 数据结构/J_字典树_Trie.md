@@ -1,5 +1,5 @@
 ## ==========================================================================
-C++ 数据结构教程 — 字典树 (Trie)
+数据结构教程 — 字典树 (Trie)
 ## ==========================================================================
 
 ## 📋 章节概述
@@ -64,71 +64,67 @@ graph TD
 
 1.3 标准实现（数组方式）
 
-```cpp
-#include <iostream>
-#include <string>
-#include <vector>
-
-class Trie {
-private:
-    struct TrieNode {
+```pseudocode
+CLASS Trie {
+PRIVATE:
+    STRUCT TrieNode {
         TrieNode* children[26];
         bool isEnd;
         int prefixCount;
 
-        TrieNode() : isEnd(false), prefixCount(0) {
+        TrieNode() : isEnd(FALSE), prefixCount(0) {
             for (int i = 0; i < 26; ++i)
-                children[i] = nullptr;
+                children[i] = NULL;
         }
     };
 
     TrieNode* root;
 
-    void destroy(TrieNode* node) {
+    FUNCTION destroy(TrieNode* node) {
         if (!node) return;
         for (int i = 0; i < 26; ++i)
             destroy(node->children[i]);
-        delete node;
+        DELETE node;
     }
 
-public:
-    Trie() { root = new TrieNode(); }
+PUBLIC:
+    Trie() { root = NEW TrieNode(); }
 
     ~Trie() { destroy(root); }
 
-    void insert(const std::string& word) {
+    FUNCTION insert(string word) {
         TrieNode* curr = root;
         for (char c : word) {
             int idx = c - 'a';
             if (!curr->children[idx])
-                curr->children[idx] = new TrieNode();
+                curr->children[idx] = NEW TrieNode();
             curr = curr->children[idx];
             curr->prefixCount++;
         }
-        curr->isEnd = true;
+        curr->isEnd = TRUE;
     }
 
-    bool search(const std::string& word) const {
+    FUNCTION search(string word) {
         TrieNode* curr = root;
         for (char c : word) {
             int idx = c - 'a';
-            if (!curr->children[idx]) return false;
+            if (!curr->children[idx]) return FALSE;
             curr = curr->children[idx];
         }
         return curr->isEnd;
     }
 
-    bool startsWith(const std::string& prefix) const {
+    FUNCTION startsWith(string prefix) {
         TrieNode* curr = root;
         for (char c : prefix) {
             int idx = c - 'a';
-            if (!curr->children[idx]) return false;
+            if (!curr->children[idx]) return FALSE;
             curr = curr->children[idx];
         }
-        return true;
+        return TRUE;
     }
 
-    int countPrefix(const std::string& prefix) const {
+    FUNCTION countPrefix(string prefix) {
         TrieNode* curr = root;
         for (char c : prefix) {
             int idx = c - 'a';
@@ -138,95 +134,95 @@ public:
         return curr->prefixCount;
     }
 
-    bool remove(const std::string& word) {
+    FUNCTION remove(string word) {
         return removeHelper(root, word, 0);
     }
 
-private:
-    bool removeHelper(TrieNode* node, const std::string& word, int depth) {
-        if (!node) return false;
-        if (depth == (int)word.size()) {
-            if (!node->isEnd) return false;
-            node->isEnd = false;
-            return true;
+PRIVATE:
+    FUNCTION removeHelper(TrieNode* node, string word, int depth) {
+        if (!node) return FALSE;
+        if (depth == word.size()) {
+            if (!node->isEnd) return FALSE;
+            node->isEnd = FALSE;
+            return TRUE;
         }
         int idx = word[depth] - 'a';
         if (!removeHelper(node->children[idx], word, depth + 1))
-            return false;
+            return FALSE;
         node->children[idx]->prefixCount--;
         if (node->children[idx]->prefixCount == 0 && !node->children[idx]->isEnd) {
             destroy(node->children[idx]);
-            node->children[idx] = nullptr;
+            node->children[idx] = NULL;
         }
-        return true;
+        return TRUE;
     }
 };
 
-int main() {
+FUNCTION main() {
     Trie trie;
     trie.insert("apple");
     trie.insert("app");
     trie.insert("application");
     trie.insert("banana");
 
-    std::cout << std::boolalpha;
-    std::cout << "search 'apple': " << trie.search("apple") << std::endl;
-    std::cout << "search 'app': " << trie.search("app") << std::endl;
-    std::cout << "search 'ap': " << trie.search("ap") << std::endl;
-    std::cout << "startsWith 'app': " << trie.startsWith("app") << std::endl;
-    std::cout << "countPrefix 'app': " << trie.countPrefix("app") << std::endl;
+    PRINT boolalpha;
+    PRINT "search 'apple': " + trie.search("apple") + NEWLINE;
+    PRINT "search 'app': " + trie.search("app") + NEWLINE;
+    PRINT "search 'ap': " + trie.search("ap") + NEWLINE;
+    PRINT "startsWith 'app': " + trie.startsWith("app") + NEWLINE;
+    PRINT "countPrefix 'app': " + trie.countPrefix("app") + NEWLINE;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 1.4 哈希表实现（支持任意字符集）
 
-```cpp
-#include <iostream>
-#include <string>
-#include <unordered_map>
-#include <vector>
-
-class TrieMap {
-private:
-    struct TrieNode {
-        std::unordered_map<char, TrieNode*> children;
-        bool isEnd = false;
+```pseudocode
+CLASS TrieMap {
+PRIVATE:
+    STRUCT TrieNode {
+        unordered_map<char, TrieNode*> children;
+        bool isEnd = FALSE;
         int value = 0;
     };
 
     TrieNode* root;
 
-public:
-    TrieMap() { root = new TrieNode(); }
+PUBLIC:
+    TrieMap() { root = NEW TrieNode(); }
 
-    void insert(const std::string& key, int val) {
+    FUNCTION insert(string key, int val) {
         TrieNode* curr = root;
         for (char c : key) {
             if (curr->children.find(c) == curr->children.end())
-                curr->children[c] = new TrieNode();
+                curr->children[c] = NEW TrieNode();
             curr = curr->children[c];
         }
-        curr->isEnd = true;
+        curr->isEnd = TRUE;
         curr->value = val;
     }
 
-    int get(const std::string& key) const {
+    FUNCTION get(string key) {
         TrieNode* curr = root;
         for (char c : key) {
-            auto it = curr->children.find(c);
+            it = curr->children.find(c);
             if (it == curr->children.end()) return -1;
             curr = it->second;
         }
         return curr->isEnd ? curr->value : -1;
     }
 
-    std::vector<std::string> getAllWithPrefix(const std::string& prefix) const {
-        std::vector<std::string> result;
+    vector<string> getAllWithPrefix(string prefix) {
+        vector<string> result;
         TrieNode* curr = root;
         for (char c : prefix) {
-            auto it = curr->children.find(c);
+            it = curr->children.find(c);
             if (it == curr->children.end()) return result;
             curr = it->second;
         }
@@ -234,57 +230,56 @@ public:
         return result;
     }
 
-private:
-    void dfs(TrieNode* node, std::string current, std::vector<std::string>& result) const {
+PRIVATE:
+    FUNCTION dfs(TrieNode* node, string current, vector<string> result) {
         if (node->isEnd) result.push_back(current);
-        for (auto& [ch, child] : node->children) {
+        for ( [ch, child] : node->children) {
             dfs(child, current + ch, result);
         }
     }
 };
 
-int main() {
+FUNCTION main() {
     TrieMap trie;
     trie.insert("hello", 1);
     trie.insert("help", 2);
     trie.insert("heap", 3);
     trie.insert("world", 4);
 
-    auto words = trie.getAllWithPrefix("he");
-    std::cout << "以'he'开头的词: ";
-    for (const auto& w : words)
-        std::cout << w << " ";
-    std::cout << std::endl;
+    words = trie.getAllWithPrefix("he");
+    PRINT "以'he'开头的词: ";
+    for ( w : words)
+        PRINT w + " ";
+    PRINT endl;
 
     return 0;
 }
+
 ```
 
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
 ## ==========================================================================
-### 📖 第二节: 所有用法大全
+### 📖 第二节: 实现思路
 ## ==========================================================================
 
 2.1 自动补全功能
 
-```cpp
-#include <iostream>
-#include <string>
-#include <vector>
-#include <queue>
-#include <algorithm>
-
-class AutoComplete {
-private:
-    struct TrieNode {
+```pseudocode
+CLASS AutoComplete {
+PRIVATE:
+    STRUCT TrieNode {
         TrieNode* children[26]{};
-        bool isEnd = false;
+        bool isEnd = FALSE;
         int frequency = 0;
     };
 
     TrieNode* root;
 
-    void collectWords(TrieNode* node, std::string& current,
-                      std::vector<std::pair<std::string, int>>& results) {
+    FUNCTION collectWords(TrieNode* node, string current,
+                      vector<pair<string, int>> results) {
         if (node->isEnd)
             results.emplace_back(current, node->frequency);
         for (int i = 0; i < 26; ++i) {
@@ -296,22 +291,22 @@ private:
         }
     }
 
-public:
-    AutoComplete() { root = new TrieNode(); }
+PUBLIC:
+    AutoComplete() { root = NEW TrieNode(); }
 
-    void addWord(const std::string& word, int freq = 1) {
+    FUNCTION addWord(string word, int freq = 1) {
         TrieNode* curr = root;
         for (char c : word) {
             int idx = c - 'a';
             if (!curr->children[idx])
-                curr->children[idx] = new TrieNode();
+                curr->children[idx] = NEW TrieNode();
             curr = curr->children[idx];
         }
-        curr->isEnd = true;
+        curr->isEnd = TRUE;
         curr->frequency += freq;
     }
 
-    std::vector<std::string> suggest(const std::string& prefix, int topK = 5) {
+    vector<string> suggest(string prefix, int topK = 5) {
         TrieNode* curr = root;
         for (char c : prefix) {
             int idx = c - 'a';
@@ -319,21 +314,21 @@ public:
             curr = curr->children[idx];
         }
 
-        std::vector<std::pair<std::string, int>> candidates;
-        std::string current = prefix;
+        vector<pair<string, int>> candidates;
+        string current = prefix;
         collectWords(curr, current, candidates);
 
-        std::sort(candidates.begin(), candidates.end(),
-                  [](const auto& a, const auto& b) { return a.second > b.second; });
+        SORT(candidates.begin(), candidates.end(),
+                  []( a,  b) { return a.second > b.second; });
 
-        std::vector<std::string> result;
-        for (int i = 0; i < std::min(topK, (int)candidates.size()); ++i)
+        vector<string> result;
+        for (int i = 0; i < MIN(topK, candidates.size()); ++i)
             result.push_back(candidates[i].first);
         return result;
     }
 };
 
-int main() {
+FUNCTION main() {
     AutoComplete ac;
     ac.addWord("algorithm", 100);
     ac.addWord("alpha", 80);
@@ -342,54 +337,55 @@ int main() {
     ac.addWord("apple", 120);
     ac.addWord("application", 200);
 
-    auto suggestions = ac.suggest("al", 3);
-    std::cout << "输入'al'的补全建议: ";
-    for (const auto& s : suggestions)
-        std::cout << s << " ";
-    std::cout << std::endl;
+    suggestions = ac.suggest("al", 3);
+    PRINT "输入'al'的补全建议: ";
+    for ( s : suggestions)
+        PRINT s + " ";
+    PRINT endl;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.2 字典序排序
 
-```cpp
-#include <iostream>
-#include <string>
-#include <vector>
-
-class TrieSorter {
-private:
-    struct TrieNode {
+```pseudocode
+CLASS TrieSorter {
+PRIVATE:
+    STRUCT TrieNode {
         TrieNode* children[26]{};
         int wordCount = 0;
     };
     TrieNode* root;
 
-public:
-    TrieSorter() { root = new TrieNode(); }
+PUBLIC:
+    TrieSorter() { root = NEW TrieNode(); }
 
-    void insert(const std::string& word) {
+    FUNCTION insert(string word) {
         TrieNode* curr = root;
         for (char c : word) {
             int idx = c - 'a';
             if (!curr->children[idx])
-                curr->children[idx] = new TrieNode();
+                curr->children[idx] = NEW TrieNode();
             curr = curr->children[idx];
         }
         curr->wordCount++;
     }
 
-    std::vector<std::string> getSorted() {
-        std::vector<std::string> result;
-        std::string current;
+    vector<string> getSorted() {
+        vector<string> result;
+        string current;
         dfs(root, current, result);
         return result;
     }
 
-private:
-    void dfs(TrieNode* node, std::string& current, std::vector<std::string>& result) {
+PRIVATE:
+    FUNCTION dfs(TrieNode* node, string current, vector<string> result) {
         for (int i = 0; i < node->wordCount; ++i)
             result.push_back(current);
         for (int i = 0; i < 26; ++i) {
@@ -402,57 +398,58 @@ private:
     }
 };
 
-int main() {
+FUNCTION main() {
     TrieSorter sorter;
-    std::vector<std::string> words = {"banana", "apple", "cherry", "avocado", "blueberry"};
+    vector<string> words = {"banana", "apple", "cherry", "avocado", "blueberry"};
 
-    for (const auto& w : words)
+    for ( w : words)
         sorter.insert(w);
 
-    auto sorted = sorter.getSorted();
-    std::cout << "字典序排序: ";
-    for (const auto& w : sorted)
-        std::cout << w << " ";
-    std::cout << std::endl;
+    sorted = sorter.getSorted();
+    PRINT "字典序排序: ";
+    for ( w : sorted)
+        PRINT w + " ";
+    PRINT endl;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.3 最长公共前缀
 
-```cpp
-#include <iostream>
-#include <string>
-#include <vector>
-
-class TrieLCP {
-private:
-    struct TrieNode {
+```pseudocode
+CLASS TrieLCP {
+PRIVATE:
+    STRUCT TrieNode {
         TrieNode* children[26]{};
         int childCount = 0;
-        bool isEnd = false;
+        bool isEnd = FALSE;
     };
     TrieNode* root;
 
-public:
-    TrieLCP() { root = new TrieNode(); }
+PUBLIC:
+    TrieLCP() { root = NEW TrieNode(); }
 
-    void insert(const std::string& word) {
+    FUNCTION insert(string word) {
         TrieNode* curr = root;
         for (char c : word) {
             int idx = c - 'a';
             if (!curr->children[idx]) {
-                curr->children[idx] = new TrieNode();
+                curr->children[idx] = NEW TrieNode();
                 curr->childCount++;
             }
             curr = curr->children[idx];
         }
-        curr->isEnd = true;
+        curr->isEnd = TRUE;
     }
 
-    std::string longestCommonPrefix() {
-        std::string lcp;
+    FUNCTION longestCommonPrefix() {
+        string lcp;
         TrieNode* curr = root;
         while (curr->childCount == 1 && !curr->isEnd) {
             for (int i = 0; i < 26; ++i) {
@@ -467,48 +464,50 @@ public:
     }
 };
 
-int main() {
+FUNCTION main() {
     TrieLCP trie;
     trie.insert("flower");
     trie.insert("flow");
     trie.insert("flight");
 
-    std::cout << "最长公共前缀: " << trie.longestCommonPrefix() << std::endl;
+    PRINT "最长公共前缀: " + trie.longestCommonPrefix() + NEWLINE;
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.4 01字典树（求最大异或值）
 
-```cpp
-#include <iostream>
-#include <vector>
-
-class XORTrie {
-private:
-    struct TrieNode {
+```pseudocode
+CLASS XORTrie {
+PRIVATE:
+    STRUCT TrieNode {
         TrieNode* children[2]{};
     };
     TrieNode* root;
 
-public:
-    XORTrie() { root = new TrieNode(); }
+PUBLIC:
+    XORTrie() { root = NEW TrieNode(); }
 
-    void insert(int num) {
+    FUNCTION insert(int num) {
         TrieNode* curr = root;
         for (int i = 31; i >= 0; --i) {
-            int bit = (num >> i) & 1;
+            int bit = (num >> i)  1;
             if (!curr->children[bit])
-                curr->children[bit] = new TrieNode();
+                curr->children[bit] = NEW TrieNode();
             curr = curr->children[bit];
         }
     }
 
-    int queryMaxXor(int num) {
+    FUNCTION queryMaxXor(int num) {
         TrieNode* curr = root;
         int result = 0;
         for (int i = 31; i >= 0; --i) {
-            int bit = (num >> i) & 1;
+            int bit = (num >> i)  1;
             int want = 1 - bit;
             if (curr->children[want]) {
                 result |= (1 << i);
@@ -520,47 +519,47 @@ public:
         return result;
     }
 
-    int findMaxXorPair(const std::vector<int>& nums) {
+    FUNCTION findMaxXorPair(vector<int> nums) {
         int maxXor = 0;
         for (int num : nums) {
             insert(num);
-            maxXor = std::max(maxXor, queryMaxXor(num));
+            maxXor = MAX(maxXor, queryMaxXor(num));
         }
         return maxXor;
     }
 };
 
-int main() {
+FUNCTION main() {
     XORTrie trie;
-    std::vector<int> nums = {3, 10, 5, 25, 2, 8};
-    std::cout << "最大异或值: " << trie.findMaxXorPair(nums) << std::endl;
+    vector<int> nums = {3, 10, 5, 25, 2, 8};
+    PRINT "最大异或值: " + trie.findMaxXorPair(nums) + NEWLINE;
     return 0;
 }
+
 ```
 
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
 ## ==========================================================================
-### 📖 第三节: 实用案例
+### 📖 第三节: 应用场景
 ## ==========================================================================
 
 3.1 案例一：拼写检查器
 
-```cpp
-#include <iostream>
-#include <string>
-#include <vector>
-#include <fstream>
-
-class SpellChecker {
-private:
-    struct TrieNode {
+```pseudocode
+CLASS SpellChecker {
+PRIVATE:
+    STRUCT TrieNode {
         TrieNode* children[26]{};
-        bool isEnd = false;
+        bool isEnd = FALSE;
     };
     TrieNode* root;
 
-    void suggestHelper(TrieNode* node, std::string& current,
-                       std::vector<std::string>& suggestions, int limit) {
-        if ((int)suggestions.size() >= limit) return;
+    FUNCTION suggestHelper(TrieNode* node, string current,
+                       vector<string> suggestions, int limit) {
+        if (suggestions.size() >= limit) return;
         if (node->isEnd)
             suggestions.push_back(current);
         for (int i = 0; i < 26; ++i) {
@@ -572,90 +571,91 @@ private:
         }
     }
 
-public:
-    SpellChecker() { root = new TrieNode(); }
+PUBLIC:
+    SpellChecker() { root = NEW TrieNode(); }
 
-    void loadDictionary(const std::vector<std::string>& words) {
-        for (const auto& word : words)
+    FUNCTION loadDictionary(vector<string> words) {
+        for ( word : words)
             insert(word);
     }
 
-    void insert(const std::string& word) {
+    FUNCTION insert(string word) {
         TrieNode* curr = root;
         for (char c : word) {
             int idx = c - 'a';
             if (!curr->children[idx])
-                curr->children[idx] = new TrieNode();
+                curr->children[idx] = NEW TrieNode();
             curr = curr->children[idx];
         }
-        curr->isEnd = true;
+        curr->isEnd = TRUE;
     }
 
-    bool isCorrect(const std::string& word) {
+    FUNCTION isCorrect(string word) {
         TrieNode* curr = root;
         for (char c : word) {
             int idx = c - 'a';
-            if (!curr->children[idx]) return false;
+            if (!curr->children[idx]) return FALSE;
             curr = curr->children[idx];
         }
         return curr->isEnd;
     }
 
-    std::vector<std::string> getSuggestions(const std::string& prefix, int limit = 5) {
+    vector<string> getSuggestions(string prefix, int limit = 5) {
         TrieNode* curr = root;
         for (char c : prefix) {
             int idx = c - 'a';
             if (!curr->children[idx]) return {};
             curr = curr->children[idx];
         }
-        std::vector<std::string> suggestions;
-        std::string current = prefix;
+        vector<string> suggestions;
+        string current = prefix;
         suggestHelper(curr, current, suggestions, limit);
         return suggestions;
     }
 };
 
-int main() {
+FUNCTION main() {
     SpellChecker checker;
     checker.loadDictionary({"apple", "application", "apply", "approach",
                             "banana", "band", "bank", "bar",
                             "cat", "car", "card", "care"});
 
-    std::string input = "appl";
+    string input = "appl";
     if (!checker.isCorrect(input)) {
-        std::cout << "'" << input << "' 拼写不正确，您是否想输入：" << std::endl;
-        auto suggestions = checker.getSuggestions(input);
-        for (const auto& s : suggestions)
-            std::cout << "  - " << s << std::endl;
+        PRINT "'" + input + "' 拼写不正确，您是否想输入：" + NEWLINE;
+        suggestions = checker.getSuggestions(input);
+        for ( s : suggestions)
+            PRINT "  - " + s + NEWLINE;
     }
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 3.2 案例二：IP路由表（最长前缀匹配）
 
-```cpp
-#include <iostream>
-#include <string>
-#include <vector>
-
-class IPRouter {
-private:
-    struct TrieNode {
+```pseudocode
+CLASS IPRouter {
+PRIVATE:
+    STRUCT TrieNode {
         TrieNode* children[2]{};
         int nextHop = -1;
     };
     TrieNode* root;
 
-    std::vector<int> ipToBits(const std::string& ip) {
-        std::vector<int> bits;
+    vector<int> ipToBits(string ip) {
+        vector<int> bits;
         int num = 0;
         int dotCount = 0;
         for (char c : ip) {
             if (c == '.') {
                 for (int i = 7; i >= 0; --i)
-                    bits.push_back((num >> i) & 1);
+                    bits.push_back((num >> i)  1);
                 num = 0;
                 dotCount++;
             } else {
@@ -663,27 +663,27 @@ private:
             }
         }
         for (int i = 7; i >= 0; --i)
-            bits.push_back((num >> i) & 1);
+            bits.push_back((num >> i)  1);
         return bits;
     }
 
-public:
-    IPRouter() { root = new TrieNode(); }
+PUBLIC:
+    IPRouter() { root = NEW TrieNode(); }
 
-    void addRoute(const std::string& ip, int prefixLen, int hop) {
-        auto bits = ipToBits(ip);
+    FUNCTION addRoute(string ip, int prefixLen, int hop) {
+        bits = ipToBits(ip);
         TrieNode* curr = root;
         for (int i = 0; i < prefixLen; ++i) {
             int bit = bits[i];
             if (!curr->children[bit])
-                curr->children[bit] = new TrieNode();
+                curr->children[bit] = NEW TrieNode();
             curr = curr->children[bit];
         }
         curr->nextHop = hop;
     }
 
-    int lookup(const std::string& ip) {
-        auto bits = ipToBits(ip);
+    FUNCTION lookup(string ip) {
+        bits = ipToBits(ip);
         TrieNode* curr = root;
         int lastHop = -1;
         for (int bit : bits) {
@@ -696,56 +696,56 @@ public:
     }
 };
 
-int main() {
+FUNCTION main() {
     IPRouter router;
     router.addRoute("192.168.0.0", 16, 1);
     router.addRoute("192.168.1.0", 24, 2);
     router.addRoute("10.0.0.0", 8, 3);
 
-    std::cout << "192.168.1.100 -> 端口 " << router.lookup("192.168.1.100") << std::endl;
-    std::cout << "192.168.2.50 -> 端口 " << router.lookup("192.168.2.50") << std::endl;
-    std::cout << "10.1.2.3 -> 端口 " << router.lookup("10.1.2.3") << std::endl;
+    PRINT "192.168.1.100 -> 端口 " + router.lookup("192.168.1.100") + NEWLINE;
+    PRINT "192.168.2.50 -> 端口 " + router.lookup("192.168.2.50") + NEWLINE;
+    PRINT "10.1.2.3 -> 端口 " + router.lookup("10.1.2.3") + NEWLINE;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 3.3 案例三：敏感词过滤（AC自动机简化版）
 
-```cpp
-#include <iostream>
-#include <string>
-#include <vector>
-#include <unordered_set>
-
-class SensitiveFilter {
-private:
-    struct TrieNode {
+```pseudocode
+CLASS SensitiveFilter {
+PRIVATE:
+    STRUCT TrieNode {
         TrieNode* children[256]{};
-        bool isEnd = false;
+        bool isEnd = FALSE;
         int wordLen = 0;
     };
     TrieNode* root;
 
-public:
-    SensitiveFilter() { root = new TrieNode(); }
+PUBLIC:
+    SensitiveFilter() { root = NEW TrieNode(); }
 
-    void addWord(const std::string& word) {
+    FUNCTION addWord(string word) {
         TrieNode* curr = root;
         for (unsigned char c : word) {
             if (!curr->children[c])
-                curr->children[c] = new TrieNode();
+                curr->children[c] = NEW TrieNode();
             curr = curr->children[c];
         }
-        curr->isEnd = true;
+        curr->isEnd = TRUE;
         curr->wordLen = word.size();
     }
 
-    std::string filter(const std::string& text, char replacement = '*') {
-        std::string result = text;
-        for (int i = 0; i < (int)text.size(); ++i) {
+    FUNCTION filter(string text, char replacement = '*') {
+        string result = text;
+        for (int i = 0; i < text.size(); ++i) {
             TrieNode* curr = root;
-            for (int j = i; j < (int)text.size(); ++j) {
+            for (int j = i; j < text.size(); ++j) {
                 unsigned char c = text[j];
                 if (!curr->children[c]) break;
                 curr = curr->children[c];
@@ -759,19 +759,24 @@ public:
     }
 };
 
-int main() {
+FUNCTION main() {
     SensitiveFilter filter;
     filter.addWord("bad");
     filter.addWord("ugly");
     filter.addWord("hate");
 
-    std::string text = "This is a bad example with ugly words and hate speech.";
-    std::cout << "原文: " << text << std::endl;
-    std::cout << "过滤: " << filter.filter(text) << std::endl;
+    string text = "This is a bad example with ugly words and hate speech.";
+    PRINT "原文: " + text + NEWLINE;
+    PRINT "过滤: " + filter.filter(text) + NEWLINE;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 ## ==========================================================================
 ### 📖 第四节: 课后习题

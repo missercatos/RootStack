@@ -1,8 +1,8 @@
-## ==========================================================================
-C++ 数据结构教程 — 线段树 (Segment Tree)
-## ==========================================================================
+---
+数据结构教程 — 线段树 (Segment Tree)
+---
 
-## 📋 章节概述
+##  章节概述
 
 线段树（Segment Tree）是一种用于高效处理区间查询和区间修改的树形数据结构。
 它将一个数组划分为若干区间，每个节点维护对应区间的聚合信息（如区间和、最大值、最小值等），
@@ -12,11 +12,11 @@ C++ 数据结构教程 — 线段树 (Segment Tree)
 时间序列数据聚合等。本章将从线段树的基本原理讲起，深入懒标记的实现，
 全面覆盖各种变体，最后通过实例和习题巩固所学知识。
 
-> 📌 **底层实现参考**：如果需要深入理解本章数据结构的底层实现（纯C手写、内存布局、指针操作），请参阅 [[../../C语言深化教程/3数据结构/09_高级数据结构|C语言教程: 高级数据结构]]。C教程侧重手动实现与内存本质，本教程侧重STL使用与算法优化，两者互补。
+>  **底层实现参考**：如果需要深入理解本章数据结构的底层实现（纯C手写、内存布局、指针操作），请参阅 [[../../C语言深化教程/3数据结构/09_高级数据结构|C语言教程: 高级数据结构]]。C教程侧重手动实现与内存本质，本教程侧重STL使用与算法优化，两者互补。
 
-## ==========================================================================
-### 📖 第一节: 基础语法 + 计算机底层原理
-## ==========================================================================
+---
+###  第一节: 基础语法 + 计算机底层原理
+---
 
 1.1 线段树的基本概念
 -----------------------
@@ -66,697 +66,721 @@ graph TD
 
 1.3 基本线段树（区间和 + 单点修改）
 
-```cpp
-#include <iostream>
-#include <vector>
+```pseudocode
+CLASS SegmentTree:
+    tree    // 数组（长度 4n），存储区间和
+    n       // 原数组长度
 
-class SegmentTree {
-private:
-    std::vector<long long> tree;
-    int n;
+    FUNCTION build(arr, node, start, end):
+        IF start == end THEN
+            tree[node] = arr[start]
+            RETURN
+        END IF
+        mid = (start + end) // 2
+        build(arr, 2 * node, start, mid)
+        build(arr, 2 * node + 1, mid + 1, end)
+        tree[node] = tree[2 * node] + tree[2 * node + 1]
+    END FUNCTION
 
-    void build(const std::vector<int>& arr, int node, int start, int end) {
-        if (start == end) {
-            tree[node] = arr[start];
-            return;
-        }
-        int mid = (start + end) / 2;
-        build(arr, 2 * node, start, mid);
-        build(arr, 2 * node + 1, mid + 1, end);
-        tree[node] = tree[2 * node] + tree[2 * node + 1];
-    }
+    FUNCTION update(node, start, end, idx, val):
+        IF start == end THEN
+            tree[node] = val
+            RETURN
+        END IF
+        mid = (start + end) // 2
+        IF idx <= mid THEN
+            update(2 * node, start, mid, idx, val)
+        ELSE
+            update(2 * node + 1, mid + 1, end, idx, val)
+        END IF
+        tree[node] = tree[2 * node] + tree[2 * node + 1]
+    END FUNCTION
 
-    void update(int node, int start, int end, int idx, int val) {
-        if (start == end) {
-            tree[node] = val;
-            return;
-        }
-        int mid = (start + end) / 2;
-        if (idx <= mid)
-            update(2 * node, start, mid, idx, val);
-        else
-            update(2 * node + 1, mid + 1, end, idx, val);
-        tree[node] = tree[2 * node] + tree[2 * node + 1];
-    }
+    FUNCTION query(node, start, end, l, r):
+        IF r < start OR end < l THEN
+            RETURN 0
+        END IF
+        IF l <= start AND end <= r THEN
+            RETURN tree[node]
+        END IF
+        mid = (start + end) // 2
+        RETURN query(2 * node, start, mid, l, r) +
+               query(2 * node + 1, mid + 1, end, l, r)
+    END FUNCTION
 
-    long long query(int node, int start, int end, int l, int r) {
-        if (r < start || end < l) return 0;
-        if (l <= start && end <= r) return tree[node];
-        int mid = (start + end) / 2;
-        return query(2 * node, start, mid, l, r) +
-               query(2 * node + 1, mid + 1, end, l, r);
-    }
+    CONSTRUCTOR(arr):
+        n = LENGTH(arr)
+        tree = ARRAY of size 4 * n, filled with 0
+        build(arr, 1, 0, n - 1)
+    END CONSTRUCTOR
 
-public:
-    SegmentTree(const std::vector<int>& arr) {
-        n = arr.size();
-        tree.assign(4 * n, 0);
-        build(arr, 1, 0, n - 1);
-    }
+    FUNCTION update(idx, val):
+        update(1, 0, n - 1, idx, val)
+    END FUNCTION
 
-    void update(int idx, int val) {
-        update(1, 0, n - 1, idx, val);
-    }
+    FUNCTION query(l, r):
+        RETURN query(1, 0, n - 1, l, r)
+    END FUNCTION
+END CLASS
 
-    long long query(int l, int r) {
-        return query(1, 0, n - 1, l, r);
-    }
-};
-
-int main() {
-    std::vector<int> arr = {1, 3, 5, 7, 9, 11};
-    SegmentTree st(arr);
-
-    std::cout << "区间[1,4]的和: " << st.query(1, 4) << std::endl;
-    st.update(2, 10);
-    std::cout << "修改后区间[1,4]的和: " << st.query(1, 4) << std::endl;
-
-    return 0;
-}
+// 使用示例:
+arr = [1, 3, 5, 7, 9, 11]
+st = SegmentTree(arr)
+DISPLAY st.query(1, 4)   // 输出区间[1,4]的和
+st.update(2, 10)
+DISPLAY st.query(1, 4)   // 输出修改后的和
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 1.4 带懒标记的线段树（区间修改 + 区间查询）
 
-```cpp
-#include <iostream>
-#include <vector>
+```pseudocode
+CLASS LazySegmentTree:
+    tree    // 数组，存储区间和
+    lazy    // 数组，存储懒标记（待下传的加法值）
+    n       // 原数组长度
 
-class LazySegmentTree {
-private:
-    std::vector<long long> tree;
-    std::vector<long long> lazy;
-    int n;
+    FUNCTION build(arr, node, start, end):
+        IF start == end THEN
+            tree[node] = arr[start]
+            RETURN
+        END IF
+        mid = (start + end) // 2
+        build(arr, 2 * node, start, mid)
+        build(arr, 2 * node + 1, mid + 1, end)
+        tree[node] = tree[2 * node] + tree[2 * node + 1]
+    END FUNCTION
 
-    void build(const std::vector<int>& arr, int node, int start, int end) {
-        if (start == end) {
-            tree[node] = arr[start];
-            return;
-        }
-        int mid = (start + end) / 2;
-        build(arr, 2 * node, start, mid);
-        build(arr, 2 * node + 1, mid + 1, end);
-        tree[node] = tree[2 * node] + tree[2 * node + 1];
-    }
+    FUNCTION pushDown(node, start, end):
+        IF lazy[node] != 0 THEN
+            mid = (start + end) // 2
+            tree[2 * node] = tree[2 * node] + lazy[node] * (mid - start + 1)
+            tree[2 * node + 1] = tree[2 * node + 1] + lazy[node] * (end - mid)
+            lazy[2 * node] = lazy[2 * node] + lazy[node]
+            lazy[2 * node + 1] = lazy[2 * node + 1] + lazy[node]
+            lazy[node] = 0
+        END IF
+    END FUNCTION
 
-    void pushDown(int node, int start, int end) {
-        if (lazy[node] != 0) {
-            int mid = (start + end) / 2;
-            tree[2 * node] += lazy[node] * (mid - start + 1);
-            tree[2 * node + 1] += lazy[node] * (end - mid);
-            lazy[2 * node] += lazy[node];
-            lazy[2 * node + 1] += lazy[node];
-            lazy[node] = 0;
-        }
-    }
+    FUNCTION rangeUpdate(node, start, end, l, r, val):
+        IF r < start OR end < l THEN
+            RETURN
+        END IF
+        IF l <= start AND end <= r THEN
+            tree[node] = tree[node] + val * (end - start + 1)
+            lazy[node] = lazy[node] + val
+            RETURN
+        END IF
+        pushDown(node, start, end)
+        mid = (start + end) // 2
+        rangeUpdate(2 * node, start, mid, l, r, val)
+        rangeUpdate(2 * node + 1, mid + 1, end, l, r, val)
+        tree[node] = tree[2 * node] + tree[2 * node + 1]
+    END FUNCTION
 
-    void rangeUpdate(int node, int start, int end, int l, int r, long long val) {
-        if (r < start || end < l) return;
-        if (l <= start && end <= r) {
-            tree[node] += val * (end - start + 1);
-            lazy[node] += val;
-            return;
-        }
-        pushDown(node, start, end);
-        int mid = (start + end) / 2;
-        rangeUpdate(2 * node, start, mid, l, r, val);
-        rangeUpdate(2 * node + 1, mid + 1, end, l, r, val);
-        tree[node] = tree[2 * node] + tree[2 * node + 1];
-    }
+    FUNCTION rangeQuery(node, start, end, l, r):
+        IF r < start OR end < l THEN
+            RETURN 0
+        END IF
+        IF l <= start AND end <= r THEN
+            RETURN tree[node]
+        END IF
+        pushDown(node, start, end)
+        mid = (start + end) // 2
+        RETURN rangeQuery(2 * node, start, mid, l, r) +
+               rangeQuery(2 * node + 1, mid + 1, end, l, r)
+    END FUNCTION
 
-    long long rangeQuery(int node, int start, int end, int l, int r) {
-        if (r < start || end < l) return 0;
-        if (l <= start && end <= r) return tree[node];
-        pushDown(node, start, end);
-        int mid = (start + end) / 2;
-        return rangeQuery(2 * node, start, mid, l, r) +
-               rangeQuery(2 * node + 1, mid + 1, end, l, r);
-    }
+    CONSTRUCTOR(arr):
+        n = LENGTH(arr)
+        tree = ARRAY of size 4 * n, filled with 0
+        lazy = ARRAY of size 4 * n, filled with 0
+        build(arr, 1, 0, n - 1)
+    END CONSTRUCTOR
 
-public:
-    LazySegmentTree(const std::vector<int>& arr) {
-        n = arr.size();
-        tree.assign(4 * n, 0);
-        lazy.assign(4 * n, 0);
-        build(arr, 1, 0, n - 1);
-    }
+    FUNCTION rangeUpdate(l, r, val):
+        rangeUpdate(1, 0, n - 1, l, r, val)
+    END FUNCTION
 
-    void rangeUpdate(int l, int r, long long val) {
-        rangeUpdate(1, 0, n - 1, l, r, val);
-    }
+    FUNCTION rangeQuery(l, r):
+        RETURN rangeQuery(1, 0, n - 1, l, r)
+    END FUNCTION
+END CLASS
 
-    long long rangeQuery(int l, int r) {
-        return rangeQuery(1, 0, n - 1, l, r);
-    }
-};
-
-int main() {
-    std::vector<int> arr = {1, 3, 5, 7, 9, 11};
-    LazySegmentTree st(arr);
-
-    std::cout << "区间[1,4]的和: " << st.rangeQuery(1, 4) << std::endl;
-    st.rangeUpdate(1, 3, 5);
-    std::cout << "[1,3]各加5后，区间[1,4]的和: " << st.rangeQuery(1, 4) << std::endl;
-
-    return 0;
-}
+// 使用示例:
+arr = [1, 3, 5, 7, 9, 11]
+st = LazySegmentTree(arr)
+DISPLAY st.rangeQuery(1, 4)
+st.rangeUpdate(1, 3, 5)
+DISPLAY st.rangeQuery(1, 4)
 ```
 
-## ==========================================================================
-### 📖 第二节: 所有用法大全
-## ==========================================================================
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
+---
+###  第二节: 实现思路
+---
 
 2.1 区间最大值/最小值线段树
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <climits>
+```pseudocode
+STRUCT Node:
+    maxVal, minVal    // 同时存储最大和最小值
+END STRUCT
 
-class MinMaxSegTree {
-private:
-    struct Node {
-        long long maxVal, minVal;
-    };
-    std::vector<Node> tree;
-    int n;
+CLASS MinMaxSegTree:
+    tree    // 数组，存储 Node（每个节点含 maxVal 和 minVal）
+    n       // 原数组长度
 
-    void build(const std::vector<int>& arr, int node, int start, int end) {
-        if (start == end) {
-            tree[node] = {arr[start], arr[start]};
-            return;
-        }
-        int mid = (start + end) / 2;
-        build(arr, 2 * node, start, mid);
-        build(arr, 2 * node + 1, mid + 1, end);
-        tree[node].maxVal = std::max(tree[2*node].maxVal, tree[2*node+1].maxVal);
-        tree[node].minVal = std::min(tree[2*node].minVal, tree[2*node+1].minVal);
-    }
+    FUNCTION build(arr, node, start, end):
+        IF start == end THEN
+            tree[node].maxVal = arr[start]
+            tree[node].minVal = arr[start]
+            RETURN
+        END IF
+        mid = (start + end) // 2
+        build(arr, 2 * node, start, mid)
+        build(arr, 2 * node + 1, mid + 1, end)
+        tree[node].maxVal = MAX(tree[2 * node].maxVal, tree[2 * node + 1].maxVal)
+        tree[node].minVal = MIN(tree[2 * node].minVal, tree[2 * node + 1].minVal)
+    END FUNCTION
 
-    long long queryMax(int node, int start, int end, int l, int r) {
-        if (r < start || end < l) return LLONG_MIN;
-        if (l <= start && end <= r) return tree[node].maxVal;
-        int mid = (start + end) / 2;
-        return std::max(queryMax(2*node, start, mid, l, r),
-                       queryMax(2*node+1, mid+1, end, l, r));
-    }
+    FUNCTION queryMax(node, start, end, l, r):
+        IF r < start OR end < l THEN
+            RETURN NEGATIVE_INFINITY
+        END IF
+        IF l <= start AND end <= r THEN
+            RETURN tree[node].maxVal
+        END IF
+        mid = (start + end) // 2
+        RETURN MAX(queryMax(2 * node, start, mid, l, r),
+                   queryMax(2 * node + 1, mid + 1, end, l, r))
+    END FUNCTION
 
-    long long queryMin(int node, int start, int end, int l, int r) {
-        if (r < start || end < l) return LLONG_MAX;
-        if (l <= start && end <= r) return tree[node].minVal;
-        int mid = (start + end) / 2;
-        return std::min(queryMin(2*node, start, mid, l, r),
-                       queryMin(2*node+1, mid+1, end, l, r));
-    }
+    FUNCTION queryMin(node, start, end, l, r):
+        IF r < start OR end < l THEN
+            RETURN POSITIVE_INFINITY
+        END IF
+        IF l <= start AND end <= r THEN
+            RETURN tree[node].minVal
+        END IF
+        mid = (start + end) // 2
+        RETURN MIN(queryMin(2 * node, start, mid, l, r),
+                   queryMin(2 * node + 1, mid + 1, end, l, r))
+    END FUNCTION
 
-public:
-    MinMaxSegTree(const std::vector<int>& arr) {
-        n = arr.size();
-        tree.resize(4 * n);
-        build(arr, 1, 0, n - 1);
-    }
+    CONSTRUCTOR(arr):
+        n = LENGTH(arr)
+        tree = ARRAY of size 4 * n (Node type)
+        build(arr, 1, 0, n - 1)
+    END CONSTRUCTOR
 
-    long long queryMax(int l, int r) { return queryMax(1, 0, n-1, l, r); }
-    long long queryMin(int l, int r) { return queryMin(1, 0, n-1, l, r); }
-};
+    FUNCTION queryMax(l, r):
+        RETURN queryMax(1, 0, n - 1, l, r)
+    END FUNCTION
 
-int main() {
-    std::vector<int> arr = {2, 5, 1, 8, 3, 7, 4, 6};
-    MinMaxSegTree st(arr);
-
-    std::cout << "区间[1,5]最大值: " << st.queryMax(1, 5) << std::endl;
-    std::cout << "区间[1,5]最小值: " << st.queryMin(1, 5) << std::endl;
-    return 0;
-}
+    FUNCTION queryMin(l, r):
+        RETURN queryMin(1, 0, n - 1, l, r)
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.2 区间乘法+加法的线段树（双懒标记）
 
-```cpp
-#include <iostream>
-#include <vector>
+```pseudocode
+CLASS MulAddSegTree:
+    tree       // 数组，存储区间和（对 mod 取模）
+    lazyMul    // 数组，存储乘法懒标记
+    lazyAdd    // 数组，存储加法懒标记
+    mod        // 模数
+    n          // 原数组长度
 
-class MulAddSegTree {
-private:
-    std::vector<long long> tree;
-    std::vector<long long> lazyMul;
-    std::vector<long long> lazyAdd;
-    long long mod;
-    int n;
+    FUNCTION build(arr, node, start, end):
+        lazyMul[node] = 1
+        lazyAdd[node] = 0
+        IF start == end THEN
+            tree[node] = arr[start] MOD mod
+            RETURN
+        END IF
+        mid = (start + end) // 2
+        build(arr, 2 * node, start, mid)
+        build(arr, 2 * node + 1, mid + 1, end)
+        tree[node] = (tree[2 * node] + tree[2 * node + 1]) MOD mod
+    END FUNCTION
 
-    void build(const std::vector<int>& arr, int node, int start, int end) {
-        lazyMul[node] = 1;
-        lazyAdd[node] = 0;
-        if (start == end) {
-            tree[node] = arr[start] % mod;
-            return;
-        }
-        int mid = (start + end) / 2;
-        build(arr, 2*node, start, mid);
-        build(arr, 2*node+1, mid+1, end);
-        tree[node] = (tree[2*node] + tree[2*node+1]) % mod;
-    }
+    FUNCTION apply(node, start, end, mul, add):
+        tree[node] = (tree[node] * mul MOD mod + add * (end - start + 1) MOD mod) MOD mod
+        lazyMul[node] = lazyMul[node] * mul MOD mod
+        lazyAdd[node] = (lazyAdd[node] * mul MOD mod + add) MOD mod
+    END FUNCTION
 
-    void pushDown(int node, int start, int end) {
-        int mid = (start + end) / 2;
-        apply(2*node, start, mid, lazyMul[node], lazyAdd[node]);
-        apply(2*node+1, mid+1, end, lazyMul[node], lazyAdd[node]);
-        lazyMul[node] = 1;
-        lazyAdd[node] = 0;
-    }
+    FUNCTION pushDown(node, start, end):
+        mid = (start + end) // 2
+        apply(2 * node, start, mid, lazyMul[node], lazyAdd[node])
+        apply(2 * node + 1, mid + 1, end, lazyMul[node], lazyAdd[node])
+        lazyMul[node] = 1
+        lazyAdd[node] = 0
+    END FUNCTION
 
-    void apply(int node, int start, int end, long long mul, long long add) {
-        tree[node] = (tree[node] * mul % mod + add * (end - start + 1) % mod) % mod;
-        lazyMul[node] = lazyMul[node] * mul % mod;
-        lazyAdd[node] = (lazyAdd[node] * mul % mod + add) % mod;
-    }
+    FUNCTION rangeMultiply(node, start, end, l, r, val):
+        IF r < start OR end < l THEN
+            RETURN
+        END IF
+        IF l <= start AND end <= r THEN
+            apply(node, start, end, val, 0)
+            RETURN
+        END IF
+        pushDown(node, start, end)
+        mid = (start + end) // 2
+        rangeMultiply(2 * node, start, mid, l, r, val)
+        rangeMultiply(2 * node + 1, mid + 1, end, l, r, val)
+        tree[node] = (tree[2 * node] + tree[2 * node + 1]) MOD mod
+    END FUNCTION
 
-    void rangeMultiply(int node, int start, int end, int l, int r, long long val) {
-        if (r < start || end < l) return;
-        if (l <= start && end <= r) {
-            apply(node, start, end, val, 0);
-            return;
-        }
-        pushDown(node, start, end);
-        int mid = (start + end) / 2;
-        rangeMultiply(2*node, start, mid, l, r, val);
-        rangeMultiply(2*node+1, mid+1, end, l, r, val);
-        tree[node] = (tree[2*node] + tree[2*node+1]) % mod;
-    }
+    FUNCTION rangeAdd(node, start, end, l, r, val):
+        IF r < start OR end < l THEN
+            RETURN
+        END IF
+        IF l <= start AND end <= r THEN
+            apply(node, start, end, 1, val)
+            RETURN
+        END IF
+        pushDown(node, start, end)
+        mid = (start + end) // 2
+        rangeAdd(2 * node, start, mid, l, r, val)
+        rangeAdd(2 * node + 1, mid + 1, end, l, r, val)
+        tree[node] = (tree[2 * node] + tree[2 * node + 1]) MOD mod
+    END FUNCTION
 
-    void rangeAdd(int node, int start, int end, int l, int r, long long val) {
-        if (r < start || end < l) return;
-        if (l <= start && end <= r) {
-            apply(node, start, end, 1, val);
-            return;
-        }
-        pushDown(node, start, end);
-        int mid = (start + end) / 2;
-        rangeAdd(2*node, start, mid, l, r, val);
-        rangeAdd(2*node+1, mid+1, end, l, r, val);
-        tree[node] = (tree[2*node] + tree[2*node+1]) % mod;
-    }
+    FUNCTION rangeQuery(node, start, end, l, r):
+        IF r < start OR end < l THEN
+            RETURN 0
+        END IF
+        IF l <= start AND end <= r THEN
+            RETURN tree[node]
+        END IF
+        pushDown(node, start, end)
+        mid = (start + end) // 2
+        RETURN (rangeQuery(2 * node, start, mid, l, r) +
+                rangeQuery(2 * node + 1, mid + 1, end, l, r)) MOD mod
+    END FUNCTION
 
-    long long rangeQuery(int node, int start, int end, int l, int r) {
-        if (r < start || end < l) return 0;
-        if (l <= start && end <= r) return tree[node];
-        pushDown(node, start, end);
-        int mid = (start + end) / 2;
-        return (rangeQuery(2*node, start, mid, l, r) +
-                rangeQuery(2*node+1, mid+1, end, l, r)) % mod;
-    }
+    CONSTRUCTOR(arr, p):
+        mod = p
+        n = LENGTH(arr)
+        tree = ARRAY of size 4 * n, filled with 0
+        lazyMul = ARRAY of size 4 * n, filled with 1
+        lazyAdd = ARRAY of size 4 * n, filled with 0
+        build(arr, 1, 0, n - 1)
+    END CONSTRUCTOR
 
-public:
-    MulAddSegTree(const std::vector<int>& arr, long long p) : mod(p) {
-        n = arr.size();
-        tree.assign(4*n, 0);
-        lazyMul.assign(4*n, 1);
-        lazyAdd.assign(4*n, 0);
-        build(arr, 1, 0, n-1);
-    }
+    FUNCTION rangeMultiply(l, r, val):
+        rangeMultiply(1, 0, n - 1, l, r, val)
+    END FUNCTION
 
-    void rangeMultiply(int l, int r, long long val) { rangeMultiply(1, 0, n-1, l, r, val); }
-    void rangeAdd(int l, int r, long long val) { rangeAdd(1, 0, n-1, l, r, val); }
-    long long rangeQuery(int l, int r) { return rangeQuery(1, 0, n-1, l, r); }
-};
+    FUNCTION rangeAdd(l, r, val):
+        rangeAdd(1, 0, n - 1, l, r, val)
+    END FUNCTION
 
-int main() {
-    std::vector<int> arr = {1, 2, 3, 4, 5};
-    MulAddSegTree st(arr, 1000000007);
-
-    std::cout << "区间[0,4]和: " << st.rangeQuery(0, 4) << std::endl;
-    st.rangeMultiply(1, 3, 2);
-    std::cout << "[1,3]乘2后，区间[0,4]和: " << st.rangeQuery(0, 4) << std::endl;
-    st.rangeAdd(0, 2, 3);
-    std::cout << "[0,2]加3后，区间[0,4]和: " << st.rangeQuery(0, 4) << std::endl;
-    return 0;
-}
+    FUNCTION rangeQuery(l, r):
+        RETURN rangeQuery(1, 0, n - 1, l, r)
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.3 动态开点线段树
 
-```cpp
-#include <iostream>
+```pseudocode
+STRUCT Node:
+    sum = 0      // 区间和
+    lazy = 0     // 懒标记
+    left = 0     // 左子节点编号
+    right = 0    // 右子节点编号
+END STRUCT
 
-class DynamicSegTree {
-private:
-    struct Node {
-        long long sum = 0;
-        long long lazy = 0;
-        int left = 0, right = 0;
-    };
+CLASS DynamicSegTree:
+    nodes     // 动态数组，存储 Node
+    root      // 根节点编号
+    L, R      // 值域范围 [L, R]
 
-    std::vector<Node> nodes;
-    int root;
-    int L, R;
+    FUNCTION newNode():
+        APPEND new Node to nodes
+        RETURN LENGTH(nodes) - 1
+    END FUNCTION
 
-    int newNode() {
-        nodes.push_back({});
-        return nodes.size() - 1;
-    }
+    FUNCTION pushDown(node, start, end):
+        IF nodes[node].lazy == 0 THEN RETURN
+        IF nodes[node].left == 0 THEN
+            nodes[node].left = newNode()
+        END IF
+        IF nodes[node].right == 0 THEN
+            nodes[node].right = newNode()
+        END IF
+        mid = (start + end) // 2
+        lc = nodes[node].left
+        rc = nodes[node].right
+        nodes[lc].sum = nodes[lc].sum + nodes[node].lazy * (mid - start + 1)
+        nodes[lc].lazy = nodes[lc].lazy + nodes[node].lazy
+        nodes[rc].sum = nodes[rc].sum + nodes[node].lazy * (end - mid)
+        nodes[rc].lazy = nodes[rc].lazy + nodes[node].lazy
+        nodes[node].lazy = 0
+    END FUNCTION
 
-    void pushDown(int node, int start, int end) {
-        if (nodes[node].lazy == 0) return;
-        if (!nodes[node].left) nodes[node].left = newNode();
-        if (!nodes[node].right) nodes[node].right = newNode();
-        int mid = (start + end) / 2;
-        nodes[nodes[node].left].sum += nodes[node].lazy * (mid - start + 1);
-        nodes[nodes[node].left].lazy += nodes[node].lazy;
-        nodes[nodes[node].right].sum += nodes[node].lazy * (end - mid);
-        nodes[nodes[node].right].lazy += nodes[node].lazy;
-        nodes[node].lazy = 0;
-    }
+    FUNCTION update(node, start, end, l, r, val):    // node 传引用
+        IF node == 0 THEN
+            node = newNode()
+        END IF
+        IF l <= start AND end <= r THEN
+            nodes[node].sum = nodes[node].sum + val * (end - start + 1)
+            nodes[node].lazy = nodes[node].lazy + val
+            RETURN
+        END IF
+        pushDown(node, start, end)
+        mid = (start + end) // 2
+        IF l <= mid THEN
+            update(nodes[node].left, start, mid, l, r, val)
+        END IF
+        IF r > mid THEN
+            update(nodes[node].right, mid + 1, end, l, r, val)
+        END IF
+        nodes[node].sum = 0
+        IF nodes[node].left != 0 THEN
+            nodes[node].sum = nodes[node].sum + nodes[nodes[node].left].sum
+        END IF
+        IF nodes[node].right != 0 THEN
+            nodes[node].sum = nodes[node].sum + nodes[nodes[node].right].sum
+        END IF
+    END FUNCTION
 
-    void update(int& node, int start, int end, int l, int r, long long val) {
-        if (!node) node = newNode();
-        if (l <= start && end <= r) {
-            nodes[node].sum += val * (end - start + 1);
-            nodes[node].lazy += val;
-            return;
-        }
-        pushDown(node, start, end);
-        int mid = (start + end) / 2;
-        if (l <= mid) update(nodes[node].left, start, mid, l, r, val);
-        if (r > mid) update(nodes[node].right, mid+1, end, l, r, val);
-        nodes[node].sum = 0;
-        if (nodes[node].left) nodes[node].sum += nodes[nodes[node].left].sum;
-        if (nodes[node].right) nodes[node].sum += nodes[nodes[node].right].sum;
-    }
+    FUNCTION query(node, start, end, l, r):
+        IF node == 0 THEN
+            RETURN 0
+        END IF
+        IF l <= start AND end <= r THEN
+            RETURN nodes[node].sum
+        END IF
+        pushDown(node, start, end)
+        mid = (start + end) // 2
+        result = 0
+        IF l <= mid THEN
+            result = result + query(nodes[node].left, start, mid, l, r)
+        END IF
+        IF r > mid THEN
+            result = result + query(nodes[node].right, mid + 1, end, l, r)
+        END IF
+        RETURN result
+    END FUNCTION
 
-    long long query(int node, int start, int end, int l, int r) {
-        if (!node) return 0;
-        if (l <= start && end <= r) return nodes[node].sum;
-        pushDown(node, start, end);
-        int mid = (start + end) / 2;
-        long long res = 0;
-        if (l <= mid) res += query(nodes[node].left, start, mid, l, r);
-        if (r > mid) res += query(nodes[node].right, mid+1, end, l, r);
-        return res;
-    }
+    CONSTRUCTOR(l, r):
+        L = l; R = r
+        nodes = []  // 空数组，下标 0 不使用
+        APPEND empty Node to nodes  // 占位符
+        root = newNode()
+    END CONSTRUCTOR
 
-public:
-    DynamicSegTree(int l, int r) : L(l), R(r) {
-        nodes.push_back({});
-        root = newNode();
-    }
+    FUNCTION update(l, r, val):
+        update(root, L, R, l, r, val)
+    END FUNCTION
 
-    void update(int l, int r, long long val) { update(root, L, R, l, r, val); }
-    long long query(int l, int r) { return query(root, L, R, l, r); }
-};
-
-int main() {
-    DynamicSegTree st(1, 1000000000);
-    st.update(1, 100, 5);
-    st.update(50, 200, 3);
-    std::cout << "query[1,200]: " << st.query(1, 200) << std::endl;
-    std::cout << "query[50,100]: " << st.query(50, 100) << std::endl;
-    return 0;
-}
+    FUNCTION query(l, r):
+        RETURN query(root, L, R, l, r)
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.4 持久化线段树（主席树）
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <algorithm>
+```pseudocode
+STRUCT Node:
+    left, right    // 左右子节点编号
+    count          // 该节点代表的值域区间内的元素个数
+END STRUCT
 
-class PersistentSegTree {
-private:
-    struct Node {
-        int left, right;
-        int count;
-    };
-    std::vector<Node> nodes;
-    std::vector<int> roots;
+CLASS PersistentSegTree:
+    nodes    // 动态数组，存储 Node（所有历史版本共享）
+    roots    // 数组，存每个历史版本的根节点编号
 
-    int newNode(int l = 0, int r = 0, int cnt = 0) {
-        nodes.push_back({l, r, cnt});
-        return nodes.size() - 1;
-    }
+    FUNCTION newNode(l=0, r=0, cnt=0):
+        node = Node(left=l, right=r, count=cnt)
+        APPEND node to nodes
+        RETURN LENGTH(nodes) - 1
+    END FUNCTION
 
-    int build(int start, int end) {
-        int node = newNode();
-        if (start == end) return node;
-        int mid = (start + end) / 2;
-        nodes[node].left = build(start, mid);
-        nodes[node].right = build(mid + 1, end);
-        return node;
-    }
+    FUNCTION build(start, end):
+        node = newNode()
+        IF start == end THEN
+            RETURN node
+        END IF
+        mid = (start + end) // 2
+        nodes[node].left = build(start, mid)
+        nodes[node].right = build(mid + 1, end)
+        RETURN node
+    END FUNCTION
 
-    int update(int prev, int start, int end, int pos) {
-        int node = newNode(nodes[prev].left, nodes[prev].right, nodes[prev].count + 1);
-        if (start == end) return node;
-        int mid = (start + end) / 2;
-        if (pos <= mid)
-            nodes[node].left = update(nodes[prev].left, start, mid, pos);
-        else
-            nodes[node].right = update(nodes[prev].right, mid + 1, end, pos);
-        return node;
-    }
+    FUNCTION update(prev, start, end, pos):
+        node = newNode(nodes[prev].left, nodes[prev].right, nodes[prev].count + 1)
+        IF start == end THEN
+            RETURN node
+        END IF
+        mid = (start + end) // 2
+        IF pos <= mid THEN
+            nodes[node].left = update(nodes[prev].left, start, mid, pos)
+        ELSE
+            nodes[node].right = update(nodes[prev].right, mid + 1, end, pos)
+        END IF
+        RETURN node
+    END FUNCTION
 
-    int query(int u, int v, int start, int end, int k) {
-        if (start == end) return start;
-        int mid = (start + end) / 2;
-        int leftCount = nodes[nodes[v].left].count - nodes[nodes[u].left].count;
-        if (k <= leftCount)
-            return query(nodes[u].left, nodes[v].left, start, mid, k);
-        else
-            return query(nodes[u].right, nodes[v].right, mid + 1, end, k - leftCount);
-    }
+    FUNCTION query(u, v, start, end, k):   // u: 左端点版本, v: 右端点版本
+        IF start == end THEN
+            RETURN start
+        END IF
+        mid = (start + end) // 2
+        leftCount = nodes[nodes[v].left].count - nodes[nodes[u].left].count
+        IF k <= leftCount THEN
+            RETURN query(nodes[u].left, nodes[v].left, start, mid, k)
+        ELSE
+            RETURN query(nodes[u].right, nodes[v].right, mid + 1, end, k - leftCount)
+        END IF
+    END FUNCTION
 
-public:
-    int queryKth(const std::vector<int>& arr, int l, int r, int k) {
-        std::vector<int> sorted = arr;
-        std::sort(sorted.begin(), sorted.end());
-        sorted.erase(std::unique(sorted.begin(), sorted.end()), sorted.end());
-        int m = sorted.size();
-
-        nodes.clear();
-        roots.clear();
-        roots.push_back(build(0, m - 1));
-
-        for (int x : arr) {
-            int pos = std::lower_bound(sorted.begin(), sorted.end(), x) - sorted.begin();
-            roots.push_back(update(roots.back(), 0, m - 1, pos));
-        }
-
-        int idx = query(roots[l], roots[r + 1], 0, m - 1, k);
-        return sorted[idx];
-    }
-};
-
-int main() {
-    PersistentSegTree pst;
-    std::vector<int> arr = {1, 5, 2, 6, 3, 7};
-    std::cout << "区间[1,4]第2小: " << pst.queryKth(arr, 1, 4, 2) << std::endl;
-    std::cout << "区间[0,5]第3小: " << pst.queryKth(arr, 0, 5, 3) << std::endl;
-    return 0;
-}
+    FUNCTION queryKth(arr, l, r, k):
+        sorted = SORT(UNIQUE(arr))   // 排序去重
+        m = LENGTH(sorted)
+        nodes = []; roots = []
+        APPEND build(0, m - 1) to roots
+        FOR EACH x IN arr:
+            pos = LOWER_BOUND(sorted, x)   // 偏移排序后的位置
+            APPEND update(roots[LAST], 0, m - 1, pos) to roots
+        END FOR
+        idx = query(roots[l], roots[r + 1], 0, m - 1, k)
+        RETURN sorted[idx]
+    END FUNCTION
+END CLASS
 ```
 
-## ==========================================================================
-### 📖 第三节: 实用案例
-## ==========================================================================
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
+---
+###  第三节: 应用场景
+---
 
 3.1 案例一：区间染色问题
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <set>
+```pseudocode
+CLASS IntervalColoring:
+    tree    // 数组，存储区间颜色（-1 表示混合色）
+    lazy    // 数组，存储懒标记（待下传的颜色值）
+    n       // 区间长度
 
-class IntervalColoring {
-private:
-    std::vector<int> tree;
-    std::vector<int> lazy;
-    int n;
+    FUNCTION pushDown(node):
+        IF lazy[node] != 0 THEN
+            tree[2 * node] = lazy[node]
+            tree[2 * node + 1] = lazy[node]
+            lazy[2 * node] = lazy[node]
+            lazy[2 * node + 1] = lazy[node]
+            lazy[node] = 0
+        END IF
+    END FUNCTION
 
-    void pushDown(int node) {
-        if (lazy[node] != 0) {
-            tree[2*node] = lazy[node];
-            tree[2*node+1] = lazy[node];
-            lazy[2*node] = lazy[node];
-            lazy[2*node+1] = lazy[node];
-            lazy[node] = 0;
-        }
-    }
+    FUNCTION update(node, start, end, l, r, color):
+        IF l <= start AND end <= r THEN
+            tree[node] = color
+            lazy[node] = color
+            RETURN
+        END IF
+        pushDown(node)
+        mid = (start + end) // 2
+        IF l <= mid THEN
+            update(2 * node, start, mid, l, r, color)
+        END IF
+        IF r > mid THEN
+            update(2 * node + 1, mid + 1, end, l, r, color)
+        END IF
+        IF tree[2 * node] == tree[2 * node + 1] THEN
+            tree[node] = tree[2 * node]
+        ELSE
+            tree[node] = -1
+        END IF
+    END FUNCTION
 
-    void update(int node, int start, int end, int l, int r, int color) {
-        if (l <= start && end <= r) {
-            tree[node] = color;
-            lazy[node] = color;
-            return;
-        }
-        pushDown(node);
-        int mid = (start + end) / 2;
-        if (l <= mid) update(2*node, start, mid, l, r, color);
-        if (r > mid) update(2*node+1, mid+1, end, l, r, color);
-        tree[node] = (tree[2*node] == tree[2*node+1]) ? tree[2*node] : -1;
-    }
+    FUNCTION queryColors(node, start, end, l, r, colors):
+        IF l <= start AND end <= r AND tree[node] > 0 THEN
+            ADD tree[node] to colors     // 加入 set，自动去重
+            RETURN
+        END IF
+        IF start == end THEN RETURN
+        pushDown(node)
+        mid = (start + end) // 2
+        IF l <= mid THEN
+            queryColors(2 * node, start, mid, l, r, colors)
+        END IF
+        IF r > mid THEN
+            queryColors(2 * node + 1, mid + 1, end, l, r, colors)
+        END IF
+    END FUNCTION
 
-    void queryColors(int node, int start, int end, int l, int r, std::set<int>& colors) {
-        if (l <= start && end <= r && tree[node] > 0) {
-            colors.insert(tree[node]);
-            return;
-        }
-        if (start == end) return;
-        pushDown(node);
-        int mid = (start + end) / 2;
-        if (l <= mid) queryColors(2*node, start, mid, l, r, colors);
-        if (r > mid) queryColors(2*node+1, mid+1, end, l, r, colors);
-    }
+    CONSTRUCTOR(size):
+        n = size
+        tree = ARRAY of size 4 * n, filled with 1
+        lazy = ARRAY of size 4 * n, filled with 0
+    END CONSTRUCTOR
 
-public:
-    IntervalColoring(int size) : n(size) {
-        tree.assign(4*n, 1);
-        lazy.assign(4*n, 0);
-    }
+    FUNCTION paint(l, r, color):
+        update(1, 1, n, l, r, color)
+    END FUNCTION
 
-    void paint(int l, int r, int color) { update(1, 1, n, l, r, color); }
-
-    int countColors(int l, int r) {
-        std::set<int> colors;
-        queryColors(1, 1, n, l, r, colors);
-        return colors.size();
-    }
-};
-
-int main() {
-    IntervalColoring ic(100);
-    ic.paint(1, 30, 1);
-    ic.paint(20, 50, 2);
-    ic.paint(40, 60, 3);
-
-    std::cout << "区间[1,60]的颜色种数: " << ic.countColors(1, 60) << std::endl;
-    std::cout << "区间[25,45]的颜色种数: " << ic.countColors(25, 45) << std::endl;
-    return 0;
-}
+    FUNCTION countColors(l, r):
+        colors = EMPTY_SET
+        queryColors(1, 1, n, l, r, colors)
+        RETURN LENGTH(colors)
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 3.2 案例二：逆序对计数
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <algorithm>
+```pseudocode
+CLASS InversionCount:
+    tree    // 树状数组（BIT）
+    n       // 值域大小
 
-class InversionCount {
-private:
-    std::vector<int> tree;
-    int n;
+    FUNCTION update(pos):
+        pos = pos + 1    // BIT 下标从 1 开始
+        WHILE pos <= n:
+            tree[pos] = tree[pos] + 1
+            pos = pos + (pos & -pos)     // lowbit
+        END WHILE
+    END FUNCTION
 
-    void update(int pos) {
-        for (pos += 1; pos <= n; pos += pos & (-pos))
-            tree[pos]++;
-    }
+    FUNCTION query(pos):
+        sum = 0
+        pos = pos + 1
+        WHILE pos > 0:
+            sum = sum + tree[pos]
+            pos = pos - (pos & -pos)
+        END WHILE
+        RETURN sum
+    END FUNCTION
 
-    int query(int pos) {
-        int sum = 0;
-        for (pos += 1; pos > 0; pos -= pos & (-pos))
-            sum += tree[pos];
-        return sum;
-    }
-
-public:
-    long long count(std::vector<int>& arr) {
-        std::vector<int> sorted = arr;
-        std::sort(sorted.begin(), sorted.end());
-        sorted.erase(std::unique(sorted.begin(), sorted.end()), sorted.end());
-        n = sorted.size();
-        tree.assign(n + 1, 0);
-
-        long long inversions = 0;
-        for (int i = (int)arr.size() - 1; i >= 0; --i) {
-            int rank = std::lower_bound(sorted.begin(), sorted.end(), arr[i]) - sorted.begin();
-            inversions += query(rank - 1);
-            update(rank);
-        }
-        return inversions;
-    }
-};
-
-int main() {
-    std::vector<int> arr = {5, 3, 2, 4, 1};
-    InversionCount ic;
-    std::cout << "逆序对数量: " << ic.count(arr) << std::endl;
-    return 0;
-}
+    FUNCTION count(arr):
+        sorted = SORT(UNIQUE(arr))
+        n = LENGTH(sorted)
+        tree = ARRAY of size n + 1, filled with 0
+        inversions = 0
+        FOR i FROM LENGTH(arr) - 1 DOWNTO 0:
+            rank = LOWER_BOUND(sorted, arr[i])
+            inversions = inversions + query(rank - 1)
+            update(rank)
+        END FOR
+        RETURN inversions
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 3.3 案例三：区间GCD查询
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <algorithm>
+```pseudocode
+FUNCTION gcd(a, b):
+    WHILE b != 0:
+        temp = b
+        b = a MOD b
+        a = temp
+    END WHILE
+    RETURN a
+END FUNCTION
 
-class GCDSegTree {
-private:
-    std::vector<long long> tree;
-    int n;
+CLASS GCDSegTree:
+    tree    // 数组，存储区间 GCD
+    n       // 原数组长度
 
-    long long gcd(long long a, long long b) {
-        while (b) { a %= b; std::swap(a, b); }
-        return a;
-    }
+    FUNCTION build(arr, node, start, end):
+        IF start == end THEN
+            tree[node] = arr[start]
+            RETURN
+        END IF
+        mid = (start + end) // 2
+        build(arr, 2 * node, start, mid)
+        build(arr, 2 * node + 1, mid + 1, end)
+        tree[node] = gcd(tree[2 * node], tree[2 * node + 1])
+    END FUNCTION
 
-    void build(const std::vector<int>& arr, int node, int start, int end) {
-        if (start == end) {
-            tree[node] = arr[start];
-            return;
-        }
-        int mid = (start + end) / 2;
-        build(arr, 2*node, start, mid);
-        build(arr, 2*node+1, mid+1, end);
-        tree[node] = gcd(tree[2*node], tree[2*node+1]);
-    }
+    FUNCTION query(node, start, end, l, r):
+        IF r < start OR end < l THEN
+            RETURN 0
+        END IF
+        IF l <= start AND end <= r THEN
+            RETURN tree[node]
+        END IF
+        mid = (start + end) // 2
+        RETURN gcd(query(2 * node, start, mid, l, r),
+                   query(2 * node + 1, mid + 1, end, l, r))
+    END FUNCTION
 
-    long long query(int node, int start, int end, int l, int r) {
-        if (r < start || end < l) return 0;
-        if (l <= start && end <= r) return tree[node];
-        int mid = (start + end) / 2;
-        return gcd(query(2*node, start, mid, l, r),
-                   query(2*node+1, mid+1, end, l, r));
-    }
+    FUNCTION update(node, start, end, idx, val):
+        IF start == end THEN
+            tree[node] = val
+            RETURN
+        END IF
+        mid = (start + end) // 2
+        IF idx <= mid THEN
+            update(2 * node, start, mid, idx, val)
+        ELSE
+            update(2 * node + 1, mid + 1, end, idx, val)
+        END IF
+        tree[node] = gcd(tree[2 * node], tree[2 * node + 1])
+    END FUNCTION
 
-    void update(int node, int start, int end, int idx, int val) {
-        if (start == end) {
-            tree[node] = val;
-            return;
-        }
-        int mid = (start + end) / 2;
-        if (idx <= mid) update(2*node, start, mid, idx, val);
-        else update(2*node+1, mid+1, end, idx, val);
-        tree[node] = gcd(tree[2*node], tree[2*node+1]);
-    }
+    CONSTRUCTOR(arr):
+        n = LENGTH(arr)
+        tree = ARRAY of size 4 * n, filled with 0
+        build(arr, 1, 0, n - 1)
+    END CONSTRUCTOR
 
-public:
-    GCDSegTree(const std::vector<int>& arr) {
-        n = arr.size();
-        tree.assign(4*n, 0);
-        build(arr, 1, 0, n-1);
-    }
+    FUNCTION query(l, r):
+        RETURN query(1, 0, n - 1, l, r)
+    END FUNCTION
 
-    long long query(int l, int r) { return query(1, 0, n-1, l, r); }
-    void update(int idx, int val) { update(1, 0, n-1, idx, val); }
-};
-
-int main() {
-    std::vector<int> arr = {12, 18, 24, 36, 48, 60};
-    GCDSegTree st(arr);
-
-    std::cout << "区间[0,5]的GCD: " << st.query(0, 5) << std::endl;
-    std::cout << "区间[2,4]的GCD: " << st.query(2, 4) << std::endl;
-    st.update(3, 15);
-    std::cout << "修改后区间[0,5]的GCD: " << st.query(0, 5) << std::endl;
-    return 0;
-}
+    FUNCTION update(idx, val):
+        update(1, 0, n - 1, idx, val)
+    END FUNCTION
+END CLASS
 ```
 
-## ==========================================================================
-### 📖 第四节: 课后习题
-## ==========================================================================
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
+---
+###  第四节: 课后习题
+---
 
 1. 基础题：实现一棵支持区间加法和区间求和的线段树（带懒标记）。
 
@@ -769,27 +793,27 @@ int main() {
    - [P3372 线段树1](https://www.luogu.com.cn/problem/P3372)（区间加+区间和）
    - [P3373 线段树2](https://www.luogu.com.cn/problem/P3373)（区间乘+区间加+区间和）
 
-## ==========================================================================
+---
 
 
-## --------------------------------------------------------------------------
-## 🔗 知识网络
-## --------------------------------------------------------------------------
+***
+##  知识网络
+***
 
 - **上一章**: [[K_并查集_UnionFind]] | **下一章**: [[M_树状数组_BIT]] | **返回**: [[DSA学习路线]] (Phase 5 选修)
 - **算法技巧**: [[../算法技巧/优化]] | [[../算法技巧/前缀和]]
 - **相关**: [[数据结构/M_树状数组_BIT]] | [[算法技巧/分治]] | [[区间问题]]
 
-## ==========================================================================
+---
 ## 章节测试
-## ==========================================================================
+---
 
 ### 判断题
 
 > [!question] 判断题 1
 > 线段树的空间复杂度为O(2n)，其中n为数组长度。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -798,8 +822,8 @@ int main() {
 
 > [!question] 判断题 2
 > 线段树的建树时间复杂度为O(n)。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -808,8 +832,8 @@ int main() {
 
 > [!question] 判断题 3
 > 懒标记（Lazy Propagation）的作用是将区间修改延迟到需要时才下传。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -818,8 +842,8 @@ int main() {
 
 > [!question] 判断题 4
 > 线段树只能维护满足结合律的运算（如加法、取max、取min）。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -828,8 +852,8 @@ int main() {
 
 > [!question] 判断题 5
 > 动态开点线段树可以处理值域为[1, 10^9]的问题。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -838,8 +862,8 @@ int main() {
 
 > [!question] 判断题 6
 > 主席树（持久化线段树）可以查询区间第k小元素。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -848,8 +872,8 @@ int main() {
 
 > [!question] 判断题 7
 > 线段树可以处理不等长区间的查询（如查询第k个位置到第m个位置）。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -858,8 +882,8 @@ int main() {
 
 > [!question] 判断题 8
 > 对同一个区间同时进行乘法和加法修改时，必须使用双懒标记。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -868,8 +892,8 @@ int main() {
 
 > [!question] 判断题 9
 > 线段树的每次查询最多访问O(4 log n)个节点。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -878,8 +902,8 @@ int main() {
 
 > [!question] 判断题 10
 > 线段树无法支持在数组中间插入或删除元素的操作。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误

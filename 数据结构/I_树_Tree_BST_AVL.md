@@ -1,8 +1,8 @@
-## ==========================================================================
-C++ 数据结构教程 — 树 (Tree) — 二叉搜索树与AVL树
-## ==========================================================================
+---
+数据结构教程 — 树 (Tree) — 二叉搜索树与AVL树
+---
 
-## 📋 章节概述
+##  章节概述
 
 树（Tree）是一种非线性的层次结构，由节点和连接节点的边组成。树结构在计算机
 科学中无处不在：文件系统、HTML DOM树、编译器语法树、数据库索引、网络路由等。
@@ -10,11 +10,11 @@ C++ 数据结构教程 — 树 (Tree) — 二叉搜索树与AVL树
 本章重点讲解二叉搜索树（BST）和自平衡二叉搜索树AVL树，理解从普通树到平衡树的
 演进思路，以及旋转操作如何维持树的平衡。
 
-> 📌 **底层实现参考**：如果需要深入理解本章数据结构的底层实现（纯C手写、内存布局、指针操作），请参阅 [[../../C语言深化教程/3数据结构/06_树与二叉树|C语言教程: 树与二叉树]]。C教程侧重手动实现与内存本质，本教程侧重STL使用与算法优化，两者互补。
+>  **底层实现参考**：如果需要深入理解本章数据结构的底层实现（纯C手写、内存布局、指针操作），请参阅 [[../../C语言深化教程/3数据结构/06_树与二叉树|C语言教程: 树与二叉树]]。C教程侧重手动实现与内存本质，本教程侧重STL使用与算法优化，两者互补。
 
-## ==========================================================================
-### 📖 第一节: 基础语法 + 计算机底层原理
-## ==========================================================================
+---
+###  第一节: 基础语法 + 计算机底层原理
+---
 
 1.1 树的基本概念
 --------------------
@@ -36,119 +36,133 @@ C++ 数据结构教程 — 树 (Tree) — 二叉搜索树与AVL树
 - 后序遍历（Post-order）：左 → 右 → 根
 - 层序遍历（Level-order）：从上到下，从左到右
 
-```cpp
-#include <iostream>
-#include <queue>
-#include <stack>
+```pseudocode
+STRUCT TreeNode:
+    data: integer
+    left: pointer to TreeNode
+    right: pointer to TreeNode
+END STRUCT
 
-struct TreeNode {
-    int data;
-    TreeNode* left;
-    TreeNode* right;
+CLASS BinaryTree:
+    root = NULL
 
-    TreeNode(int val) : data(val), left(nullptr), right(nullptr) {}
-};
+FUNCTION destructor():
+    destroy(root)
+END FUNCTION
 
-class BinaryTree {
-protected:
-    TreeNode* root;
+FUNCTION destroy(node):
+    IF node == NULL:
+        RETURN
+    END IF
+    destroy(node.left)
+    destroy(node.right)
+    DELETE node
+END FUNCTION
 
-    void preorder(TreeNode* node) const {
-        if (!node) return;
-        std::cout << node->data << " ";
-        preorder(node->left);
-        preorder(node->right);
-    }
+FUNCTION preorder(node):
+    IF node == NULL:
+        RETURN
+    END IF
+    PRINT node.data, " "
+    preorder(node.left)
+    preorder(node.right)
+END FUNCTION
 
-    void inorder(TreeNode* node) const {
-        if (!node) return;
-        inorder(node->left);
-        std::cout << node->data << " ";
-        inorder(node->right);
-    }
+FUNCTION inorder(node):
+    IF node == NULL:
+        RETURN
+    END IF
+    inorder(node.left)
+    PRINT node.data, " "
+    inorder(node.right)
+END FUNCTION
 
-    void postorder(TreeNode* node) const {
-        if (!node) return;
-        postorder(node->left);
-        postorder(node->right);
-        std::cout << node->data << " ";
-    }
+FUNCTION postorder(node):
+    IF node == NULL:
+        RETURN
+    END IF
+    postorder(node.left)
+    postorder(node.right)
+    PRINT node.data, " "
+END FUNCTION
 
-    void destroy(TreeNode* node) {
-        if (!node) return;
-        destroy(node->left);
-        destroy(node->right);
-        delete node;
-    }
+FUNCTION print_preorder():
+    PRINT "前序遍历: "
+    preorder(root)
+    PRINT newline
+END FUNCTION
 
-public:
-    BinaryTree() : root(nullptr) {}
-    virtual ~BinaryTree() { destroy(root); }
+FUNCTION print_inorder():
+    PRINT "中序遍历: "
+    inorder(root)
+    PRINT newline
+END FUNCTION
 
-    virtual void insert(int value) = 0;
+FUNCTION print_postorder():
+    PRINT "后序遍历: "
+    postorder(root)
+    PRINT newline
+END FUNCTION
 
-    void printPreorder() const {
-        std::cout << "前序遍历: ";
-        preorder(root);
-        std::cout << std::endl;
-    }
+FUNCTION print_levelorder():
+    IF root == NULL:
+        RETURN
+    END IF
+    q = NEW Queue()
+    q.push(root)
 
-    void printInorder() const {
-        std::cout << "中序遍历: ";
-        inorder(root);
-        std::cout << std::endl;
-    }
+    PRINT "层序遍历: "
+    WHILE NOT q.empty():
+        node = q.front()
+        q.pop()
+        PRINT node.data, " "
 
-    void printPostorder() const {
-        std::cout << "后序遍历: ";
-        postorder(root);
-        std::cout << std::endl;
-    }
+        IF node.left != NULL:
+            q.push(node.left)
+        END IF
+        IF node.right != NULL:
+            q.push(node.right)
+        END IF
+    END WHILE
+    PRINT newline
+END FUNCTION
 
-    void printLevelorder() const {
-        if (!root) return;
-        std::queue<TreeNode*> q;
-        q.push(root);
+// 非递归中序遍历（了解栈在树遍历中的作用）
+FUNCTION print_inorder_iterative():
+    stk = NEW Stack()
+    cur = root
 
-        std::cout << "层序遍历: ";
-        while (!q.empty()) {
-            TreeNode* node = q.front();
-            q.pop();
-            std::cout << node->data << " ";
+    PRINT "中序遍历(迭代): "
+    WHILE cur != NULL OR NOT stk.empty():
+        WHILE cur != NULL:
+            stk.push(cur)
+            cur = cur.left
+        END WHILE
+        cur = stk.top()
+        stk.pop()
+        PRINT cur.data, " "
+        cur = cur.right
+    END WHILE
+    PRINT newline
+END FUNCTION
 
-            if (node->left) q.push(node->left);
-            if (node->right) q.push(node->right);
-        }
-        std::cout << std::endl;
-    }
+FUNCTION height(node):
+    IF node == NULL:
+        RETURN 0
+    END IF
+    RETURN 1 + MAX(height(node.left), height(node.right))
+END FUNCTION
 
-    // 非递归中序遍历（了解栈在树遍历中的作用）
-    void printInorderIterative() const {
-        std::stack<TreeNode*> stk;
-        TreeNode* cur = root;
-
-        std::cout << "中序遍历(迭代): ";
-        while (cur || !stk.empty()) {
-            while (cur) {
-                stk.push(cur);
-                cur = cur->left;
-            }
-            cur = stk.top();
-            stk.pop();
-            std::cout << cur->data << " ";
-            cur = cur->right;
-        }
-        std::cout << std::endl;
-    }
-
-    int height(TreeNode* node) const {
-        if (!node) return 0;
-        return 1 + std::max(height(node->left), height(node->right));
-    }
-
-    int getHeight() const { return height(root); }
-};
+FUNCTION get_height():
+    RETURN height(root)
+END FUNCTION
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/06_树与二叉树]]
+- C++ STL 参考: [[../../cpp教程/容器库/09_set_multiset]]
+---
 
 1.2 二叉搜索树（BST）
 --------------------------
@@ -158,102 +172,113 @@ public:
 2. 右子树所有节点的值 > 根节点的值
 3. 左右子树也是二叉搜索树
 
-```cpp
-#include <iostream>
+```pseudocode
+CLASS BST EXTENDS BinaryTree:
 
-class BST : public BinaryTree {
-private:
-    TreeNode* insertNode(TreeNode* node, int value) {
-        if (!node) return new TreeNode(value);
+FUNCTION insert_node(node, value):
+    IF node == NULL:
+        RETURN NEW TreeNode(value)
+    END IF
 
-        if (value < node->data) {
-            node->left = insertNode(node->left, value);
-        } else if (value > node->data) {
-            node->right = insertNode(node->right, value);
-        }
-        // 值相等时不插入（不允许重复）
-        return node;
-    }
+    IF value < node.data:
+        node.left = insert_node(node.left, value)
+    ELSE IF value > node.data:
+        node.right = insert_node(node.right, value)
+    END IF
+    // 值相等时不插入（不允许重复）
+    RETURN node
+END FUNCTION
 
-    TreeNode* searchNode(TreeNode* node, int value) const {
-        if (!node || node->data == value) return node;
-        if (value < node->data) return searchNode(node->left, value);
-        return searchNode(node->right, value);
-    }
+FUNCTION search_node(node, value):
+    IF node == NULL OR node.data == value:
+        RETURN node
+    END IF
+    IF value < node.data:
+        RETURN search_node(node.left, value)
+    END IF
+    RETURN search_node(node.right, value)
+END FUNCTION
 
-    TreeNode* findMin(TreeNode* node) const {
-        while (node && node->left) node = node->left;
-        return node;
-    }
+FUNCTION find_min(node):
+    WHILE node != NULL AND node.left != NULL:
+        node = node.left
+    END WHILE
+    RETURN node
+END FUNCTION
 
-    TreeNode* deleteNode(TreeNode* node, int value) {
-        if (!node) return nullptr;
+FUNCTION delete_node(node, value):
+    IF node == NULL:
+        RETURN NULL
+    END IF
 
-        if (value < node->data) {
-            node->left = deleteNode(node->left, value);
-        } else if (value > node->data) {
-            node->right = deleteNode(node->right, value);
-        } else {
-            // 找到要删除的节点
-            if (!node->left) {
-                TreeNode* temp = node->right;
-                delete node;
-                return temp;
-            }
-            if (!node->right) {
-                TreeNode* temp = node->left;
-                delete node;
-                return temp;
-            }
+    IF value < node.data:
+        node.left = delete_node(node.left, value)
+    ELSE IF value > node.data:
+        node.right = delete_node(node.right, value)
+    ELSE:
+        // 找到要删除的节点
+        IF node.left == NULL:
+            temp = node.right
+            DELETE node
+            RETURN temp
+        END IF
+        IF node.right == NULL:
+            temp = node.left
+            DELETE node
+            RETURN temp
+        END IF
 
-            // 有两个子节点：用右子树的最小节点替换
-            TreeNode* min_node = findMin(node->right);
-            node->data = min_node->data;
-            node->right = deleteNode(node->right, min_node->data);
-        }
-        return node;
-    }
+        // 有两个子节点：用右子树的最小节点替换
+        min_node = find_min(node.right)
+        node.data = min_node.data
+        node.right = delete_node(node.right, min_node.data)
+    END IF
+    RETURN node
+END FUNCTION
 
-public:
-    void insert(int value) override {
-        root = insertNode(root, value);
-    }
+FUNCTION insert(value):
+    root = insert_node(root, value)
+END FUNCTION
 
-    bool search(int value) const {
-        return searchNode(root, value) != nullptr;
-    }
+FUNCTION search(value):
+    RETURN search_node(root, value) != NULL
+END FUNCTION
 
-    void remove(int value) {
-        root = deleteNode(root, value);
-    }
-};
+FUNCTION remove(value):
+    root = delete_node(root, value)
+END FUNCTION
 
-int main() {
-    BST tree;
+// 使用示例
+FUNCTION main()
+    tree = NEW BST()
 
     // 插入节点
-    int values[] = {50, 30, 80, 20, 40, 70, 90, 10, 35, 45, 85};
-    for (int v : values) {
-        tree.insert(v);
-    }
+    ARRAY values = [50, 30, 80, 20, 40, 70, 90, 10, 35, 45, 85]
+    FOR EACH v IN values:
+        tree.insert(v)
+    END FOR
 
-    tree.printInorder();    // 应输出有序序列
-    tree.printPreorder();
-    tree.printPostorder();
-    tree.printLevelorder();
-    tree.printInorderIterative();
+    tree.print_inorder()    // 应输出有序序列
+    tree.print_preorder()
+    tree.print_postorder()
+    tree.print_levelorder()
+    tree.print_inorder_iterative()
 
-    std::cout << "查找40: " << (tree.search(40) ? "找到" : "未找到") << std::endl;
-    std::cout << "查找100: " << (tree.search(100) ? "找到" : "未找到") << std::endl;
-    std::cout << "树高: " << tree.getHeight() << std::endl;
+    PRINT "查找40: ", IF tree.search(40) THEN "找到" ELSE "未找到"
+    PRINT "查找100: ", IF tree.search(100) THEN "找到" ELSE "未找到"
+    PRINT "树高: ", tree.get_height()
 
-    tree.remove(40);
-    std::cout << "删除40后: ";
-    tree.printInorder();
-
-    return 0;
-}
+    tree.remove(40)
+    PRINT "删除40后: "
+    tree.print_inorder()
+END FUNCTION
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/06_树与二叉树]]
+- C++ STL 参考: [[../../cpp教程/容器库/09_set_multiset]]
+---
 
 BST的问题：当插入有序数据时，BST退化为链表（斜树），树高为O(n)，
 查找复杂度退化到O(n)。这就是为什么需要平衡树。
@@ -325,227 +350,238 @@ graph TD
 > 与斐波那契数列相关, N(0)=1, N(1)=2。可证明高度 h ≤ 1.44 * log2(n),
 > 因此查找、插入、删除均为 O(log n)。
 
-```cpp
-#include <iostream>
-#include <algorithm>
+```pseudocode
+STRUCT AVLNode:
+    data: integer
+    left: pointer to AVLNode
+    right: pointer to AVLNode
+    height: integer
+END STRUCT
 
-class AVLTree {
-private:
-    struct AVLNode {
-        int data;
-        AVLNode* left;
-        AVLNode* right;
-        int height;
+CLASS AVLTree:
+    root = NULL
 
-        AVLNode(int val) : data(val), left(nullptr), right(nullptr), height(1) {}
-    };
+FUNCTION get_height(node):
+    IF node == NULL:
+        RETURN 0
+    END IF
+    RETURN node.height
+END FUNCTION
 
-    AVLNode* root;
+FUNCTION get_balance(node):
+    IF node == NULL:
+        RETURN 0
+    END IF
+    RETURN get_height(node.left) - get_height(node.right)
+END FUNCTION
 
-    int getHeight(AVLNode* node) const {
-        return node ? node->height : 0;
-    }
+FUNCTION update_height(node):
+    IF node != NULL:
+        node.height = 1 + MAX(get_height(node.left),
+                              get_height(node.right))
+    END IF
+END FUNCTION
 
-    int getBalance(AVLNode* node) const {
-        return node ? getHeight(node->left) - getHeight(node->right) : 0;
-    }
+// 右旋
+FUNCTION right_rotate(y):
+    x = y.left
+    T2 = x.right
 
-    void updateHeight(AVLNode* node) {
-        if (node) {
-            node->height = 1 + std::max(getHeight(node->left),
-                                        getHeight(node->right));
-        }
-    }
+    x.right = y
+    y.left = T2
 
-    // 右旋
-    AVLNode* rightRotate(AVLNode* y) {
-        AVLNode* x = y->left;
-        AVLNode* T2 = x->right;
+    update_height(y)
+    update_height(x)
 
-        x->right = y;
-        y->left = T2;
+    RETURN x
+END FUNCTION
 
-        updateHeight(y);
-        updateHeight(x);
+// 左旋
+FUNCTION left_rotate(x):
+    y = x.right
+    T2 = y.left
 
-        return x;
-    }
+    y.left = x
+    x.right = T2
 
-    // 左旋
-    AVLNode* leftRotate(AVLNode* x) {
-        AVLNode* y = x->right;
-        AVLNode* T2 = y->left;
+    update_height(x)
+    update_height(y)
 
-        y->left = x;
-        x->right = T2;
+    RETURN y
+END FUNCTION
 
-        updateHeight(x);
-        updateHeight(y);
+FUNCTION find_min(node):
+    WHILE node != NULL AND node.left != NULL:
+        node = node.left
+    END WHILE
+    RETURN node
+END FUNCTION
 
-        return y;
-    }
+FUNCTION insert_node(node, value):
+    // 1. 普通BST插入
+    IF node == NULL:
+        RETURN NEW AVLNode(value)
+    END IF
 
-    AVLNode* insertNode(AVLNode* node, int value) {
-        // 1. 普通BST插入
-        if (!node) return new AVLNode(value);
+    IF value < node.data:
+        node.left = insert_node(node.left, value)
+    ELSE IF value > node.data:
+        node.right = insert_node(node.right, value)
+    ELSE:
+        RETURN node  // 不允许重复
+    END IF
 
-        if (value < node->data) {
-            node->left = insertNode(node->left, value);
-        } else if (value > node->data) {
-            node->right = insertNode(node->right, value);
-        } else {
-            return node;  // 不允许重复
-        }
+    // 2. 更新高度
+    update_height(node)
 
-        // 2. 更新高度
-        updateHeight(node);
+    // 3. 检查平衡因子并旋转
+    balance = get_balance(node)
 
-        // 3. 检查平衡因子并旋转
-        int balance = getBalance(node);
+    // LL情况: 右旋
+    IF balance > 1 AND value < node.left.data:
+        RETURN right_rotate(node)
+    END IF
 
-        // LL情况: 右旋
-        if (balance > 1 && value < node->left->data) {
-            return rightRotate(node);
-        }
+    // RR情况: 左旋
+    IF balance < -1 AND value > node.right.data:
+        RETURN left_rotate(node)
+    END IF
 
-        // RR情况: 左旋
-        if (balance < -1 && value > node->right->data) {
-            return leftRotate(node);
-        }
+    // LR情况: 先左旋再右旋
+    IF balance > 1 AND value > node.left.data:
+        node.left = left_rotate(node.left)
+        RETURN right_rotate(node)
+    END IF
 
-        // LR情况: 先左旋再右旋
-        if (balance > 1 && value > node->left->data) {
-            node->left = leftRotate(node->left);
-            return rightRotate(node);
-        }
+    // RL情况: 先右旋再左旋
+    IF balance < -1 AND value < node.right.data:
+        node.right = right_rotate(node.right)
+        RETURN left_rotate(node)
+    END IF
 
-        // RL情况: 先右旋再左旋
-        if (balance < -1 && value < node->right->data) {
-            node->right = rightRotate(node->right);
-            return leftRotate(node);
-        }
+    RETURN node
+END FUNCTION
 
-        return node;
-    }
+FUNCTION delete_node(node, value):
+    // 1. 普通BST删除
+    IF node == NULL:
+        RETURN NULL
+    END IF
 
-    AVLNode* findMin(AVLNode* node) const {
-        while (node && node->left) node = node->left;
-        return node;
-    }
+    IF value < node.data:
+        node.left = delete_node(node.left, value)
+    ELSE IF value > node.data:
+        node.right = delete_node(node.right, value)
+    ELSE:
+        IF node.left == NULL OR node.right == NULL:
+            temp = IF node.left != NULL THEN node.left ELSE node.right
+            DELETE node
+            RETURN temp
+        END IF
 
-    AVLNode* deleteNode(AVLNode* node, int value) {
-        // 1. 普通BST删除
-        if (!node) return nullptr;
+        min_node = find_min(node.right)
+        node.data = min_node.data
+        node.right = delete_node(node.right, min_node.data)
+    END IF
 
-        if (value < node->data) {
-            node->left = deleteNode(node->left, value);
-        } else if (value > node->data) {
-            node->right = deleteNode(node->right, value);
-        } else {
-            if (!node->left || !node->right) {
-                AVLNode* temp = node->left ? node->left : node->right;
-                delete node;
-                return temp;
-            }
+    IF node == NULL:
+        RETURN NULL
+    END IF
 
-            AVLNode* min_node = findMin(node->right);
-            node->data = min_node->data;
-            node->right = deleteNode(node->right, min_node->data);
-        }
+    // 2. 更新高度
+    update_height(node)
 
-        if (!node) return nullptr;
+    // 3. 检查平衡
+    balance = get_balance(node)
 
-        // 2. 更新高度
-        updateHeight(node);
+    // LL
+    IF balance > 1 AND get_balance(node.left) >= 0:
+        RETURN right_rotate(node)
+    END IF
 
-        // 3. 检查平衡
-        int balance = getBalance(node);
+    // LR
+    IF balance > 1 AND get_balance(node.left) < 0:
+        node.left = left_rotate(node.left)
+        RETURN right_rotate(node)
+    END IF
 
-        // LL
-        if (balance > 1 && getBalance(node->left) >= 0) {
-            return rightRotate(node);
-        }
+    // RR
+    IF balance < -1 AND get_balance(node.right) <= 0:
+        RETURN left_rotate(node)
+    END IF
 
-        // LR
-        if (balance > 1 && getBalance(node->left) < 0) {
-            node->left = leftRotate(node->left);
-            return rightRotate(node);
-        }
+    // RL
+    IF balance < -1 AND get_balance(node.right) > 0:
+        node.right = right_rotate(node.right)
+        RETURN left_rotate(node)
+    END IF
 
-        // RR
-        if (balance < -1 && getBalance(node->right) <= 0) {
-            return leftRotate(node);
-        }
+    RETURN node
+END FUNCTION
 
-        // RL
-        if (balance < -1 && getBalance(node->right) > 0) {
-            node->right = rightRotate(node->right);
-            return leftRotate(node);
-        }
+FUNCTION inorder(node):
+    IF node == NULL:
+        RETURN
+    END IF
+    inorder(node.left)
+    PRINT node.data, "(BF=", get_balance(node), ") "
+    inorder(node.right)
+END FUNCTION
 
-        return node;
-    }
+FUNCTION destroy(node):
+    IF node == NULL:
+        RETURN
+    END IF
+    destroy(node.left)
+    destroy(node.right)
+    DELETE node
+END FUNCTION
 
-    void inorder(AVLNode* node) const {
-        if (!node) return;
-        inorder(node->left);
-        std::cout << node->data << "(BF=" << getBalance(node) << ") ";
-        inorder(node->right);
-    }
+FUNCTION insert(value):
+    root = insert_node(root, value)
+END FUNCTION
 
-    void destroy(AVLNode* node) {
-        if (!node) return;
-        destroy(node->left);
-        destroy(node->right);
-        delete node;
-    }
+FUNCTION remove(value):
+    root = delete_node(root, value)
+END FUNCTION
 
-public:
-    AVLTree() : root(nullptr) {}
-    ~AVLTree() { destroy(root); }
+FUNCTION print():
+    PRINT "AVL树中序遍历(带平衡因子): "
+    inorder(root)
+    PRINT newline
+    PRINT "树高: ", IF root != NULL THEN root.height ELSE 0
+END FUNCTION
 
-    void insert(int value) {
-        root = insertNode(root, value);
-    }
+// 使用示例
+FUNCTION main()
+    avl = NEW AVLTree()
 
-    void remove(int value) {
-        root = deleteNode(root, value);
-    }
+    PRINT "插入有序序列 10, 20, 30, 40, 50, 25"
+    avl.insert(10)
+    avl.insert(20)
+    avl.insert(30)
+    avl.insert(40)
+    avl.insert(50)
+    avl.insert(25)
 
-    void print() const {
-        std::cout << "AVL树中序遍历(带平衡因子): ";
-        inorder(root);
-        std::cout << std::endl;
-        std::cout << "树高: " << (root ? root->height : 0) << std::endl;
-    }
-};
+    avl.print()
 
-int main() {
-    AVLTree avl;
-
-    // 插入有序数据
-    std::cout << "插入有序序列 10, 20, 30, 40, 50, 25" << std::endl;
-    avl.insert(10);
-    avl.insert(20);
-    avl.insert(30);
-    avl.insert(40);
-    avl.insert(50);
-    avl.insert(25);
-
-    avl.print();
-
-    std::cout << "\n删除30:" << std::endl;
-    avl.remove(30);
-    avl.print();
-
-    return 0;
-}
+    PRINT "删除30:"
+    avl.remove(30)
+    avl.print()
+END FUNCTION
 ```
 
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/06_树与二叉树]]
+- C++ STL 参考: [[../../cpp教程/容器库/09_set_multiset]]
+---
 
-## ==========================================================================
-### 📖 第二节: 所有用法大全
-## ==========================================================================
+
+---
+###  第二节: 实现变体
+---
 
 2.1 其他常见树结构
 -----------------------
@@ -569,302 +605,319 @@ int main() {
 2.2 字典树（Trie）实现
 --------------------------
 
-```cpp
-#include <iostream>
-#include <unordered_map>
-#include <string>
-#include <vector>
+```pseudocode
+STRUCT TrieNode:
+    children: Map(char -> pointer to TrieNode)
+    is_end: boolean
+    count: integer   // 经过该节点的单词数
+END STRUCT
 
-class TrieNode {
-public:
-    std::unordered_map<char, TrieNode*> children;
-    bool is_end;
-    int count;  // 经过该节点的单词数
+CLASS Trie:
+    root = NEW TrieNode()
 
-    TrieNode() : is_end(false), count(0) {}
-    ~TrieNode() {
-        for (auto& [ch, child] : children) {
-            delete child;
-        }
-    }
-};
+FUNCTION destructor():
+    destroy(root)
+END FUNCTION
 
-class Trie {
-private:
-    TrieNode* root;
+FUNCTION destroy(node):
+    FOR EACH (ch, child) IN node.children:
+        destroy(child)
+    END FOR
+    DELETE node
+END FUNCTION
 
-public:
-    Trie() : root(new TrieNode()) {}
-    ~Trie() { delete root; }
+FUNCTION insert(word):
+    cur = root
+    FOR EACH ch IN word:
+        IF ch NOT IN cur.children:
+            cur.children[ch] = NEW TrieNode()
+        END IF
+        cur = cur.children[ch]
+        cur.count = cur.count + 1
+    END FOR
+    cur.is_end = TRUE
+END FUNCTION
 
-    void insert(const std::string& word) {
-        TrieNode* cur = root;
-        for (char ch : word) {
-            if (cur->children.find(ch) == cur->children.end()) {
-                cur->children[ch] = new TrieNode();
-            }
-            cur = cur->children[ch];
-            cur->count++;
-        }
-        cur->is_end = true;
-    }
+FUNCTION search(word):
+    cur = root
+    FOR EACH ch IN word:
+        IF ch NOT IN cur.children:
+            RETURN FALSE
+        END IF
+        cur = cur.children[ch]
+    END FOR
+    RETURN cur.is_end
+END FUNCTION
 
-    bool search(const std::string& word) const {
-        TrieNode* cur = root;
-        for (char ch : word) {
-            auto it = cur->children.find(ch);
-            if (it == cur->children.end()) return false;
-            cur = it->second;
-        }
-        return cur->is_end;
-    }
+FUNCTION starts_with(prefix):
+    cur = root
+    FOR EACH ch IN prefix:
+        IF ch NOT IN cur.children:
+            RETURN FALSE
+        END IF
+        cur = cur.children[ch]
+    END FOR
+    RETURN TRUE
+END FUNCTION
 
-    bool startsWith(const std::string& prefix) const {
-        TrieNode* cur = root;
-        for (char ch : prefix) {
-            auto it = cur->children.find(ch);
-            if (it == cur->children.end()) return false;
-            cur = it->second;
-        }
-        return true;
-    }
+// 获取所有以prefix为前缀的单词
+FUNCTION get_words_with_prefix(prefix):
+    cur = root
+    FOR EACH ch IN prefix:
+        IF ch NOT IN cur.children:
+            RETURN NEW ARRAY
+        END IF
+        cur = cur.children[ch]
+    END FOR
 
-    // 获取所有以prefix为前缀的单词
-    std::vector<std::string> getWordsWithPrefix(const std::string& prefix) const {
-        TrieNode* cur = root;
-        for (char ch : prefix) {
-            auto it = cur->children.find(ch);
-            if (it == cur->children.end()) return {};
-            cur = it->second;
-        }
+    result = NEW ARRAY
+    current = COPY(prefix)
+    dfs_collect(cur, current, result)
+    RETURN result
+END FUNCTION
 
-        std::vector<std::string> result;
-        std::string current = prefix;
-        dfsCollect(cur, current, result);
-        return result;
-    }
+FUNCTION dfs_collect(node, current, result):
+    IF node.is_end:
+        result.APPEND(current)
+    END IF
+    FOR EACH (ch, child) IN node.children:
+        current = current + ch
+        dfs_collect(child, current, result)
+        current = current WITHOUT LAST CHAR
+    END FOR
+END FUNCTION
 
-private:
-    void dfsCollect(TrieNode* node, std::string& current,
-                    std::vector<std::string>& result) const {
-        if (node->is_end) {
-            result.push_back(current);
-        }
-        for (const auto& [ch, child] : node->children) {
-            current.push_back(ch);
-            dfsCollect(child, current, result);
-            current.pop_back();
-        }
-    }
-};
+FUNCTION main()
+    trie = NEW Trie()
 
-int main() {
-    Trie trie;
+    trie.insert("apple")
+    trie.insert("app")
+    trie.insert("application")
+    trie.insert("apt")
+    trie.insert("bat")
+    trie.insert("batch")
+    trie.insert("bath")
 
-    trie.insert("apple");
-    trie.insert("app");
-    trie.insert("application");
-    trie.insert("apt");
-    trie.insert("bat");
-    trie.insert("batch");
-    trie.insert("bath");
+    PRINT "search(app): ", trie.search("app")
+    PRINT "search(apple): ", trie.search("apple")
+    PRINT "starts_with(app): ", trie.starts_with("app")
 
-    std::cout << "search(app): " << trie.search("app") << std::endl;
-    std::cout << "search(apple): " << trie.search("apple") << std::endl;
-    std::cout << "startsWith(app): " << trie.startsWith("app") << std::endl;
+    PRINT "以 'ap' 为前缀的单词: "
+    FOR EACH word IN trie.get_words_with_prefix("ap"):
+        PRINT word, " "
+    END FOR
+    PRINT newline
 
-    std::cout << "\n以\"ap\"为前缀的单词: ";
-    for (const auto& word : trie.getWordsWithPrefix("ap")) {
-        std::cout << word << " ";
-    }
-    std::cout << std::endl;
-
-    std::cout << "\n以\"bat\"为前缀的单词: ";
-    for (const auto& word : trie.getWordsWithPrefix("bat")) {
-        std::cout << word << " ";
-    }
-    std::cout << std::endl;
-
-    return 0;
-}
+    PRINT "以 'bat' 为前缀的单词: "
+    FOR EACH word IN trie.get_words_with_prefix("bat"):
+        PRINT word, " "
+    END FOR
+    PRINT newline
+END FUNCTION
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/06_树与二叉树]]
+- C++ STL 参考: [[../../cpp教程/容器库/09_set_multiset]]
+---
 
 2.3 树与数组的转换（堆的树形表示）
 ----------------------------------------
 
-```cpp
-#include <iostream>
-#include <vector>
-
+```pseudocode
 // 用数组表示的完全二叉树（堆）
-class HeapTree {
-private:
-    std::vector<int> data;
+CLASS HeapTree:
+    data = NEW ARRAY
 
-public:
-    void insert(int value) {
-        data.push_back(value);
-        siftUp(data.size() - 1);
-    }
+FUNCTION insert(value):
+    data.APPEND(value)
+    sift_up(LENGTH(data) - 1)
+END FUNCTION
 
-    void siftUp(size_t index) {
-        while (index > 0) {
-            size_t parent = (index - 1) / 2;
-            if (data[parent] >= data[index]) break;
-            std::swap(data[parent], data[index]);
-            index = parent;
-        }
-    }
+FUNCTION sift_up(index):
+    WHILE index > 0:
+        parent = (index - 1) / 2
+        IF data[parent] >= data[index]:
+            BREAK
+        END IF
+        SWAP(data[parent], data[index])
+        index = parent
+    END WHILE
+END FUNCTION
 
-    void printAsTree() const {
-        if (data.empty()) return;
+FUNCTION print_as_tree():
+    IF data IS EMPTY:
+        RETURN
+    END IF
 
-        int level = 0;
-        int count = 0;
-        int total = data.size();
+    level = 0
+    count = 0
+    total = LENGTH(data)
 
-        std::cout << "数组表示的完全二叉树:" << std::endl;
+    PRINT "数组表示的完全二叉树:"
 
-        while (count < total) {
-            int nodes_in_level = 1 << level;
-            for (int i = 0; i < nodes_in_level && count < total; ++i) {
-                std::cout << data[count++] << " ";
-            }
-            std::cout << std::endl;
-            ++level;
-        }
+    WHILE count < total:
+        nodes_in_level = 1 << level   // 2^level
+        FOR i = 0 TO nodes_in_level - 1:
+            IF count >= total:
+                BREAK
+            END IF
+            PRINT data[count], " "
+            count = count + 1
+        END FOR
+        PRINT newline
+        level = level + 1
+    END WHILE
 
-        // 打印父子关系
-        std::cout << "\n父子关系:" << std::endl;
-        for (size_t i = 0; i < data.size(); ++i) {
-            std::cout << "节点[" << i << "]=" << data[i];
-            size_t left = 2 * i + 1;
-            size_t right = 2 * i + 2;
-            if (left < data.size())
-                std::cout << " 左子[" << left << "]=" << data[left];
-            if (right < data.size())
-                std::cout << " 右子[" << right << "]=" << data[right];
-            std::cout << std::endl;
-        }
-    }
-};
+    // 打印父子关系
+    PRINT "父子关系:"
+    FOR i = 0 TO total - 1:
+        PRINT "节点[", i, "]=", data[i]
+        left = 2 * i + 1
+        right = 2 * i + 2
+        IF left < total:
+            PRINT " 左子[", left, "]=", data[left]
+        END IF
+        IF right < total:
+            PRINT " 右子[", right, "]=", data[right]
+        END IF
+        PRINT newline
+    END FOR
+END FUNCTION
 
-int main() {
-    HeapTree ht;
+FUNCTION main()
+    ht = NEW HeapTree()
 
-    for (int v : {3, 1, 4, 1, 5, 9, 2, 6}) {
-        ht.insert(v);
-    }
+    FOR EACH v IN [3, 1, 4, 1, 5, 9, 2, 6]:
+        ht.insert(v)
+    END FOR
 
-    ht.printAsTree();
-
-    return 0;
-}
+    ht.print_as_tree()
+END FUNCTION
 ```
 
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/06_树与二叉树]]
+- C++ STL 参考: [[../../cpp教程/容器库/09_set_multiset]]
+---
 
-## ==========================================================================
-### 📖 第三节: 实用案例
-## ==========================================================================
+
+---
+###  第三节: 应用场景
+---
 
 案例一：文件系统目录树
 ------------------------------
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <string>
-#include <map>
-#include <algorithm>
+```pseudocode
+STRUCT FSNode:
+    name: string
+    is_directory: boolean
+    children: list of pointer to FSNode
+END STRUCT
 
-class FileSystemNode {
-public:
-    std::string name;
-    bool is_directory;
-    std::vector<FileSystemNode*> children;
+FUNCTION add_child(parent, child):
+    parent.children.APPEND(child)
+END FUNCTION
 
-    FileSystemNode(const std::string& n, bool dir)
-        : name(n), is_directory(dir) {}
+FUNCTION print(node, depth):
+    FOR i = 0 TO depth - 1:
+        PRINT "  "
+    END FOR
+    IF node.is_directory:
+        PRINT "[dir]  ", node.name
+    ELSE:
+        PRINT "[file] ", node.name
+    END IF
 
-    void addChild(FileSystemNode* child) {
-        children.push_back(child);
-    }
+    // 按类型排序：目录在前，文件在后
+    dirs = NEW ARRAY
+    files = NEW ARRAY
+    FOR EACH child IN node.children:
+        IF child.is_directory:
+            dirs.APPEND(child)
+        ELSE:
+            files.APPEND(child)
+        END IF
+    END FOR
 
-    void print(int depth = 0) const {
-        for (int i = 0; i < depth; ++i) std::cout << "  ";
-        std::cout << (is_directory ? "📁 " : "📄 ") << name << std::endl;
+    FOR EACH child IN dirs:
+        print(child, depth + 1)
+    END FOR
+    FOR EACH child IN files:
+        print(child, depth + 1)
+    END FOR
+END FUNCTION
 
-        // 按类型排序：目录在前，文件在后
-        std::vector<FileSystemNode*> dirs, files;
-        for (auto child : children) {
-            if (child->is_directory) dirs.push_back(child);
-            else files.push_back(child);
-        }
+FUNCTION find(node, target_name):
+    IF node.name == target_name:
+        RETURN node
+    END IF
+    FOR EACH child IN node.children:
+        result = find(child, target_name)
+        IF result != NULL:
+            RETURN result
+        END IF
+    END FOR
+    RETURN NULL
+END FUNCTION
 
-        for (auto child : dirs) child->print(depth + 1);
-        for (auto child : files) child->print(depth + 1);
-    }
+FUNCTION total_size(node):
+    count = IF node.is_directory THEN 0 ELSE 1
+    FOR EACH child IN node.children:
+        count = count + total_size(child)
+    END FOR
+    RETURN count
+END FUNCTION
 
-    FileSystemNode* find(const std::string& target_name) {
-        if (name == target_name) return this;
-        for (auto child : children) {
-            auto result = child->find(target_name);
-            if (result) return result;
-        }
-        return nullptr;
-    }
+FUNCTION main()
+    root = NEW FSNode("root", TRUE)
 
-    size_t totalSize() const {
-        size_t count = is_directory ? 0 : 1;
-        for (auto child : children) {
-            count += child->totalSize();
-        }
-        return count;
-    }
-};
+    home = NEW FSNode("home", TRUE)
+    user = NEW FSNode("user", TRUE)
+    docs = NEW FSNode("docs", TRUE)
+    pics = NEW FSNode("pics", TRUE)
 
-int main() {
-    FileSystemNode root("root", true);
+    readme = NEW FSNode("readme.txt", FALSE)
+    notes = NEW FSNode("notes.md", FALSE)
+    photo1 = NEW FSNode("vacation.jpg", FALSE)
+    photo2 = NEW FSNode("family.png", FALSE)
 
-    FileSystemNode* home = new FileSystemNode("home", true);
-    FileSystemNode* user = new FileSystemNode("user", true);
-    FileSystemNode* docs = new FileSystemNode("docs", true);
-    FileSystemNode* pics = new FileSystemNode("pics", true);
+    etc = NEW FSNode("etc", TRUE)
+    config = NEW FSNode("config.ini", FALSE)
 
-    FileSystemNode* readme = new FileSystemNode("readme.txt", false);
-    FileSystemNode* notes = new FileSystemNode("notes.md", false);
-    FileSystemNode* photo1 = new FileSystemNode("vacation.jpg", false);
-    FileSystemNode* photo2 = new FileSystemNode("family.png", false);
+    add_child(root, home)
+    add_child(root, etc)
 
-    FileSystemNode* etc = new FileSystemNode("etc", true);
-    FileSystemNode* config = new FileSystemNode("config.ini", false);
+    add_child(home, user)
+    add_child(user, docs)
+    add_child(user, pics)
 
-    root.addChild(home);
-    root.addChild(etc);
+    add_child(docs, readme)
+    add_child(docs, notes)
+    add_child(pics, photo1)
+    add_child(pics, photo2)
 
-    home->addChild(user);
-    user->addChild(docs);
-    user->addChild(pics);
+    add_child(etc, config)
 
-    docs->addChild(readme);
-    docs->addChild(notes);
-    pics->addChild(photo1);
-    pics->addChild(photo2);
+    PRINT "文件系统树:"
+    print(root, 0)
 
-    etc->addChild(config);
+    PRINT "查找 pics: "
+    found = find(root, "pics")
+    PRINT IF found != NULL THEN "找到" ELSE "未找到"
 
-    std::cout << "文件系统树:" << std::endl;
-    root.print();
-
-    std::cout << "\n查找 pics: ";
-    auto found = root.find("pics");
-    std::cout << (found ? "找到" : "未找到") << std::endl;
-
-    std::cout << "非目录文件总数: " << root.totalSize() << std::endl;
-
-    return 0;
-}
+    PRINT "非目录文件总数: ", total_size(root)
+END FUNCTION
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/06_树与二叉树]]
+- C++ STL 参考: [[../../cpp教程/容器库/09_set_multiset]]
+---
 
 
 案例二：表达式树（语法树）
@@ -872,71 +925,58 @@ int main() {
 
 将数学表达式表示为树结构，支持求值和打印：
 
-```cpp
-#include <iostream>
-#include <string>
-#include <cmath>
+```pseudocode
+ABSTRACT CLASS ExprNode:
+    FUNCTION evaluate()  // 纯虚函数
+    FUNCTION to_string() // 纯虚函数
+END CLASS
 
-class ExprNode {
-public:
-    virtual ~ExprNode() = default;
-    virtual double evaluate() const = 0;
-    virtual std::string toString() const = 0;
-};
+CLASS NumberNode EXTENDS ExprNode:
+    value: double
 
-class NumberNode : public ExprNode {
-    double value;
-public:
-    NumberNode(double v) : value(v) {}
-    double evaluate() const override { return value; }
-    std::string toString() const override { return std::to_string(value); }
-};
+FUNCTION evaluate():
+    RETURN value
+END FUNCTION
 
-class BinaryOpNode : public ExprNode {
-protected:
-    ExprNode* left;
-    ExprNode* right;
-    char op;
+FUNCTION to_string():
+    RETURN STRING(value)
+END FUNCTION
 
-public:
-    BinaryOpNode(ExprNode* l, ExprNode* r, char o)
-        : left(l), right(r), op(o) {}
+CLASS BinaryOpNode EXTENDS ExprNode:
+    left: pointer to ExprNode
+    right: pointer to ExprNode
+    op: char
 
-    ~BinaryOpNode() override {
-        delete left;
-        delete right;
-    }
+FUNCTION destructor():
+    DELETE left
+    DELETE right
+END FUNCTION
 
-    std::string toString() const override {
-        return "(" + left->toString() + " " + op + " " + right->toString() + ")";
-    }
-};
+FUNCTION to_string():
+    RETURN "(" + left.to_string() + " " + op + " " + right.to_string() + ")"
+END FUNCTION
 
-class AddNode : public BinaryOpNode {
-public:
-    AddNode(ExprNode* l, ExprNode* r) : BinaryOpNode(l, r, '+') {}
-    double evaluate() const override { return left->evaluate() + right->evaluate(); }
-};
+CLASS AddNode EXTENDS BinaryOpNode:
+FUNCTION evaluate():
+    RETURN left.evaluate() + right.evaluate()
+END FUNCTION
 
-class SubNode : public BinaryOpNode {
-public:
-    SubNode(ExprNode* l, ExprNode* r) : BinaryOpNode(l, r, '-') {}
-    double evaluate() const override { return left->evaluate() - right->evaluate(); }
-};
+CLASS SubNode EXTENDS BinaryOpNode:
+FUNCTION evaluate():
+    RETURN left.evaluate() - right.evaluate()
+END FUNCTION
 
-class MulNode : public BinaryOpNode {
-public:
-    MulNode(ExprNode* l, ExprNode* r) : BinaryOpNode(l, r, '*') {}
-    double evaluate() const override { return left->evaluate() * right->evaluate(); }
-};
+CLASS MulNode EXTENDS BinaryOpNode:
+FUNCTION evaluate():
+    RETURN left.evaluate() * right.evaluate()
+END FUNCTION
 
-class DivNode : public BinaryOpNode {
-public:
-    DivNode(ExprNode* l, ExprNode* r) : BinaryOpNode(l, r, '/') {}
-    double evaluate() const override { return left->evaluate() / right->evaluate(); }
-};
+CLASS DivNode EXTENDS BinaryOpNode:
+FUNCTION evaluate():
+    RETURN left.evaluate() / right.evaluate()
+END FUNCTION
 
-int main() {
+FUNCTION main()
     // 构建表达式: (3 + 4) * (5 - 2)
     //        *
     //      /   \
@@ -944,24 +984,28 @@ int main() {
     //    / \   / \
     //   3   4 5   2
 
-    ExprNode* expr = new MulNode(
-        new AddNode(new NumberNode(3), new NumberNode(4)),
-        new SubNode(new NumberNode(5), new NumberNode(2))
-    );
+    expr = NEW MulNode(
+        NEW AddNode(NEW NumberNode(3), NEW NumberNode(4)),
+        NEW SubNode(NEW NumberNode(5), NEW NumberNode(2))
+    )
 
-    std::cout << "表达式: " << expr->toString() << std::endl;
-    std::cout << "计算结果: " << expr->evaluate() << std::endl;
+    PRINT "表达式: ", expr.to_string()
+    PRINT "计算结果: ", expr.evaluate()
 
-    delete expr;
-
-    return 0;
-}
+    DELETE expr
+END FUNCTION
 ```
 
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/06_树与二叉树]]
+- C++ STL 参考: [[../../cpp教程/容器库/09_set_multiset]]
+---
 
-## ==========================================================================
-### 📖 第四节: 课后习题
-## ==========================================================================
+
+---
+###  第四节: 课后习题
+---
 
 1. 基础题：手动实现BST的完整操作。
    - 插入、删除、查找、遍历（全部四种）
@@ -990,17 +1034,17 @@ int main() {
    - 支持插入、删除、查找
    - 验证B树的高度平衡性质
 
-## ==========================================================================
+---
 
 
-## ==========================================================================
-### 📝 章节测试
-## ==========================================================================
+---
+###  章节测试
+---
 
 > [!question] 判断题 1
 > 二叉搜索树（BST）中，左子树所有节点的值都小于根节点 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1009,8 +1053,8 @@ int main() {
 
 > [!question] 判断题 2
 > BST的中序遍历结果一定是有序的（升序） （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1019,8 +1063,8 @@ int main() {
 
 > [!question] 判断题 3
 > AVL树是一种严格平衡的二叉搜索树，任意节点左右子树高度差不超过1 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1029,8 +1073,8 @@ int main() {
 
 > [!question] 判断题 4
 > 在最坏情况下，BST的查找时间复杂度为O(n) （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1039,8 +1083,8 @@ int main() {
 
 > [!question] 判断题 5
 > 二叉树的前序遍历顺序为：左子树 → 根节点 → 右子树 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -1049,8 +1093,8 @@ int main() {
 
 > [!question] 判断题 6
 > AVL树的插入操作最多需要一次旋转（单旋或双旋）即可恢复平衡 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1059,8 +1103,8 @@ int main() {
 
 > [!question] 判断题 7
 > 完全二叉树一定是BST （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -1069,8 +1113,8 @@ int main() {
 
 > [!question] 判断题 8
 > 删除BST中有两个子节点的节点时，可以用其中序后继替换 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1079,8 +1123,8 @@ int main() {
 
 > [!question] 判断题 9
 > 一棵含有n个节点的AVL树，其高度为O(log n) （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1089,8 +1133,8 @@ int main() {
 
 > [!question] 判断题 10
 > 已知前序遍历和后序遍历，可以唯一确定一棵二叉树 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -1157,7 +1201,7 @@ int main() {
 > > [!success]- 点击查看答案
 > > 正确答案: B
 > > 
-> > **解析**: 7个节点的完全二叉树：第1层1个，第2层2个，第3层4个。第3层的4个节点都是叶子。公式：⌈n/2⌉ = ⌈7/2⌉ = 4。
+> > **解析**: 7个节点的完全二叉树：第1层1个，第2层2个，第3层4个。第3层的4个节点都是叶子。公式：ceil(n/2) = ceil(7/2) = 4。
 
 > [!question] 选择题 6
 > BST中查找最小值应该？
@@ -1221,7 +1265,7 @@ int main() {
 
 ---
 
-### 💻 编程大题
+###  编程大题
 
 > [!note] 编程题 1：实现完整的AVL树
 > **要求**：
@@ -1268,7 +1312,7 @@ int main() {
 >
 > **提示**: 前序第一个为根，在中序中找到根的位置idx，左子树元素数=idx-inStart
 
-### 🔗 推荐练习题（洛谷）
+###  推荐练习题（洛谷）
 
 | 题号 | 题目 | 难度 | 知识点 |
 |------|------|------|--------|
@@ -1277,9 +1321,9 @@ int main() {
 
 ---
 
-## --------------------------------------------------------------------------
-## 🔗 知识网络
-## --------------------------------------------------------------------------
+***
+##  知识网络
+***
 
 - **上一章**: [[C_堆_Heap]] | **下一章**: [[J_字典树_Trie]] | **返回**: [[DSA学习路线]]
 - **相关结构**: [[E_红黑树_RedBlackTree]]

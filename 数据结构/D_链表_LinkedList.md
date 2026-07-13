@@ -1,8 +1,8 @@
-## ==========================================================================
-C++ 数据结构教程 — 链表 (Linked List)
-## ==========================================================================
+---
+数据结构教程 — 链表 (Linked List)
+---
 
-## 📋 章节概述
+##  章节概述
 
 链表（Linked List）是一种线性数据结构，其中的元素通过指针链接在一起，而不是像
 数组那样在内存中连续存储。链表的每个节点包含数据域和指针域，指针指向下一个节点。
@@ -12,11 +12,11 @@ C++ 数据结构教程 — 链表 (Linked List)
 链表的缺点：不支持随机访问（O(n)才能访问任意元素）；每个节点需要额外的指针
 存储空间；对缓存不友好（节点分散在内存各处）。
 
-> 📌 **底层实现参考**：如果需要深入理解本章数据结构的底层实现（纯C手写、内存布局、指针操作），请参阅 [[../../C语言深化教程/3数据结构/02_链表|C语言教程: 链表]]。C教程侧重手动实现与内存本质，本教程侧重STL使用与算法优化，两者互补。
+>  **底层实现参考**：如果需要深入理解本章数据结构的底层实现（纯C手写、内存布局、指针操作），请参阅 [[../../C语言深化教程/3数据结构/02_链表|C语言教程: 链表]]。C教程侧重手动实现与内存本质，本教程侧重STL使用与算法优化，两者互补。
 
-## ==========================================================================
-### 📖 第一节: 基础语法 + 计算机底层原理
-## ==========================================================================
+---
+###  第一节: 基础语法 + 计算机底层原理
+---
 
 1.1 链表的基本概念
 -----------------------
@@ -27,80 +27,84 @@ C++ 数据结构教程 — 链表 (Linked List)
 双向链表（Doubly Linked List）：每个节点包含数据 + 指向前一个和后一个节点的指针。
 循环链表（Circular Linked List）：尾节点指向头节点，形成环。
 
-```cpp
-#include <iostream>
+```pseudocode
+STRUCT SinglyNode:
+    data: integer
+    next: pointer to SinglyNode
+END STRUCT
 
-struct SinglyNode {
-    int data;
-    SinglyNode* next;
+STRUCT DoublyNode:
+    data: integer
+    prev: pointer to DoublyNode
+    next: pointer to DoublyNode
+END STRUCT
 
-    SinglyNode(int val) : data(val), next(nullptr) {}
-};
-
-struct DoublyNode {
-    int data;
-    DoublyNode* prev;
-    DoublyNode* next;
-
-    DoublyNode(int val) : data(val), prev(nullptr), next(nullptr) {}
-};
-
-int main() {
+FUNCTION main()
     // 创建单向链表: 10 -> 20 -> 30
-    SinglyNode* head = new SinglyNode(10);
-    head->next = new SinglyNode(20);
-    head->next->next = new SinglyNode(30);
+    head = NEW SinglyNode(10)
+    head.next = NEW SinglyNode(20)
+    head.next.next = NEW SinglyNode(30)
 
     // 遍历单向链表
-    std::cout << "单向链表: ";
-    SinglyNode* cur = head;
-    while (cur) {
-        std::cout << cur->data;
-        if (cur->next) std::cout << " -> ";
-        cur = cur->next;
-    }
-    std::cout << std::endl;
+    PRINT "单向链表: "
+    cur = head
+    WHILE cur != NULL:
+        PRINT cur.data
+        IF cur.next != NULL:
+            PRINT " -> "
+        END IF
+        cur = cur.next
+    END WHILE
+    PRINT newline
 
     // 创建双向链表: 10 <-> 20 <-> 30
-    DoublyNode* dhead = new DoublyNode(10);
-    DoublyNode* dsecond = new DoublyNode(20);
-    DoublyNode* dthird = new DoublyNode(30);
+    dhead = NEW DoublyNode(10)
+    dsecond = NEW DoublyNode(20)
+    dthird = NEW DoublyNode(30)
 
-    dhead->next = dsecond;
-    dsecond->prev = dhead;
-    dsecond->next = dthird;
-    dthird->prev = dsecond;
+    dhead.next = dsecond
+    dsecond.prev = dhead
+    dsecond.next = dthird
+    dthird.prev = dsecond
 
     // 正向遍历
-    std::cout << "双向链表(正向): ";
-    DoublyNode* dcur = dhead;
-    while (dcur) {
-        std::cout << dcur->data;
-        if (dcur->next) std::cout << " <-> ";
-        dcur = dcur->next;
-    }
-    std::cout << std::endl;
+    PRINT "双向链表(正向): "
+    dcur = dhead
+    WHILE dcur != NULL:
+        PRINT dcur.data
+        IF dcur.next != NULL:
+            PRINT " <-> "
+        END IF
+        dcur = dcur.next
+    END WHILE
+    PRINT newline
 
     // 反向遍历
-    std::cout << "双向链表(反向): ";
-    dcur = dthird;
-    while (dcur) {
-        std::cout << dcur->data;
-        if (dcur->prev) std::cout << " <-> ";
-        dcur = dcur->prev;
-    }
-    std::cout << std::endl;
+    PRINT "双向链表(反向): "
+    dcur = dthird
+    WHILE dcur != NULL:
+        PRINT dcur.data
+        IF dcur.prev != NULL:
+            PRINT " <-> "
+        END IF
+        dcur = dcur.prev
+    END WHILE
+    PRINT newline
 
     // 清理内存（略）
-
-    return 0;
-}
+END FUNCTION
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/02_链表]]
+- C++ STL 参考: [[../../cpp教程/容器库/08_list_forward_list]]
+---
 
 1.2 链表的底层原理：内存布局
 ---------------------------------
 
-链表节点在内存中是非连续存储的。每个节点通过 new 在堆上独立分配。
+链表节点在内存中是非连续存储的。每个节点通过动态内存在堆上独立分配。
 
 ```mermaid
 graph LR
@@ -149,618 +153,661 @@ flowchart LR
 1.3 手动实现单向链表
 -----------------------
 
-```cpp
-#include <iostream>
-#include <stdexcept>
+```pseudocode
+STRUCT Node:
+    data: T
+    next: pointer to Node
+END STRUCT
 
-template<typename T>
-class LinkedList {
-private:
-    struct Node {
-        T data;
-        Node* next;
-        Node(const T& val) : data(val), next(nullptr) {}
-    };
+CLASS LinkedList:
+    head = NULL
+    count = 0
 
-    Node* head;
-    size_t count;
+FUNCTION destructor():
+    WHILE head != NULL:
+        temp = head
+        head = head.next
+        DELETE temp
+    END WHILE
+END FUNCTION
 
-public:
-    LinkedList() : head(nullptr), count(0) {}
+// 头插
+FUNCTION push_front(value):
+    new_node = NEW Node(value)
+    new_node.next = head
+    head = new_node
+    count = count + 1
+END FUNCTION
 
-    ~LinkedList() {
-        while (head) {
-            Node* temp = head;
-            head = head->next;
-            delete temp;
-        }
-    }
+// 尾插
+FUNCTION push_back(value):
+    new_node = NEW Node(value)
+    IF head == NULL:
+        head = new_node
+    ELSE:
+        cur = head
+        WHILE cur.next != NULL:
+            cur = cur.next
+        END WHILE
+        cur.next = new_node
+    END IF
+    count = count + 1
+END FUNCTION
 
-    // 头插
-    void push_front(const T& value) {
-        Node* new_node = new Node(value);
-        new_node->next = head;
-        head = new_node;
-        ++count;
-    }
+// 中间插入（在指定位置之后）
+FUNCTION insert_after(index, value):
+    IF index >= count:
+        THROW "索引越界"
+    END IF
+    cur = head
+    FOR i = 0 TO index - 1:
+        cur = cur.next
+    END FOR
 
-    // 尾插
-    void push_back(const T& value) {
-        Node* new_node = new Node(value);
-        if (!head) {
-            head = new_node;
-        } else {
-            Node* cur = head;
-            while (cur->next) cur = cur->next;
-            cur->next = new_node;
-        }
-        ++count;
-    }
+    new_node = NEW Node(value)
+    new_node.next = cur.next
+    cur.next = new_node
+    count = count + 1
+END FUNCTION
 
-    // 中间插入（在指定位置之后）
-    void insert_after(size_t index, const T& value) {
-        if (index >= count) {
-            throw std::out_of_range("索引越界");
-        }
-        Node* cur = head;
-        for (size_t i = 0; i < index; ++i) cur = cur->next;
+// 头删
+FUNCTION pop_front():
+    IF head == NULL:
+        THROW "链表为空"
+    END IF
+    temp = head
+    head = head.next
+    DELETE temp
+    count = count - 1
+END FUNCTION
 
-        Node* new_node = new Node(value);
-        new_node->next = cur->next;
-        cur->next = new_node;
-        ++count;
-    }
+// 尾删
+FUNCTION pop_back():
+    IF head == NULL:
+        THROW "链表为空"
+    END IF
+    IF head.next == NULL:
+        DELETE head
+        head = NULL
+    ELSE:
+        cur = head
+        WHILE cur.next.next != NULL:
+            cur = cur.next
+        END WHILE
+        DELETE cur.next
+        cur.next = NULL
+    END IF
+    count = count - 1
+END FUNCTION
 
-    // 头删
-    void pop_front() {
-        if (!head) throw std::underflow_error("链表为空");
-        Node* temp = head;
-        head = head->next;
-        delete temp;
-        --count;
-    }
+// 按值删除（删除第一个匹配的）
+FUNCTION remove(value):
+    IF head == NULL:
+        RETURN
+    END IF
 
-    // 尾删
-    void pop_back() {
-        if (!head) throw std::underflow_error("链表为空");
-        if (!head->next) {
-            delete head;
-            head = nullptr;
-        } else {
-            Node* cur = head;
-            while (cur->next->next) cur = cur->next;
-            delete cur->next;
-            cur->next = nullptr;
-        }
-        --count;
-    }
+    IF head.data == value:
+        temp = head
+        head = head.next
+        DELETE temp
+        count = count - 1
+        RETURN
+    END IF
 
-    // 按值删除（删除第一个匹配的）
-    void remove(const T& value) {
-        if (!head) return;
+    cur = head
+    WHILE cur.next != NULL AND cur.next.data != value:
+        cur = cur.next
+    END WHILE
+    IF cur.next != NULL:
+        temp = cur.next
+        cur.next = cur.next.next
+        DELETE temp
+        count = count - 1
+    END IF
+END FUNCTION
 
-        if (head->data == value) {
-            Node* temp = head;
-            head = head->next;
-            delete temp;
-            --count;
-            return;
-        }
+// 查找
+FUNCTION contains(value):
+    cur = head
+    WHILE cur != NULL:
+        IF cur.data == value:
+            RETURN TRUE
+        END IF
+        cur = cur.next
+    END WHILE
+    RETURN FALSE
+END FUNCTION
 
-        Node* cur = head;
-        while (cur->next && cur->next->data != value) {
-            cur = cur->next;
-        }
-        if (cur->next) {
-            Node* temp = cur->next;
-            cur->next = cur->next->next;
-            delete temp;
-            --count;
-        }
-    }
+// 反转链表
+FUNCTION reverse():
+    prev = NULL
+    cur = head
+    WHILE cur != NULL:
+        next = cur.next
+        cur.next = prev
+        prev = cur
+        cur = next
+    END WHILE
+    head = prev
+END FUNCTION
 
-    // 查找
-    bool contains(const T& value) const {
-        Node* cur = head;
-        while (cur) {
-            if (cur->data == value) return true;
-            cur = cur->next;
-        }
-        return false;
-    }
+// 获取第index个元素（0-based）
+FUNCTION at(index):
+    IF index >= count:
+        THROW "索引越界"
+    END IF
+    cur = head
+    FOR i = 0 TO index - 1:
+        cur = cur.next
+    END FOR
+    RETURN cur.data
+END FUNCTION
 
-    // 反转链表
-    void reverse() {
-        Node* prev = nullptr;
-        Node* cur = head;
-        Node* next = nullptr;
+FUNCTION print():
+    cur = head
+    WHILE cur != NULL:
+        PRINT cur.data
+        IF cur.next != NULL:
+            PRINT " -> "
+        END IF
+        cur = cur.next
+    END WHILE
+    PRINT " (size=", count, ")"
+END FUNCTION
 
-        while (cur) {
-            next = cur->next;
-            cur->next = prev;
-            prev = cur;
-            cur = next;
-        }
-        head = prev;
-    }
+FUNCTION size():
+    RETURN count
+END FUNCTION
 
-    // 获取第index个元素（0-based）
-    T& at(size_t index) {
-        if (index >= count) throw std::out_of_range("索引越界");
-        Node* cur = head;
-        for (size_t i = 0; i < index; ++i) cur = cur->next;
-        return cur->data;
-    }
+FUNCTION empty():
+    RETURN count == 0
+END FUNCTION
 
-    void print() const {
-        Node* cur = head;
-        while (cur) {
-            std::cout << cur->data;
-            if (cur->next) std::cout << " -> ";
-            cur = cur->next;
-        }
-        std::cout << " (size=" << count << ")" << std::endl;
-    }
+FUNCTION main()
+    lst = NEW LinkedList()
 
-    size_t size() const { return count; }
-    bool empty() const { return count == 0; }
-};
+    lst.push_back(10)
+    lst.push_back(20)
+    lst.push_back(30)
+    lst.push_front(5)
+    lst.print()
 
-int main() {
-    LinkedList<int> lst;
+    lst.insert_after(1, 15)
+    lst.print()
 
-    lst.push_back(10);
-    lst.push_back(20);
-    lst.push_back(30);
-    lst.push_front(5);
-    lst.print();
+    lst.pop_front()
+    lst.print()
 
-    lst.insert_after(1, 15);
-    lst.print();
+    lst.reverse()
+    PRINT "反转后: "
+    lst.print()
 
-    lst.pop_front();
-    lst.print();
+    PRINT "含有20? ", lst.contains(20)
+    PRINT "at(2) = ", lst.at(2)
 
-    lst.reverse();
-    std::cout << "反转后: ";
-    lst.print();
-
-    std::cout << "含有20? " << lst.contains(20) << std::endl;
-    std::cout << "at(2) = " << lst.at(2) << std::endl;
-
-    lst.remove(20);
-    lst.print();
-
-    return 0;
-}
+    lst.remove(20)
+    lst.print()
+END FUNCTION
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/02_链表]]
+- C++ STL 参考: [[../../cpp教程/容器库/08_list_forward_list]]
+---
 
 1.4 手动实现双向链表
 ------------------------
 
-```cpp
-#include <iostream>
-#include <stdexcept>
+```pseudocode
+STRUCT DNode:
+    data: T
+    prev: pointer to DNode
+    next: pointer to DNode
+END STRUCT
 
-template<typename T>
-class DoublyLinkedList {
-private:
-    struct Node {
-        T data;
-        Node* prev;
-        Node* next;
-        Node(const T& val) : data(val), prev(nullptr), next(nullptr) {}
-    };
+CLASS DoublyLinkedList:
+    head = NULL
+    tail = NULL
+    count = 0
 
-    Node* head;
-    Node* tail;
-    size_t count;
+FUNCTION destructor():
+    WHILE head != NULL:
+        temp = head
+        head = head.next
+        DELETE temp
+    END WHILE
+END FUNCTION
 
-public:
-    DoublyLinkedList() : head(nullptr), tail(nullptr), count(0) {}
+FUNCTION push_back(value):
+    new_node = NEW DNode(value)
+    IF head == NULL:
+        head = new_node
+        tail = new_node
+    ELSE:
+        new_node.prev = tail
+        tail.next = new_node
+        tail = new_node
+    END IF
+    count = count + 1
+END FUNCTION
 
-    ~DoublyLinkedList() {
-        while (head) {
-            Node* temp = head;
-            head = head->next;
-            delete temp;
-        }
-    }
+FUNCTION push_front(value):
+    new_node = NEW DNode(value)
+    IF head == NULL:
+        head = new_node
+        tail = new_node
+    ELSE:
+        new_node.next = head
+        head.prev = new_node
+        head = new_node
+    END IF
+    count = count + 1
+END FUNCTION
 
-    void push_back(const T& value) {
-        Node* new_node = new Node(value);
-        if (!head) {
-            head = tail = new_node;
-        } else {
-            new_node->prev = tail;
-            tail->next = new_node;
-            tail = new_node;
-        }
-        ++count;
-    }
+FUNCTION pop_back():
+    IF tail == NULL:
+        THROW "链表为空"
+    END IF
+    temp = tail
+    tail = tail.prev
+    IF tail != NULL:
+        tail.next = NULL
+    ELSE:
+        head = NULL
+    END IF
+    DELETE temp
+    count = count - 1
+END FUNCTION
 
-    void push_front(const T& value) {
-        Node* new_node = new Node(value);
-        if (!head) {
-            head = tail = new_node;
-        } else {
-            new_node->next = head;
-            head->prev = new_node;
-            head = new_node;
-        }
-        ++count;
-    }
+FUNCTION print_forward():
+    cur = head
+    WHILE cur != NULL:
+        PRINT cur.data
+        IF cur.next != NULL:
+            PRINT " <-> "
+        END IF
+        cur = cur.next
+    END WHILE
+    PRINT newline
+END FUNCTION
 
-    void pop_back() {
-        if (!tail) throw std::underflow_error("链表为空");
-        Node* temp = tail;
-        tail = tail->prev;
-        if (tail) tail->next = nullptr;
-        else head = nullptr;
-        delete temp;
-        --count;
-    }
+FUNCTION print_backward():
+    cur = tail
+    WHILE cur != NULL:
+        PRINT cur.data
+        IF cur.prev != NULL:
+            PRINT " <-> "
+        END IF
+        cur = cur.prev
+    END WHILE
+    PRINT newline
+END FUNCTION
 
-    void print_forward() const {
-        Node* cur = head;
-        while (cur) {
-            std::cout << cur->data;
-            if (cur->next) std::cout << " <-> ";
-            cur = cur->next;
-        }
-        std::cout << std::endl;
-    }
+FUNCTION size():
+    RETURN count
+END FUNCTION
 
-    void print_backward() const {
-        Node* cur = tail;
-        while (cur) {
-            std::cout << cur->data;
-            if (cur->prev) std::cout << " <-> ";
-            cur = cur->prev;
-        }
-        std::cout << std::endl;
-    }
+FUNCTION main()
+    dll = NEW DoublyLinkedList()
+    dll.push_back(10)
+    dll.push_back(20)
+    dll.push_back(30)
+    dll.push_front(5)
 
-    size_t size() const { return count; }
-};
-
-int main() {
-    DoublyLinkedList<int> dll;
-    dll.push_back(10);
-    dll.push_back(20);
-    dll.push_back(30);
-    dll.push_front(5);
-
-    std::cout << "正向: ";
-    dll.print_forward();
-    std::cout << "反向: ";
-    dll.print_backward();
-
-    return 0;
-}
+    PRINT "正向: "
+    dll.print_forward()
+    PRINT "反向: "
+    dll.print_backward()
+END FUNCTION
 ```
 
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/02_链表]]
+- C++ STL 参考: [[../../cpp教程/容器库/08_list_forward_list]]
+---
 
-## ==========================================================================
-### 📖 第二节: 所有用法大全
-## ==========================================================================
 
-2.1 std::forward_list —— 单向链表
+---
+###  第二节: 实现变体
+---
+
+2.1 单向链表（Singly Linked List）
 ---------------------------------------
 
-C++11引入，比list更节省内存（只有一个指针）。
+单向链表更节省内存（只有一个指针），支持头部操作和在指定位置之后操作。
 
-```cpp
-#include <iostream>
-#include <forward_list>
-
-int main() {
-    std::forward_list<int> flst = {1, 2, 3, 4, 5};
+```pseudocode
+FUNCTION main()
+    flst = NEW SinglyLinkedList()
+    flst.push_back(1)
+    flst.push_back(2)
+    flst.push_back(3)
+    flst.push_back(4)
+    flst.push_back(5)
 
     // 头部操作
-    flst.push_front(0);
-    flst.pop_front();
+    flst.push_front(0)
+    flst.pop_front()
 
-    // 在指定位置之后操作（需要前驱迭代器）
-    auto it = flst.before_begin();  // 头部哨兵
-    flst.insert_after(it, 99);     // 在头部之后插入
+    // 在指定位置之后插入（需要前驱迭代器）
+    it = flst.before_begin()   // 头部哨兵
+    flst.insert_after(it, 99)  // 在头部之后插入
 
     // 查找并插入
-    auto prev = flst.before_begin();
-    for (auto cur = flst.begin(); cur != flst.end(); ++cur, ++prev) {
-        if (*cur == 3) {
-            flst.insert_after(cur, 100);  // 在3之后插入100
-            break;
-        }
-    }
+    cur = flst.begin()
+    WHILE cur != flst.end():
+        IF cur.data == 3:
+            flst.insert_after(cur, 100)  // 在3之后插入100
+            BREAK
+        END IF
+        cur = cur.next
+    END WHILE
 
     // 删除
-    flst.erase_after(flst.before_begin());  // 删除第一个元素
+    flst.erase_after(flst.before_begin())  // 删除第一个元素
 
     // 特有操作
-    flst.sort();
-    flst.unique();        // 删除连续重复元素
-    flst.reverse();
+    flst.sort()
+    flst.unique()        // 删除连续重复元素
+    flst.reverse()
 
     // 拼接
-    std::forward_list<int> other = {200, 300};
-    flst.splice_after(flst.before_begin(), other);  // 将other拼接到头部
+    other = NEW SinglyLinkedList([200, 300])
+    flst.splice_after(flst.before_begin(), other)  // 将other拼接到头部
 
     // 合并（两个list必须已排序）
-    std::forward_list<int> a = {1, 3, 5};
-    std::forward_list<int> b = {2, 4, 6};
-    a.merge(b);
+    a = NEW SinglyLinkedList([1, 3, 5])
+    b = NEW SinglyLinkedList([2, 4, 6])
+    a.merge(b)
 
-    for (int x : a) std::cout << x << " ";
-    std::cout << std::endl;
-
-    return 0;
-}
+    a.print()    // 输出: 1 2 3 4 5 6
+END FUNCTION
 ```
 
-2.2 std::list —— 双向链表
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/02_链表]]
+- C++ STL 参考: [[../../cpp教程/容器库/08_list_forward_list]]
+---
+
+2.2 双向链表（Doubly Linked List）
 ------------------------------
 
-```cpp
-#include <iostream>
-#include <list>
-#include <algorithm>
-
-int main() {
-    std::list<int> lst = {3, 1, 4, 1, 5, 9};
+```pseudocode
+FUNCTION main()
+    lst = NEW DoublyLinkedList()
+    lst.push_back(3)
+    lst.push_back(1)
+    lst.push_back(4)
+    lst.push_back(1)
+    lst.push_back(5)
+    lst.push_back(9)
 
     // 两端操作
-    lst.push_front(0);
-    lst.push_back(10);
-    lst.pop_front();
-    lst.pop_back();
+    lst.push_front(0)
+    lst.push_back(10)
+    lst.pop_front()
+    lst.pop_back()
 
     // 插入（在pos之前）
-    auto it = std::find(lst.begin(), lst.end(), 4);
-    if (it != lst.end()) {
-        lst.insert(it, 100);      // 在4之前插入
-        lst.emplace(it, 200);     // C++11就地构造
-    }
+    it = lst.find(4)
+    IF it != lst.end():
+        lst.insert(it, 100)      // 在4之前插入
+    END IF
 
     // 删除
-    lst.remove(1);                // 删除所有值为1的元素
-    lst.remove_if([](int x) { return x > 5; });  // 条件删除
+    lst.remove(1)                // 删除所有值为1的元素
+    lst.remove_if(FUNCTION(x): RETURN x > 5) // 条件删除
 
     // 链表特有操作
-    lst.sort();
-    lst.unique();                 // 去重
-    lst.reverse();
+    lst.sort()
+    lst.unique()                 // 去重
+    lst.reverse()
 
     // 拼接（将other的元素移动到lst中）
-    std::list<int> other = {100, 200};
-    lst.splice(lst.end(), other);  // other变为空
+    other = NEW DoublyLinkedList([100, 200])
+    lst.splice(lst.end(), other)  // other变为空
 
     // 合并（两个list必须都已排序）
-    std::list<int> a = {1, 3, 5};
-    std::list<int> b = {2, 4, 6};
-    a.merge(b);  // a变为{1,2,3,4,5,6}, b为空
+    a = NEW DoublyLinkedList([1, 3, 5])
+    b = NEW DoublyLinkedList([2, 4, 6])
+    a.merge(b)  // a变为{1,2,3,4,5,6}, b为空
 
     // resize
-    lst.resize(10);    // 扩展或截断
-    lst.resize(20, -1); // 用-1填充新元素
+    lst.resize(10)    // 扩展或截断
+    lst.resize(20, -1) // 用-1填充新元素
 
     // 赋值
-    lst.assign(5, 100);  // 全部替换为5个100
+    lst.assign(5, 100)  // 全部替换为5个100
 
     // 遍历
-    for (int x : lst) std::cout << x << " ";
-    std::cout << std::endl;
-
-    return 0;
-}
+    lst.print()
+END FUNCTION
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/02_链表]]
+- C++ STL 参考: [[../../cpp教程/容器库/08_list_forward_list]]
+---
 
 2.3 链表算法（常见操作）
 ---------------------------
 
-```cpp
-#include <iostream>
-#include <forward_list>
-#include <unordered_set>
+```pseudocode
+STRUCT ListNode:
+    val: integer
+    next: pointer to ListNode
+END STRUCT
 
 // 1. 检测链表是否有环（快慢指针）
-struct ListNode {
-    int val;
-    ListNode* next;
-    ListNode(int v) : val(v), next(nullptr) {}
-};
+FUNCTION has_cycle(head):
+    slow = head
+    fast = head
 
-bool hasCycle(ListNode* head) {
-    ListNode* slow = head;
-    ListNode* fast = head;
-
-    while (fast && fast->next) {
-        slow = slow->next;
-        fast = fast->next->next;
-        if (slow == fast) return true;
-    }
-    return false;
-}
+    WHILE fast != NULL AND fast.next != NULL:
+        slow = slow.next
+        fast = fast.next.next
+        IF slow == fast:
+            RETURN TRUE
+        END IF
+    END WHILE
+    RETURN FALSE
+END FUNCTION
 
 // 2. 找到链表中间节点
-ListNode* findMiddle(ListNode* head) {
-    ListNode* slow = head;
-    ListNode* fast = head;
+FUNCTION find_middle(head):
+    slow = head
+    fast = head
 
-    while (fast && fast->next) {
-        slow = slow->next;
-        fast = fast->next->next;
-    }
-    return slow;
-}
+    WHILE fast != NULL AND fast.next != NULL:
+        slow = slow.next
+        fast = fast.next.next
+    END WHILE
+    RETURN slow
+END FUNCTION
 
 // 3. 合并两个有序链表
-ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
-    ListNode dummy(0);
-    ListNode* tail = &dummy;
+FUNCTION merge_two_lists(l1, l2):
+    dummy = NEW ListNode(0)
+    tail = dummy
 
-    while (l1 && l2) {
-        if (l1->val <= l2->val) {
-            tail->next = l1;
-            l1 = l1->next;
-        } else {
-            tail->next = l2;
-            l2 = l2->next;
-        }
-        tail = tail->next;
-    }
-    tail->next = l1 ? l1 : l2;
+    WHILE l1 != NULL AND l2 != NULL:
+        IF l1.val <= l2.val:
+            tail.next = l1
+            l1 = l1.next
+        ELSE:
+            tail.next = l2
+            l2 = l2.next
+        END IF
+        tail = tail.next
+    END WHILE
+    IF l1 != NULL:
+        tail.next = l1
+    ELSE:
+        tail.next = l2
+    END IF
 
-    return dummy.next;
-}
+    RETURN dummy.next
+END FUNCTION
 
 // 4. 删除倒数第N个节点
-ListNode* removeNthFromEnd(ListNode* head, int n) {
-    ListNode dummy(0);
-    dummy.next = head;
-    ListNode* fast = &dummy;
-    ListNode* slow = &dummy;
+FUNCTION remove_nth_from_end(head, n):
+    dummy = NEW ListNode(0)
+    dummy.next = head
+    fast = dummy
+    slow = dummy
 
     // fast 先走 n+1 步
-    for (int i = 0; i <= n; ++i) fast = fast->next;
+    FOR i = 0 TO n:
+        fast = fast.next
+    END FOR
 
-    while (fast) {
-        fast = fast->next;
-        slow = slow->next;
-    }
+    WHILE fast != NULL:
+        fast = fast.next
+        slow = slow.next
+    END WHILE
 
-    ListNode* to_delete = slow->next;
-    slow->next = slow->next->next;
-    delete to_delete;
+    to_delete = slow.next
+    slow.next = slow.next.next
+    DELETE to_delete
 
-    return dummy.next;
-}
+    RETURN dummy.next
+END FUNCTION
 
-// 辅助函数
-void printList(ListNode* head) {
-    while (head) {
-        std::cout << head->val;
-        if (head->next) std::cout << " -> ";
-        head = head->next;
-    }
-    std::cout << std::endl;
-}
+FUNCTION print_list(head):
+    WHILE head != NULL:
+        PRINT head.val
+        IF head.next != NULL:
+            PRINT " -> "
+        END IF
+        head = head.next
+    END WHILE
+    PRINT newline
+END FUNCTION
 
-int main() {
+FUNCTION main()
     // 合并有序链表
-    ListNode* l1 = new ListNode(1);
-    l1->next = new ListNode(3);
-    l1->next->next = new ListNode(5);
+    l1 = NEW ListNode(1)
+    l1.next = NEW ListNode(3)
+    l1.next.next = NEW ListNode(5)
 
-    ListNode* l2 = new ListNode(2);
-    l2->next = new ListNode(4);
-    l2->next->next = new ListNode(6);
+    l2 = NEW ListNode(2)
+    l2.next = NEW ListNode(4)
+    l2.next.next = NEW ListNode(6)
 
-    ListNode* merged = mergeTwoLists(l1, l2);
-    std::cout << "合并后: ";
-    printList(merged);
+    merged = merge_two_lists(l1, l2)
+    PRINT "合并后: "
+    print_list(merged)
 
     // 中间节点
-    ListNode* mid = findMiddle(merged);
-    std::cout << "中间节点: " << mid->val << std::endl;
+    mid = find_middle(merged)
+    PRINT "中间节点: ", mid.val
 
     // 删除倒数第3个
-    ListNode* after_remove = removeNthFromEnd(merged, 3);
-    std::cout << "删除倒数第3个: ";
-    printList(after_remove);
-
-    return 0;
-}
+    after_remove = remove_nth_from_end(merged, 3)
+    PRINT "删除倒数第3个: "
+    print_list(after_remove)
+END FUNCTION
 ```
 
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/02_链表]]
+- C++ STL 参考: [[../../cpp教程/容器库/08_list_forward_list]]
+---
 
-## ==========================================================================
-### 📖 第三节: 实用案例
-## ==========================================================================
+
+---
+###  第三节: 应用场景
+---
 
 案例一：浏览器的前进后退（双向链表版）
 ----------------------------------------------
 
 与栈实现不同，这里使用双向链表更直观地管理页面历史：
 
-```cpp
-#include <iostream>
-#include <string>
+```pseudocode
+STRUCT Page:
+    url: string
+    prev: pointer to Page
+    next: pointer to Page
+END STRUCT
 
-class BrowserHistory {
-private:
-    struct Page {
-        std::string url;
-        Page* prev;
-        Page* next;
-        Page(const std::string& u) : url(u), prev(nullptr), next(nullptr) {}
-    };
+CLASS BrowserHistory:
+    current: pointer to Page
 
-    Page* current;
+FUNCTION constructor(homepage):
+    current = NEW Page(homepage)
+END FUNCTION
 
-public:
-    BrowserHistory(const std::string& homepage) {
-        current = new Page(homepage);
-    }
+FUNCTION visit(url):
+    // 清空前进历史
+    temp = current.next
+    WHILE temp != NULL:
+        to_del = temp
+        temp = temp.next
+        DELETE to_del
+    END WHILE
 
-    void visit(const std::string& url) {
-        // 清空前进历史
-        Page* temp = current->next;
-        while (temp) {
-            Page* to_del = temp;
-            temp = temp->next;
-            delete to_del;
-        }
+    current.next = NEW Page(url)
+    current.next.prev = current
+    current = current.next
+    PRINT "访问: ", url
+END FUNCTION
 
-        current->next = new Page(url);
-        current->next->prev = current;
-        current = current->next;
-        std::cout << "访问: " << url << std::endl;
-    }
+FUNCTION back(steps):
+    WHILE steps > 0 AND current.prev != NULL:
+        current = current.prev
+        steps = steps - 1
+    END WHILE
+    PRINT "后退到: ", current.url
+    RETURN current.url
+END FUNCTION
 
-    std::string back(int steps) {
-        while (steps-- > 0 && current->prev) {
-            current = current->prev;
-        }
-        std::cout << "后退到: " << current->url << std::endl;
-        return current->url;
-    }
+FUNCTION forward(steps):
+    WHILE steps > 0 AND current.next != NULL:
+        current = current.next
+        steps = steps - 1
+    END WHILE
+    PRINT "前进到: ", current.url
+    RETURN current.url
+END FUNCTION
 
-    std::string forward(int steps) {
-        while (steps-- > 0 && current->next) {
-            current = current->next;
-        }
-        std::cout << "前进到: " << current->url << std::endl;
-        return current->url;
-    }
+FUNCTION destructor():
+    WHILE current.prev != NULL:
+        current = current.prev
+    END WHILE
+    WHILE current != NULL:
+        temp = current
+        current = current.next
+        DELETE temp
+    END WHILE
+END FUNCTION
 
-    ~BrowserHistory() {
-        while (current->prev) current = current->prev;
-        while (current) {
-            Page* temp = current;
-            current = current->next;
-            delete temp;
-        }
-    }
-};
+FUNCTION main()
+    bh = NEW BrowserHistory("google.com")
 
-int main() {
-    BrowserHistory bh("google.com");
+    bh.visit("github.com")
+    bh.visit("stackoverflow.com")
+    bh.visit("cppreference.com")
 
-    bh.visit("github.com");
-    bh.visit("stackoverflow.com");
-    bh.visit("cppreference.com");
+    bh.back(1)   // stackoverflow.com
+    bh.back(1)   // github.com
+    bh.forward(1) // stackoverflow.com
+    bh.visit("reddit.com")  // 前进历史被清空
 
-    bh.back(1);   // stackoverflow.com
-    bh.back(1);   // github.com
-    bh.forward(1); // stackoverflow.com
-    bh.visit("reddit.com");  // 前进历史被清空
-
-    bh.back(2);   // github.com -> google.com
-
-    return 0;
-}
+    bh.back(2)   // github.com -> google.com
+END FUNCTION
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/02_链表]]
+- C++ STL 参考: [[../../cpp教程/容器库/08_list_forward_list]]
+---
 
 
 案例二：约瑟夫问题（循环链表）
@@ -769,58 +816,60 @@ int main() {
 经典的约瑟夫问题：n个人围成一圈，从第一个人开始报数，报到m的人出列，求最后
 剩下的人。
 
-```cpp
-#include <iostream>
+```pseudocode
+STRUCT Person:
+    id: integer
+    next: pointer to Person
+END STRUCT
 
-struct Person {
-    int id;
-    Person* next;
-    Person(int i) : id(i), next(nullptr) {}
-};
-
-int josephus(int n, int m) {
+FUNCTION josephus(n, m):
     // 创建循环链表
-    Person* head = new Person(1);
-    Person* prev = head;
+    head = NEW Person(1)
+    prev = head
 
-    for (int i = 2; i <= n; ++i) {
-        Person* p = new Person(i);
-        prev->next = p;
-        prev = p;
-    }
-    prev->next = head;  // 形成环
+    FOR i = 2 TO n:
+        p = NEW Person(i)
+        prev.next = p
+        prev = p
+    END FOR
+    prev.next = head  // 形成环
 
     // 开始游戏
-    Person* cur = head;
-    Person* last = prev;
+    cur = head
+    last = prev
 
-    while (cur->next != cur) {  // 只剩一个人时结束
+    WHILE cur.next != cur:  // 只剩一个人时结束
         // 报数到m-1
-        for (int i = 1; i < m; ++i) {
-            last = cur;
-            cur = cur->next;
-        }
+        FOR i = 1 TO m - 1:
+            last = cur
+            cur = cur.next
+        END FOR
 
         // cur出列
-        std::cout << cur->id << " 出列" << std::endl;
-        last->next = cur->next;
-        delete cur;
-        cur = last->next;
-    }
+        PRINT cur.id, " 出列"
+        last.next = cur.next
+        DELETE cur
+        cur = last.next
+    END WHILE
 
-    int survivor = cur->id;
-    delete cur;
-    return survivor;
-}
+    survivor = cur.id
+    DELETE cur
+    RETURN survivor
+END FUNCTION
 
-int main() {
-    int n = 7, m = 3;
-    int survivor = josephus(n, m);
-    std::cout << n << "个人, 报数" << m << ", 幸存者: " << survivor << std::endl;
-
-    return 0;
-}
+FUNCTION main()
+    n = 7
+    m = 3
+    survivor = josephus(n, m)
+    PRINT n, "个人, 报数", m, ", 幸存者: ", survivor
+END FUNCTION
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/02_链表]]
+- C++ STL 参考: [[../../cpp教程/容器库/08_list_forward_list]]
+---
 
 
 案例三：多项式的链表表示与运算
@@ -828,113 +877,126 @@ int main() {
 
 使用链表表示多项式，实现加法运算：
 
-```cpp
-#include <iostream>
+```pseudocode
+STRUCT Term:
+    coefficient: integer   // 系数
+    exponent: integer      // 指数
+    next: pointer to Term
+END STRUCT
 
-struct Term {
-    int coefficient;  // 系数
-    int exponent;     // 指数
-    Term* next;
-    Term(int c, int e) : coefficient(c), exponent(e), next(nullptr) {}
-};
+CLASS Polynomial:
+    head = NULL
 
-class Polynomial {
-private:
-    Term* head;
+// 辅助：在尾部添加项
+FUNCTION append(coeff, exp):
+    IF coeff == 0:
+        RETURN   // 系数为0的项不添加
+    END IF
+    IF head == NULL:
+        head = NEW Term(coeff, exp)
+        RETURN
+    END IF
+    cur = head
+    WHILE cur.next != NULL:
+        cur = cur.next
+    END WHILE
+    cur.next = NEW Term(coeff, exp)
+END FUNCTION
 
-    // 辅助：在尾部添加项
-    void append(int coeff, int exp) {
-        if (coeff == 0) return;  // 系数为0的项不添加
-        if (!head) {
-            head = new Term(coeff, exp);
-            return;
-        }
-        Term* cur = head;
-        while (cur->next) cur = cur->next;
-        cur->next = new Term(coeff, exp);
-    }
+FUNCTION constructor(terms):
+    FOR EACH (coeff, exp) IN terms:
+        append(coeff, exp)
+    END FOR
+END FUNCTION
 
-public:
-    Polynomial() : head(nullptr) {}
+FUNCTION destructor():
+    WHILE head != NULL:
+        temp = head
+        head = head.next
+        DELETE temp
+    END WHILE
+END FUNCTION
 
-    Polynomial(const std::initializer_list<std::pair<int, int>>& terms) : head(nullptr) {
-        for (auto& [c, e] : terms) {
-            append(c, e);
-        }
-    }
+// 多项式加法
+FUNCTION add(other):
+    result = NEW Polynomial()
+    p = head
+    q = other.head
 
-    ~Polynomial() {
-        while (head) {
-            Term* temp = head;
-            head = head->next;
-            delete temp;
-        }
-    }
+    WHILE p != NULL AND q != NULL:
+        IF p.exponent > q.exponent:
+            result.append(p.coefficient, p.exponent)
+            p = p.next
+        ELSE IF p.exponent < q.exponent:
+            result.append(q.coefficient, q.exponent)
+            q = q.next
+        ELSE:
+            result.append(p.coefficient + q.coefficient, p.exponent)
+            p = p.next
+            q = q.next
+        END IF
+    END WHILE
 
-    // 多项式加法
-    Polynomial add(const Polynomial& other) const {
-        Polynomial result;
-        Term* p = head;
-        Term* q = other.head;
+    WHILE p != NULL:
+        result.append(p.coefficient, p.exponent)
+        p = p.next
+    END WHILE
+    WHILE q != NULL:
+        result.append(q.coefficient, q.exponent)
+        q = q.next
+    END WHILE
 
-        while (p && q) {
-            if (p->exponent > q->exponent) {
-                result.append(p->coefficient, p->exponent);
-                p = p->next;
-            } else if (p->exponent < q->exponent) {
-                result.append(q->coefficient, q->exponent);
-                q = q->next;
-            } else {
-                result.append(p->coefficient + q->coefficient, p->exponent);
-                p = p->next;
-                q = q->next;
-            }
-        }
+    RETURN result
+END FUNCTION
 
-        while (p) { result.append(p->coefficient, p->exponent); p = p->next; }
-        while (q) { result.append(q->coefficient, q->exponent); q = q->next; }
+FUNCTION print():
+    IF head == NULL:
+        PRINT "0"
+        RETURN
+    END IF
+    cur = head
+    WHILE cur != NULL:
+        IF cur != head AND cur.coefficient > 0:
+            PRINT " + "
+        END IF
+        IF cur.coefficient < 0:
+            PRINT " - "
+        END IF
+        abs_c = ABS(cur.coefficient)
 
-        return result;
-    }
+        IF cur.exponent == 0:
+            PRINT abs_c
+        ELSE IF cur.exponent == 1:
+            PRINT abs_c, "x"
+        ELSE:
+            PRINT abs_c, "x^", cur.exponent
+        END IF
+        cur = cur.next
+    END WHILE
+END FUNCTION
 
-    void print() const {
-        if (!head) { std::cout << "0"; return; }
-        Term* cur = head;
-        while (cur) {
-            if (cur != head && cur->coefficient > 0) std::cout << " + ";
-            if (cur->coefficient < 0) std::cout << " - ";
-            int abs_c = cur->coefficient > 0 ? cur->coefficient : -cur->coefficient;
+FUNCTION main()
+    p1 = NEW Polynomial([(3, 2), (2, 1), (1, 0)])     // 3x^2 + 2x + 1
+    p2 = NEW Polynomial([(5, 3), (-1, 2), (4, 0)])    // 5x^3 - x^2 + 4
 
-            if (cur->exponent == 0) {
-                std::cout << abs_c;
-            } else if (cur->exponent == 1) {
-                std::cout << abs_c << "x";
-            } else {
-                std::cout << abs_c << "x^" << cur->exponent;
-            }
-            cur = cur->next;
-        }
-    }
-};
+    sum = p1.add(p2)
 
-int main() {
-    Polynomial p1({{3, 2}, {2, 1}, {1, 0}});     // 3x^2 + 2x + 1
-    Polynomial p2({{5, 3}, {-1, 2}, {4, 0}});    // 5x^3 - x^2 + 4
-
-    Polynomial sum = p1.add(p2);
-
-    std::cout << "P1 = "; p1.print(); std::cout << std::endl;
-    std::cout << "P2 = "; p2.print(); std::cout << std::endl;
-    std::cout << "和 = "; sum.print(); std::cout << std::endl;
-
-    return 0;
-}
+    PRINT "P1 = "; p1.print(); PRINT newline
+    PRINT "P2 = "; p2.print(); PRINT newline
+    PRINT "和 = "; sum.print(); PRINT newline
+END FUNCTION
 ```
 
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+- C 语言底层参考: [[../../c语言教程/3数据结构/02_链表]]
+- C++ STL 参考: [[../../cpp教程/容器库/08_list_forward_list]]
+---
 
-## ==========================================================================
-### 📖 第四节: 课后习题
-## ==========================================================================
+
+---
+###  第四节: 课后习题
+---
 
 1. 基础题：手动实现一个带哨兵节点的单向链表。
    - 使用 dummy head（哨兵头节点）简化边界条件处理
@@ -962,17 +1024,17 @@ int main() {
    - 或者实现无锁链表（lock-free，使用CAS原子操作）
    - 验证线程安全性
 
-## ==========================================================================
+---
 
 
-## ==========================================================================
-### 📝 章节测试
-## ==========================================================================
+---
+###  章节测试
+---
 
 > [!question] 判断题 1
 > 单向链表中每个节点包含数据域和两个指针域（前驱和后继） （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -981,8 +1043,8 @@ int main() {
 
 > [!question] 判断题 2
 > 链表的随机访问时间复杂度为O(1) （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -991,8 +1053,8 @@ int main() {
 
 > [!question] 判断题 3
 > 在链表中间位置插入一个节点的时间复杂度为O(1)（假设已有指向该位置的指针） （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1000,19 +1062,19 @@ int main() {
 > > **解析**: 如果已经有指向插入位置的指针，只需要修改几个指针即可完成插入，时间复杂度为O(1)。查找位置可能需要O(n)，但插入操作本身是O(1)。
 
 > [!question] 判断题 4
-> 循环链表的尾节点的next指针指向nullptr （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> 循环链表的尾节点的next指针指向NULL （ ）
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
 > > 
-> > **解析**: 循环链表的尾节点的next指针指向头节点，形成一个环。普通链表的尾节点next才指向nullptr。
+> > **解析**: 循环链表的尾节点的next指针指向头节点，形成一个环。普通链表的尾节点next才指向NULL。
 
 > [!question] 判断题 5
 > 使用快慢指针可以在O(n)时间、O(1)空间内判断链表是否有环 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1020,19 +1082,19 @@ int main() {
 > > **解析**: 快指针每次走2步，慢指针每次走1步。如果链表有环，快指针最终会追上慢指针（两者相遇）。无需额外空间，时间O(n)。
 
 > [!question] 判断题 6
-> std::list 的 sort() 函数使用的是快速排序算法 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> 标准库中链表的 sort() 函数使用的是快速排序算法 （ ）
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
 > > 
-> > **解析**: std::list::sort()通常使用归并排序，因为链表不支持随机访问，快排需要随机访问不适合链表。归并排序只需要顺序访问，适合链表结构。
+> > **解析**: 链表的sort()通常使用归并排序，因为链表不支持随机访问，快排需要随机访问不适合链表。归并排序只需要顺序访问，适合链表结构。
 
 > [!question] 判断题 7
 > 删除链表中的某个节点时，必须知道该节点的前驱节点（单向链表） （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1041,28 +1103,28 @@ int main() {
 
 > [!question] 判断题 8
 > 哨兵节点（dummy head）可以简化链表头部插入/删除的边界条件处理 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
 > > 
-> > **解析**: 使用哨兵节点后，链表始终非空，头部操作和中间操作的逻辑统一，不再需要特殊处理head为nullptr的情况。
+> > **解析**: 使用哨兵节点后，链表始终非空，头部操作和中间操作的逻辑统一，不再需要特殊处理head为NULL的情况。
 
 > [!question] 判断题 9
-> std::forward_list 支持 push_back() 操作 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> 单向链表标准容器支持 push_back() 操作 （ ）
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
 > > 
-> > **解析**: std::forward_list 是单向链表，只支持 push_front()。要在尾部插入需要先遍历到末尾，效率低，因此标准库不提供push_back()。
+> > **解析**: 单向链表通常只支持 push_front()。要在尾部插入需要先遍历到末尾，效率低，因此标准库通常不提供push_back()。
 
 > [!question] 判断题 10
 > 链表相比数组的主要缺点是缓存命中率低 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1132,7 +1194,7 @@ int main() {
 > > **解析**: 约瑟夫问题中人们围成一圈依次报数出列，循环链表的尾节点连接头节点形成环，天然模拟了"围成一圈"的场景。
 
 > [!question] 选择题 6
-> std::list 的 splice() 操作的时间复杂度是？
+> 链表的 splice() 操作的时间复杂度是？
 > - [ ] A. O(1)
 > - [ ] B. O(n)
 > - [ ] C. O(n log n)
@@ -1168,7 +1230,7 @@ int main() {
 > > **解析**: 使用双指针法（类似归并排序的merge步骤），每次比较两个链表的当前节点取较小者，时间复杂度O(n+m)。
 
 > [!question] 选择题 9
-> 下面哪个操作在std::list上比std::vector更高效？
+> 下面哪个操作在链表上比数组更高效？
 > - [ ] A. 随机访问第i个元素
 > - [ ] B. 在已知位置插入/删除元素
 > - [ ] C. 排序
@@ -1177,7 +1239,7 @@ int main() {
 > > [!success]- 点击查看答案
 > > 正确答案: B
 > > 
-> > **解析**: list在已知位置（有迭代器）插入/删除只需O(1)修改指针，而vector需要O(n)移动元素。其他操作（随机访问、排序、查找）vector都更快。
+> > **解析**: 链表在已知位置（有迭代器）插入/删除只需O(1)修改指针，而数组需要O(n)移动元素。其他操作（随机访问、排序、查找）数组都更快。
 
 > [!question] 选择题 10
 > 以下哪种数据结构可以视为"带有多层链表索引"的升级链表？
@@ -1193,11 +1255,11 @@ int main() {
 
 ---
 
-### 💻 编程大题
+###  编程大题
 
 > [!note] 编程题 1：实现一个双向循环链表
 > **要求**：
-> 1. 实现模板类 `CircularDoublyLinkedList<T>`
+> 1. 实现双向循环链表类 `CircularDoublyLinkedList`
 > 2. 支持以下操作：
 >    - `push_front(val)` / `push_back(val)` — 头部/尾部插入
 >    - `pop_front()` / `pop_back()` — 头部/尾部删除
@@ -1220,23 +1282,23 @@ int main() {
 >    - 递归地对两半链表排序
 >    - 合并两个有序链表
 > 4. 额外：实现自底向上的迭代归并排序（O(1)空间）
-> 5. 与std::list::sort()进行性能对比
+> 5. 与标准链表sort()进行性能对比
 >
 > **提示**: 自底向上先两两合并长度为1的子链表，再合并长度为2的，依此类推
 
 > [!note] 编程题 3：LRU缓存的链表+哈希表实现
 > **要求**：
-> 1. 使用双向链表 + unordered_map 实现LRU（最近最少使用）缓存
+> 1. 使用双向链表 + 哈希表 实现LRU（最近最少使用）缓存
 > 2. 支持操作：
 >    - `get(key)` — 获取key对应的value，如果key不存在返回-1，O(1)
 >    - `put(key, value)` — 插入或更新键值对，如果超出容量则淘汰最久未使用的，O(1)
-> 3. 不使用std::list，手动实现双向链表部分
+> 3. 不使用标准链表，手动实现双向链表部分
 > 4. 正确处理边界情况：空缓存、容量为1、重复key等
 > 5. 编写完整测试验证
 >
 > **提示**: 链表头部为最近使用，尾部为最久未使用。每次get/put都将节点移到头部
 
-### 🔗 推荐练习题（洛谷）
+###  推荐练习题（洛谷）
 
 | 题号 | 题目 | 难度 | 知识点 |
 |------|------|------|--------|
@@ -1244,10 +1306,10 @@ int main() {
 
 ---
 
-## --------------------------------------------------------------------------
-## 🔗 知识网络
-## --------------------------------------------------------------------------
+***
+##  知识网络
+***
 
 - **上一章**: [[B_栈_Stack]] | **下一章**: [[F_队列_Queue]] | **返回**: [[DSA学习路线]]
-- **相关容器**: [[容器类/08_list_forward_list]]
+- **相关容器**: [[容器库/08_list_forward_list]]
 - **算法技巧**: [[../算法技巧/双指针]] | [[../算法技巧/数组]]

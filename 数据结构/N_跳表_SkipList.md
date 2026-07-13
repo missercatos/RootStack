@@ -1,8 +1,8 @@
-## ==========================================================================
-C++ 数据结构教程 — 跳表 (Skip List)
-## ==========================================================================
+---
+数据结构教程 — 跳表 (Skip List)
+---
 
-## 📋 章节概述
+##  章节概述
 
 跳表（Skip List）是一种基于有序链表的数据结构，通过添加多级索引实现高效的
 查找、插入和删除操作。它是由William Pugh于1990年发明的，作为平衡二叉搜索树
@@ -13,11 +13,11 @@ C++ 数据结构教程 — 跳表 (Skip List)
 本章将从跳表的多级索引思想讲起，深入概率平衡原理，
 全面覆盖跳表的实现和优化，最后通过实例和习题巩固所学知识。
 
-> 📌 **底层实现参考**：如果需要深入理解本章数据结构的底层实现（纯C手写、内存布局、指针操作），请参阅 [[../../C语言深化教程/3数据结构/09_高级数据结构|C语言教程: 高级数据结构]]。C教程侧重手动实现与内存本质，本教程侧重STL使用与算法优化，两者互补。
+>  **底层实现参考**：如果需要深入理解本章数据结构的底层实现（纯C手写、内存布局、指针操作），请参阅 [[../../C语言深化教程/3数据结构/09_高级数据结构|C语言教程: 高级数据结构]]。C教程侧重手动实现与内存本质，本教程侧重STL使用与算法优化，两者互补。
 
-## ==========================================================================
-### 📖 第一节: 基础语法 + 计算机底层原理
-## ==========================================================================
+---
+###  第一节: 基础语法 + 计算机底层原理
+---
 
 1.1 跳表的基本概念
 -----------------------
@@ -70,165 +70,145 @@ graph TD
 
 1.3 完整实现
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <cstdlib>
-#include <ctime>
-#include <climits>
+```pseudocode
+STRUCT Node:
+    key, value
+    forward      // 数组: forward[i] = 当前节点在第 i 层的后继指针
+    CONSTRUCTOR(k, v, level):
+        key = k; value = v
+        forward = ARRAY of size level + 1, filled with NULL
+    END CONSTRUCTOR
+END STRUCT
 
-class SkipList {
-private:
-    struct Node {
-        int key;
-        int value;
-        std::vector<Node*> forward;
+CLASS SkipList:
+    header          // 头节点（哨兵，key = NEGATIVE_INFINITY）
+    maxLevel        // 最大层数
+    currentLevel    // 当前最高非空层
+    probability     // 晋升概率（通常 0.5）
+    size            // 元素个数
 
-        Node(int k, int v, int level) : key(k), value(v), forward(level + 1, nullptr) {}
-    };
+    FUNCTION randomLevel():
+        level = 0
+        WHILE RANDOM_FLOAT() < probability AND level < maxLevel:
+            level = level + 1
+        END WHILE
+        RETURN level
+    END FUNCTION
 
-    Node* header;
-    int maxLevel;
-    int currentLevel;
-    float probability;
-    int size_;
+    CONSTRUCTOR(maxLvl=16, p=0.5):
+        maxLevel = maxLvl
+        currentLevel = 0
+        probability = p
+        size = 0
+        header = NEW Node(NEGATIVE_INFINITY, 0, maxLevel)
+    END CONSTRUCTOR
 
-    int randomLevel() {
-        int level = 0;
-        while ((float)rand() / RAND_MAX < probability && level < maxLevel)
-            level++;
-        return level;
-    }
+    DESTRUCTOR:
+        curr = header.forward[0]
+        WHILE curr != NULL:
+            next = curr.forward[0]
+            FREE curr
+            curr = next
+        END WHILE
+        FREE header
+    END DESTRUCTOR
 
-public:
-    SkipList(int maxLvl = 16, float p = 0.5)
-        : maxLevel(maxLvl), currentLevel(0), probability(p), size_(0) {
-        header = new Node(INT_MIN, 0, maxLevel);
-        srand(time(nullptr));
-    }
+    FUNCTION search(key, value):
+        curr = header
+        FOR i FROM currentLevel DOWNTO 0:
+            WHILE curr.forward[i] != NULL AND curr.forward[i].key < key:
+                curr = curr.forward[i]
+            END WHILE
+        END FOR
+        curr = curr.forward[0]
+        IF curr != NULL AND curr.key == key THEN
+            value = curr.value
+            RETURN TRUE
+        END IF
+        RETURN FALSE
+    END FUNCTION
 
-    ~SkipList() {
-        Node* curr = header->forward[0];
-        while (curr) {
-            Node* next = curr->forward[0];
-            delete curr;
-            curr = next;
-        }
-        delete header;
-    }
+    FUNCTION insert(key, value):
+        update = ARRAY of size maxLevel + 1, filled with NULL
+        curr = header
+        FOR i FROM currentLevel DOWNTO 0:
+            WHILE curr.forward[i] != NULL AND curr.forward[i].key < key:
+                curr = curr.forward[i]
+            END WHILE
+            update[i] = curr    // 记录每层的前驱
+        END FOR
 
-    bool search(int key, int& value) const {
-        Node* curr = header;
-        for (int i = currentLevel; i >= 0; --i) {
-            while (curr->forward[i] && curr->forward[i]->key < key)
-                curr = curr->forward[i];
-        }
-        curr = curr->forward[0];
-        if (curr && curr->key == key) {
-            value = curr->value;
-            return true;
-        }
-        return false;
-    }
+        curr = curr.forward[0]
+        IF curr != NULL AND curr.key == key THEN
+            curr.value = value    // 键已存在，更新值
+            RETURN
+        END IF
 
-    void insert(int key, int value) {
-        std::vector<Node*> update(maxLevel + 1, nullptr);
-        Node* curr = header;
+        newLevel = randomLevel()
+        IF newLevel > currentLevel THEN
+            FOR i FROM currentLevel + 1 TO newLevel:
+                update[i] = header
+            END FOR
+            currentLevel = newLevel
+        END IF
 
-        for (int i = currentLevel; i >= 0; --i) {
-            while (curr->forward[i] && curr->forward[i]->key < key)
-                curr = curr->forward[i];
-            update[i] = curr;
-        }
+        newNode = NEW Node(key, value, newLevel)
+        FOR i FROM 0 TO newLevel:
+            newNode.forward[i] = update[i].forward[i]
+            update[i].forward[i] = newNode
+        END FOR
+        size = size + 1
+    END FUNCTION
 
-        curr = curr->forward[0];
+    FUNCTION remove(key):
+        update = ARRAY of size maxLevel + 1, filled with NULL
+        curr = header
+        FOR i FROM currentLevel DOWNTO 0:
+            WHILE curr.forward[i] != NULL AND curr.forward[i].key < key:
+                curr = curr.forward[i]
+            END WHILE
+            update[i] = curr
+        END FOR
 
-        if (curr && curr->key == key) {
-            curr->value = value;
-            return;
-        }
+        curr = curr.forward[0]
+        IF curr == NULL OR curr.key != key THEN RETURN FALSE
 
-        int newLevel = randomLevel();
-        if (newLevel > currentLevel) {
-            for (int i = currentLevel + 1; i <= newLevel; ++i)
-                update[i] = header;
-            currentLevel = newLevel;
-        }
+        FOR i FROM 0 TO currentLevel:
+            IF update[i].forward[i] != curr THEN BREAK
+            update[i].forward[i] = curr.forward[i]
+        END FOR
 
-        Node* newNode = new Node(key, value, newLevel);
-        for (int i = 0; i <= newLevel; ++i) {
-            newNode->forward[i] = update[i]->forward[i];
-            update[i]->forward[i] = newNode;
-        }
-        size_++;
-    }
+        FREE curr
+        size = size - 1
 
-    bool remove(int key) {
-        std::vector<Node*> update(maxLevel + 1, nullptr);
-        Node* curr = header;
+        WHILE currentLevel > 0 AND header.forward[currentLevel] == NULL:
+            currentLevel = currentLevel - 1
+        END WHILE
 
-        for (int i = currentLevel; i >= 0; --i) {
-            while (curr->forward[i] && curr->forward[i]->key < key)
-                curr = curr->forward[i];
-            update[i] = curr;
-        }
+        RETURN TRUE
+    END FUNCTION
 
-        curr = curr->forward[0];
-        if (!curr || curr->key != key) return false;
+    FUNCTION getSize():
+        RETURN size
+    END FUNCTION
 
-        for (int i = 0; i <= currentLevel; ++i) {
-            if (update[i]->forward[i] != curr) break;
-            update[i]->forward[i] = curr->forward[i];
-        }
-
-        delete curr;
-        size_--;
-
-        while (currentLevel > 0 && !header->forward[currentLevel])
-            currentLevel--;
-
-        return true;
-    }
-
-    int getSize() const { return size_; }
-
-    void print() const {
-        for (int i = currentLevel; i >= 0; --i) {
-            std::cout << "Level " << i << ": ";
-            Node* curr = header->forward[i];
-            while (curr) {
-                std::cout << curr->key << " ";
-                curr = curr->forward[i];
-            }
-            std::cout << std::endl;
-        }
-    }
-};
-
-int main() {
-    SkipList sl;
-    sl.insert(3, 30);
-    sl.insert(6, 60);
-    sl.insert(8, 80);
-    sl.insert(12, 120);
-    sl.insert(17, 170);
-    sl.insert(25, 250);
-    sl.insert(30, 300);
-
-    sl.print();
-    std::cout << std::endl;
-
-    int val;
-    if (sl.search(17, val))
-        std::cout << "找到key=17, value=" << val << std::endl;
-
-    sl.remove(12);
-    std::cout << "删除12后:" << std::endl;
-    sl.print();
-
-    return 0;
-}
+    FUNCTION print():
+        FOR i FROM currentLevel DOWNTO 0:
+            DISPLAY "Level ", i, ": "
+            curr = header.forward[i]
+            WHILE curr != NULL:
+                DISPLAY curr.key, " "
+                curr = curr.forward[i]
+            END WHILE
+            DISPLAY NEWLINE
+        END FOR
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 1.4 概率分析
 
@@ -239,674 +219,576 @@ int main() {
 
 最大层数建议设为 log₁/ₚ(n)，例如n=10^6, p=0.5时设maxLevel=20即可。
 
-## ==========================================================================
-### 📖 第二节: 所有用法大全
-## ==========================================================================
+---
+###  第二节: 实现思路
+---
 
 2.1 支持排名操作的跳表
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <cstdlib>
-#include <ctime>
-#include <climits>
+```pseudocode
+STRUCT Node:
+    key
+    forward      // 数组: 各层后继指针
+    span         // 数组: span[i] = 第 i 层指针跨越的节点数
+    CONSTRUCTOR(k, level):
+        key = k
+        forward = ARRAY of size level + 1, filled with NULL
+        span = ARRAY of size level + 1, filled with 0
+    END CONSTRUCTOR
+END STRUCT
 
-class RankedSkipList {
-private:
-    struct Node {
-        int key;
-        std::vector<Node*> forward;
-        std::vector<int> span;
+CLASS RankedSkipList:
+    header, maxLevel, currentLevel, size
 
-        Node(int k, int level) : key(k), forward(level + 1, nullptr), span(level + 1, 0) {}
-    };
+    FUNCTION randomLevel():
+        level = 0
+        WHILE RANDOM() MOD 2 == 0 AND level < maxLevel:
+            level = level + 1
+        END WHILE
+        RETURN level
+    END FUNCTION
 
-    Node* header;
-    int maxLevel;
-    int currentLevel;
-    int size_;
+    CONSTRUCTOR(maxLvl=16):
+        maxLevel = maxLvl; currentLevel = 0; size = 0
+        header = NEW Node(NEGATIVE_INFINITY, maxLevel)
+    END CONSTRUCTOR
 
-    int randomLevel() {
-        int level = 0;
-        while (rand() % 2 == 0 && level < maxLevel)
-            level++;
-        return level;
-    }
+    FUNCTION insert(key):
+        update = ARRAY of size maxLevel + 1
+        rank = ARRAY of size maxLevel + 1, filled with 0
+        curr = header
+        FOR i FROM currentLevel DOWNTO 0:
+            IF i == currentLevel THEN rank[i] = 0
+            ELSE rank[i] = rank[i + 1]
+            END IF
+            WHILE curr.forward[i] != NULL AND curr.forward[i].key < key:
+                rank[i] = rank[i] + curr.span[i]
+                curr = curr.forward[i]
+            END WHILE
+            update[i] = curr
+        END FOR
 
-public:
-    RankedSkipList(int maxLvl = 16) : maxLevel(maxLvl), currentLevel(0), size_(0) {
-        header = new Node(INT_MIN, maxLevel);
-        srand(time(nullptr));
-    }
+        newLevel = randomLevel()
+        IF newLevel > currentLevel THEN
+            FOR i FROM currentLevel + 1 TO newLevel:
+                rank[i] = 0
+                update[i] = header
+                update[i].span[i] = size
+            END FOR
+            currentLevel = newLevel
+        END IF
 
-    void insert(int key) {
-        std::vector<Node*> update(maxLevel + 1);
-        std::vector<int> rank(maxLevel + 1, 0);
-        Node* curr = header;
+        newNode = NEW Node(key, newLevel)
+        FOR i FROM 0 TO newLevel:
+            newNode.forward[i] = update[i].forward[i]
+            update[i].forward[i] = newNode
+            newNode.span[i] = update[i].span[i] - (rank[0] - rank[i])
+            update[i].span[i] = (rank[0] - rank[i]) + 1
+        END FOR
 
-        for (int i = currentLevel; i >= 0; --i) {
-            rank[i] = (i == currentLevel) ? 0 : rank[i + 1];
-            while (curr->forward[i] && curr->forward[i]->key < key) {
-                rank[i] += curr->span[i];
-                curr = curr->forward[i];
-            }
-            update[i] = curr;
-        }
+        FOR i FROM newLevel + 1 TO currentLevel:
+            update[i].span[i] = update[i].span[i] + 1
+        END FOR
+        size = size + 1
+    END FUNCTION
 
-        int newLevel = randomLevel();
-        if (newLevel > currentLevel) {
-            for (int i = currentLevel + 1; i <= newLevel; ++i) {
-                rank[i] = 0;
-                update[i] = header;
-                update[i]->span[i] = size_;
-            }
-            currentLevel = newLevel;
-        }
+    FUNCTION getRank(key):    // 返回 key 的排名（1-based）
+        curr = header
+        rank = 0
+        FOR i FROM currentLevel DOWNTO 0:
+            WHILE curr.forward[i] != NULL AND curr.forward[i].key <= key:
+                rank = rank + curr.span[i]
+                curr = curr.forward[i]
+            END WHILE
+        END FOR
+        IF curr.key == key THEN RETURN rank
+        RETURN -1
+    END FUNCTION
 
-        Node* newNode = new Node(key, newLevel);
-        for (int i = 0; i <= newLevel; ++i) {
-            newNode->forward[i] = update[i]->forward[i];
-            update[i]->forward[i] = newNode;
-            newNode->span[i] = update[i]->span[i] - (rank[0] - rank[i]);
-            update[i]->span[i] = (rank[0] - rank[i]) + 1;
-        }
-
-        for (int i = newLevel + 1; i <= currentLevel; ++i)
-            update[i]->span[i]++;
-
-        size_++;
-    }
-
-    int getRank(int key) {
-        Node* curr = header;
-        int rank = 0;
-        for (int i = currentLevel; i >= 0; --i) {
-            while (curr->forward[i] && curr->forward[i]->key <= key) {
-                rank += curr->span[i];
-                curr = curr->forward[i];
-            }
-        }
-        if (curr->key == key) return rank;
-        return -1;
-    }
-
-    int getByRank(int rank) {
-        Node* curr = header;
-        int traversed = 0;
-        for (int i = currentLevel; i >= 0; --i) {
-            while (curr->forward[i] && traversed + curr->span[i] <= rank) {
-                traversed += curr->span[i];
-                curr = curr->forward[i];
-            }
-        }
-        return (traversed == rank) ? curr->key : -1;
-    }
-
-    int getSize() const { return size_; }
-};
-
-int main() {
-    RankedSkipList sl;
-    sl.insert(10);
-    sl.insert(20);
-    sl.insert(30);
-    sl.insert(40);
-    sl.insert(50);
-
-    std::cout << "30的排名: " << sl.getRank(30) << std::endl;
-    std::cout << "排名第2的元素: " << sl.getByRank(2) << std::endl;
-    std::cout << "排名第4的元素: " << sl.getByRank(4) << std::endl;
-
-    return 0;
-}
+    FUNCTION getByRank(rank):    // 返回排名第 rank 的元素
+        curr = header
+        traversed = 0
+        FOR i FROM currentLevel DOWNTO 0:
+            WHILE curr.forward[i] != NULL AND traversed + curr.span[i] <= rank:
+                traversed = traversed + curr.span[i]
+                curr = curr.forward[i]
+            END WHILE
+        END FOR
+        IF traversed == rank THEN RETURN curr.key
+        RETURN -1
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.2 区间查询跳表
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <cstdlib>
-#include <ctime>
-#include <climits>
+```pseudocode
+STRUCT Node:
+    key, value
+    forward      // 数组: 各层后继指针
+    CONSTRUCTOR(k, v, level):
+        key = k; value = v
+        forward = ARRAY of size level + 1, filled with NULL
+    END CONSTRUCTOR
+END STRUCT
 
-class RangeSkipList {
-private:
-    struct Node {
-        int key, value;
-        std::vector<Node*> forward;
-        Node(int k, int v, int level) : key(k), value(v), forward(level + 1, nullptr) {}
-    };
+CLASS RangeSkipList:
+    header, maxLevel, currentLevel
 
-    Node* header;
-    int maxLevel, currentLevel;
+    FUNCTION randomLevel():
+        level = 0
+        WHILE RANDOM() MOD 2 == 0 AND level < maxLevel:
+            level = level + 1
+        END WHILE
+        RETURN level
+    END FUNCTION
 
-    int randomLevel() {
-        int level = 0;
-        while (rand() % 2 == 0 && level < maxLevel) level++;
-        return level;
-    }
+    CONSTRUCTOR(maxLvl=16):
+        maxLevel = maxLvl; currentLevel = 0
+        header = NEW Node(NEGATIVE_INFINITY, 0, maxLevel)
+    END CONSTRUCTOR
 
-public:
-    RangeSkipList(int maxLvl = 16) : maxLevel(maxLvl), currentLevel(0) {
-        header = new Node(INT_MIN, 0, maxLevel);
-        srand(time(nullptr));
-    }
+    FUNCTION insert(key, value):
+        update = ARRAY of size maxLevel + 1
+        curr = header
+        FOR i FROM currentLevel DOWNTO 0:
+            WHILE curr.forward[i] != NULL AND curr.forward[i].key < key:
+                curr = curr.forward[i]
+            END WHILE
+            update[i] = curr
+        END FOR
+        newLevel = randomLevel()
+        IF newLevel > currentLevel THEN
+            FOR i FROM currentLevel + 1 TO newLevel:
+                update[i] = header
+            END FOR
+            currentLevel = newLevel
+        END IF
+        newNode = NEW Node(key, value, newLevel)
+        FOR i FROM 0 TO newLevel:
+            newNode.forward[i] = update[i].forward[i]
+            update[i].forward[i] = newNode
+        END FOR
+    END FUNCTION
 
-    void insert(int key, int value) {
-        std::vector<Node*> update(maxLevel + 1);
-        Node* curr = header;
-        for (int i = currentLevel; i >= 0; --i) {
-            while (curr->forward[i] && curr->forward[i]->key < key)
-                curr = curr->forward[i];
-            update[i] = curr;
-        }
-        int newLevel = randomLevel();
-        if (newLevel > currentLevel) {
-            for (int i = currentLevel + 1; i <= newLevel; ++i)
-                update[i] = header;
-            currentLevel = newLevel;
-        }
-        Node* newNode = new Node(key, value, newLevel);
-        for (int i = 0; i <= newLevel; ++i) {
-            newNode->forward[i] = update[i]->forward[i];
-            update[i]->forward[i] = newNode;
-        }
-    }
-
-    std::vector<std::pair<int,int>> rangeQuery(int low, int high) {
-        std::vector<std::pair<int,int>> result;
-        Node* curr = header;
-        for (int i = currentLevel; i >= 0; --i) {
-            while (curr->forward[i] && curr->forward[i]->key < low)
-                curr = curr->forward[i];
-        }
-        curr = curr->forward[0];
-        while (curr && curr->key <= high) {
-            result.emplace_back(curr->key, curr->value);
-            curr = curr->forward[0];
-        }
-        return result;
-    }
-};
-
-int main() {
-    RangeSkipList sl;
-    sl.insert(5, 50);
-    sl.insert(10, 100);
-    sl.insert(15, 150);
-    sl.insert(20, 200);
-    sl.insert(25, 250);
-    sl.insert(30, 300);
-
-    auto results = sl.rangeQuery(10, 25);
-    std::cout << "范围[10,25]内的元素:" << std::endl;
-    for (auto [k, v] : results)
-        std::cout << "  key=" << k << ", value=" << v << std::endl;
-
-    return 0;
-}
+    FUNCTION rangeQuery(low, high):
+        result = EMPTY_LIST
+        curr = header
+        FOR i FROM currentLevel DOWNTO 0:
+            WHILE curr.forward[i] != NULL AND curr.forward[i].key < low:
+                curr = curr.forward[i]
+            END WHILE
+        END FOR
+        curr = curr.forward[0]
+        WHILE curr != NULL AND curr.key <= high:
+            APPEND (curr.key, curr.value) TO result
+            curr = curr.forward[0]
+        END WHILE
+        RETURN result
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.3 并发安全跳表（简化版）
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <mutex>
-#include <shared_mutex>
-#include <cstdlib>
-#include <climits>
+```pseudocode
+STRUCT Node:
+    key, value
+    forward      // 数组: 各层后继指针
+    nodeMutex    // 每节点一个互斥锁
+    CONSTRUCTOR(k, v, level):
+        key = k; value = v
+        forward = ARRAY of size level + 1, filled with NULL
+    END CONSTRUCTOR
+END STRUCT
 
-class ConcurrentSkipList {
-private:
-    struct Node {
-        int key, value;
-        std::vector<Node*> forward;
-        std::mutex nodeMutex;
-        Node(int k, int v, int level) : key(k), value(v), forward(level + 1, nullptr) {}
-    };
+CLASS ConcurrentSkipList:
+    header, maxLevel, currentLevel
+    rwLock      // 全局读写锁（简化实现）
 
-    Node* header;
-    int maxLevel, currentLevel;
-    mutable std::shared_mutex rwLock;
+    FUNCTION randomLevel():
+        level = 0
+        WHILE RANDOM() MOD 2 == 0 AND level < maxLevel:
+            level = level + 1
+        END WHILE
+        RETURN level
+    END FUNCTION
 
-    int randomLevel() {
-        int level = 0;
-        while (rand() % 2 == 0 && level < maxLevel) level++;
-        return level;
-    }
+    CONSTRUCTOR(maxLvl=16):
+        maxLevel = maxLvl; currentLevel = 0
+        header = NEW Node(NEGATIVE_INFINITY, 0, maxLevel)
+    END CONSTRUCTOR
 
-public:
-    ConcurrentSkipList(int maxLvl = 16) : maxLevel(maxLvl), currentLevel(0) {
-        header = new Node(INT_MIN, 0, maxLevel);
-    }
+    FUNCTION search(key, value):
+        ACQUIRE_READ_LOCK(rwLock)
+        curr = header
+        FOR i FROM currentLevel DOWNTO 0:
+            WHILE curr.forward[i] != NULL AND curr.forward[i].key < key:
+                curr = curr.forward[i]
+            END WHILE
+        END FOR
+        curr = curr.forward[0]
+        IF curr != NULL AND curr.key == key THEN
+            value = curr.value
+            RELEASE_READ_LOCK(rwLock)
+            RETURN TRUE
+        END IF
+        RELEASE_READ_LOCK(rwLock)
+        RETURN FALSE
+    END FUNCTION
 
-    bool search(int key, int& value) {
-        std::shared_lock<std::shared_mutex> lock(rwLock);
-        Node* curr = header;
-        for (int i = currentLevel; i >= 0; --i) {
-            while (curr->forward[i] && curr->forward[i]->key < key)
-                curr = curr->forward[i];
-        }
-        curr = curr->forward[0];
-        if (curr && curr->key == key) {
-            value = curr->value;
-            return true;
-        }
-        return false;
-    }
-
-    void insert(int key, int value) {
-        std::unique_lock<std::shared_mutex> lock(rwLock);
-        std::vector<Node*> update(maxLevel + 1);
-        Node* curr = header;
-        for (int i = currentLevel; i >= 0; --i) {
-            while (curr->forward[i] && curr->forward[i]->key < key)
-                curr = curr->forward[i];
-            update[i] = curr;
-        }
-        curr = curr->forward[0];
-        if (curr && curr->key == key) {
-            curr->value = value;
-            return;
-        }
-        int newLevel = randomLevel();
-        if (newLevel > currentLevel) {
-            for (int i = currentLevel + 1; i <= newLevel; ++i)
-                update[i] = header;
-            currentLevel = newLevel;
-        }
-        Node* newNode = new Node(key, value, newLevel);
-        for (int i = 0; i <= newLevel; ++i) {
-            newNode->forward[i] = update[i]->forward[i];
-            update[i]->forward[i] = newNode;
-        }
-    }
-};
-
-int main() {
-    ConcurrentSkipList sl;
-    sl.insert(1, 10);
-    sl.insert(2, 20);
-    sl.insert(3, 30);
-
-    int val;
-    if (sl.search(2, val))
-        std::cout << "key=2, value=" << val << std::endl;
-    return 0;
-}
+    FUNCTION insert(key, value):
+        ACQUIRE_WRITE_LOCK(rwLock)
+        update = ARRAY of size maxLevel + 1
+        curr = header
+        FOR i FROM currentLevel DOWNTO 0:
+            WHILE curr.forward[i] != NULL AND curr.forward[i].key < key:
+                curr = curr.forward[i]
+            END WHILE
+            update[i] = curr
+        END FOR
+        curr = curr.forward[0]
+        IF curr != NULL AND curr.key == key THEN
+            curr.value = value
+            RELEASE_WRITE_LOCK(rwLock)
+            RETURN
+        END IF
+        newLevel = randomLevel()
+        IF newLevel > currentLevel THEN
+            FOR i FROM currentLevel + 1 TO newLevel:
+                update[i] = header
+            END FOR
+            currentLevel = newLevel
+        END IF
+        newNode = NEW Node(key, value, newLevel)
+        FOR i FROM 0 TO newLevel:
+            newNode.forward[i] = update[i].forward[i]
+            update[i].forward[i] = newNode
+        END FOR
+        RELEASE_WRITE_LOCK(rwLock)
+    END FUNCTION
+END CLASS
 ```
 
-## ==========================================================================
-### 📖 第三节: 实用案例
-## ==========================================================================
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
+---
+###  第三节: 应用场景
+---
 
 3.1 案例一：模拟Redis有序集合（ZSet）
 
-```cpp
-#include <iostream>
-#include <string>
-#include <unordered_map>
-#include <vector>
-#include <cstdlib>
-#include <ctime>
-#include <climits>
+```pseudocode
+STRUCT Node:
+    score
+    member       // 成员名（字符串）
+    forward      // 各层后继指针
+    span         // 各层跨越节点数
+    CONSTRUCTOR(s, m, level):
+        score = s; member = m
+        forward = ARRAY of size level + 1, filled with NULL
+        span = ARRAY of size level + 1, filled with 0
+    END CONSTRUCTOR
+END STRUCT
 
-class ZSet {
-private:
-    struct Node {
-        double score;
-        std::string member;
-        std::vector<Node*> forward;
-        std::vector<int> span;
-        Node(double s, const std::string& m, int level)
-            : score(s), member(m), forward(level+1, nullptr), span(level+1, 0) {}
-    };
+CLASS ZSet:
+    header      // 跳表头节点
+    dict        // 哈希表: member → score (O(1) 查询分数)
+    maxLevel, currentLevel, size
 
-    Node* header;
-    std::unordered_map<std::string, double> dict;
-    int maxLevel, currentLevel, size_;
+    FUNCTION randomLevel():
+        level = 0
+        WHILE RANDOM() MOD 4 < 1 AND level < maxLevel:   // p=1/4
+            level = level + 1
+        END WHILE
+        RETURN level
+    END FUNCTION
 
-    int randomLevel() {
-        int level = 0;
-        while (rand() % 4 < 1 && level < maxLevel) level++;
-        return level;
-    }
+    FUNCTION less(a, score, member):    // 比较函数: (score, member) 是否小于
+        RETURN a.score < score OR (a.score == score AND a.member < member)
+    END FUNCTION
 
-    bool less(Node* a, double score, const std::string& member) {
-        return a->score < score || (a->score == score && a->member < member);
-    }
+    CONSTRUCTOR(maxLvl=32):
+        maxLevel = maxLvl; currentLevel = 0; size = 0
+        header = NEW Node(NEGATIVE_INFINITY, "", maxLevel)
+    END CONSTRUCTOR
 
-public:
-    ZSet(int maxLvl = 32) : maxLevel(maxLvl), currentLevel(0), size_(0) {
-        header = new Node(-1e18, "", maxLevel);
-        srand(time(nullptr));
-    }
+    FUNCTION zadd(member, score):
+        IF dict CONTAINS member THEN zrem(member)
+        dict[member] = score
+        update = ARRAY of size maxLevel + 1
+        curr = header
+        FOR i FROM currentLevel DOWNTO 0:
+            WHILE curr.forward[i] != NULL AND less(curr.forward[i], score, member):
+                curr = curr.forward[i]
+            END WHILE
+            update[i] = curr
+        END FOR
+        newLevel = randomLevel()
+        IF newLevel > currentLevel THEN
+            FOR i FROM currentLevel + 1 TO newLevel:
+                update[i] = header
+                header.span[i] = size
+            END FOR
+            currentLevel = newLevel
+        END IF
+        newNode = NEW Node(score, member, newLevel)
+        FOR i FROM 0 TO newLevel:
+            newNode.forward[i] = update[i].forward[i]
+            update[i].forward[i] = newNode
+        END FOR
+        size = size + 1
+    END FUNCTION
 
-    void zadd(const std::string& member, double score) {
-        if (dict.count(member)) zrem(member);
-        dict[member] = score;
+    FUNCTION zrem(member):
+        IF NOT dict CONTAINS member THEN RETURN FALSE
+        score = dict[member]
+        REMOVE member FROM dict
+        update = ARRAY of size maxLevel + 1
+        curr = header
+        FOR i FROM currentLevel DOWNTO 0:
+            WHILE curr.forward[i] != NULL AND less(curr.forward[i], score, member):
+                curr = curr.forward[i]
+            END WHILE
+            update[i] = curr
+        END FOR
+        curr = curr.forward[0]
+        IF curr == NULL OR curr.member != member THEN RETURN FALSE
+        FOR i FROM 0 TO currentLevel:
+            IF update[i].forward[i] != curr THEN BREAK
+            update[i].forward[i] = curr.forward[i]
+        END FOR
+        FREE curr
+        size = size - 1
+        WHILE currentLevel > 0 AND header.forward[currentLevel] == NULL:
+            currentLevel = currentLevel - 1
+        END WHILE
+        RETURN TRUE
+    END FUNCTION
 
-        std::vector<Node*> update(maxLevel + 1);
-        Node* curr = header;
-        for (int i = currentLevel; i >= 0; --i) {
-            while (curr->forward[i] && less(curr->forward[i], score, member))
-                curr = curr->forward[i];
-            update[i] = curr;
-        }
+    FUNCTION zscore(member):
+        IF dict CONTAINS member THEN RETURN dict[member]
+        RETURN -1
+    END FUNCTION
 
-        int newLevel = randomLevel();
-        if (newLevel > currentLevel) {
-            for (int i = currentLevel + 1; i <= newLevel; ++i) {
-                update[i] = header;
-                header->span[i] = size_;
-            }
-            currentLevel = newLevel;
-        }
+    FUNCTION zrangeByScore(minScore, maxScore):
+        result = EMPTY_LIST
+        curr = header
+        FOR i FROM currentLevel DOWNTO 0:
+            WHILE curr.forward[i] != NULL AND curr.forward[i].score < minScore:
+                curr = curr.forward[i]
+            END WHILE
+        END FOR
+        curr = curr.forward[0]
+        WHILE curr != NULL AND curr.score <= maxScore:
+            APPEND curr.member TO result
+            curr = curr.forward[0]
+        END WHILE
+        RETURN result
+    END FUNCTION
 
-        Node* newNode = new Node(score, member, newLevel);
-        for (int i = 0; i <= newLevel; ++i) {
-            newNode->forward[i] = update[i]->forward[i];
-            update[i]->forward[i] = newNode;
-        }
-        size_++;
-    }
-
-    bool zrem(const std::string& member) {
-        if (!dict.count(member)) return false;
-        double score = dict[member];
-        dict.erase(member);
-
-        std::vector<Node*> update(maxLevel + 1);
-        Node* curr = header;
-        for (int i = currentLevel; i >= 0; --i) {
-            while (curr->forward[i] && less(curr->forward[i], score, member))
-                curr = curr->forward[i];
-            update[i] = curr;
-        }
-        curr = curr->forward[0];
-        if (!curr || curr->member != member) return false;
-
-        for (int i = 0; i <= currentLevel; ++i) {
-            if (update[i]->forward[i] != curr) break;
-            update[i]->forward[i] = curr->forward[i];
-        }
-        delete curr;
-        size_--;
-        while (currentLevel > 0 && !header->forward[currentLevel]) currentLevel--;
-        return true;
-    }
-
-    double zscore(const std::string& member) {
-        if (dict.count(member)) return dict[member];
-        return -1;
-    }
-
-    std::vector<std::string> zrangeByScore(double minScore, double maxScore) {
-        std::vector<std::string> result;
-        Node* curr = header;
-        for (int i = currentLevel; i >= 0; --i) {
-            while (curr->forward[i] && curr->forward[i]->score < minScore)
-                curr = curr->forward[i];
-        }
-        curr = curr->forward[0];
-        while (curr && curr->score <= maxScore) {
-            result.push_back(curr->member);
-            curr = curr->forward[0];
-        }
-        return result;
-    }
-
-    int zcard() const { return size_; }
-};
-
-int main() {
-    ZSet zset;
-    zset.zadd("alice", 95.5);
-    zset.zadd("bob", 87.3);
-    zset.zadd("charlie", 92.1);
-    zset.zadd("david", 88.8);
-    zset.zadd("eve", 91.0);
-
-    std::cout << "alice的分数: " << zset.zscore("alice") << std::endl;
-    std::cout << "集合大小: " << zset.zcard() << std::endl;
-
-    auto range = zset.zrangeByScore(88.0, 93.0);
-    std::cout << "分数在[88,93]之间的成员: ";
-    for (const auto& m : range) std::cout << m << " ";
-    std::cout << std::endl;
-
-    zset.zrem("bob");
-    std::cout << "删除bob后集合大小: " << zset.zcard() << std::endl;
-
-    return 0;
-}
+    FUNCTION zcard():
+        RETURN size
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 3.2 案例二：内存数据库索引
 
-```cpp
-#include <iostream>
-#include <string>
-#include <vector>
-#include <cstdlib>
-#include <ctime>
-#include <climits>
-#include <sstream>
+```pseudocode
+STRUCT Record:
+    id
+    name    // 字符串
+    age
+    salary
+END STRUCT
 
-class MemDBIndex {
-private:
-    struct Record {
-        int id;
-        std::string name;
-        int age;
-        double salary;
-    };
+STRUCT Node:
+    key     // 索引键（用 record.id 作为 key）
+    data    // 指向 Record 的指针
+    forward // 各层后继指针
+    CONSTRUCTOR(k, d, level):
+        key = k; data = d
+        forward = ARRAY of size level + 1, filled with NULL
+    END CONSTRUCTOR
+END STRUCT
 
-    struct Node {
-        int key;
-        Record* data;
-        std::vector<Node*> forward;
-        Node(int k, Record* d, int level)
-            : key(k), data(d), forward(level + 1, nullptr) {}
-    };
+CLASS MemDBIndex:
+    header, maxLevel, currentLevel
 
-    Node* header;
-    int maxLevel, currentLevel;
+    FUNCTION randomLevel():
+        level = 0
+        WHILE RANDOM() MOD 2 == 0 AND level < maxLevel:
+            level = level + 1
+        END WHILE
+        RETURN level
+    END FUNCTION
 
-    int randomLevel() {
-        int level = 0;
-        while (rand() % 2 == 0 && level < maxLevel) level++;
-        return level;
-    }
+    CONSTRUCTOR(maxLvl=16):
+        maxLevel = maxLvl; currentLevel = 0
+        header = NEW Node(NEGATIVE_INFINITY, NULL, maxLevel)
+    END CONSTRUCTOR
 
-public:
-    MemDBIndex(int maxLvl = 16) : maxLevel(maxLvl), currentLevel(0) {
-        header = new Node(INT_MIN, nullptr, maxLevel);
-        srand(time(nullptr));
-    }
+    FUNCTION insert(record):
+        update = ARRAY of size maxLevel + 1
+        curr = header
+        FOR i FROM currentLevel DOWNTO 0:
+            WHILE curr.forward[i] != NULL AND curr.forward[i].key < record.id:
+                curr = curr.forward[i]
+            END WHILE
+            update[i] = curr
+        END FOR
+        newLevel = randomLevel()
+        IF newLevel > currentLevel THEN
+            FOR i FROM currentLevel + 1 TO newLevel:
+                update[i] = header
+            END FOR
+            currentLevel = newLevel
+        END IF
+        newNode = NEW Node(record.id, record, newLevel)
+        FOR i FROM 0 TO newLevel:
+            newNode.forward[i] = update[i].forward[i]
+            update[i].forward[i] = newNode
+        END FOR
+    END FUNCTION
 
-    void insert(Record* record) {
-        std::vector<Node*> update(maxLevel + 1);
-        Node* curr = header;
-        for (int i = currentLevel; i >= 0; --i) {
-            while (curr->forward[i] && curr->forward[i]->key < record->id)
-                curr = curr->forward[i];
-            update[i] = curr;
-        }
-        int newLevel = randomLevel();
-        if (newLevel > currentLevel) {
-            for (int i = currentLevel + 1; i <= newLevel; ++i)
-                update[i] = header;
-            currentLevel = newLevel;
-        }
-        Node* newNode = new Node(record->id, record, newLevel);
-        for (int i = 0; i <= newLevel; ++i) {
-            newNode->forward[i] = update[i]->forward[i];
-            update[i]->forward[i] = newNode;
-        }
-    }
+    FUNCTION find(id):
+        curr = header
+        FOR i FROM currentLevel DOWNTO 0:
+            WHILE curr.forward[i] != NULL AND curr.forward[i].key < id:
+                curr = curr.forward[i]
+            END WHILE
+        END FOR
+        curr = curr.forward[0]
+        IF curr != NULL AND curr.key == id THEN RETURN curr.data
+        RETURN NULL
+    END FUNCTION
 
-    Record* find(int id) {
-        Node* curr = header;
-        for (int i = currentLevel; i >= 0; --i) {
-            while (curr->forward[i] && curr->forward[i]->key < id)
-                curr = curr->forward[i];
-        }
-        curr = curr->forward[0];
-        if (curr && curr->key == id) return curr->data;
-        return nullptr;
-    }
-
-    std::vector<Record*> rangeScan(int startId, int endId) {
-        std::vector<Record*> results;
-        Node* curr = header;
-        for (int i = currentLevel; i >= 0; --i) {
-            while (curr->forward[i] && curr->forward[i]->key < startId)
-                curr = curr->forward[i];
-        }
-        curr = curr->forward[0];
-        while (curr && curr->key <= endId) {
-            results.push_back(curr->data);
-            curr = curr->forward[0];
-        }
-        return results;
-    }
-};
-
-int main() {
-    MemDBIndex db;
-
-    std::vector<MemDBIndex::Record> records = {
-        {1, "张三", 28, 15000},
-        {2, "李四", 35, 25000},
-        {3, "王五", 22, 8000},
-        {4, "赵六", 30, 18000},
-        {5, "钱七", 45, 35000}
-    };
-
-    for (auto& r : records) db.insert(&r);
-
-    auto* found = db.find(3);
-    if (found)
-        std::cout << "ID=3: " << found->name << ", 年龄" << found->age << std::endl;
-
-    auto range = db.rangeScan(2, 4);
-    std::cout << "ID[2,4]的记录:" << std::endl;
-    for (auto* r : range)
-        std::cout << "  " << r->id << ": " << r->name << std::endl;
-
-    return 0;
-}
+    FUNCTION rangeScan(startId, endId):
+        results = EMPTY_LIST
+        curr = header
+        FOR i FROM currentLevel DOWNTO 0:
+            WHILE curr.forward[i] != NULL AND curr.forward[i].key < startId:
+                curr = curr.forward[i]
+            END WHILE
+        END FOR
+        curr = curr.forward[0]
+        WHILE curr != NULL AND curr.key <= endId:
+            APPEND curr.data TO results
+            curr = curr.forward[0]
+        END WHILE
+        RETURN results
+    END FUNCTION
+END CLASS
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 3.3 案例三：跳表 vs 平衡树性能对比
 
-```cpp
-#include <iostream>
-#include <set>
-#include <chrono>
-#include <cstdlib>
-#include <vector>
-#include <climits>
+```pseudocode
+STRUCT Node:
+    key
+    forward      // 各层后继指针
+    CONSTRUCTOR(k, level):
+        key = k
+        forward = ARRAY of size level + 1, filled with NULL
+    END CONSTRUCTOR
+END STRUCT
 
-class BenchmarkSkipList {
-private:
-    struct Node {
-        int key;
-        std::vector<Node*> forward;
-        Node(int k, int level) : key(k), forward(level + 1, nullptr) {}
-    };
-    Node* header;
-    int maxLevel, currentLevel;
+CLASS BenchmarkSkipList:
+    header, maxLevel, currentLevel
 
-    int randomLevel() {
-        int level = 0;
-        while (rand() % 2 == 0 && level < maxLevel) level++;
-        return level;
-    }
+    FUNCTION randomLevel():
+        level = 0
+        WHILE RANDOM() MOD 2 == 0 AND level < maxLevel:
+            level = level + 1
+        END WHILE
+        RETURN level
+    END FUNCTION
 
-public:
-    BenchmarkSkipList(int maxLvl = 20) : maxLevel(maxLvl), currentLevel(0) {
-        header = new Node(INT_MIN, maxLevel);
-    }
+    CONSTRUCTOR(maxLvl=20):
+        maxLevel = maxLvl; currentLevel = 0
+        header = NEW Node(NEGATIVE_INFINITY, maxLevel)
+    END CONSTRUCTOR
 
-    void insert(int key) {
-        std::vector<Node*> update(maxLevel + 1);
-        Node* curr = header;
-        for (int i = currentLevel; i >= 0; --i) {
-            while (curr->forward[i] && curr->forward[i]->key < key)
-                curr = curr->forward[i];
-            update[i] = curr;
-        }
-        int newLevel = randomLevel();
-        if (newLevel > currentLevel) {
-            for (int i = currentLevel + 1; i <= newLevel; ++i)
-                update[i] = header;
-            currentLevel = newLevel;
-        }
-        Node* newNode = new Node(key, newLevel);
-        for (int i = 0; i <= newLevel; ++i) {
-            newNode->forward[i] = update[i]->forward[i];
-            update[i]->forward[i] = newNode;
-        }
-    }
+    FUNCTION insert(key):
+        update = ARRAY of size maxLevel + 1
+        curr = header
+        FOR i FROM currentLevel DOWNTO 0:
+            WHILE curr.forward[i] != NULL AND curr.forward[i].key < key:
+                curr = curr.forward[i]
+            END WHILE
+            update[i] = curr
+        END FOR
+        newLevel = randomLevel()
+        IF newLevel > currentLevel THEN
+            FOR i FROM currentLevel + 1 TO newLevel:
+                update[i] = header
+            END FOR
+            currentLevel = newLevel
+        END IF
+        newNode = NEW Node(key, newLevel)
+        FOR i FROM 0 TO newLevel:
+            newNode.forward[i] = update[i].forward[i]
+            update[i].forward[i] = newNode
+        END FOR
+    END FUNCTION
 
-    bool search(int key) {
-        Node* curr = header;
-        for (int i = currentLevel; i >= 0; --i) {
-            while (curr->forward[i] && curr->forward[i]->key < key)
-                curr = curr->forward[i];
-        }
-        curr = curr->forward[0];
-        return curr && curr->key == key;
-    }
-};
+    FUNCTION search(key):
+        curr = header
+        FOR i FROM currentLevel DOWNTO 0:
+            WHILE curr.forward[i] != NULL AND curr.forward[i].key < key:
+                curr = curr.forward[i]
+            END WHILE
+        END FOR
+        curr = curr.forward[0]
+        RETURN curr != NULL AND curr.key == key
+    END FUNCTION
+END CLASS
 
-int main() {
-    const int N = 100000;
-    std::vector<int> data(N);
-    for (int i = 0; i < N; ++i) data[i] = rand();
+// 性能对比流程:
+N = 100000
+data = ARRAY of N random integers
+sl = BenchmarkSkipList()
 
-    auto start = std::chrono::high_resolution_clock::now();
-    BenchmarkSkipList sl;
-    for (int x : data) sl.insert(x);
-    auto end = std::chrono::high_resolution_clock::now();
-    auto skipTime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+START_TIMER()
+FOR EACH x IN data: sl.insert(x)
+skipInsertTime = STOP_TIMER()
 
-    start = std::chrono::high_resolution_clock::now();
-    std::set<int> rbTree;
-    for (int x : data) rbTree.insert(x);
-    end = std::chrono::high_resolution_clock::now();
-    auto treeTime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+rbTree = BALANCED_TREE()
+START_TIMER()
+FOR EACH x IN data: rbTree.insert(x)
+treeInsertTime = STOP_TIMER()
 
-    std::cout << "插入" << N << "个元素:" << std::endl;
-    std::cout << "  跳表耗时: " << skipTime << "ms" << std::endl;
-    std::cout << "  红黑树(std::set)耗时: " << treeTime << "ms" << std::endl;
-
-    start = std::chrono::high_resolution_clock::now();
-    for (int x : data) sl.search(x);
-    end = std::chrono::high_resolution_clock::now();
-    skipTime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-
-    start = std::chrono::high_resolution_clock::now();
-    for (int x : data) rbTree.count(x);
-    end = std::chrono::high_resolution_clock::now();
-    treeTime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-
-    std::cout << "查找" << N << "个元素:" << std::endl;
-    std::cout << "  跳表耗时: " << skipTime << "ms" << std::endl;
-    std::cout << "  红黑树(std::set)耗时: " << treeTime << "ms" << std::endl;
-
-    return 0;
-}
+DISPLAY "插入", N, "个元素:"
+DISPLAY "  跳表耗时:", skipInsertTime, "ms"
+DISPLAY "  平衡树耗时:", treeInsertTime, "ms"
 ```
 
-## ==========================================================================
-### 📖 第四节: 课后习题
-## ==========================================================================
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
+
+---
+###  第四节: 课后习题
+---
 
 1. 基础题：实现一个完整的跳表，支持插入、删除、查找、打印各层结构。
 
@@ -916,27 +798,27 @@ int main() {
 
 4. 挑战题：实现一个支持读写锁的并发跳表，保证多线程安全。
 
-## ==========================================================================
+---
 
 
-## --------------------------------------------------------------------------
-## 🔗 知识网络
-## --------------------------------------------------------------------------
+***
+##  知识网络
+***
 
 - **上一章**: [[M_树状数组_BIT]] | **下一章**: [[E_红黑树_RedBlackTree]] | **返回**: [[DSA学习路线]] (Phase 5 选修)
 - **算法技巧**: [[../算法技巧/二分查找]]
 - **相关**: [[数据结构/E_红黑树_RedBlackTree]] | [[Redis内部实现]] | [[并发数据结构]]
 
-## ==========================================================================
+---
 ## 章节测试
-## ==========================================================================
+---
 
 ### 判断题
 
 > [!question] 判断题 1
 > 跳表的查找时间复杂度在最坏情况下为O(n)。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -945,8 +827,8 @@ int main() {
 
 > [!question] 判断题 2
 > 跳表的期望空间复杂度为O(n log n)。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -955,8 +837,8 @@ int main() {
 
 > [!question] 判断题 3
 > Redis中的有序集合（Sorted Set）底层使用跳表实现。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -965,8 +847,8 @@ int main() {
 
 > [!question] 判断题 4
 > 跳表的插入操作不需要像AVL树那样进行旋转。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -975,8 +857,8 @@ int main() {
 
 > [!question] 判断题 5
 > 跳表中概率参数p越大，索引层数越多，查找速度越快。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -985,8 +867,8 @@ int main() {
 
 > [!question] 判断题 6
 > 跳表比平衡二叉搜索树更容易实现并发安全的版本。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -995,8 +877,8 @@ int main() {
 
 > [!question] 判断题 7
 > 跳表中每个节点的层数是在插入时随机决定的，之后不会改变。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1005,8 +887,8 @@ int main() {
 
 > [!question] 判断题 8
 > 跳表的最底层包含所有元素，且是有序的。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1015,8 +897,8 @@ int main() {
 
 > [!question] 判断题 9
 > 跳表支持高效的范围查询（range query）。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -1025,8 +907,8 @@ int main() {
 
 > [!question] 判断题 10
 > 跳表的删除操作时间复杂度为O(1)。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ]  正确
+> - [ ]  错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -1179,7 +1061,7 @@ int main() {
 > > 使用跳表按score排序存储成员。zrangeByScore先用O(log n)定位到第一个≥min的节点，再顺序遍历直到>max。zcount可以通过span计算或直接遍历计数。
 
 > [!question] 编程大题 3
-> **题目**: 对比跳表与std::set（红黑树）的性能。分别测试：
+> **题目**: 对比跳表与红黑树的性能。分别测试：
 > 1. 插入10^6个随机整数的时间
 > 2. 查找10^6次的时间
 > 3. 删除10^5个元素的时间
@@ -1187,4 +1069,4 @@ int main() {
 > 输出三项操作各自的耗时对比。
 >
 > > [!success]- 点击查看提示
-> > 使用std::chrono进行计时。跳表手动实现，std::set使用标准库。注意使用相同的测试数据集以保证公平性。预期结果：两者性能接近，跳表可能在缓存局部性上稍差但在插入上略快。
+> > 使用计时函数进行计时。跳表手动实现，红黑树使用对应语言的平衡树。注意使用相同的测试数据集以保证公平性。预期结果：两者性能接近，跳表可能在缓存局部性上稍差但在插入上略快。

@@ -1,5 +1,5 @@
 ## ==========================================================================
-C++ 数据结构教程 — 图 (Graph)
+数据结构教程 — 图 (Graph)
 ## ==========================================================================
 
 ## 📋 章节概述
@@ -61,48 +61,45 @@ graph LR
 优点：判断两顶点间是否有边O(1)
 缺点：空间O(V^2)，稀疏图浪费空间
 
-```cpp
-#include <iostream>
-#include <vector>
-
-class AdjacencyMatrixGraph {
-private:
+```pseudocode
+CLASS AdjacencyMatrixGraph {
+PRIVATE:
     int vertices;
-    std::vector<std::vector<int>> matrix;  // 0=无边, 1=有边
+    vector<vector<int>> matrix;  // 0=无边, 1=有边
 
-public:
-    AdjacencyMatrixGraph(int v) : vertices(v), matrix(v, std::vector<int>(v, 0)) {}
+PUBLIC:
+    AdjacencyMatrixGraph(int v) : vertices(v), matrix(v, vector<int>(v, 0)) {}
 
-    void addEdge(int u, int v, bool directed = false) {
+    FUNCTION addEdge(int u, int v, bool directed = FALSE) {
         matrix[u][v] = 1;
         if (!directed) matrix[v][u] = 1;
     }
 
-    void removeEdge(int u, int v) {
+    FUNCTION removeEdge(int u, int v) {
         matrix[u][v] = 0;
         matrix[v][u] = 0;
     }
 
-    bool hasEdge(int u, int v) const {
+    FUNCTION hasEdge(int u, int v) {
         return matrix[u][v] != 0;
     }
 
-    void print() const {
-        std::cout << "   ";
-        for (int i = 0; i < vertices; ++i) std::cout << i << " ";
-        std::cout << std::endl;
+    FUNCTION print() {
+        PRINT "   ";
+        for (int i = 0; i < vertices; ++i) PRINT i + " ";
+        PRINT endl;
 
         for (int i = 0; i < vertices; ++i) {
-            std::cout << i << ": ";
+            PRINT i + ": ";
             for (int j = 0; j < vertices; ++j) {
-                std::cout << matrix[i][j] << " ";
+                PRINT matrix[i][j] + " ";
             }
-            std::cout << std::endl;
+            PRINT endl;
         }
     }
 };
 
-int main() {
+FUNCTION main() {
     AdjacencyMatrixGraph g(4);
     g.addEdge(0, 1);
     g.addEdge(0, 2);
@@ -111,12 +108,17 @@ int main() {
 
     g.print();
 
-    std::cout << "0-2有边? " << g.hasEdge(0, 2) << std::endl;
-    std::cout << "0-3有边? " << g.hasEdge(0, 3) << std::endl;
+    PRINT "0-2有边? " + g.hasEdge(0, 2) + NEWLINE;
+    PRINT "0-3有边? " + g.hasEdge(0, 3) + NEWLINE;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 (2) 邻接表（Adjacency List）
 每个顶点维护一个链表/vector，存储与其相邻的顶点。
@@ -124,52 +126,48 @@ int main() {
 优点：空间O(V+E)，适合稀疏图
 缺点：判断两顶点间是否有边需要O(degree)
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <list>
-
-class AdjacencyListGraph {
-private:
+```pseudocode
+CLASS AdjacencyListGraph {
+PRIVATE:
     int vertices;
-    std::vector<std::list<int>> adj_list;
+    vector<list<int>> adj_list;
 
-public:
+PUBLIC:
     AdjacencyListGraph(int v) : vertices(v), adj_list(v) {}
 
-    void addEdge(int u, int v, bool directed = false) {
+    FUNCTION addEdge(int u, int v, bool directed = FALSE) {
         adj_list[u].push_back(v);
         if (!directed) adj_list[v].push_back(u);
     }
 
-    void removeEdge(int u, int v) {
+    FUNCTION removeEdge(int u, int v) {
         adj_list[u].remove(v);
         adj_list[v].remove(u);
     }
 
-    bool hasEdge(int u, int v) const {
+    FUNCTION hasEdge(int u, int v) {
         for (int w : adj_list[u]) {
-            if (w == v) return true;
+            if (w == v) return TRUE;
         }
-        return false;
+        return FALSE;
     }
 
-    std::list<int> getNeighbors(int v) const {
+    list<int> getNeighbors(int v) {
         return adj_list[v];
     }
 
-    void print() const {
+    FUNCTION print() {
         for (int i = 0; i < vertices; ++i) {
-            std::cout << i << ": ";
+            PRINT i + ": ";
             for (int neighbor : adj_list[i]) {
-                std::cout << neighbor << " ";
+                PRINT neighbor + " ";
             }
-            std::cout << std::endl;
+            PRINT endl;
         }
     }
 };
 
-int main() {
+FUNCTION main() {
     AdjacencyListGraph g(5);
     g.addEdge(0, 1);
     g.addEdge(0, 4);
@@ -179,16 +177,21 @@ int main() {
     g.addEdge(2, 3);
     g.addEdge(3, 4);
 
-    std::cout << "邻接表:" << std::endl;
+    PRINT "邻接表:" + NEWLINE;
     g.print();
 
-    std::cout << "\n顶点1的邻居: ";
-    for (int v : g.getNeighbors(1)) std::cout << v << " ";
-    std::cout << std::endl;
+    PRINT "\n顶点1的邻居: ";
+    for (int v : g.getNeighbors(1)) PRINT v + " ";
+    PRINT endl;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 1.3 图的遍历：广度优先搜索（BFS）
 ---------------------------------------
@@ -208,56 +211,51 @@ graph TD
     end
 ```
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <list>
-#include <queue>
-
-class Graph {
-private:
+```pseudocode
+CLASS Graph {
+PRIVATE:
     int vertices;
-    std::vector<std::list<int>> adj_list;
+    vector<list<int>> adj_list;
 
-public:
+PUBLIC:
     Graph(int v) : vertices(v), adj_list(v) {}
 
-    void addEdge(int u, int v, bool directed = false) {
+    FUNCTION addEdge(int u, int v, bool directed = FALSE) {
         adj_list[u].push_back(v);
         if (!directed) adj_list[v].push_back(u);
     }
 
     // BFS遍历
-    void bfs(int start) const {
-        std::vector<bool> visited(vertices, false);
-        std::queue<int> q;
+    FUNCTION bfs(int start) {
+        vector<bool> visited(vertices, FALSE);
+        queue<int> q;
 
-        visited[start] = true;
+        visited[start] = TRUE;
         q.push(start);
 
-        std::cout << "BFS从" << start << "开始: ";
+        PRINT "BFS从" + start + "开始: ";
         while (!q.empty()) {
             int current = q.front();
             q.pop();
-            std::cout << current << " ";
+            PRINT current + " ";
 
             for (int neighbor : adj_list[current]) {
                 if (!visited[neighbor]) {
-                    visited[neighbor] = true;
+                    visited[neighbor] = TRUE;
                     q.push(neighbor);
                 }
             }
         }
-        std::cout << std::endl;
+        PRINT endl;
     }
 
     // BFS求最短路径（无权图）
-    std::vector<int> shortestPath(int start, int end) const {
-        std::vector<bool> visited(vertices, false);
-        std::vector<int> parent(vertices, -1);
-        std::queue<int> q;
+    vector<int> shortestPath(int start, int end) {
+        vector<bool> visited(vertices, FALSE);
+        vector<int> parent(vertices, -1);
+        queue<int> q;
 
-        visited[start] = true;
+        visited[start] = TRUE;
         q.push(start);
 
         while (!q.empty()) {
@@ -268,7 +266,7 @@ public:
 
             for (int neighbor : adj_list[current]) {
                 if (!visited[neighbor]) {
-                    visited[neighbor] = true;
+                    visited[neighbor] = TRUE;
                     parent[neighbor] = current;
                     q.push(neighbor);
                 }
@@ -276,18 +274,18 @@ public:
         }
 
         // 重构路径
-        std::vector<int> path;
+        vector<int> path;
         if (!visited[end]) return path;  // 无法到达
 
         for (int v = end; v != -1; v = parent[v]) {
             path.push_back(v);
         }
-        std::reverse(path.begin(), path.end());
+        REVERSE(path.begin(), path.end());
         return path;
     }
 };
 
-int main() {
+FUNCTION main() {
     Graph g(6);
     g.addEdge(0, 1);
     g.addEdge(0, 2);
@@ -300,34 +298,34 @@ int main() {
 
     g.bfs(0);
 
-    auto path = g.shortestPath(0, 5);
-    std::cout << "0->5的最短路径: ";
-    for (int v : path) std::cout << v << " ";
-    std::cout << std::endl;
+    path = g.shortestPath(0, 5);
+    PRINT "0->5的最短路径: ";
+    for (int v : path) PRINT v + " ";
+    PRINT endl;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 1.4 图的遍历：深度优先搜索（DFS）
 ---------------------------------------
 
 DFS使用栈（递归或显式栈），沿一条路径走到尽头再回溯。
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <list>
-#include <stack>
-
-class GraphDFS {
-private:
+```pseudocode
+CLASS GraphDFS {
+PRIVATE:
     int vertices;
-    std::vector<std::list<int>> adj_list;
+    vector<list<int>> adj_list;
 
-    void dfsRecursive(int v, std::vector<bool>& visited) const {
-        visited[v] = true;
-        std::cout << v << " ";
+    FUNCTION dfsRecursive(int v, vector<bool> visited) {
+        visited[v] = TRUE;
+        PRINT v + " ";
 
         for (int neighbor : adj_list[v]) {
             if (!visited[neighbor]) {
@@ -336,134 +334,133 @@ private:
         }
     }
 
-public:
+PUBLIC:
     GraphDFS(int v) : vertices(v), adj_list(v) {}
 
-    void addEdge(int u, int v, bool directed = false) {
+    FUNCTION addEdge(int u, int v, bool directed = FALSE) {
         adj_list[u].push_back(v);
         if (!directed) adj_list[v].push_back(u);
     }
 
     // 递归DFS
-    void dfsRecursive(int start) const {
-        std::vector<bool> visited(vertices, false);
-        std::cout << "DFS(递归)从" << start << "开始: ";
+    FUNCTION dfsRecursive(int start) {
+        vector<bool> visited(vertices, FALSE);
+        PRINT "DFS(递归)从" + start + "开始: ";
         dfsRecursive(start, visited);
-        std::cout << std::endl;
+        PRINT endl;
     }
 
     // 迭代DFS（使用栈）
-    void dfsIterative(int start) const {
-        std::vector<bool> visited(vertices, false);
-        std::stack<int> stk;
+    FUNCTION dfsIterative(int start) {
+        vector<bool> visited(vertices, FALSE);
+        stack<int> stk;
 
         stk.push(start);
 
-        std::cout << "DFS(迭代)从" << start << "开始: ";
+        PRINT "DFS(迭代)从" + start + "开始: ";
         while (!stk.empty()) {
             int v = stk.top();
             stk.pop();
 
             if (visited[v]) continue;
-            visited[v] = true;
-            std::cout << v << " ";
+            visited[v] = TRUE;
+            PRINT v + " ";
 
             // 逆序入栈以保持与递归相同的遍历顺序
-            for (auto it = adj_list[v].rbegin(); it != adj_list[v].rend(); ++it) {
+            for (it = adj_list[v].rbegin(); it != adj_list[v].rend(); ++it) {
                 if (!visited[*it]) {
                     stk.push(*it);
                 }
             }
         }
-        std::cout << std::endl;
+        PRINT endl;
     }
 
     // 判断是否有环（有向图）
-    bool hasCycle() const {
-        std::vector<bool> visited(vertices, false);
-        std::vector<bool> on_path(vertices, false);
+    FUNCTION hasCycle() {
+        vector<bool> visited(vertices, FALSE);
+        vector<bool> on_path(vertices, FALSE);
 
         for (int i = 0; i < vertices; ++i) {
             if (!visited[i]) {
-                if (dfsCycleDetect(i, visited, on_path)) return true;
+                if (dfsCycleDetect(i, visited, on_path)) return TRUE;
             }
         }
-        return false;
+        return FALSE;
     }
 
-private:
-    bool dfsCycleDetect(int v, std::vector<bool>& visited,
-                        std::vector<bool>& on_path) const {
-        visited[v] = true;
-        on_path[v] = true;
+PRIVATE:
+    FUNCTION dfsCycleDetect(int v, vector<bool> visited,
+                        vector<bool> on_path) {
+        visited[v] = TRUE;
+        on_path[v] = TRUE;
 
         for (int neighbor : adj_list[v]) {
             if (!visited[neighbor]) {
-                if (dfsCycleDetect(neighbor, visited, on_path)) return true;
+                if (dfsCycleDetect(neighbor, visited, on_path)) return TRUE;
             } else if (on_path[neighbor]) {
-                return true;  // 发现环
+                return TRUE;  // 发现环
             }
         }
 
-        on_path[v] = false;
-        return false;
+        on_path[v] = FALSE;
+        return FALSE;
     }
 };
 
-int main() {
+FUNCTION main() {
     GraphDFS g(5);
-    g.addEdge(0, 1, true);
-    g.addEdge(1, 2, true);
-    g.addEdge(2, 0, true);   // 形成环 0->1->2->0
-    g.addEdge(1, 3, true);
-    g.addEdge(3, 4, true);
+    g.addEdge(0, 1, TRUE);
+    g.addEdge(1, 2, TRUE);
+    g.addEdge(2, 0, TRUE);   // 形成环 0->1->2->0
+    g.addEdge(1, 3, TRUE);
+    g.addEdge(3, 4, TRUE);
 
     g.dfsRecursive(0);
     g.dfsIterative(0);
 
-    std::cout << "有环? " << g.hasCycle() << std::endl;
+    PRINT "有环? " + g.hasCycle() + NEWLINE;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 
 ## ==========================================================================
-### 📖 第二节: 所有用法大全
+### 📖 第二节: 实现思路
 ## ==========================================================================
 
 2.1 加权图与最短路径（Dijkstra算法）
 -----------------------------------------
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <limits>
-#include <list>
-
-class WeightedGraph {
-private:
+```pseudocode
+CLASS WeightedGraph {
+PRIVATE:
     int vertices;
-    std::vector<std::list<std::pair<int, int>>> adj_list;  // {neighbor, weight}
+    vector<list<pair<int, int>>> adj_list;  // {neighbor, weight}
 
-public:
+PUBLIC:
     WeightedGraph(int v) : vertices(v), adj_list(v) {}
 
-    void addEdge(int u, int v, int weight, bool directed = false) {
+    FUNCTION addEdge(int u, int v, int weight, bool directed = FALSE) {
         adj_list[u].push_back({v, weight});
         if (!directed) adj_list[v].push_back({u, weight});
     }
 
     // Dijkstra最短路径算法
-    std::vector<int> dijkstra(int start) const {
-        std::vector<int> dist(vertices, std::numeric_limits<int>::max());
-        std::vector<bool> visited(vertices, false);
+    vector<int> dijkstra(int start) {
+        vector<int> dist(vertices, numeric_limits<int>::MAX());
+        vector<bool> visited(vertices, FALSE);
 
         // 最小堆：{距离, 顶点}
-        std::priority_queue<std::pair<int, int>,
-                            std::vector<std::pair<int, int>>,
-                            std::greater<std::pair<int, int>>> pq;
+        priority_queue<pair<int, int>,
+                            vector<pair<int, int>>,
+                            greater<pair<int, int>>> pq;
 
         dist[start] = 0;
         pq.push({0, start});
@@ -473,9 +470,9 @@ public:
             pq.pop();
 
             if (visited[u]) continue;
-            visited[u] = true;
+            visited[u] = TRUE;
 
-            for (const auto& [v, w] : adj_list[u]) {
+            for ( [v, w] : adj_list[u]) {
                 if (!visited[v] && dist[u] + w < dist[v]) {
                     dist[v] = dist[u] + w;
                     pq.push({dist[v], v});
@@ -487,15 +484,15 @@ public:
     }
 
     // Bellman-Ford算法（处理负权边）
-    std::vector<int> bellmanFord(int start) const {
-        std::vector<int> dist(vertices, std::numeric_limits<int>::max());
+    vector<int> bellmanFord(int start) {
+        vector<int> dist(vertices, numeric_limits<int>::MAX());
         dist[start] = 0;
 
         // 松弛V-1次
         for (int i = 0; i < vertices - 1; ++i) {
             for (int u = 0; u < vertices; ++u) {
-                for (const auto& [v, w] : adj_list[u]) {
-                    if (dist[u] != std::numeric_limits<int>::max() &&
+                for ( [v, w] : adj_list[u]) {
+                    if (dist[u] != numeric_limits<int>::MAX() &&
                         dist[u] + w < dist[v]) {
                         dist[v] = dist[u] + w;
                     }
@@ -505,10 +502,10 @@ public:
 
         // 检查负权环
         for (int u = 0; u < vertices; ++u) {
-            for (const auto& [v, w] : adj_list[u]) {
-                if (dist[u] != std::numeric_limits<int>::max() &&
+            for ( [v, w] : adj_list[u]) {
+                if (dist[u] != numeric_limits<int>::MAX() &&
                     dist[u] + w < dist[v]) {
-                    std::cout << "图中存在负权环！" << std::endl;
+                    PRINT "图中存在负权环！" + NEWLINE;
                     return {};
                 }
             }
@@ -518,7 +515,7 @@ public:
     }
 };
 
-int main() {
+FUNCTION main() {
     WeightedGraph g(6);
     g.addEdge(0, 1, 4);
     g.addEdge(0, 2, 2);
@@ -530,18 +527,23 @@ int main() {
     g.addEdge(3, 5, 6);
     g.addEdge(4, 5, 3);
 
-    auto dist = g.dijkstra(0);
+    dist = g.dijkstra(0);
 
-    std::cout << "从0到各点的最短距离:" << std::endl;
+    PRINT "从0到各点的最短距离:" + NEWLINE;
     for (int i = 0; i < dist.size(); ++i) {
-        std::cout << "  0 -> " << i << ": "
-                  << (dist[i] == std::numeric_limits<int>::max() ? "INF" :
-                      std::to_string(dist[i])) << std::endl;
+        PRINT "  0 -> " + i + ": "
+                  << (dist[i] == numeric_limits<int>::MAX() ? "INF" :
+                      to_string(dist[i])) + NEWLINE;
     }
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 Dijkstra 算法逐步推演（以图中 0 到各点的最短路径为例）：
 
@@ -573,55 +575,49 @@ graph TD
 2.2 最小生成树（Prim算法 & Kruskal算法）
 ---------------------------------------------
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <list>
-#include <queue>
-#include <algorithm>
-
-class MST {
-private:
+```pseudocode
+CLASS MST {
+PRIVATE:
     // 并查集（Union-Find）
-    struct UnionFind {
-        std::vector<int> parent, rank;
+    STRUCT UnionFind {
+        vector<int> parent, rank;
         UnionFind(int n) : parent(n), rank(n, 0) {
             for (int i = 0; i < n; ++i) parent[i] = i;
         }
 
-        int find(int x) {
+        FUNCTION find(int x) {
             if (parent[x] != x)
                 parent[x] = find(parent[x]);
             return parent[x];
         }
 
-        bool unite(int x, int y) {
+        FUNCTION unite(int x, int y) {
             int px = find(x), py = find(y);
-            if (px == py) return false;
-            if (rank[px] < rank[py]) std::swap(px, py);
+            if (px == py) return FALSE;
+            if (rank[px] < rank[py]) SWAP(px, py);
             parent[py] = px;
             if (rank[px] == rank[py]) ++rank[px];
-            return true;
+            return TRUE;
         }
     };
 
-public:
+PUBLIC:
     // Kruskal算法
-    static std::vector<std::tuple<int, int, int>>
-    kruskalMST(int vertices, std::vector<std::tuple<int, int, int>>& edges) {
+    static vector<tuple<int, int, int>>
+    kruskalMST(int vertices, vector<tuple<int, int, int>> edges) {
         // 按权重排序
-        std::sort(edges.begin(), edges.end(),
-                  [](const auto& a, const auto& b) {
-                      return std::get<2>(a) < std::get<2>(b);
+        SORT(edges.begin(), edges.end(),
+                  []( a,  b) {
+                      return get<2>(a) < get<2>(b);
                   });
 
         UnionFind uf(vertices);
-        std::vector<std::tuple<int, int, int>> mst;
+        vector<tuple<int, int, int>> mst;
 
-        for (const auto& [u, v, w] : edges) {
+        for ( [u, v, w] : edges) {
             if (uf.unite(u, v)) {
                 mst.push_back({u, v, w});
-                if (mst.size() == (size_t)vertices - 1) break;
+                if (mst.size() == vertices - 1) break;
             }
         }
 
@@ -629,17 +625,17 @@ public:
     }
 
     // Prim算法
-    static std::vector<std::pair<int, int>>
-    primMST(const std::vector<std::list<std::pair<int, int>>>& adj_list) {
+    static vector<pair<int, int>>
+    primMST(vector<list<pair<int, int>>> adj_list) {
         int vertices = adj_list.size();
-        std::vector<bool> in_mst(vertices, false);
-        std::vector<int> key(vertices, std::numeric_limits<int>::max());
-        std::vector<int> parent(vertices, -1);
+        vector<bool> in_mst(vertices, FALSE);
+        vector<int> key(vertices, numeric_limits<int>::MAX());
+        vector<int> parent(vertices, -1);
 
         // 最小堆：{权重, 顶点}
-        std::priority_queue<std::pair<int, int>,
-                            std::vector<std::pair<int, int>>,
-                            std::greater<std::pair<int, int>>> pq;
+        priority_queue<pair<int, int>,
+                            vector<pair<int, int>>,
+                            greater<pair<int, int>>> pq;
 
         key[0] = 0;
         pq.push({0, 0});
@@ -649,9 +645,9 @@ public:
             pq.pop();
 
             if (in_mst[u]) continue;
-            in_mst[u] = true;
+            in_mst[u] = TRUE;
 
-            for (const auto& [v, w] : adj_list[u]) {
+            for ( [v, w] : adj_list[u]) {
                 if (!in_mst[v] && w < key[v]) {
                     key[v] = w;
                     parent[v] = u;
@@ -661,7 +657,7 @@ public:
         }
 
         // 构建MST边列表
-        std::vector<std::pair<int, int>> mst;
+        vector<pair<int, int>> mst;
         for (int i = 1; i < vertices; ++i) {
             if (parent[i] != -1) {
                 mst.push_back({parent[i], i});
@@ -671,53 +667,53 @@ public:
     }
 };
 
-int main() {
+FUNCTION main() {
     int V = 5;
 
     // 边: (u, v, w)
-    std::vector<std::tuple<int, int, int>> edges = {
+    vector<tuple<int, int, int>> edges = {
         {0, 1, 2}, {0, 3, 6}, {1, 2, 3},
         {1, 3, 8}, {1, 4, 5}, {2, 4, 7}, {3, 4, 9}
     };
 
-    auto mst = MST::kruskalMST(V, edges);
+    mst = MST::kruskalMST(V, edges);
     int total_weight = 0;
 
-    std::cout << "Kruskal最小生成树:" << std::endl;
-    for (const auto& [u, v, w] : mst) {
-        std::cout << "  " << u << " - " << v << "  权重: " << w << std::endl;
+    PRINT "Kruskal最小生成树:" + NEWLINE;
+    for ( [u, v, w] : mst) {
+        PRINT "  " + u + " - " + v + "  权重: " + w + NEWLINE;
         total_weight += w;
     }
-    std::cout << "总权重: " << total_weight << std::endl;
+    PRINT "总权重: " + total_weight + NEWLINE;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 2.3 拓扑排序（Topological Sort）
 -------------------------------------
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <list>
-#include <queue>
-
-class TopologicalSort {
-private:
+```pseudocode
+CLASS TopologicalSort {
+PRIVATE:
     int vertices;
-    std::vector<std::list<int>> adj_list;
+    vector<list<int>> adj_list;
 
-public:
+PUBLIC:
     TopologicalSort(int v) : vertices(v), adj_list(v) {}
 
-    void addEdge(int u, int v) {
+    FUNCTION addEdge(int u, int v) {
         adj_list[u].push_back(v);
     }
 
     // Kahn算法（基于入度）
-    std::vector<int> topologicalSort() {
-        std::vector<int> in_degree(vertices, 0);
+    vector<int> topologicalSort() {
+        vector<int> in_degree(vertices, 0);
 
         for (int u = 0; u < vertices; ++u) {
             for (int v : adj_list[u]) {
@@ -725,12 +721,12 @@ public:
             }
         }
 
-        std::queue<int> q;
+        queue<int> q;
         for (int i = 0; i < vertices; ++i) {
             if (in_degree[i] == 0) q.push(i);
         }
 
-        std::vector<int> result;
+        vector<int> result;
         while (!q.empty()) {
             int u = q.front();
             q.pop();
@@ -743,8 +739,8 @@ public:
             }
         }
 
-        if (result.size() != (size_t)vertices) {
-            std::cout << "图中存在环，无法拓扑排序！" << std::endl;
+        if (result.size() != vertices) {
+            PRINT "图中存在环，无法拓扑排序！" + NEWLINE;
             return {};
         }
 
@@ -752,7 +748,7 @@ public:
     }
 };
 
-int main() {
+FUNCTION main() {
     // 课程依赖图
     TopologicalSort ts(6);
     ts.addEdge(0, 2);  // C++基础 -> 数据结构
@@ -763,43 +759,40 @@ int main() {
     ts.addEdge(3, 5);  // 算法 -> 图形学
     ts.addEdge(4, 5);  // 数据库 -> 图形学
 
-    auto order = ts.topologicalSort();
+    order = ts.topologicalSort();
 
-    std::cout << "学习顺序: ";
+    PRINT "学习顺序: ";
     for (int course : order) {
-        std::cout << "C" << course << " ";
+        PRINT "C" + course + " ";
     }
-    std::cout << std::endl;
+    PRINT endl;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 
 ## ==========================================================================
-### 📖 第三节: 实用案例
+### 📖 第三节: 应用场景
 ## ==========================================================================
 
 案例一：社交网络的影响力分析
 ------------------------------------
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <list>
-#include <queue>
-#include <unordered_map>
-#include <string>
-#include <algorithm>
+```pseudocode
+CLASS SocialNetwork {
+PRIVATE:
+    unordered_map<string, int> name_to_id;
+    vector<string> id_to_name;
+    vector<list<int>> friends;
 
-class SocialNetwork {
-private:
-    std::unordered_map<std::string, int> name_to_id;
-    std::vector<std::string> id_to_name;
-    std::vector<std::list<int>> friends;
-
-    int getOrCreateId(const std::string& name) {
-        auto it = name_to_id.find(name);
+    FUNCTION getOrCreateId(string name) {
+        it = name_to_id.find(name);
         if (it != name_to_id.end()) return it->second;
         int id = id_to_name.size();
         name_to_id[name] = id;
@@ -808,8 +801,8 @@ private:
         return id;
     }
 
-public:
-    void addFriendship(const std::string& a, const std::string& b) {
+PUBLIC:
+    FUNCTION addFriendship(string a, string b) {
         int id_a = getOrCreateId(a);
         int id_b = getOrCreateId(b);
         friends[id_a].push_back(id_b);
@@ -817,9 +810,9 @@ public:
     }
 
     // 计算影响力（影响力 = 粉丝数 + 粉丝的粉丝数 * 0.5）
-    std::vector<std::pair<std::string, double>> getInfluenceRank() {
+    vector<pair<string, double>> getInfluenceRank() {
         int n = id_to_name.size();
-        std::vector<double> influence(n, 0);
+        vector<double> influence(n, 0);
 
         for (int i = 0; i < n; ++i) {
             influence[i] = friends[i].size();  // 直接粉丝
@@ -830,13 +823,13 @@ public:
             }
         }
 
-        std::vector<std::pair<std::string, double>> result;
+        vector<pair<string, double>> result;
         for (int i = 0; i < n; ++i) {
             result.push_back({id_to_name[i], influence[i]});
         }
 
-        std::sort(result.begin(), result.end(),
-                  [](const auto& a, const auto& b) {
+        SORT(result.begin(), result.end(),
+                  []( a,  b) {
                       return a.second > b.second;
                   });
 
@@ -844,8 +837,8 @@ public:
     }
 
     // 寻找最短联系路径（六度分隔理论）
-    std::vector<std::string> findConnectionPath(const std::string& from,
-                                                 const std::string& to) {
+    vector<string> findConnectionPath(string from,
+                                                 string to) {
         if (name_to_id.find(from) == name_to_id.end() ||
             name_to_id.find(to) == name_to_id.end()) {
             return {};
@@ -855,11 +848,11 @@ public:
         int end = name_to_id[to];
         int n = id_to_name.size();
 
-        std::vector<bool> visited(n, false);
-        std::vector<int> parent(n, -1);
-        std::queue<int> q;
+        vector<bool> visited(n, FALSE);
+        vector<int> parent(n, -1);
+        queue<int> q;
 
-        visited[start] = true;
+        visited[start] = TRUE;
         q.push(start);
 
         while (!q.empty()) {
@@ -870,7 +863,7 @@ public:
 
             for (int neighbor : friends[cur]) {
                 if (!visited[neighbor]) {
-                    visited[neighbor] = true;
+                    visited[neighbor] = TRUE;
                     parent[neighbor] = cur;
                     q.push(neighbor);
                 }
@@ -879,16 +872,16 @@ public:
 
         if (!visited[end]) return {};
 
-        std::vector<std::string> path;
+        vector<string> path;
         for (int v = end; v != -1; v = parent[v]) {
             path.push_back(id_to_name[v]);
         }
-        std::reverse(path.begin(), path.end());
+        REVERSE(path.begin(), path.end());
         return path;
     }
 };
 
-int main() {
+FUNCTION main() {
     SocialNetwork sn;
 
     sn.addFriendship("Alice", "Bob");
@@ -899,47 +892,44 @@ int main() {
     sn.addFriendship("Eve", "Frank");
     sn.addFriendship("Bob", "Grace");
 
-    std::cout << "影响力排名:" << std::endl;
-    for (const auto& [name, score] : sn.getInfluenceRank()) {
-        std::cout << "  " << name << ": " << score << std::endl;
+    PRINT "影响力排名:" + NEWLINE;
+    for ( [name, score] : sn.getInfluenceRank()) {
+        PRINT "  " + name + ": " + score + NEWLINE;
     }
 
-    std::cout << "\nAlice到Frank的联系路径: ";
-    for (const auto& name : sn.findConnectionPath("Alice", "Frank")) {
-        std::cout << name << " -> ";
+    PRINT "\nAlice到Frank的联系路径: ";
+    for ( name : sn.findConnectionPath("Alice", "Frank")) {
+        PRINT name + " -> ";
     }
-    std::cout << "End" << std::endl;
+    PRINT "End" + NEWLINE;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 
 案例二：地图导航系统
 ---------------------------
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <list>
-#include <queue>
-#include <limits>
-#include <string>
-#include <unordered_map>
-
-class MapNavigator {
-private:
-    struct Location {
-        std::string name;
+```pseudocode
+CLASS MapNavigator {
+PRIVATE:
+    STRUCT Location {
+        string name;
         double lat, lon;
     };
 
-    std::vector<Location> locations;
-    std::vector<std::list<std::pair<int, double>>> roads;  // {neighbor, distance(km)}
-    std::unordered_map<std::string, int> name_to_id;
+    vector<Location> locations;
+    vector<list<pair<int, double>>> roads;  // {neighbor, distance(km)}
+    unordered_map<string, int> name_to_id;
 
-public:
-    int addLocation(const std::string& name, double lat, double lon) {
+PUBLIC:
+    FUNCTION addLocation(string name, double lat, double lon) {
         int id = locations.size();
         name_to_id[name] = id;
         locations.push_back({name, lat, lon});
@@ -947,26 +937,26 @@ public:
         return id;
     }
 
-    void addRoad(const std::string& a, const std::string& b, double distance) {
+    FUNCTION addRoad(string a, string b, double distance) {
         int id_a = name_to_id[a];
         int id_b = name_to_id[b];
         roads[id_a].push_back({id_b, distance});
         roads[id_b].push_back({id_a, distance});
     }
 
-    std::pair<std::vector<std::string>, double>
-    findShortestPath(const std::string& from, const std::string& to) {
+    pair<vector<string>, double>
+    findShortestPath(string from, string to) {
         int start = name_to_id[from];
         int end = name_to_id[to];
         int n = locations.size();
 
-        std::vector<double> dist(n, std::numeric_limits<double>::max());
-        std::vector<int> parent(n, -1);
-        std::vector<bool> visited(n, false);
+        vector<double> dist(n, numeric_limits<double>::MAX());
+        vector<int> parent(n, -1);
+        vector<bool> visited(n, FALSE);
 
-        std::priority_queue<std::pair<double, int>,
-                            std::vector<std::pair<double, int>>,
-                            std::greater<std::pair<double, int>>> pq;
+        priority_queue<pair<double, int>,
+                            vector<pair<double, int>>,
+                            greater<pair<double, int>>> pq;
 
         dist[start] = 0;
         pq.push({0, start});
@@ -976,11 +966,11 @@ public:
             pq.pop();
 
             if (visited[u]) continue;
-            visited[u] = true;
+            visited[u] = TRUE;
 
             if (u == end) break;
 
-            for (const auto& [v, w] : roads[u]) {
+            for ( [v, w] : roads[u]) {
                 if (!visited[v] && dist[u] + w < dist[v]) {
                     dist[v] = dist[u] + w;
                     parent[v] = u;
@@ -989,21 +979,21 @@ public:
             }
         }
 
-        std::vector<std::string> path;
-        if (dist[end] == std::numeric_limits<double>::max()) {
+        vector<string> path;
+        if (dist[end] == numeric_limits<double>::MAX()) {
             return {path, -1};
         }
 
         for (int v = end; v != -1; v = parent[v]) {
             path.push_back(locations[v].name);
         }
-        std::reverse(path.begin(), path.end());
+        REVERSE(path.begin(), path.end());
 
         return {path, dist[end]};
     }
 };
 
-int main() {
+FUNCTION main() {
     MapNavigator nav;
 
     nav.addLocation("北京", 39.9, 116.4);
@@ -1019,19 +1009,24 @@ int main() {
     nav.addRoad("南京", "上海", 300);
     nav.addRoad("天津", "上海", 1000);
 
-    auto [path, distance] = nav.findShortestPath("北京", "上海");
+    [path, distance] = nav.findShortestPath("北京", "上海");
 
-    std::cout << "北京到上海的最短路线: ";
+    PRINT "北京到上海的最短路线: ";
     for (size_t i = 0; i < path.size(); ++i) {
-        std::cout << path[i];
-        if (i < path.size() - 1) std::cout << " -> ";
+        PRINT path[i];
+        if (i < path.size() - 1) PRINT " -> ";
     }
-    std::cout << std::endl;
-    std::cout << "总距离: " << distance << "公里" << std::endl;
+    PRINT endl;
+    PRINT "总距离: " + distance + "公里" + NEWLINE;
 
     return 0;
 }
+
 ```
+
+---
+**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
+---
 
 
 ## ==========================================================================
