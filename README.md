@@ -70,7 +70,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/
+RootStack/                          ├ v0.1.0
 ├── README.md                    ← 你在这里
 │
 ├── 路径A-C主线.md               C 主线: 从零到内核
@@ -104,7 +104,9 @@ RootStack/
 │
 ├── 汇编基础/ (3篇)              x86/ARM 汇编教程
 │
-├── git.md                      Git 与 GitHub 终端操作指南
+├── git.md                       Git 与 GitHub 终端操作指南 (14节)
+├── github-settings.md           GitHub 网页端设置指南（新增）
+├── VERSION                      项目版本号: 0.1.0
 └── ISSUES.md                   问题讨论与贡献指南
 ```
 
