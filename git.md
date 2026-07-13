@@ -232,6 +232,37 @@ git push origin main
 - [ ] 如果修改代码，已经自己测试过
 - [ ] 分支名有意义（`fix/typo`, `feat/add-xxx`）
 
+### 跨仓库 PR（Fork → 原项目）
+
+最典型的场景：你 fork 了别人的仓库，在自己的 master 上改了代码，想向原仓库的 `clean-main` 分支提交 PR。
+
+```bash
+# 确保本地 master 与原仓库的 clean-main 同步
+git remote add upstream https://github.com/原作者/仓库名.git
+git fetch upstream
+git checkout master
+git merge upstream/clean-main
+
+# 推送你的改动到自己的 fork
+git push origin master
+
+# 用 gh 发起 PR（指定目标仓库、目标分支、来源分支）
+gh pr create \
+  --repo 原作者/仓库名 \
+  --base clean-main \
+  --head 你的用户名:master \
+  --title "PR 标题" \
+  --body "描述改动内容"
+```
+
+关键参数：
+
+| 参数 | 含义 | 示例 |
+|------|------|------|
+| `--repo` | PR 要提交到的目标仓库（原项目） | `--repo 原作者/仓库名` |
+| `--base` | 目标仓库的分支（你要合并到哪） | `--base clean-main` |
+| `--head` | 你的 fork 和分支（`你的用户名:分支名`） | `--head 你的用户名:master` |
+
 ---
 
 ## 8 作为仓库主人：审查与合并 PR
@@ -258,6 +289,12 @@ gh pr merge 42 --rebase                 # rebase 方式
 
 # 关闭 PR（不合并）
 gh pr close 42
+
+# 撤销已合并的 PR（git revert）
+# 如果合并后发现问题，用 revert 创建一个"反 commit"来撤销，而非 reset
+git revert -m 1 <merge-commit的hash>
+# -m 1 表示保留主分支，撤销合并进来的内容
+# 推荐用 revert 而非 reset，因为 revert 不改写历史，多人协作更安全
 
 # 在原仓库网页版也可以直接点 "Merge pull request"
 ```

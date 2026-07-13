@@ -11,14 +11,17 @@
             "id": "0cdf19aaafd6f559",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "canvas",
               "state": {
-                "file": "README.md",
-                "mode": "source",
-                "source": false
+                "file": "未命名.canvas",
+                "viewState": {
+                  "x": 0,
+                  "y": 0,
+                  "zoom": 0
+                }
               },
-              "icon": "lucide-file",
-              "title": "README"
+              "icon": "lucide-layout-dashboard",
+              "title": "未命名"
             }
           }
         ]
@@ -200,9 +203,10 @@
   },
   "active": "0cdf19aaafd6f559",
   "lastOpenFiles": [
+    "未命名.canvas",
+    "README.md",
     "ISSUES.md",
     "git.md",
-    "README.md",
     "总目录.md",
     "数据结构/DSA学习路线.md",
     "数据结构/D_链表_LinkedList.md",
@@ -225,7 +229,6 @@
     "内核/游戏引擎内核/音频引擎.md",
     "内核/游戏引擎内核/ECS架构.md",
     "内核/游戏引擎内核/物理引擎.md",
-    "内核/游戏引擎内核/渲染管线.md",
     "数据结构/sedlSv4Ox",
     "数据结构/sed04rqYY",
     "数据结构/sedIDgALR",
