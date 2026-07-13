@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Assembly-525252?style=flat-square&logo=assemblermips&logoColor=white" alt="Assembly"/>
   <img src="https://img.shields.io/badge/数据结构-339933?style=flat-square" alt="数据结构"/>
   <img src="https://img.shields.io/badge/算法-FF6F00?style=flat-square" alt="算法"/>
-  <img src="https://img.shields.io/badge/版本-0.1.0-blue?style=flat-square" alt="version"/>
+  <img src="https://img.shields.io/badge/版本-0.1.1-blue?style=flat-square" alt="version"/>
 </p>
 
 ---
