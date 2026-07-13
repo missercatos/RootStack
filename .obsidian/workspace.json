@@ -11,17 +11,10 @@
             "id": "0cdf19aaafd6f559",
             "type": "leaf",
             "state": {
-              "type": "canvas",
-              "state": {
-                "file": "未命名.canvas",
-                "viewState": {
-                  "x": 0,
-                  "y": 0,
-                  "zoom": 0
-                }
-              },
-              "icon": "lucide-layout-dashboard",
-              "title": "未命名"
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "关系图谱"
             }
           }
         ]
