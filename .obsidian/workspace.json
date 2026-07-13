@@ -201,6 +201,7 @@
   "active": "0cdf19aaafd6f559",
   "lastOpenFiles": [
     "ISSUES.md",
+    "git.md",
     "README.md",
     "总目录.md",
     "数据结构/DSA学习路线.md",
@@ -225,7 +226,6 @@
     "内核/游戏引擎内核/ECS架构.md",
     "内核/游戏引擎内核/物理引擎.md",
     "内核/游戏引擎内核/渲染管线.md",
-    "内核/游戏引擎内核/游戏循环.md",
     "数据结构/sedlSv4Ox",
     "数据结构/sed04rqYY",
     "数据结构/sedIDgALR",
