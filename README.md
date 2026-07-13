@@ -1,7 +1,7 @@
 
-# C 体系教程
+# RootStack
 
-> 一个 C 语言体系百科兼教科书的教程 —— 覆盖 C 语言、C++、数据结构与算法、系统内核、汇编。
+> 从 C 出发的类百科式技术栈指导库 —— 覆盖 C 语言、C++、数据结构与算法、Linux 系统、系统内核、汇编、Rust，构成完整底层知识体系。
 
 ## 关于本教程
 
@@ -48,7 +48,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-c体系教程/
+RootStack/
 ├── README.md                    ← 你在这里
 │
 ├── 路径A-C主线.md               C 主线: 从零到内核
@@ -74,14 +74,17 @@ c体系教程/
 │   ├── 工具内核/ (7篇)         游戏引擎内核/ (7篇)
 │   └── 内核索引.md              C与Rust的内核新时代.md
 │
-└── 汇编基础/ (3篇)              x86/ARM 汇编教程
+├── 汇编基础/ (3篇)              x86/ARM 汇编教程
+│
+├── git.md                      Git 与 GitHub 终端操作指南
+└── ISSUES.md                   问题讨论与贡献指南
 ```
 
 ---
 
 ## 写在教程之前
 
-本教程体系的目标是提供一套完整的 C 语言体系知识库。我们追求的不是"一本通"的虚假承诺，而是一个结构清晰、双向链接、支持 AI 辅助学习的知识体系。
+本教程体系的目标是提供一套从 C 出发、延伸至系统底层的完整知识库，涵盖 C、C++、数据结构与算法、Linux 系统、操作系统内核、Rust 语言。我们追求的不是"一本通"的虚假承诺，而是一个结构清晰、双向链接、支持 AI 辅助学习的知识体系。
 
 **核心原则**:
 
@@ -94,7 +97,7 @@ c体系教程/
 
 ---
 
-## 内核 —— C 语言体系的终极目的
+## 内核 —— 技术栈的底层基石
 
 C 语言之所以诞生，就是为了写操作系统内核。Dennis Ritchie 在 Bell Labs 创造 C 语言时，目标就是用它重写 Unix 内核（之前用汇编）。至今，Linux 内核（3000万行）、Windows NT 内核、FreeBSD 内核、以及几乎所有嵌入式 RTOS 都是用 C 写的。
 
@@ -174,10 +177,62 @@ Linux 6.1 开始正式支持 Rust 内核模块。未来的趋势不是 C vs Rust
 
 ---
 
+## 快速参与贡献
+
+RootStack 欢迎任何人贡献内容、修正错误或提出建议。
+
+### 网页端操作（无需安装 Git）
+
+1. **Fork 本项目** — 打开 GitHub 项目页，点击右上角 `Fork` 按钮
+2. **提建议** — 点击仓库上方的 `Issues` 标签 → `New Issue`，描述你的问题或想法
+3. **在线修改并提交 PR** — 在 GitHub 网页上浏览到要修改的文件，点击  编辑按钮 → 修改 → `Commit changes` → 选择 `Create a new branch` → `Propose changes` → 点击 `Create Pull Request`
+4. **Fork 后如何同步上游** — 在 GitHub 网页上，你的 fork 仓库页点击 `Sync fork` → `Update branch`
+
+### 终端操作（专业流程）
+
+详见 [[git|Git 与 GitHub 终端操作指南]]，包含从安装到 PR 合并的完整教程。
+
+```
+# 极简流程：Fork → Clone → 修改 → PR
+git clone https://github.com/你的用户名/RootStack.git
+cd RootStack
+git remote add upstream https://github.com/原项目名/RootStack.git
+git checkout -b my-feature
+# 修改文件...
+git add .
+git commit -m "说明你的修改"
+git push origin my-feature
+# 然后去 GitHub 网页点 "Compare & pull request"
+```
+
+### Git 安装（各平台）
+
+| 平台 | 安装命令 | 备注 |
+|------|---------|------|
+| Linux (Debian/Ubuntu) | `sudo apt install git` | |
+| Linux (Arch) | `sudo pacman -S git` | |
+| macOS | `brew install git` | 也可从 git-scm.com 下载 .dmg |
+| Windows | `winget install Git.Git` 或从 git-scm.com 下载 exe | |
+
+**作者观点**：推荐使用终端里的原生 Git，而不是 `git.exe` 或 IDE 内置的 Git GUI。终端 Git 给你完整的能力、一致的跨平台体验，以及对每一步操作的掌控感。图形化的 Git 工具适合查看历史，但日常操作建议回归命令行。
+
+---
+
+## 致谢
+
+本教程体系的开发过程中使用了以下 AI 辅助工具：
+
+- [opencode](https://opencode.ai) — 项目重构与内容批量处理
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — 方案设计、内容编写与代码审查
+
+感谢所有通过 [[ISSUES|问题讨论区]] 和 Pull Request 参与贡献的读者。
+
+---
+
 ## 近期更新
 
 > 以下为项目管理员维护的更新日志。新增内容、删除内容、重大修改请在此处简要记录。
 
-| 日期 | 变更类型 | 说明 |
-|------|---------|------|
-| | | |
+| 日期   | 变更类型   | 说明                                          |
+| ---- | ------ | ------------------------------------------- |
+| 7.13 | 首次提交项目 | 将作者以前的cpp_deep,c-learning项目整合起来并删减整理形成的一套教程 |
