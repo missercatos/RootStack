@@ -174,6 +174,17 @@ Linux 6.1 开始正式支持 Rust 内核模块。未来的趋势不是 C vs Rust
 
 ---
 
+## 致谢
+
+本教程体系的开发过程中使用了以下 AI 辅助工具：
+
+- [opencode](https://opencode.ai) — 项目重构与内容批量处理
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — 方案设计、内容编写与代码审查
+
+感谢所有通过 [[ISSUES|问题讨论区]] 和 Pull Request 参与贡献的读者。
+
+---
+
 ## 近期更新
 
 > 以下为项目管理员维护的更新日志。新增内容、删除内容、重大修改请在此处简要记录。
