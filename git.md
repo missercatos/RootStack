@@ -349,7 +349,106 @@ gh run watch
 
 ---
 
-## 10 常见问题
+## 10 情景现场
+
+### 场景一：参与大项目（无仓库权限，Fork + 跨仓库 PR）
+
+你发现某个开源项目有个 bug，想修掉它。你没有该项目仓库的写入权限，所以需要 Fork。
+
+```bash
+# ---- 第 1 步：Fork ----
+# 在浏览器打开 GitHub 项目页，点击右上角 Fork
+# 或在终端（已安装 gh）：
+gh repo clone 原作者/大项目 --fork    # 自动 fork 并 clone 你的 fork
+
+# 如果已经手动 fork，用 clone 拉自己的副本
+git clone https://github.com/你的用户名/大项目.git
+cd 大项目
+
+# 添加上游仓库（原项目），用于后续同步
+git remote add upstream https://github.com/原作者/大项目.git
+
+# ---- 第 2 步：建分支 ----
+git switch -c fix/login-bug
+# 原则：永远不在 master/main 上直接改
+
+# ---- 第 3 步：修改 + 测试 ----
+# vim src/login.c        ← 修改代码
+# make test              ← 本地测试通过
+git diff                 # 确认改动正确
+
+# ---- 第 4 步：提交 + 推送 ----
+git add src/login.c
+git commit -m "fix: 登录模块空指针检查异常"
+git push origin fix/login-bug
+
+# ---- 第 5 步：发起 PR ----
+gh pr create \
+  --repo 原作者/大项目 \
+  --base clean-main \
+  --head 你的用户名:fix/login-bug \
+  --title "fix: 登录模块空指针检查异常" \
+  --body "在特定输入下 login() 会走空指针分支，增加了 NULL 检查。"
+
+# PR 提交后，项目维护者会看到你的 PR，审查后合并或要求修改。
+
+# ---- 第 6 步：同步上游（下次贡献前必做） ----
+git checkout main
+git fetch upstream
+git merge upstream/clean-main
+git push origin main
+```
+
+---
+
+### 场景二：项目参与者（有仓库权限，同仓库 PR）
+
+你在团队项目中有一个新功能要做，你有仓库的写入权限，直接在同一仓库内操作。
+
+```bash
+# ---- 第 1 步：拉取最新代码 ----
+git clone https://github.com/团队名/项目.git
+cd 项目
+# 或如果已 clone：git pull origin clean-main
+
+# ---- 第 2 步：建分支 ----
+git switch -c feat/user-avatar
+
+# ---- 第 3 步：修改 + 测试 ----
+# vim src/user/avatar.c
+# go test ./...          ← 测试通过
+git status               # 确认改了什么
+
+# ---- 第 4 步：提交 + 推送 ----
+git add .
+git commit -m "feat: 用户头像上传功能"
+git push origin feat/user-avatar
+
+# ---- 第 5 步：发起 PR ----
+# 目标分支是团队仓库的 clean-main，来源是刚才推送的 feat/user-avatar
+gh pr create \
+  --base clean-main \
+  --head feat/user-avatar \
+  --title "feat: 用户头像上传功能" \
+  --body "实现了头像裁剪、压缩和 CDN 上传"
+
+# ---- 第 6 步：审查后修改 ----
+# 如果审查者要求修改
+# vim src/user/avatar.c
+git add .
+git commit -m "fix: 根据审查意见调整压缩参数"
+git push origin feat/user-avatar   # PR 自动更新
+
+# ---- 第 7 步：PR 合并后删分支 ----
+git checkout clean-main
+git pull origin clean-main
+git branch -d feat/user-avatar
+git push origin --delete feat/user-avatar
+```
+
+---
+
+## 11 常见问题
 
 ### Q: 提交时发现漏了一个文件怎么办？
 
