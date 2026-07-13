@@ -404,7 +404,67 @@
 
 ---
 
-### 推荐阅读物
+### 推荐算法资源
+
+以下开源项目可配合本路线各 Phase 使用，按推荐优先级排列。
+
+### OI-wiki — 编程竞赛百科
+
+- 仓库: https://github.com/OI-wiki/OI-wiki
+- 在线站: https://oi-wiki.org
+- Stars: 26.3k
+- 语言: 中文
+
+OI-wiki 是中文编程竞赛领域最完整的知识整合站点，覆盖 OI/ICPC 的全部知识点（基础语法、搜索、DP、图论、数论、计算几何等）。**做题遇到不会的知识点，先去 OI-wiki 查**——它的知识树结构和本教程的 DSA 路线高度互补。如果你发现在某个知识点上本教程讲得不够深，OI-wiki 通常是下一步的绝佳去处。
+
+---
+
+### TheAlgorithms 系列 — 多语言参考实现
+
+TheAlgorithms 社区在多个语言中提供了算法实现，所有代码均为教育目的编写，有测试、有文档、无外部依赖。
+
+| 仓库 | Stars | 与本教程的关系 |
+|------|-------|--------------|
+| [TheAlgorithms/Python](https://github.com/TheAlgorithms/Python) | 223k | Python 刷题时对照参考 |
+| [TheAlgorithms/C-Plus-Plus](https://github.com/TheAlgorithms/C-Plus-Plus) | 34.5k | **本教程 C++ 主线直接对照** |
+| [TheAlgorithms/C](https://github.com/TheAlgorithms/C) | 22.2k | **本教程 C 主线直接对照** |
+| [TheAlgorithms/Java](https://github.com/TheAlgorithms/Java) | 66k | Java 备查 |
+| [TheAlgorithms/Rust](https://github.com/TheAlgorithms/Rust) | 25.9k | Rust 备查 |
+| [TheAlgorithms/Go](https://github.com/TheAlgorithms/Go) | 18.1k | Go 备查 |
+
+**使用建议**：学完某个数据结构后，打开对应仓库搜索该结构，阅读其实现代码。对比不同语言对同一算法的实现差异——这本身就是极好的学习方式。
+
+---
+
+### awesome-algorithms — 精选资源导航
+
+- 仓库: https://github.com/tayllan/awesome-algorithms
+- Stars: 25.4k
+
+一份精选的算法学习资源列表，按 Beginner-Friendly / Programming Contest / Theory & Fundamentals / Cheat Sheet 等分类。包含：
+
+- 书籍推荐：CLRS、Algorithm Design Manual、TAOCP
+- 在线课程：MIT 6-006、6-046j
+- 竞赛平台：Codeforces、AtCoder、LeetCode、HackerEarth
+- 可视化工具：VisuAlgo、See Algorithms
+
+适合在本路线学完某个阶段后，按需去 awesome-algorithms 里找对应的书或课程深入。
+
+---
+
+### Algo-Atlas — LeetCode 2000 题刷题计划
+
+- 仓库: https://github.com/lvy010/Algo-Atlas
+- Stars: 493
+- 语言: C++ / Python
+
+作者整理的 LeetCode 刷题笔记（8 个月 2000 题计划），按题型分类整理（双指针、滑动窗口、前缀和、位运算、DFS/BFS、DP、贪心等）。每个大类下有典型例题的详细题解（CSDN 博客），适合按本路线 Phase 3（算法专题深化）的顺序做对照刷题。
+
+**使用方式**：`git clone` 到本地，用 Typora 或 Obsidian 打开 `.md` 文件，可边看题解边写代码。
+
+---
+
+## 推荐阅读物
 
 - Introduction to Algorithms (CLRS)
 - Algorithms (Robert Sedgewick)
