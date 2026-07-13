@@ -514,6 +514,225 @@ git clean -fd                  # 删除未跟踪的文件和目录
 
 ---
 
+---
+
+## 12 版本标签与发布
+
+### 语义化版本 (Semantic Versioning)
+
+版本号格式 **MAJOR.MINOR.PATCH**，例如 `v1.2.3`：
+
+| 位 | 称 | 说明 | 例子 |
+|----|-----|------|------|
+| MAJOR | 主版本 | 不兼容的 API 变更 / 重大重构 | `v1.0.0` → `v2.0.0` |
+| MINOR | 次版本 | 向下兼容的新功能 / 新增内容 | `v1.0.0` → `v1.1.0` |
+| PATCH | 修订号 | 向下兼容的 bug 修复 / 小修正 | `v1.0.0` → `v1.0.1` |
+
+RootStack 是文档项目，按里程碑手动打 tag：
+
+```bash
+# 查看当前版本（最近的 tag）
+git describe --tags
+
+# 打 lightweight tag（只是一个标记）
+git tag v0.1.0
+
+# 推荐：annotated tag（包含作者、日期、信息）
+git tag -a v0.1.0 -m "首个可读版本：Phase 1-12 内容就绪"
+
+# 推送 tag 到远程（默认不会随 git push 推送）
+git push origin v0.1.0          # 推送单个 tag
+git push origin --tags          # 推送所有本地 tag
+
+# 列出所有 tag
+git tag -l "v0.*"
+
+# 删除 tag
+git tag -d v0.1.0               # 删除本地
+git push origin --delete v0.1.0 # 删除远程
+```
+
+### 网页端操作 tag（GitHub 网页）
+
+```bash
+# 1. 打开仓库 https://github.com/用户名/仓库名
+# 2. 点击页面中间的 Tags（或 Releases）
+# 3. 点击 "Create a new release" → "Choose a tag" → 输入新 tag 名
+#    如果没有这个 tag，GitHub 会自动创建
+# 4. 填写 Release title 和描述
+# 5. 点击 "Publish release"
+```
+
+| 操作 | 终端命令 | 网页入口 |
+|------|---------|---------|
+| 创建 tag | `git tag -a v0.1.0 -m "msg"` + `git push origin v0.1.0` | 仓库页 → Releases → Draft a new release |
+| 查看 tag | `git tag -l` | 仓库页 → Tags |
+| 删除 tag | `git tag -d v0.1.0` + `git push --delete origin v0.1.0` | Releases → 对应 release → Delete |
+| 发布 Release | `gh release create v0.1.0 --title "v0.1.0" --notes "changelog"` | 创建 release 页面 → Publish release |
+
+---
+
+## 13 GitHub 网页端操作
+
+### 创建仓库
+
+1. 登录 GitHub，点击右上角 `+` → **New repository**
+2. 填仓库名（例如 `my-project`），写描述
+3. 选择 **Public**（公开）或 **Private**（私有）
+4. 可选：初始化 README、.gitignore、license
+5. 点击 **Create repository**
+6. 创建后按页面提示 push 本地代码
+
+### 仓库设置（Settings tab）
+
+进入仓库后点顶部 **Settings**：
+
+| 设置项 | 位置 | 说明 |
+|--------|------|------|
+| Repository name | Settings → General | 改仓库名 |
+| Description | Settings → General | 仓库描述（显示在仓库页顶部） |
+| Topics | 仓库页顶部齿轮图标 ⚙ 或 Settings → General | 加标签如 `c` `cpp` `algorithm` `obsidian` |
+| Visibility | Settings → Danger Zone → Change visibility | 公开/私有切换 |
+| Archive | Settings → Danger Zone → Archive this repository | 归档（只读）|
+| Delete | Settings → Danger Zone → Delete this repository | 删除（不可恢复）|
+
+### 添加 Collaborator
+
+```
+Settings → Collaborators → Add people → 输入 GitHub 用户名 → Add
+```
+
+被添加的人有仓库的**写入权限**，可以 push、创建分支、合并 PR。
+
+### 网页端 Fork + PR
+
+```
+# Fork（在自己账号下创建副本）
+打开目标仓库 → 点右上角 "Fork" → Create fork
+
+# 提交 Pull Request
+自己的 Fork 仓库 → 点 "Pull Request" tab → "New pull request"
+  → base repository: 原仓库 → base branch: clean-main
+  → head repository: 自己的 Fork → compare branch: 自己的分支
+  → Create pull request → 填写标题和描述 → Create
+```
+
+### 网页端 Issue 管理
+
+```
+仓库页 → Issues tab → New issue
+  → 写标题 + 描述（支持 Markdown）
+  → 右侧 Assignees: 指派给谁
+  → Labels: 加标签（bug / enhancement / question）
+  → Projects: 关联项目看板
+  → Submit new issue
+```
+
+Issue 操作：Comment（评论）、Close（关闭）、Reopen（重新打开）、Pin（置顶）、Lock（锁定讨论）。
+
+### 网页端 PR Review
+
+PR 页面 → Files changed tab → 逐行浏览改动 → 点击行号前的 `+` 发表评论
+→ Finish your review → 三种结果：
+
+| 选项 | 说明 |
+|------|------|
+| Comment | 普通评论（不阻止合并）|
+| Approve | 批准（同意合并）|
+| Request changes | 要求修改（阻止合并直到解决）|
+
+---
+
+## 14 签名提交
+
+### SSH key（免密推送）
+
+SSH 方式 clone 和 push 不需要输密码：
+
+```bash
+# 检查已有 key
+ls -la ~/.ssh/id_ed25519.pub
+
+# 生成新 key
+ssh-keygen -t ed25519 -C "your@email.com"
+# 一路回车，可选设置 passphrase
+
+# 查看公钥
+cat ~/.ssh/id_ed25519.pub
+# 复制输出内容（以 ssh-ed25519 开头）
+```
+
+添加到 GitHub（网页端）：
+
+```
+Settings → SSH and GPG keys → New SSH key
+  → Title: 起个名字（比如 "我的笔记本"）
+  → Key: 粘贴刚才复制的公钥
+  → Add SSH key
+```
+
+之后 clone 用 SSH 地址：
+
+```bash
+git clone git@github.com:用户名/仓库名.git
+```
+
+### GPG 签名（Verified 标记）
+
+让 commit 显示绿色的 **Verified** 徽章：
+
+```bash
+# 1. 安装 GPG
+# Debian/Ubuntu
+sudo apt install gnupg
+# Arch
+sudo pacman -S gnupg
+
+# 2. 生成 GPG 密钥（交互式）
+gpg --full-generate-key
+# 选 RSA and RSA → 4096 bits → 1y（或 0 永不过期）
+# 填姓名和邮箱（必须与 git config user.email 一致）
+# 设置密码
+
+# 3. 列出密钥，记下指纹（sec 行后的长串）
+gpg --list-secret-keys --keyid-format LONG
+# 例如 sec   rsa4096/AAAAAAAAAAAAAAAA  2026-01-01
+# 指纹就是 AAAAAAAAAAAAAAAA
+
+# 4. 导出公钥
+gpg --armor --export AAAAAAAAAAAAAAAA
+# 复制输出（从 -----BEGIN PGP PUBLIC KEY BLOCK----- 开始）
+```
+
+添加到 GitHub（网页端）：
+
+```
+Settings → SSH and GPG keys → New GPG key
+  → Key: 粘贴上面导出的公钥
+  → Add GPG key
+```
+
+```bash
+# 5. 配置 git 使用该密钥签名
+git config --global user.signingkey AAAAAAAAAAAAAAAA
+git config --global commit.gpgsign true   # 默认所有 commit 签名
+
+# 6. 签名提交
+git commit -S -m "feat: 添加xxx功能"       # -S 指定签名
+# 或全局已启用时正常 commit 即可
+
+# 7. 验证签名
+git log --show-signature -1
+```
+
+| 认证方式 | 用途 | 设置位置 |
+|---------|------|---------|
+| SSH key | clone/push 免密 | Settings → SSH and GPG keys → New SSH key |
+| GPG key | commit 显示 Verified | Settings → SSH and GPG keys → New GPG key |
+| Personal token | API 访问 / HTTPS clone | Settings → Developer settings → Personal access tokens |
+
+---
+
 ## 推荐阅读
 
 - [Pro Git 中文版 (官方书籍)](https://git-scm.com/book/zh/v2)

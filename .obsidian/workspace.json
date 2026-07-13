@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "README.md",
+                "file": "git.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "README"
+              "title": "git"
             }
           }
         ]
@@ -200,6 +200,9 @@
   },
   "active": "0cdf19aaafd6f559",
   "lastOpenFiles": [
+    "github-settings.md",
+    "ISSUES.md",
+    "README.md",
     "路径D-DSA算法刷题.md",
     "算法/数学/快速幂与模运算.md",
     "算法/搜索进阶/IDA星算法.md",
@@ -238,9 +241,6 @@
     "算法/杂项技巧/CDQ分治.md",
     "算法/杂项技巧/整体二分与WQS二分.md",
     "算法/杂项技巧/莫队算法.md",
-    "算法/算法技巧/Manacher.md",
-    "算法/算法技巧/KMP.md",
-    "算法/算法技巧/AC自动机.md",
     "算法/计算几何",
     "算法/算法技巧",
     "算法/杂项技巧",
