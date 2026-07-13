@@ -11,7 +11,29 @@
 
 ---
 
-## Obsidian 使用指南
+## 推荐学习环境：Linux
+
+本教程涉及编译、链接、系统调用、内核模块、汇编等底层内容。在 Windows 下学习 C/系统编程，频繁遇到 PATH 差异、缺少标准工具链、权限模型不一致、ABI 不同步等问题，每个问题都在分散你对核心知识的注意力。**推荐使用 Linux 作为学习环境**，一次解决所有环境问题，把精力留给真正要学的东西。
+
+### 为什么推荐 Arch Linux
+
+> 以下为**作者个人观点**： Arch Linux 是最好的日用 Linux 发行版。***这不代表它在所有场景下都是最佳选择——服务器部署推荐 Debian/RHEL，嵌入式推荐 Yocto/Buildroot，但作为**个人日常桌面学习和开发环境**，Arch Linux 的优势明显。
+
+- **滚动更新** — 安装即是最新内核（6.x）、最新 glibc、最新 gcc、最新 LLVM。不需要重装系统来升级，`pacman -Syu` 一次全部更新
+- **Arch Linux Archive (ALA)** — 如果真的需要回滚某个包，ALA 保存了所有历史版本，用 `downgrade` 工具即可指定版本
+- **AUR (Arch User Repository)** — 几乎任何软件的安装都是一个命令：`yay -S obsidian`、`yay -S github-cli`、`yay -S visual-studio-code-bin`，不需要手动编译或找第三方源
+- **ArchWiki** — 业界公认最详尽的 Linux 文档库。一个问题在 ArchWiki 上通常能找到完整的解决方案，比翻论坛帖子快 10 倍
+- **贴近上游** — Arch 的包几乎不修改上游源码，配置最接近 Linux 内核和 GNU 工具链的原始行为。这对学习 C/系统编程非常有利——你遇到的问题就是上游的问题，不会因为发行版打了奇怪的补丁而困惑
+- **不想折腾？** 如果不想手动安装 Arch，推荐 [EndeavourOS](https://endeavouros.com/)——基于 Arch 的衍生版，有图形安装器，安装后直接获得完整的 Arch 体验。或者archinstall一键安装
+- **自由灵活**  这就是Arch最适合作为日用linux系统的原因。arch具有极高的灵活性，从内核选择到桌面环境（de还是wm）完全自由，可根据喜好灵活搭配，社区活跃。
+- **问题**  以上有很多都是问题，aur，滚动更新，会导致一些冲突，滚挂，因此在工作环境和服务器中并不推荐。但是作为日常使用，其体验无与伦比。
+
+### 快速入门
+
+- [Shorin ArchLinux Guide](https://github.com/SHORiN-KiWATA/Shorin-ArchLinux-Guide) — shorin老师的教程，很完善，适合新手入门
+- [ArchWiki 官网](https://wiki.archlinux.org/) — 官网，基本上所有linux的问题这里都能看到答案
+
+---## Obsidian 使用指南
 
 本教程设计为在 Obsidian 中阅读以获得最佳体验（双向链接预览、图谱视图、可折叠答案）。以下是各平台的安装和导入方法：
 
