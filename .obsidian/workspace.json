@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "ISSUES.md",
+                "file": "github-settings.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "ISSUES"
+              "title": "github-settings"
             }
           }
         ],
@@ -229,8 +229,8 @@
   },
   "active": "9e320ee1bde7d16c",
   "lastOpenFiles": [
-    "README.md",
     "ISSUES.md",
+    "README.md",
     "github-settings.md",
     "git.md",
     "_config.yml",
