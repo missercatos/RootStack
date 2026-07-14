@@ -4,7 +4,23 @@
 
 ---
 
-## 1 仓库基础设置
+**快速导航**（Obsidian 中可点击跳转；下同）
+
+- [[#^nav-1|1 仓库基础设置]]
+- [[#^nav-2|2 协作管理]]
+- [[#^nav-3|3 分支保护]]
+- [[#^nav-4|4 Issue 管理]]
+- [[#^nav-5|5 Pull Request 管理]]
+- [[#^nav-6|6 Releases]]
+- [[#^nav-7|7 安全设置]]
+- [[#^nav-8|8 Webhooks]]
+- [[#^nav-9|9 其他实用设置]]
+- [[#^nav-links|相关链接]]
+
+---
+
+<a id="nav-1"></a>
+## 1 仓库基础设置 ^nav-1
 
 进入仓库后点击顶部 **Settings** tab。
 
@@ -37,43 +53,114 @@ Settings → Danger Zone → Change visibility
 
 ---
 
-## 2 协作管理
+<a id="nav-2"></a>
+## 2 协作管理 ^nav-2
+
+### 可见性切换（私⇄公）
+
+```
+Settings → Danger Zone → Change visibility
+→ Change to public / Change to private
+→ 输入仓库名确认
+```
+
+| 场景 | 操作 | 注意 |
+|------|------|------|
+| 个人项目想公开 | 改为 Public | 任何人都能 clone/fork，此前 Issues 不变 |
+| 公开项目想私有 | 改为 Private | 已 fork 的副本不会被删除，但无法再公开访问 |
 
 ### 添加 Collaborator
 
+进入目标仓库：
+
 ```
 Settings → Collaborators → Add people
-→ 输入 GitHub 用户名 → 选择权限 → Add
+→ 输入对方 GitHub 用户名或邮箱
+→ 选择权限 → Add
+→ 对方会收到邀请邮件/通知，接受后即生效
 ```
 
-权限有三种：
+权限三种：
 
 | 权限 | 说明 |
 |------|------|
-| Read | 只能看代码、看 Issues |
-| Write | 可以 push 分支、创建 PR、合并 PR |
-| Admin | 所有操作，包括改设置、删仓库 |
+| Read | 看代码、提 Issue、看 Discussions |
+| Write | 可以 push 分支、提 PR、合并 PR |
+| Admin | 所有操作，包括改仓库设置、删仓库、加人 |
 
-### 组织 (Organization)
+**批量加人：** 如果团队超过 3 人，建议先创建 Organization（见下一节），用 Team 管理权限，而非逐个加 Collaborator。
 
-如果多人协作超过 2-3 人，建议建一个 Organization 代替个人仓库：
+### 创建组织 (Organization)
 
-```
-https://github.com/organizations/组织名
-→ 建组织是免费的
-→ 在组织下建仓库，还可以按 Team 分组管理权限
-```
+组织是 GitHub 上管理多人协作的标准方式，仓库归组织所有，不依赖个人账号。
 
-### 转移仓库所有权
+**创建步骤：**
 
 ```
-Settings → Danger Zone → Transfer ownership
-→ 输入目标用户/组织名 → 输入仓库名确认
+GitHub 右上角 + → New organization
+→ 选 Free 方案（免费，无限协作）
+→ 填写组织名（如 RootStack-Project，以后不可改）
+→ 填写联系邮箱
+→ 选择 "My personal account"（组织归属到你的账号下管理）
+→ 可添加成员（可跳过，稍后在组织页加）
+→ Complete setup
 ```
+
+创建后你就是组织的 **Owner**（超级管理员）。
+
+**在组织下创建新仓库：**
+
+```
+组织页 → Repositories tab → New repository
+→ 填写仓库名、描述、可见性
+→ 注意 Owner 已自动选的该组织名
+→ Create repository
+```
+
+**给组织添加成员：**
+
+```
+组织页 → People → Invite member
+→ 输入用户名或邮箱 → Invite
+→ 对方接受后，你可以在 Teams 里给他分配权限
+```
+
+**Teams（推荐）：** 在组织里建 Team 可以批量管理权限：
+
+```
+组织页 → Teams → New team
+→ 填 team 名（如 "core-devs"、"contributors"）
+→ Add members → Add repositories（给这个 team 哪些仓库的什么权限）
+→ 一个 team 的人自动获得相同权限，加人时直接加进 team 即可
+```
+
+### 转移仓库所有权（个人→组织）
+
+把当前在你个人名下的仓库**完整转给组织**，包括 Issues、PR、Wiki、Stars 全部保留。
+
+```
+仓库页 → Settings → Danger Zone → Transfer ownership
+→ 输入目标组织名（必须先创建好组织）
+→ 输入仓库名确认
+→ 输入 GitHub 密码确认
+```
+
+**转移后你需要做的：**
+
+```bash
+# 本地更新远程地址
+git remote set-url origin https://github.com/组织名/仓库名.git
+
+# 验证
+git remote -v
+```
+
+转移后你在组织里默认还是 Admin，可以继续管理这个仓库。建议在组织里加一个 Team，把你自己和其他活跃成员放进去统一管理权限。
 
 ---
 
-## 3 分支保护
+<a id="nav-3"></a>
+## 3 分支保护 ^nav-3
 
 防止有人直接 push 到 `clean-main` 破坏历史：
 
@@ -94,7 +181,8 @@ Settings → Branches → Add branch protection rule
 
 ---
 
-## 4 Issue 管理
+<a id="nav-4"></a>
+## 4 Issue 管理 ^nav-4
 
 ### 创建 Issue
 
@@ -135,7 +223,8 @@ Issues tab → Milestones → New milestone
 
 ---
 
-## 5 Pull Request 管理
+<a id="nav-5"></a>
+## 5 Pull Request 管理 ^nav-5
 
 ### 网页端 PR 流程
 
@@ -172,7 +261,8 @@ Fixes #(编号)
 
 ---
 
-## 6 Releases
+<a id="nav-6"></a>
+## 6 Releases ^nav-6
 
 将 tag 转为一个可浏览的发布页：
 
@@ -193,7 +283,8 @@ Code tab → Releases → Draft a new release
 
 ---
 
-## 7 安全设置
+<a id="nav-7"></a>
+## 7 安全设置 ^nav-7
 
 ```
 Settings → Security
@@ -216,7 +307,8 @@ Settings → Security
 
 ---
 
-## 8 Webhooks
+<a id="nav-8"></a>
+## 8 Webhooks ^nav-8
 
 让 GitHub 在特定事件发生时通知你的外部服务：
 
@@ -235,7 +327,8 @@ Settings → Webhooks → Add webhook
 
 ---
 
-## 9 其他实用设置
+<a id="nav-9"></a>
+## 9 其他实用设置 ^nav-9
 
 ### 仓库话题 / 社交卡片
 
@@ -275,7 +368,8 @@ Settings → General → Features
 
 ---
 
-## 相关链接
+<a id="nav-links"></a>
+## 相关链接 ^nav-links
 
 - [[git.md|Git 与 GitHub 终端操作指南]]
 - [[ISSUES|问题讨论与贡献指南]]

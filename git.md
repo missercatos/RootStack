@@ -1,6 +1,27 @@
 # Git 与 GitHub 终端操作指南
 
-## 1 安装 Git
+**快速导航**（Obsidian 中可点击跳转；下同）
+
+- [[#^nav-1|1 安装 Git]]
+- [[#^nav-2|2 初始配置]]
+- [[#^nav-3|3 基础操作]]
+- [[#^nav-4|4 分支管理]]
+- [[#^nav-5|5 远程仓库]]
+- [[#^nav-6|6 .gitignore]]
+- [[#^nav-7|7 Fork & PR 实战]]
+- [[#^nav-8|8 审查与合并 PR]]
+- [[#^nav-9|9 GitHub CLI]]
+- [[#^nav-10|10 情景现场]]
+- [[#^nav-11|11 常见问题]]
+- [[#^nav-12|12 版本标签与发布]]
+- [[#^nav-13|13 网页端操作]]
+- [[#^nav-14|14 签名提交]]
+- [[#^nav-recommended|推荐阅读]]
+
+---
+
+<a id="nav-1"></a>
+## 1 安装 Git ^nav-1
 
 | 平台 | 命令 |
 |------|------|
@@ -21,7 +42,8 @@ git --version
 
 ---
 
-## 2 初始配置
+<a id="nav-2"></a>
+## 2 初始配置 ^nav-2
 
 ```bash
 # 必设：用户名和邮箱（显示在 commit 中）
@@ -39,7 +61,8 @@ git config --list
 
 ---
 
-## 3 基础操作
+<a id="nav-3"></a>
+## 3 基础操作 ^nav-3
 
 ```bash
 # 初始化新仓库
@@ -82,7 +105,8 @@ git reset --hard HEAD~1   # 彻底撤销（慎用，无法恢复）
 
 ---
 
-## 4 分支管理
+<a id="nav-4"></a>
+## 4 分支管理 ^nav-4
 
 ```bash
 # 查看分支
@@ -120,7 +144,8 @@ git add . && git commit           # 合并后提交
 
 ---
 
-## 5 远程仓库
+<a id="nav-5"></a>
+## 5 远程仓库 ^nav-5
 
 ```bash
 # 查看远程
@@ -147,7 +172,8 @@ git checkout -b local-branch origin/remote-branch
 
 ---
 
-## 6 .gitignore
+<a id="nav-6"></a>
+## 6 .gitignore ^nav-6
 
 在仓库根目录创建 `.gitignore`，写入不需要跟踪的文件模式：
 
@@ -190,7 +216,8 @@ temp/
 
 ---
 
-## 7 Fork & PR 实战
+<a id="nav-7"></a>
+## 7 Fork & PR 实战 ^nav-7
 
 以下是从 Fork 到提交 Pull Request 的完整流程：
 
@@ -265,7 +292,8 @@ gh pr create \
 
 ---
 
-## 8 作为仓库主人：审查与合并 PR
+<a id="nav-8"></a>
+## 8 作为仓库主人：审查与合并 PR ^nav-8
 
 ```bash
 # 查看所有 PR 列表
@@ -309,7 +337,8 @@ git revert -m 1 <merge-commit的hash>
 
 ---
 
-## 9 GitHub CLI (gh)
+<a id="nav-9"></a>
+## 9 GitHub CLI (gh) ^nav-9
 
 `gh` 是 GitHub 官方命令行工具，覆盖从 Issue 到 PR 到 Actions 的完整操作。
 
@@ -340,6 +369,28 @@ gh pr merge 42
 # 仓库操作
 gh repo view
 gh repo clone 用户名/仓库名
+gh repo create 新仓库名               # 在当前账号下创建仓库（交互式）
+gh repo create 新仓库名 --public      # 直接指定公开
+gh repo create 新仓库名 --private     # 直接指定私有
+gh repo create 组织名/新仓库名        # 在组织下创建仓库
+gh repo create 新仓库名 --clone       # 创建后自动 clone 到本地
+
+# 仓库可见性切换（私→公 or 公→私）
+gh repo edit --visibility public      # 改为公开
+gh repo edit --visibility private     # 改为私有
+
+# 邀请 Collaborator（通过 gh api）
+gh api repos/用户名/仓库名/collaborators/被邀请的用户名 -X PUT
+# 查看已邀请的 Collaborator
+gh api repos/用户名/仓库名/collaborators
+
+# 转移仓库到组织（通过 gh api）
+gh api repos/用户名/仓库名/transfer -X POST \
+  -f new_owner=组织名
+
+# 创建组织（gh 无直接命令，通过 API 需要特殊 token）
+# 推荐在网页端操作：右上角 + → New organization
+
 gh fork                      # 命令行 fork 当前仓库
 
 # 查看 CI 状态
@@ -349,7 +400,8 @@ gh run watch
 
 ---
 
-## 10 情景现场
+<a id="nav-10"></a>
+## 10 情景现场 ^nav-10
 
 ### 场景一：参与大项目（无仓库权限，Fork + 跨仓库 PR）
 
@@ -448,7 +500,8 @@ git push origin --delete feat/user-avatar
 
 ---
 
-## 11 常见问题
+<a id="nav-11"></a>
+## 11 常见问题 ^nav-11
 
 ### Q: 提交时发现漏了一个文件怎么办？
 
@@ -516,7 +569,8 @@ git clean -fd                  # 删除未跟踪的文件和目录
 
 ---
 
-## 12 版本标签与发布
+<a id="nav-12"></a>
+## 12 版本标签与发布 ^nav-12
 
 ### 语义化版本 (Semantic Versioning)
 
@@ -572,7 +626,8 @@ git push origin --delete v0.1.0 # 删除远程
 
 ---
 
-## 13 GitHub 网页端操作
+<a id="nav-13"></a>
+## 13 GitHub 网页端操作 ^nav-13
 
 ### 创建仓库
 
@@ -643,7 +698,8 @@ PR 页面 → Files changed tab → 逐行浏览改动 → 点击行号前的 `+
 
 ---
 
-## 14 签名提交
+<a id="nav-14"></a>
+## 14 签名提交 ^nav-14
 
 ### SSH key（免密推送）
 
@@ -733,7 +789,8 @@ git log --show-signature -1
 
 ---
 
-## 推荐阅读
+<a id="nav-recommended"></a>
+## 推荐阅读 ^nav-recommended
 
 - [Pro Git 中文版 (官方书籍)](https://git-scm.com/book/zh/v2)
 - [GitHub CLI 文档](https://cli.github.com/manual/)

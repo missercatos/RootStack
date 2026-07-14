@@ -16,6 +16,10 @@
   <img src="https://img.shields.io/badge/版本-0.1.1-blue?style=flat-square" alt="version"/>
 </p>
 
+<p align="center">
+  <a href="./git.md">Git 指南</a> · <a href="./github-settings.md">GitHub 设置</a> · <a href="./ISSUES.md">参与贡献</a>
+</p>
+
 ---
 
 ## 关于本教程
@@ -48,7 +52,9 @@
 - [Shorin ArchLinux Guide](https://github.com/SHORiN-KiWATA/Shorin-ArchLinux-Guide) — shorin老师的教程，很完善，适合新手入门
 - [ArchWiki 官网](https://wiki.archlinux.org/) — 官网，基本上所有linux的问题这里都能看到答案
 
----## Obsidian 使用指南
+---
+
+## Obsidian 使用指南
 
 本教程设计为在 Obsidian 中阅读以获得最佳体验（双向链接预览、图谱视图、可折叠答案）。以下是各平台的安装和导入方法：
 
