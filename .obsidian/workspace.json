@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "git.md",
+                "file": "ISSUES.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "git"
+              "title": "ISSUES"
             }
           }
         ],
@@ -229,10 +229,12 @@
   },
   "active": "9e320ee1bde7d16c",
   "lastOpenFiles": [
+    "README.md",
+    "ISSUES.md",
+    "github-settings.md",
+    "git.md",
     "_config.yml",
     "数据结构/A_容器_Container.md",
-    "README.md",
-    "git.md",
     "算法/算法技巧/数组.md",
     "数据结构/DSA学习路线.md",
     "内核/系统内核/sedmUqZGk",
@@ -249,8 +251,6 @@
     "内核/游戏引擎内核/物理引擎.md",
     "内核/系统内核/07_Linux内核源码导读.md",
     "assets/images/qrcode_1783954615606.jpg",
-    "github-settings.md",
-    "ISSUES.md",
     "路径D-DSA算法刷题.md",
     "算法/数学/快速幂与模运算.md",
     "算法/搜索进阶/IDA星算法.md",
@@ -274,7 +274,6 @@
     "算法/计算几何",
     "算法/算法技巧",
     "算法/杂项技巧",
-    "算法/数学",
     "未命名.canvas"
   ]
 }
