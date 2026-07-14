@@ -312,6 +312,6 @@ git push origin my-feature
 
 欢迎加入 QQ 群交流学习：
 
-![[assets/images/qrcode_1783954615606.jpg|扫码加入 QQ 群]]
+![扫码加入 QQ 群](https://raw.githubusercontent.com/missercatos/RootStack/clean-main/assets/images/qrcode_1783954615606.jpg)
 
 二维码失效或群满请通过 [[ISSUES|问题讨论区]] 联系管理员更新。
