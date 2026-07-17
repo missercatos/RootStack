@@ -14,7 +14,7 @@
   <img src="https://img.shields.io/badge/数据结构-339933?style=flat-square" alt="数据结构"/>
   <img src="https://img.shields.io/badge/算法-FF6F00?style=flat-square" alt="算法"/>
   <img src="https://img.shields.io/badge/网络安全-E34F26?style=flat-square" alt="网络安全"/>
-  <img src="https://img.shields.io/badge/版本-0.1.1-blue?style=flat-square" alt="version"/>
+  <img src="https://img.shields.io/badge/版本-0.2.0-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
@@ -94,7 +94,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/                          ├ v0.1.0
+RootStack/                          ├ v0.2.0
 ├── README.md                    ← 你在这里
 │
 ├── 路径A-C主线.md               C 主线: 从零到内核
@@ -137,7 +137,7 @@ RootStack/                          ├ v0.1.0
 │
 ├── git.md                       Git 与 GitHub 终端操作指南 (14节)
 ├── github-settings.md           GitHub 网页端设置指南（新增）
-├── VERSION                      项目版本号: 0.1.0
+├── VERSION                      项目版本号: 0.2.0
 └── ISSUES.md                   问题讨论与贡献指南
 ```
 
@@ -324,6 +324,7 @@ git push origin my-feature
 | 日期   | 变更类型   | 说明                                          |
 | ---- | ------ | ------------------------------------------- |
 | 7.13 | 首次提交项目 | 将作者以前的cpp_deep,c-learning项目整合起来并删减整理形成的一套教程 |
+| 7.17 | 新增职业路径 | red_team/网络安全模块(~125篇, ArchStrike体系), 路径E红队职业路径, 学习/职业路径区分 |
 
 ---
 
