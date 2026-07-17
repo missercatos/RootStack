@@ -91,8 +91,8 @@ vector<int> kmp(const string &t, const string &p) {
 
 ### 相关链接
 
-- [[算法/算法技巧/字符串|字符串基础]]
-- [[算法/算法技巧/字符串哈希|字符串哈希]]
-- [[算法/算法技巧/AC自动机|AC 自动机]]（KMP 的多模式串扩展）
+- [[字符串|字符串基础]]
+- [[字符串哈希|字符串哈希]]
+- [[AC自动机|AC 自动机]]（KMP 的多模式串扩展）
 
 > 内容来源：经本地化改造的 OI-wiki KMP 章节。详细推导见 [OI-wiki](https://oi-wiki.org/string/kmp/)。

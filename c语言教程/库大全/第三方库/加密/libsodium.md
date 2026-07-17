@@ -28,4 +28,4 @@ crypto_secretbox_easy(ciphertext, plaintext, len, nonce, key);
 
 > 如果只需要加密/签名等密码学原语（不需要 TLS），libsodium 是首选——其 API 远简单于 OpenSSL，更难误用。
 
-**跨语言参考**: [[../../2深化/08_标准库深度|C标准库深度剖析]]
+**跨语言参考**: [[../../../2深化/08_标准库深度|C标准库深度剖析]]

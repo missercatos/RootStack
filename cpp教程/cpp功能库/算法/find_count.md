@@ -90,4 +90,4 @@ FUNCTION demo_all_any_none:
 - **修改算法**: [[./modify|modify]] — `replace`/`remove`/`copy`
 - **函数式**: [[../函数式/lambda|lambda]] — lambda 作为谓词
 - **Ranges**: [[./range|C++20 ranges]] — `FILTER` 流水线替代 `find_if` + `count_if`
-- **返回目录**: [[../索引|C++ 功能库索引]]
+- **返回目录**: 

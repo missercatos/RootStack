@@ -91,4 +91,4 @@ FUNCTION demo_sample:
 - **时间与种子**: [[./chrono|chrono]] — 用 `steady_clock::now()` 做种子
 - **数值类型**: [[./numeric|numeric]] — `numeric_limits`、`complex`
 - **C 对照**: `rand()`/`srand()`（`<stdlib.h>`），存在偏差
-- **返回目录**: [[../索引|C++ 功能库索引]]
+- **返回目录**: 

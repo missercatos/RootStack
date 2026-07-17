@@ -101,4 +101,4 @@ FUNCTION demo_valarray:
 - **随机数**: [[./random|random]] — `random_device`、`mt19937`
 - **时间**: [[./chrono|chrono]] — `duration` 与 `ratio` 的关系
 - **C 对照**: `INT_MAX`/`DBL_MIN`（`<climits>` `<cfloat>`）、`sin`/`cos`（`<cmath>`）
-- **返回目录**: [[../索引|C++ 功能库索引]]
+- **返回目录**: 

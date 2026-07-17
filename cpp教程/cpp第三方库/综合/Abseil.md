@@ -31,5 +31,5 @@ Google 内部验证、增强容器、高效字符串、同步原语、良好文�
 - [[Boost|Boost]] — 功能最全的综合库
 - [[Folly|Folly]] — Facebook 高性能库
 - [[fmt|fmt]] — 格式化库（Abseil 也有 StrFormat）
-- [[../索引|库索引]]
+- 
 - (搜索: Abseil C++)

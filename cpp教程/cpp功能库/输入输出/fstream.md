@@ -77,4 +77,4 @@ FUNCTION demo_append_binary:
 - **字符串流**: [[./sstream|sstream]] — 内存格式化
 - **文件系统**: [[./filesystem|filesystem]] — 目录遍历、路径操作
 - **C 对照**: `fopen`/`fclose`/`fprintf`/`fscanf`（`<stdio.h>`）
-- **返回目录**: [[../索引|C++ 功能库索引]]
+- **返回目录**: 

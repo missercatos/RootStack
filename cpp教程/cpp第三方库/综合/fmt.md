@@ -31,5 +31,5 @@
 - [[Boost|Boost]] — Boost.Format 替代
 - [[../日志/spdlog|spdlog]] — 基于 fmt 的日志库
 - [[../../c语言教程/库大全/相关文件|C 功能库]]
-- [[../索引|库索引]]
+- 
 - (搜索: fmtlib)

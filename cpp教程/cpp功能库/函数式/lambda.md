@@ -111,4 +111,4 @@ FUNCTION demo_iile:
 - **hash**: [[./hash|hash]] — `hash` 函数对象
 - **算法**: lambda 作为 `sort`/`find_if`/`transform` 等算法的谓词
 - **C 对照**: 无 lambda，需手写函数或函数指针
-- **返回目录**: [[../索引|C++ 功能库索引]]
+- **返回目录**: 

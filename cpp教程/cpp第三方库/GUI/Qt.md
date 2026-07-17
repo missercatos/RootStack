@@ -33,6 +33,6 @@ C++ GUI 领域的"巨无霸"。不只是 GUI —— 它是一个完整的应用�
 
 - [[DearImGui|Dear ImGui]] — 即时模式 GUI
 - [[wxWidgets|wxWidgets]] — 原生外观 GUI
-- [[../../c语言教程/库大全/第三方库/相关文件|C 第三方库]]
-- [[../索引|库索引]]
+- 
+- 
 - (搜索: Qt framework)

@@ -106,4 +106,4 @@ FUNCTION demo_tls:
 - **异步任务**: [[./future|future/async]] — 高级线程抽象
 - **返回值共享**: 线程不返回值的替代方案是 `future` + `promise`
 - **C 对照**: `pthread_create`/`pthread_join`（POSIX `<pthread.h>`）
-- **返回目录**: [[../索引|C++ 功能库索引]]
+- **返回目录**: 

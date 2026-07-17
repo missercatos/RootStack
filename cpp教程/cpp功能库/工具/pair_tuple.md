@@ -100,4 +100,4 @@ FUNCTION demo_advanced:
 - **span / bitset**: [[./span_bitset|span / bitset]] — 视图与位集
 - **结构化绑定**: 适用于 `pair`/`tuple`/`struct`/`array`
 - **C 对照**: `struct { T1 first; T2 second; }` 手动定义
-- **返回目录**: [[../索引|C++ 功能库索引]]
+- **返回目录**: 

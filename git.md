@@ -646,7 +646,7 @@ git push origin --delete v0.1.0 # 删除远程
 |--------|------|------|
 | Repository name | Settings → General | 改仓库名 |
 | Description | Settings → General | 仓库描述（显示在仓库页顶部） |
-| Topics | 仓库页顶部齿轮图标 ⚙ 或 Settings → General | 加标签如 `c` `cpp` `algorithm` `obsidian` |
+| Topics | 仓库页顶部齿轮图标  (齿轮图标)  或 Settings → General | 加标签如 `c` `cpp` `algorithm` `obsidian` |
 | Visibility | Settings → Danger Zone → Change visibility | 公开/私有切换 |
 | Archive | Settings → Danger Zone → Archive this repository | 归档（只读）|
 | Delete | Settings → Danger Zone → Delete this repository | 删除（不可恢复）|

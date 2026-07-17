@@ -29,5 +29,5 @@
 
 - [[OpenMP|OpenMP]] — 编译器级并行
 - [[taskflow|taskflow]] — 任务图并行
-- [[../索引|库索引]]
+- 
 - (搜索: Intel oneTBB)

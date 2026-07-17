@@ -1,261 +1,113 @@
-## ==========================================================================
-数据结构教程 — 红黑树 (Red-Black Tree)
-## ==========================================================================
+# E 红黑树 Red-Black Tree
 
-## 📋 章节概述
+建议先阅读: [[I_树_Tree_BST_AVL|I 树 BST AVL]]
 
-红黑树（Red-Black Tree）是一种自平衡的二叉查找树，它在每个节点上增加一个存储位
-表示节点的颜色（红色或黑色），通过对任何一条从根到叶子的路径上各节点颜色的约束，
-确保没有一条路径会比其他路径长出2倍，因此红黑树是近似平衡的。
+---
 
-红黑树是C++标准库中 map、set、multimap、multiset 的底层
-实现数据结构，也是Linux内核中CFS调度器、内存管理等模块的核心数据结构。
+## 原理
 
-> 📌 **底层实现参考**：如果需要深入理解本章数据结构的底层实现（纯C手写、内存布局、指针操作），请参阅 [[../../C语言深化教程/3数据结构/09_高级数据结构|C语言教程: 高级数据结构]]。C教程侧重手动实现与内存本质，本教程侧重STL使用与算法优化，两者互补。
+红黑树（Red-Black Tree）是一种自平衡二叉查找树，每个节点额外存储一个颜色位（红色或黑色），通过颜色约束保证树近似平衡。它是 C++ 标准库中 `set`、`map`、`multiset`、`multimap` 的底层实现。
 
-## ==========================================================================
-### 📖 第一节: 基础语法 + 计算机底层原理
-## ==========================================================================
+### 五个性质
 
-1.1 红黑树的基本概念
------------------------
-
-红黑树的五个性质：
-1. 每个节点要么是红色，要么是黑色
+1. 每个节点是红色或黑色
 2. 根节点是黑色
-3. 每个叶子节点（NIL空节点）是黑色
-4. 如果一个节点是红色，则它的两个子节点都是黑色
-   （即不能有两个连续的红色节点）
-5. 从任意节点到其每个叶子的所有路径都包含相同数目的黑色节点
-   （黑色高度相同）
+3. 每个叶子（NIL 空节点）是黑色
+4. 红色节点的两个子节点必须是黑色（不能有连续的红色）
+5. 从任意节点到其每个叶子的所有路径包含相同数目的黑色节点
 
-这些约束确保了红黑树的高度不超过 2*log2(n+1)，因此查找、插入、删除的
-最坏时间复杂度为 O(log n)。
+### 复杂度
 
-```pseudocode
-红黑树示例：
-        黑(50)
-       /      \
-    红(30)    红(70)
-    /    \    /    \
- 黑(20) 黑(40)黑(60)黑(80)
-        /
-    红(35)  ← 红色节点不能有红色子节点（这里35的父是黑40，允许）
+| 操作 | 平均 | 最坏 | 说明 |
+|------|------|------|------|
+| 查找 | O(log n) | O(log n) | 高度不超过 2*log(n+1) |
+| 插入 | O(log n) | O(log n) | BST 插入 + 最多 2 次旋转 |
+| 删除 | O(log n) | O(log n) | BST 删除 + 最多 3 次旋转 |
+| 空间 | O(n) | O(n) | 每个节点额外 1 bit |
 
-```
+### 红黑树 vs AVL 树
 
----
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
-
-1.2 标准库中红黑树的使用
----------------------------
-
-红黑树在标准库中通过 map/set 等关联容器间接使用：
-
-```pseudocode
-FUNCTION main() {
-    // map 底层是红黑树（key值有序）
-    map<string, int> scores;
-    scores["Alice"] = 95;
-    scores["Bob"] = 87;
-    scores["Charlie"] = 92;
-    scores["David"] = 78;
-
-    // 红黑树的性质保证了遍历是按key排序的
-    PRINT "按名字排序的成绩表:" + NEWLINE;
-    for ( [name, score] : scores) {
-        PRINT "  " + name + ": " + score + NEWLINE;
-    }
-
-    // 查找（O(log n)）
-    it = scores.find("Bob");
-    if (it != scores.end()) {
-        PRINT "Bob的成绩: " + it->second + NEWLINE;
-    }
-
-    // 范围查找（利用红黑树的有序性）
-    lower = scores.lower_bound("B");   // 第一个 >= "B" 的元素
-    upper = scores.upper_bound("D");   // 第一个 > "D" 的元素
-    PRINT "名字在B到D之间的学生:" + NEWLINE;
-    for (it2 = lower; it2 != upper; ++it2) {
-        PRINT "  " + it2->first + ": " + it2->second + NEWLINE;
-    }
-
-    // set 也是一样
-    set<int> numbers;
-    for (int n : {5, 3, 8, 1, 9, 2, 7}) {
-        numbers.insert(n);
-    }
-
-    PRINT "有序集合: ";
-    for (int n : numbers) PRINT n + " ";
-    PRINT endl;
-
-    return 0;
-}
-
-```
+| 特性 | 红黑树 | AVL 树 |
+|------|--------|--------|
+| 平衡标准 | 近似平衡（最长路径 <= 2*最短路径） | 严格平衡（高度差 <= 1） |
+| 查找 | 稍慢（树更高） | 更快（树更矮） |
+| 插入/删除 | 更快（1-2 次旋转） | 更慢（可能 O(log n) 次旋转） |
+| 适用场景 | 插入删除频繁 | 查找频繁 |
 
 ---
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
 
-1.3 红黑树的底层实现原理
-----------------------------
+## 实现
 
-红黑树的核心操作是插入和删除后的"修正"过程。插入后通过变色和旋转保持性质，
-删除后通过"双黑"问题处理保持性质。
+### 红黑树插入（含修复）
 
-旋转操作（与AVL树相同）：
-- 左旋：将节点x的右子节点y提升到x的位置，x成为y的左子节点
-- 右旋：将节点x的左子节点y提升到x的位置，x成为y的右子节点
+```cpp
+#include <iostream>
 
-```mermaid
-graph TD
-    subgraph "左旋 (以 x 为轴)"
-        LX["x"] --> LA["a"]
-        LX --> LY["y"]
-        LY --> LB["b"]
-        LY --> LC["c"]
-    end
-    subgraph "左旋后"
-        LXR["y"] --> LXRX["x"]
-        LXR --> LXRC["c"]
-        LXRX --> LXRA["a"]
-        LXRX --> LXRB["b"]
-    end
-    subgraph "右旋 (以 x 为轴)"
-        RX["x"] --> RY["y"]
-        RX --> RC["c"]
-        RY --> RA["a"]
-        RY --> RB["b"]
-    end
-    subgraph "右旋后"
-        RXR["y"] --> RXRA2["a"]
-        RXR --> RXRX["x"]
-        RXRX --> RXRB2["b"]
-        RXRX --> RXRC2["c"]
-    end
-```
+enum class Color { RED, BLACK };
 
-1.4 红黑树的插入操作
------------------------
-
-插入过程：
-1. 按照BST规则插入新节点
-2. 将新节点涂成红色
-3. 检查并修复红黑性质（最多需要2次旋转）
-
-插入修复的三种情况：
-- 情况1：叔叔是红色 → 变色（父、叔变黑，祖父变红，然后以祖父为当前节点继续修复）
-- 情况2：叔叔是黑色，新节点与父节点同侧 → 单旋转 + 变色
-- 情况3：叔叔是黑色，新节点与父节点异侧 → 先旋转到同侧，再按情况2处理
-
-```mermaid
-flowchart TD
-    INSERT["插入新节点(红色)"] --> CASE{"检查父节点颜色"}
-    CASE -->|"父为黑"| DONE["无需修复, 完成"]
-    CASE -->|"父为红"| UNCLE{"叔叔节点颜色?"}
-    UNCLE -->|"叔叔为红 (情况1)"| RECOLOR["父和叔变黑, 祖父变红\n以祖父为新当前节点继续"]
-    UNCLE -->|"叔叔为黑"| SIDE{"新节点与父同侧?"}
-    SIDE -->|"同侧 (情况2)"| ROTATE1["旋转父节点+变色"]
-    SIDE -->|"异侧 (情况3)"| ROTATE2["先旋转新节点到同侧\n再按情况2处理"]
-    RECOLOR --> CASE
-    ROTATE1 --> DONE
-    ROTATE2 --> DONE
-```
-
-| 操作 | 平均时间 | 最坏时间 | 说明 |
-|------|----------|----------|------|
-| 查找 | O(log n) | O(log n) | BST查找 + 树高 ≤ 2log(n+1) |
-| 插入 | O(log n) | O(log n) | BST插入 O(log n) + 最多2次旋转 |
-| 删除 | O(log n) | O(log n) | BST删除 O(log n) + 最多3次旋转 |
-| 空间 | O(n) | O(n) | 每个节点额外 1 bit 存储颜色 |
-
-```pseudocode
-enum CLASS Color { RED, BLACK };
-
-
-CLASS RBTree {
-PRIVATE:
-    STRUCT Node {
+template <typename T>
+class RBTree {
+private:
+    struct Node {
         T data;
         Color color;
-        Node* left;
-        Node* right;
-        Node* parent;
-
-        Node(T val)
-            : data(val), color(Color::RED),
-              left(NULL), right(NULL), parent(NULL) {}
+        Node *left, *right, *parent;
+        Node(T val) : data(val), color(Color::RED),
+                      left(nullptr), right(nullptr), parent(nullptr) {}
     };
 
     Node* root;
-    Node* NIL;  // 哨兵空节点（黑色）
+    Node* NIL; // 哨兵空节点（黑色）
 
-    // 左旋
-    FUNCTION leftRotate(Node* x) {
+    void leftRotate(Node* x) {
         Node* y = x->right;
         x->right = y->left;
         if (y->left != NIL) y->left->parent = x;
         y->parent = x->parent;
-
-        if (x->parent == NULL) {
-            root = y;
-        } else if (x == x->parent->left) {
-            x->parent->left = y;
-        } else {
-            x->parent->right = y;
-        }
+        if (x->parent == nullptr) root = y;
+        else if (x == x->parent->left) x->parent->left = y;
+        else x->parent->right = y;
         y->left = x;
         x->parent = y;
     }
 
-    // 右旋
-    FUNCTION rightRotate(Node* x) {
-        Node* y = x->left;
-        x->left = y->right;
-        if (y->right != NIL) y->right->parent = x;
-        y->parent = x->parent;
-
-        if (x->parent == NULL) {
-            root = y;
-        } else if (x == x->parent->right) {
-            x->parent->right = y;
-        } else {
-            x->parent->left = y;
-        }
-        y->right = x;
-        x->parent = y;
+    void rightRotate(Node* y) {
+        Node* x = y->left;
+        y->left = x->right;
+        if (x->right != NIL) x->right->parent = y;
+        x->parent = y->parent;
+        if (y->parent == nullptr) root = x;
+        else if (y == y->parent->left) y->parent->left = x;
+        else y->parent->right = x;
+        x->right = y;
+        y->parent = x;
     }
 
-    // 插入修正
-    FUNCTION insertFixup(Node* z) {
+    void insertFixup(Node* z) {
         while (z->parent && z->parent->color == Color::RED) {
             if (z->parent == z->parent->parent->left) {
-                Node* y = z->parent->parent->right;  // 叔叔
-                if (y && y->color == Color::RED) {
-                    // 情况1：叔叔是红色
+                Node* y = z->parent->parent->right; // 叔叔
+                if (y->color == Color::RED) {
+                    // 情况 1: 叔叔是红色 -> 变色上移
                     z->parent->color = Color::BLACK;
                     y->color = Color::BLACK;
                     z->parent->parent->color = Color::RED;
                     z = z->parent->parent;
                 } else {
                     if (z == z->parent->right) {
-                        // 情况2：z是右孩子 → 左旋
+                        // 情况 2: 三角 -> 左旋
                         z = z->parent;
                         leftRotate(z);
                     }
-                    // 情况3：z是左孩子 → 右旋+变色
+                    // 情况 3: 直线 -> 右旋+变色
                     z->parent->color = Color::BLACK;
                     z->parent->parent->color = Color::RED;
                     rightRotate(z->parent->parent);
                 }
             } else {
-                // 对称情况
+                // 对称情况（parent 是右孩子）
                 Node* y = z->parent->parent->left;
-                if (y && y->color == Color::RED) {
+                if (y->color == Color::RED) {
                     z->parent->color = Color::BLACK;
                     y->color = Color::BLACK;
                     z->parent->parent->color = Color::RED;
@@ -274,924 +126,125 @@ PRIVATE:
         root->color = Color::BLACK;
     }
 
-    // 中序遍历
-    FUNCTION inorder(Node* node) {
+    void inorderPrint(Node* node) {
         if (node == NIL) return;
-        inorder(node->left);
-        PRINT node->data
-                  << (node->color == Color::RED ? "(红) " : "(黑) ");
-        inorder(node->right);
+        inorderPrint(node->left);
+        std::cout << node->data
+                  << (node->color == Color::RED ? "(R) " : "(B) ");
+        inorderPrint(node->right);
     }
 
-    // 计算黑色高度
-    FUNCTION blackHeight(Node* node) {
-        if (node == NIL) return 0;
-        int left = blackHeight(node->left);
-        int right = blackHeight(node->right);
-        int add = (node->color == Color::BLACK) ? 1 : 0;
-        return add + MAX(left, right);
-    }
-
-    // 释放内存
-    FUNCTION destroy(Node* node) {
+    void destroy(Node* node) {
         if (node == NIL) return;
         destroy(node->left);
         destroy(node->right);
-        DELETE node;
+        delete node;
     }
 
-PUBLIC:
+public:
     RBTree() {
-        NIL = NEW Node(T());
+        NIL = new Node(T());
         NIL->color = Color::BLACK;
-        NIL->left = NIL->right = NIL->parent = NULL;
+        NIL->left = NIL->right = NIL->parent = nullptr;
         root = NIL;
     }
 
     ~RBTree() {
         destroy(root);
-        DELETE NIL;
+        delete NIL;
     }
 
-    FUNCTION insert(T value) {
-        Node* z = NEW Node(value);
-        z->left = NIL;
-        z->right = NIL;
+    void insert(T value) {
+        Node* z = new Node(value);
+        z->left = z->right = NIL;
 
-        Node* y = NULL;
+        Node* y = nullptr;
         Node* x = root;
-
-        // 找到插入位置
         while (x != NIL) {
             y = x;
-            if (z->data < x->data) {
-                x = x->left;
-            } else if (z->data > x->data) {
-                x = x->right;
-            } else {
-                DELETE z;
-                return;  // 不允许重复
-            }
+            if (z->data < x->data) x = x->left;
+            else if (z->data > x->data) x = x->right;
+            else { delete z; return; } // 不允许重复
         }
 
         z->parent = y;
-        if (y == NULL) {
-            root = z;
-        } else if (z->data < y->data) {
-            y->left = z;
-        } else {
-            y->right = z;
-        }
+        if (y == nullptr) root = z;
+        else if (z->data < y->data) y->left = z;
+        else y->right = z;
 
-        // 插入修正
         insertFixup(z);
     }
 
-    Node* search(T value) {
+    bool search(T value) const {
         Node* cur = root;
         while (cur != NIL) {
-            if (value == cur->data) return cur;
+            if (value == cur->data) return true;
             cur = (value < cur->data) ? cur->left : cur->right;
         }
-        return NULL;
+        return false;
     }
 
-    FUNCTION print() {
-        PRINT "中序遍历: ";
-        inorder(root);
-        PRINT endl;
-        PRINT "根节点: " + root->data
-                  << (root->color == Color::RED ? "(红)" : "(黑)")
-                  << " | 黑色高度: " << blackHeight(root) + NEWLINE;
+    void print() {
+        inorderPrint(root);
+        std::cout << std::endl;
     }
 };
+```
 
-FUNCTION main() {
-    RBTree<int> rbt;
+### 插入修复的三种情况
 
-    // 插入一系列值
-    int values[] = {7, 3, 18, 10, 22, 8, 11, 26, 2, 6, 13};
-    for (int v : values) {
-        rbt.insert(v);
-        PRINT "插入 " + v + " 后: ";
-        rbt.print();
-    }
+1. **叔叔是红色**: 父和叔变黑，祖父变红，当前节点移到祖父继续修复
+2. **叔叔是黑色，当前节点与父节点同侧（直线）**: 旋转父节点 + 变色
+3. **叔叔是黑色，当前节点与父节点异侧（三角）**: 先旋转到同侧，再按情况 2 处理
 
-    // 查找测试
-    for (int v : {10, 99}) {
-        node = rbt.search(v);
-        PRINT "查找 " + v + ": "
-                  << (node ? "找到" : "未找到") + NEWLINE;
-    }
+---
+
+## STL 使用
+
+```cpp
+#include <set>
+#include <map>
+#include <iostream>
+
+int main() {
+    // set -- 有序集合（红黑树）
+    std::set<int> s = {3, 1, 4, 1, 5};
+    s.insert(9);
+    s.erase(1);
+    auto it = s.lower_bound(3); // 第一个 >= 3 的元素
+    auto it2 = s.upper_bound(3); // 第一个 > 3 的元素
+
+    for (int x : s) std::cout << x << " "; // 1 3 4 5 9
+
+    // map -- 有序映射（红黑树）
+    std::map<std::string, int> m;
+    m["apple"] = 5;
+    m["banana"] = 3;
+    // 范围查询
+    auto lb = m.lower_bound("a");
+    auto ub = m.upper_bound("c");
+    for (auto it = lb; it != ub; ++it)
+        std::cout << it->first << ": " << it->second << std::endl;
+
+    // multimap / multiset -- 允许重复键
 
     return 0;
 }
-
 ```
 
 ---
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
 
-1.5 红黑树 vs AVL树 的比较
--------------------------------
+## 应用场景
 
-| 特性       | 红黑树           | AVL树             |
-|-----------|-----------------|-------------------|
-| 平衡标准   | 近似平衡（2倍）  | 严格平衡（差<=1）  |
-| 查找速度   | 稍慢（log n）    | 更快（log n）      |
-| 插入/删除  | 更快（1-2次旋转）| 更慢（可能多次旋转）|
-| 额外存储   | 1bit颜色        | 平衡因子（整数）   |
-| 适用场景   | 插入删除频繁     | 查找频繁           |
-
-
-## ==========================================================================
-### 📖 第二节: 实现思路
-## ==========================================================================
-
-2.1 map 中的红黑树操作
-------------------------------
-
-```pseudocode
-FUNCTION main() {
-    map<int, string> rbt_map;
-
-    // 插入（每个插入都是O(log n)的红黑树操作）
-    rbt_map[5] = "five";
-    rbt_map[3] = "three";
-    rbt_map[8] = "eight";
-    rbt_map[1] = "one";
-    rbt_map[7] = "seven";
-
-    // 利用红黑树的有序性做范围查询
-    lb = rbt_map.lower_bound(3);   // >= 3
-    ub = rbt_map.upper_bound(7);   // > 7
-
-    PRINT "范围 [3, 7] 内的元素:" + NEWLINE;
-    for (it = lb; it != ub; ++it) {
-        PRINT "  " + it->first + " -> " + it->second + NEWLINE;
-    }
-
-    // 反向遍历（利用红黑树的双向迭代）
-    PRINT "反向遍历:" + NEWLINE;
-    for (it = rbt_map.rbegin(); it != rbt_map.rend(); ++it) {
-        PRINT "  " + it->first + " -> " + it->second + NEWLINE;
-    }
-
-    // equal_range
-    [low, high] = rbt_map.equal_range(5);
-    if (low != high) {
-        PRINT "equal_range(5): " + low->first
-                  << " -> " << low->second + NEWLINE;
-    }
-
-    return 0;
-}
-
-```
+- **有序字典/集合**: 需要按键排序 + 范围查询的场景（如按时间查询日志）
+- **区间调度**: 用 map 管理会议室预约，lower_bound 快速判断冲突
+- **Linux 内核 CFS 调度器**: 红黑树管理进程按 vruntime 排序
 
 ---
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
 
-2.2 set 中的红黑树操作
-------------------------------
-
-```pseudocode
-FUNCTION main() {
-    set<int> s;
-
-    // 插入
-    [it, inserted] = s.insert(5);
-    PRINT "插入5: " + (inserted ? "成功" : "已存在") + NEWLINE;
-
-    tie(it, inserted) = s.insert(5);
-    PRINT "再次插入5: " + (inserted ? "成功" : "已存在") + NEWLINE;
-
-    // 批量插入
-    s.insert({3, 8, 1, 7, 9, 2});
-
-    // 利用红黑树有序性做集合运算
-    set<int> set_a = {1, 2, 3, 4, 5};
-    set<int> set_b = {3, 4, 5, 6, 7};
-    set<int> result;
-
-    // 交集
-    set_intersection(set_a.begin(), set_a.end(),
-                          set_b.begin(), set_b.end(),
-                          inserter(result, result.begin()));
-    PRINT "交集: ";
-    for (int x : result) PRINT x + " ";
-    PRINT endl;
-
-    // 并集
-    result.clear();
-    set_union(set_a.begin(), set_a.end(),
-                   set_b.begin(), set_b.end(),
-                   inserter(result, result.begin()));
-    PRINT "并集: ";
-    for (int x : result) PRINT x + " ";
-    PRINT endl;
-
-    // 差集
-    result.clear();
-    set_difference(set_a.begin(), set_a.end(),
-                        set_b.begin(), set_b.end(),
-                        inserter(result, result.begin()));
-    PRINT "差集 (A-B): ";
-    for (int x : result) PRINT x + " ";
-    PRINT endl;
-
-    return 0;
-}
-
-```
-
----
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
-
-2.3 红黑树的应用：区间调度
--------------------------------
-
-```pseudocode
-// 使用红黑树（map）管理会议室的预约时间
-CLASS MeetingRoom {
-PRIVATE:
-    map<int, int> bookings;  // start -> end (红黑树, key有序)
-
-PUBLIC:
-    // 预约：返回是否成功
-    FUNCTION book(int start, int end) {
-        // 找到第一个 >= start 的预约
-        next = bookings.lower_bound(start);
-
-        // 检查与后一个预约是否冲突
-        if (next != bookings.end() && next->first < end) {
-            return FALSE;
-        }
-
-        // 检查与前一个预约是否冲突
-        if (next != bookings.begin()) {
-            prev = PREV(next);
-            if (prev->second > start) {
-                return FALSE;
-            }
-        }
-
-        bookings[start] = end;
-        return TRUE;
-    }
-
-    FUNCTION printBookings() {
-        PRINT "当前预约: ";
-        for ( [start, end] : bookings) {
-            PRINT "[" + start + "-" + end + ") ";
-        }
-        PRINT endl;
-    }
-};
-
-FUNCTION main() {
-    MeetingRoom room;
-
-    room.book(9, 10);    // 9:00-10:00
-    room.book(10, 11);   // 10:00-11:00
-    room.book(11, 12);   // 11:00-12:00
-
-    room.printBookings();
-
-    PRINT "预约 9:30-10:30: "
-              << (room.book(9, 10) ? "成功" : "失败") + NEWLINE;
-    PRINT "预约 14:00-15:00: "
-              << (room.book(14, 15) ? "成功" : "失败") + NEWLINE;
-
-    room.printBookings();
-
-    return 0;
-}
-
-```
-
----
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
-
-
-## ==========================================================================
-### 📖 第三节: 应用场景
-## ==========================================================================
-
-案例一：字典树形查询（中文拼音输入法）
-----------------------------------------------
-
-使用多重map（红黑树）实现拼音到汉字的映射查询：
-
-```pseudocode
-CLASS PinyinDictionary {
-PRIVATE:
-    // 拼音 -> 候选汉字集合
-    map<string, set<string>> dict;
-
-PUBLIC:
-    FUNCTION addWord(string pinyin, string hanzi) {
-        dict[pinyin].insert(hanzi);
-    }
-
-    // 精确查询
-    set<string> query(string pinyin) {
-        it = dict.find(pinyin);
-        if (it != dict.end()) {
-            return it->second;
-        }
-        return {};
-    }
-
-    // 前缀查询（利用红黑树的lower_bound/upper_bound）
-    vector<pair<string, set<string>>>
-    prefixQuery(string prefix) {
-        vector<pair<string, set<string>>> result;
-
-        start = dict.lower_bound(prefix);
-        // 构造上界: 将最后一个字符+1
-        string end_prefix = prefix;
-        end_prefix.back()++;
-
-        end = dict.lower_bound(end_prefix);
-
-        for (it = start; it != end; ++it) {
-            if (!it->second.empty()) {
-                result.push_back({it->first, it->second});
-            }
-        }
-
-        return result;
-    }
-
-    FUNCTION printAll() {
-        for ( [pinyin, hanzi_set] : dict) {
-            PRINT pinyin + ": ";
-            for ( h : hanzi_set) {
-                PRINT h + " ";
-            }
-            PRINT endl;
-        }
-    }
-};
-
-FUNCTION main() {
-    PinyinDictionary dict;
-
-    dict.addWord("zhong", "中");
-    dict.addWord("zhong", "钟");
-    dict.addWord("zhong", "衷");
-    dict.addWord("guo", "国");
-    dict.addWord("guo", "果");
-    dict.addWord("guo", "过");
-    dict.addWord("zhongguo", "中国");
-    dict.addWord("ren", "人");
-    dict.addWord("min", "民");
-    dict.addWord("renmin", "人民");
-
-    PRINT "完整词库:" + NEWLINE;
-    dict.printAll();
-
-    string input = "zhong";
-    PRINT "\n精确查询 \"" + input + "\": ";
-    for ( h : dict.query(input)) {
-        PRINT h + " ";
-    }
-    PRINT endl;
-
-    input = "g";
-    PRINT "\n前缀查询 \"" + input + "\": " + NEWLINE;
-    for ( [p, hset] : dict.prefixQuery(input)) {
-        PRINT "  " + p + ": ";
-        for ( h : hset) PRINT h + " ";
-        PRINT endl;
-    }
-
-    return 0;
-}
-
-```
-
----
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
-
-
-案例二：股票交易系统订单簿
------------------------------------
-
-使用红黑树（map）管理股票买卖订单：
-
-```pseudocode
-CLASS OrderBook {
-PRIVATE:
-    STRUCT Order {
-        int id;
-        int quantity;
-        double price;
-        string trader;
-
-        Order(int i, int q, double p, string t)
-            : id(i), quantity(q), price(p), trader(t) {}
-    };
-
-    // 卖单：按价格升序（最低价先成交）
-    map<double, vector<Order>> sell_orders;
-
-    // 买单：按价格降序（最高价先成交）
-    // 使用负值实现降序效果，或使用greater
-    map<double, vector<Order>, greater<double>> buy_orders;
-
-    int next_order_id = 1;
-
-PUBLIC:
-    FUNCTION placeBuyOrder(int quantity, double price, string trader) {
-        buy_orders[price].emplace_back(next_order_id++, quantity, price, trader);
-        PRINT "买单: " + trader + " 想以 " + price
-                  << " 买入 " << quantity << "股" + NEWLINE;
-        matchOrders();
-    }
-
-    FUNCTION placeSellOrder(int quantity, double price, string trader) {
-        sell_orders[price].emplace_back(next_order_id++, quantity, price, trader);
-        PRINT "卖单: " + trader + " 想以 " + price
-                  << " 卖出 " << quantity << "股" + NEWLINE;
-        matchOrders();
-    }
-
-PRIVATE:
-    FUNCTION matchOrders() {
-        while (!buy_orders.empty() && !sell_orders.empty()) {
-            highest_buy = buy_orders.begin();
-            lowest_sell = sell_orders.begin();
-
-            // 最高买价 >= 最低卖价 → 成交
-            if (highest_buy->first < lowest_sell->first) break;
-
-             buy_orders_at_price = highest_buy->second;
-             sell_orders_at_price = lowest_sell->second;
-
-            int trade_qty = MIN(buy_orders_at_price.front().quantity,
-                                     sell_orders_at_price.front().quantity);
-            double trade_price = lowest_sell->first;
-
-            PRINT "  [成交] " + trade_qty + "股 @ "
-                      << trade_price + NEWLINE;
-
-            buy_orders_at_price.front().quantity -= trade_qty;
-            sell_orders_at_price.front().quantity -= trade_qty;
-
-            if (buy_orders_at_price.front().quantity == 0) {
-                buy_orders_at_price.erase(buy_orders_at_price.begin());
-            }
-            if (sell_orders_at_price.front().quantity == 0) {
-                sell_orders_at_price.erase(sell_orders_at_price.begin());
-            }
-
-            if (buy_orders_at_price.empty()) buy_orders.erase(highest_buy);
-            if (sell_orders_at_price.empty()) sell_orders.erase(lowest_sell);
-        }
-    }
-
-PUBLIC:
-    FUNCTION printBook() {
-        PRINT "\n========== 订单簿 ==========" + NEWLINE;
-        PRINT "--- 卖单 (低价优先) ---" + NEWLINE;
-        for (it = sell_orders.begin(); it != sell_orders.end(); ++it) {
-            int total_qty = 0;
-            for ( o : it->second) total_qty += o.quantity;
-            PRINT "  $" + it->first + ": " + total_qty + "股" + NEWLINE;
-        }
-
-        PRINT "--- 买单 (高价优先) ---" + NEWLINE;
-        for (it = buy_orders.begin(); it != buy_orders.end(); ++it) {
-            int total_qty = 0;
-            for ( o : it->second) total_qty += o.quantity;
-            PRINT "  $" + it->first + ": " + total_qty + "股" + NEWLINE;
-        }
-        PRINT "==========================\n" + NEWLINE;
-    }
-};
-
-FUNCTION main() {
-    OrderBook ob;
-
-    ob.placeBuyOrder(100, 50.0, "Alice");
-    ob.placeSellOrder(50, 49.5, "Bob");
-    ob.placeBuyOrder(200, 51.0, "Charlie");
-    ob.placeSellOrder(100, 50.5, "David");
-    ob.placeSellOrder(150, 49.0, "Eve");
-
-    ob.printBook();
-
-    return 0;
-}
-
-```
-
----
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
-
-
-案例三：内存分配器（伙伴系统简化版）
--------------------------------------------
-
-使用红黑树管理空闲内存块：
-
-```pseudocode
-CLASS BuddyAllocator {
-PRIVATE:
-    // size -> block addresses (红黑树保证按size排序)
-    map<size_t, set<void*>> free_blocks;
-
-PUBLIC:
-    void* allocate(size_t size) {
-        // 找到第一个 >= size 的空闲块
-        it = free_blocks.lower_bound(size);
-        if (it == free_blocks.end()) {
-            PRINT "分配 " + size + "字节: 失败，无足够内存"
-                      + NEWLINE;
-            return NULL;
-        }
-
-        void* addr = *it->second.begin();
-        it->second.erase(it->second.begin());
-
-        if (it->second.empty()) {
-            free_blocks.erase(it);
-        }
-
-        PRINT "分配 " + size + "字节 @ " + addr + NEWLINE;
-        return addr;
-    }
-
-    FUNCTION deallocate(void* addr, size_t size) {
-        free_blocks[size].insert(addr);
-        PRINT "释放 " + size + "字节 @ " + addr + NEWLINE;
-    }
-
-    FUNCTION printStats() {
-        PRINT "\n空闲块统计:" + NEWLINE;
-        for ( [size, addrs] : free_blocks) {
-            PRINT "  " + size + "字节: " + addrs.size() + "个块"
-                      + NEWLINE;
-        }
-    }
-};
-
-FUNCTION main() {
-    BuddyAllocator alloc;
-
-    // 模拟内存管理
-    void* p1 = alloc.allocate(64);
-    void* p2 = alloc.allocate(128);
-    void* p3 = alloc.allocate(32);
-
-    alloc.deallocate(p1, 64);
-    alloc.deallocate(p3, 32);
-
-    void* p4 = alloc.allocate(48);
-    void* p5 = alloc.allocate(256);
-
-    alloc.deallocate(p2, 128);
-    alloc.deallocate(p4, 48);
-    alloc.deallocate(p5, 256);
-
-    alloc.printStats();
-
-    return 0;
-}
-
-```
-
----
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
-
-
-## ==========================================================================
-### 📖 第四节: 课后习题
-## ==========================================================================
-
-1. 基础题：手动实现红黑树的删除操作。
-   - 实现红黑树的删除逻辑（包括修复）
-   - 处理所有可能的删除情况（双黑问题）
-   - 验证删除后保持红黑树的五个性质
-
-2. 应用题：使用红黑树实现一个时间轮调度器。
-   - 将定时任务按执行时间存储在红黑树中
-   - 支持添加任务、取消任务、获取最近要执行的任务
-   - 模拟任务调度过程
-
-3. 进阶题：实现红黑树的区间查找（区间树）。
-   - 在红黑树节点中添加"区间最大值"字段
-   - 支持插入区间、删除区间、查找与给定区间重叠的所有区间
-   - 应用：网络路由表、防火墙规则匹配
-
-4. 综合题：实现一个支持范围统计的数据库索引。
-   - 使用红黑树存储（key, value）对
-   - 支持 count(low, high) 返回key在[low, high]范围内的元素个数
-   - 支持 sum(low, high) 返回key在范围内的value之和
-   - 时间复杂度 O(log n)
-
-5. 挑战题：实现一种红黑树的变体——左倾红黑树（Left-Leaning Red-Black Tree）。
-   - 由Robert Sedgewick提出，简化了插入和删除的实现
-   - 只有左子节点可以是红色的
-   - 实现 insert 和 delete 操作
-   - 与标准红黑树进行性能对比
-
-## ==========================================================================
-
-
-## ==========================================================================
-### 📝 章节测试
-## ==========================================================================
-
-> [!question] 判断题 1
-> 红黑树的根节点必须是黑色的 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > 
-> > **解析**: 红黑树的五条性质之一规定根节点必须是黑色。这是红黑树的基本约束。
-
-> [!question] 判断题 2
-> 红黑树允许两个连续的红色节点（父子都为红色） （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > 
-> > **解析**: 红黑树性质4规定：如果一个节点是红色，则它的两个子节点都必须是黑色。即不能有两个连续的红色节点。
-
-> [!question] 判断题 3
-> 红黑树的高度严格等于 log2(n) （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > 
-> > **解析**: 红黑树的高度不超过 2*log2(n+1)，是近似平衡的，但不保证严格等于log2(n)。AVL树比红黑树更加严格平衡。
-
-> [!question] 判断题 4
-> map 和 set 的底层实现是红黑树 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > 
-> > **解析**: C++标准库中的map、set、multimap、multiset都基于红黑树实现，保证了O(log n)的增删查操作和有序遍历。
-
-> [!question] 判断题 5
-> 红黑树的插入操作最多需要3次旋转即可恢复平衡 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > 
-> > **解析**: 红黑树的插入操作最多需要2次旋转（加上颜色调整）即可恢复平衡。删除操作最多需要3次旋转。
-
-> [!question] 判断题 6
-> 从任意节点到其所有叶子节点路径上的黑色节点数目相同 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > 
-> > **解析**: 这是红黑树性质5（黑色高度相同）。从任意节点到其每个叶子（NIL节点）的所有路径都包含相同数目的黑色节点。
-
-> [!question] 判断题 7
-> 红黑树中的NIL叶子节点（空节点）被视为黑色 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > 
-> > **解析**: 红黑树性质3规定每个叶子节点（NIL空节点）是黑色的。实际实现中通常使用一个共享的哨兵NIL节点。
-
-> [!question] 判断题 8
-> 红黑树的查找操作与普通BST完全相同，不涉及颜色 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > 
-> > **解析**: 红黑树的查找操作与普通二叉搜索树相同：从根开始，小于当前节点走左，大于走右。颜色信息只在插入和删除时用于维持平衡。
-
-> [!question] 判断题 9
-> 红黑树比AVL树更适合频繁插入/删除的场景 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > 
-> > **解析**: 红黑树平衡条件更宽松，插入/删除时需要的旋转次数更少（最多2-3次）。AVL树严格平衡，插入/删除可能需要O(log n)次旋转。因此红黑树更适合频繁修改的场景。
-
-> [!question] 判断题 10
-> 红黑树可以退化为链表结构 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > 
-> > **解析**: 红黑树的颜色约束保证了树的高度不超过2*log2(n+1)，因此不可能退化为链表。普通BST在顺序插入时才会退化为链表。
-
----
-
-> [!question] 选择题 1
-> 红黑树的五个性质中，哪一条保证了树的平衡？
-> - [ ] A. 根节点是黑色
-> - [ ] B. 红色节点的子节点必须是黑色
-> - [ ] C. 从任意节点到叶子的所有路径有相同数目的黑色节点
-> - [ ] D. B和C共同保证平衡
->
-> > [!success]- 点击查看答案
-> > 正确答案: D
-> > 
-> > **解析**: 性质4（不能连续红色）和性质5（黑色高度相同）共同保证了最长路径不超过最短路径的2倍，从而保证近似平衡。
-
-> [!question] 选择题 2
-> 在红黑树中插入新节点时，新节点初始应该是什么颜色？
-> - [ ] A. 黑色
-> - [ ] B. 红色
-> - [ ] C. 取决于父节点颜色
-> - [ ] D. 随机选择
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > 
-> > **解析**: 新插入的节点初始为红色。因为插入红色节点不会违反性质5（黑色高度不变），只可能违反性质4（连续红色），修复更容易。如果初始为黑色则一定违反性质5。
-
-> [!question] 选择题 3
-> 红黑树的最坏情况查找时间复杂度是？
-> - [ ] A. O(1)
-> - [ ] B. O(log n)
-> - [ ] C. O(n)
-> - [ ] D. O(n log n)
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > 
-> > **解析**: 红黑树保证高度不超过2*log2(n+1)，因此最坏情况下查找时间复杂度仍为O(log n)。
-
-> [!question] 选择题 4
-> 以下哪个旋转操作用于修复"左子节点的右子节点"导致的不平衡？
-> - [ ] A. 单次左旋
-> - [ ] B. 单次右旋
-> - [ ] C. 先左旋再右旋（LR双旋）
-> - [ ] D. 先右旋再左旋（RL双旋）
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > 
-> > **解析**: "左子节点的右子节点"是LR情况，需要先对左子节点进行左旋转换为LL情况，再对当前节点进行右旋修复。
-
-> [!question] 选择题 5
-> 含有n个节点的红黑树，其黑色高度（Black Height）最多为？
-> - [ ] A. log2(n)
-> - [ ] B. log2(n+1)
-> - [ ] C. 2*log2(n)
-> - [ ] D. n/2
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > 
-> > **解析**: 红黑树的黑色高度bh满足 n >= 2^bh - 1，因此 bh <= log2(n+1)。整棵树的实际高度不超过2*bh。
-
-> [!question] 选择题 6
-> 红黑树删除操作中，什么情况下需要修复（fix-up）？
-> - [ ] A. 删除红色节点时
-> - [ ] B. 删除黑色节点时
-> - [ ] C. 任何删除都需要修复
-> - [ ] D. 只有删除根节点时
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > 
-> > **解析**: 删除红色节点不会破坏红黑树性质（不影响黑色高度）。删除黑色节点会导致某条路径上黑色节点减少，违反性质5，需要通过旋转和重新着色修复。
-
-> [!question] 选择题 7
-> 以下哪个不是红黑树的应用场景？
-> - [ ] A. C++ STL中的map
-> - [ ] B. Linux内核CFS进程调度器
-> - [ ] C. Java中的TreeMap
-> - [ ] D. 数组排序算法
->
-> > [!success]- 点击查看答案
-> > 正确答案: D
-> > 
-> > **解析**: 红黑树用于需要有序动态集合的场景。数组排序通常使用快排、归并排序或堆排序等算法，不使用红黑树。
-
-> [!question] 选择题 8
-> 在map中执行lower_bound(key)，其底层红黑树的时间复杂度是？
-> - [ ] A. O(1)
-> - [ ] B. O(log n)
-> - [ ] C. O(n)
-> - [ ] D. O(n log n)
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > 
-> > **解析**: lower_bound在红黑树上执行类似二分查找的操作，沿着树从根到叶子寻找第一个不小于key的节点，时间复杂度O(log n)。
-
-> [!question] 选择题 9
-> 红黑树与2-3-4树的对应关系中，一个4-节点对应红黑树中的什么结构？
-> - [ ] A. 一个黑色节点
-> - [ ] B. 一个黑色父节点带两个红色子节点
-> - [ ] C. 三个连续的红色节点
-> - [ ] D. 一个红色父节点带两个黑色子节点
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > 
-> > **解析**: 2-3-4树的4-节点（含3个key）对应红黑树中一个黑色父节点带有两个红色子节点的结构。红黑树本质是2-3-4树的二叉表示。
-
-> [!question] 选择题 10
-> 以下哪个操作在红黑树上不能保证O(log n)时间？
-> - [ ] A. 插入
-> - [ ] B. 删除
-> - [ ] C. 查找第k大的元素（无额外信息）
-> - [ ] D. 查找最大值
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > 
-> > **解析**: 普通红黑树查找第k大元素需要中序遍历，时间O(n)。要实现O(log n)的第k大查找，需要在每个节点额外存储子树大小（称为"顺序统计树"）。
-
----
-
-### 💻 编程大题
-
-> [!note] 编程题 1：实现红黑树的插入和修复操作
-> **要求**：
-> 1. 实现红黑树节点结构（包含颜色、左右子节点、父节点指针）
-> 2. 实现左旋（rotateLeft）和右旋（rotateRight）操作
-> 3. 实现插入操作（insertNode）和插入后修复（insertFixup）
-> 4. 处理所有三种插入修复情况：
->    - Case 1: 叔节点为红色 → 重新着色
->    - Case 2: 叔节点为黑色，当前节点为"内侧"子节点 → 旋转转化为Case 3
->    - Case 3: 叔节点为黑色，当前节点为"外侧"子节点 → 旋转+着色
-> 5. 实现中序遍历验证BST性质
-> 6. 验证红黑树的五条性质是否始终满足
->
-> **提示**: 使用NIL哨兵节点替代nullptr，简化边界条件处理
-
-> [!note] 编程题 2：使用红黑树实现一个有序字典
-> **要求**：
-> 1. 基于红黑树实现类似map的键值对容器 `OrderedDict<K, V>`
-> 2. 支持以下操作：
->    - `insert(key, value)` / `erase(key)` — 插入/删除
->    - `find(key)` — 查找
->    - `operator[](key)` — 下标访问（不存在时插入默认值）
->    - `lower_bound(key)` / `upper_bound(key)` — 范围查询
->    - `size()` / `empty()`
-> 3. 支持正向和反向迭代器
-> 4. 与map进行功能和性能对比测试
->
-> **提示**: 迭代器的++操作需要找中序后继，--操作需要找中序前驱
-
-> [!note] 编程题 3：红黑树性质验证与可视化
-> **要求**：
-> 1. 实现一个红黑树验证器，检查以下性质：
->    - 根节点是否为黑色
->    - 是否存在连续红色节点
->    - 所有路径的黑色高度是否相同
->    - 是否满足BST性质
-> 2. 实现红黑树的可视化打印（树形结构，显示颜色）
-> 3. 随机插入/删除大量节点（10000+），每次操作后验证性质
-> 4. 统计树的实际高度与理论上限2*log2(n+1)的关系
-> 5. 统计旋转次数和重着色次数
->
-> **提示**: 可视化时用R/B标记颜色，使用递归打印树结构
-
-### 🔗 推荐练习题（洛谷）
+## 练习
 
 | 题号 | 题目 | 难度 | 知识点 |
 |------|------|------|--------|
-| [P3369](https://www.luogu.com.cn/problem/P3369) | 普通平衡树 | 提高 | 平衡树基本操作（可用红黑树实现） |
-
----
-
-## --------------------------------------------------------------------------
-## 🔗 知识网络
-## --------------------------------------------------------------------------
-
-- **上一章**: [[I_树_Tree_BST_AVL]] | **下一章**: [[N_跳表_SkipList]] | **返回**: [[DSA学习路线]] (Phase 5 选修)
-- **算法技巧**: [[../算法/算法技巧/优化]]
-- **相关**: [[容器库/09_set_multiset]] | [[容器库/10_map_multimap]] | [[算法/算法技巧/二分查找]]
+| P3369 | 普通平衡树 | 提高 | 平衡树基本操作 |
+| P6136 | 普通平衡树（数据加强版） | 提高+ | 红黑树/Treap/Splay |

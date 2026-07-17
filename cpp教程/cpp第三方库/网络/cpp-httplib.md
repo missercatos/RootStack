@@ -28,6 +28,6 @@
 
 - [[libcurl|libcurl]] — 成熟 HTTP 客户端
 - [[Boost.Asio|Boost.Asio]] — 底层异步网络
-- [[../../c语言教程/库大全/第三方库/相关文件|C 第三方库]]
-- [[../索引|库索引]]
+- 
+- 
 - (搜索: cpp-httplib)

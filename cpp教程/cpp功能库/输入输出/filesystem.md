@@ -87,4 +87,4 @@ FUNCTION demo_ops:
 - **文件流**: [[./fstream|fstream]] — 文件内容读写
 - **控制台 IO**: [[./iostream|iostream]] — 标准 IO
 - **C 对照**: `stat`/`opendir`/`readdir`（POSIX `<sys/stat.h>` `<dirent.h>`）
-- **返回目录**: [[../索引|C++ 功能库索引]]
+- **返回目录**: 

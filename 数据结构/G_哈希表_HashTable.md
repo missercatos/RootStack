@@ -1,1144 +1,234 @@
-## ==========================================================================
-数据结构教程 — 哈希表 (Hash Table)
-## ==========================================================================
+# G 哈希表 HashTable
 
-## 📋 章节概述
-
-哈希表（Hash Table），也称为散列表，是一种通过键（Key）直接访问存储位置的数据
-结构。它利用哈希函数将键映射到数组的某个位置，从而实现O(1)平均时间复杂度的
-插入、删除和查找操作。
-
-哈希表是 C++11 中 unordered_map、unordered_set、unordered_multimap、
-unordered_multiset 的底层实现。它在缓存系统、数据库索引、密码学、编译器设计
-等领域有着广泛的应用。
-
-> 📌 **底层实现参考**：如果需要深入理解本章数据结构的底层实现（纯C手写、内存布局、指针操作），请参阅 [[../../C语言深化教程/3数据结构/05_哈希表|C语言教程: 哈希表]]。C教程侧重手动实现与内存本质，本教程侧重STL使用与算法优化，两者互补。
-
-## ==========================================================================
-### 📖 第一节: 基础语法 + 计算机底层原理
-## ==========================================================================
-
-1.1 哈希表的基本概念
------------------------
-
-哈希表的核心组件：
-- 哈希函数：将任意大小的键映射到固定范围的整数（数组索引）
-- 数组（桶）：存储键值对的连续内存
-- 冲突解决：处理不同键映射到同一位置的策略
-
-最简单的哈希表示例（使用标准库）：
-
-```pseudocode
-FUNCTION main() {
-    // unordered_map (哈希表)
-    unordered_map<string, int> phone_book;
-
-    phone_book["Alice"] = 123456;
-    phone_book["Bob"] = 789012;
-    phone_book["Charlie"] = 345678;
-
-    PRINT "Alice的电话: " + phone_book["Alice"] + NEWLINE;
-
-    // 查找
-    it = phone_book.find("David");
-    if (it == phone_book.end()) {
-        PRINT "David不在电话簿中" + NEWLINE;
-    }
-
-    // unordered_set (哈希集合)
-    unordered_set<int> numbers = {3, 1, 4, 1, 5, 9};
-
-    numbers.insert(2);
-    numbers.erase(1);
-
-    if (numbers.find(4) != numbers.end()) {
-        PRINT "4在集合中" + NEWLINE;
-    }
-
-    return 0;
-}
-
-```
+建议先阅读: [[A_容器_Container|A 容器 Container]]
 
 ---
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
 
-1.2 哈希表的底层原理
------------------------
+## 原理
 
-哈希表的设计关键：
+哈希表（Hash Table）通过哈希函数将键映射到数组的某个位置，实现 O(1) 平均时间复杂度的插入、删除和查找操作。
 
-(1) 哈希函数的选择
-一个好的哈希函数应该：
-- 计算快速
-- 分布均匀（将键均匀映射到整个表范围）
-- 确定性（相同键总产生相同哈希值）
+### 核心组件
 
-```pseudocode
-FUNCTION main() {
-    // C++标准哈希函数
-    hash<int> int_hash;
-    hash<string> str_hash;
-    hash<double> double_hash;
+- **哈希函数**: 将任意大小的键映射到固定范围的整数（数组索引），需计算快、分布均匀、确定性
+- **桶数组**: 存储键值对的连续内存
+- **冲突解决**: 处理不同键映射到同一位置的策略
 
-    PRINT "hash(42) = " + int_hash(42) + NEWLINE;
-    PRINT "hash(\"hello\") = " + str_hash("hello") + NEWLINE;
-    PRINT "hash(3.14) = " + double_hash(3.14) + NEWLINE;
+### 冲突解决方法
 
-    // 模运算得到数组索引
-    size_t table_size = 100;
-    size_t index = int_hash(42) % table_size;
-    PRINT "42的桶索引: " + index + NEWLINE;
+1. **链地址法（拉链法）**: 每个桶维护一个链表，冲突的键值对放入同一桶的链表中。C++ unordered_map 默认使用此方法
+2. **开放地址法**: 发生冲突时寻找下一个空桶：
+   - 线性探测: `index = (hash + i) % size`
+   - 二次探测: `index = (hash + i^2) % size`
+   - 双重哈希: `index = (hash1 + i * hash2) % size`
 
-    return 0;
-}
+### 时间复杂度
 
-```
+| 操作 | 平均 | 最坏 |
+|------|------|------|
+| 插入 | O(1) | O(n) |
+| 删除 | O(1) | O(n) |
+| 查找 | O(1) | O(n) |
+
+空间复杂度: O(n + bucket_count)，负载因子（元素数/桶数）触发 rehash。
 
 ---
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
 
-(2) 冲突解决：链地址法（Separate Chaining）
-每个桶维护一个链表（或其他数据结构），冲突的键值对放入同一桶的链表中。
+## 实现
 
-```mermaid
-graph LR
-    subgraph 桶数组
-        idx0["idx0"]
-        idx1["idx1"]
-        idx2["idx2"]
-        idx3["idx3"]
-        idx4["idx4"]
-    end
-    idx0 --- null0["nullptr"]
-    idx1 --> k1["key1, val1"] --> k4["key4, val4"] --> null1["nullptr"]
-    idx2 --> k2["key2, val2"] --> null2["nullptr"]
-    idx3 --- null3["nullptr"]
-    idx4 --> k3["key3, val3"] --> null4["nullptr"]
-```
+### 链地址法 HashMap
 
-(3) 冲突解决：开放地址法（Open Addressing）
-当发生冲突时，寻找下一个空桶。常见探测方法：
-- 线性探测：index = (hash(key) + i) % table_size
-- 二次探测：index = (hash(key) + i^2) % table_size
-- 双重哈希：index = (hash1(key) + i * hash2(key)) % table_size
+```cpp
+#include <iostream>
+#include <vector>
+#include <list>
+#include <functional>
 
-1.3 手动实现哈希表（链地址法）
------------------------------------
-
-```pseudocode
-CLASS HashMap {
-PRIVATE:
-    STRUCT Entry {
-        Key key;
-        Value value;
-        Entry(Key k, Value v) : key(k), value(v) {}
+template <typename K, typename V>
+class HashMap {
+private:
+    struct Entry {
+        K key;
+        V value;
+        Entry(const K& k, const V& v) : key(k), value(v) {}
     };
 
-    vector<list<Entry>> buckets;
+    std::vector<std::list<Entry>> buckets;
     size_t num_elements;
     float max_load_factor;
 
-    hash<Key> hasher;
-
-    FUNCTION getBucketIndex(Key key) {
-        return hasher(key) % buckets.size();
+    size_t getBucketIndex(const K& key) const {
+        return std::hash<K>{}(key) % buckets.size();
     }
 
-    FUNCTION rehash(size_t new_bucket_count) {
-        vector<list<Entry>> old_buckets = MOVE(buckets);
+    void rehash(size_t new_bucket_count) {
+        auto old_buckets = std::move(buckets);
         buckets.resize(new_bucket_count);
         num_elements = 0;
-
-        for ( bucket : old_buckets) {
-            for ( entry : bucket) {
+        for (auto& bucket : old_buckets)
+            for (auto& entry : bucket)
                 insert(entry.key, entry.value);
-            }
-        }
     }
 
-PUBLIC:
+public:
     HashMap(size_t initial_size = 16)
         : buckets(initial_size), num_elements(0), max_load_factor(0.75) {}
 
-    FUNCTION insert(Key key, Value value) {
-        // 检查负载因子，需要时扩容
-        if ((num_elements + 1) / buckets.size() > max_load_factor) {
+    void insert(const K& key, const V& value) {
+        if ((num_elements + 1.0) / buckets.size() > max_load_factor)
             rehash(buckets.size() * 2);
-        }
 
-        size_t index = getBucketIndex(key);
-         bucket = buckets[index];
-
-        // 检查key是否已存在
-        for ( entry : bucket) {
+        size_t idx = getBucketIndex(key);
+        for (auto& entry : buckets[idx]) {
             if (entry.key == key) {
-                entry.value = value;  // 更新
+                entry.value = value; // 更新
                 return;
             }
         }
-
-        bucket.emplace_back(key, value);
+        buckets[idx].emplace_back(key, value);
         ++num_elements;
     }
 
-    FUNCTION find(Key key, Value out_value) {
-        size_t index = getBucketIndex(key);
-         bucket = buckets[index];
-
-        for ( entry : bucket) {
-            if (entry.key == key) {
-                out_value = entry.value;
-                return TRUE;
-            }
-        }
-        return FALSE;
+    V* find(const K& key) {
+        size_t idx = getBucketIndex(key);
+        for (auto& entry : buckets[idx])
+            if (entry.key == key)
+                return &entry.value;
+        return nullptr;
     }
 
-    Value operator[](Key key) {
-        size_t index = getBucketIndex(key);
-         bucket = buckets[index];
-
-        for ( entry : bucket) {
-            if (entry.key == key) {
-                return entry.value;
-            }
-        }
-
-        // key不存在，插入默认值
-        if ((num_elements + 1) / buckets.size() > max_load_factor) {
-            rehash(buckets.size() * 2);
-            index = getBucketIndex(key);
-        }
-
-        buckets[index].emplace_back(key, Value{});
-        ++num_elements;
-        return buckets[index].back().value;
-    }
-
-    FUNCTION erase(Key key) {
-        size_t index = getBucketIndex(key);
-         bucket = buckets[index];
-
-        for (it = bucket.begin(); it != bucket.end(); ++it) {
+    bool remove(const K& key) {
+        size_t idx = getBucketIndex(key);
+        auto& bucket = buckets[idx];
+        for (auto it = bucket.begin(); it != bucket.end(); ++it) {
             if (it->key == key) {
                 bucket.erase(it);
                 --num_elements;
-                return TRUE;
+                return true;
             }
         }
-        return FALSE;
+        return false;
     }
 
-    FUNCTION size() { return num_elements; }
-    FUNCTION empty() { return num_elements == 0; }
-
-    FUNCTION print() {
-        PRINT "哈希表 (size=" + num_elements
-                  << ", buckets=" << buckets.size() << "):" + NEWLINE;
-        for (size_t i = 0; i < buckets.size(); ++i) {
-            if (!buckets[i].empty()) {
-                PRINT "  bucket[" + i + "]: ";
-                for ( entry : buckets[i]) {
-                    PRINT "[" + entry.key + ":" + entry.value + "] ";
-                }
-                PRINT endl;
-            }
-        }
+    V& operator[](const K& key) {
+        V* found = find(key);
+        if (found) return *found;
+        insert(key, V{});
+        return *find(key);
     }
+
+    size_t size() const { return num_elements; }
+    bool empty() const { return num_elements == 0; }
 };
-
-FUNCTION main() {
-    HashMap<string, int> scores(8);
-
-    scores["Alice"] = 95;
-    scores["Bob"] = 87;
-    scores["Charlie"] = 92;
-    scores["David"] = 78;
-    scores["Eve"] = 90;
-
-    scores.print();
-
-    int score;
-    if (scores.find("Bob", score)) {
-        PRINT "Bob的成绩: " + score + NEWLINE;
-    }
-
-    scores.erase("David");
-    PRINT "删除David后: ";
-    scores.print();
-
-    return 0;
-}
-
 ```
 
----
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
+### 字符串哈希
 
-1.4 哈希表的时间复杂度与空间复杂度
----------------------------------------
+```cpp
+#include <string>
 
-| 操作    | 平均      | 最坏      |
-|--------|-----------|-----------|
-| 插入    | O(1)      | O(n)      |
-| 删除    | O(1)      | O(n)      |
-| 查找    | O(1)      | O(n)      |
-| 遍历    | O(n)      | O(n)      |
-
-空间复杂度：O(n + bucket_count)
-
-最坏情况发生在所有键映射到同一个桶中（哈希碰撞攻击）。
-标准库通过良好的哈希函数和动态扩容来避免这种情况。
-
-1.5 哈希函数的设计
----------------------
-
-```pseudocode
-// 自定义哈希函数示例
-STRUCT Student {
-    string name;
-    int id;
-    int grade;
-
-    bool operator==(Student other) {
-        return id == other.id;
-    }
-};
-
-// 方式1：自定义哈希函数对象
-STRUCT StudentHash {
-    FUNCTION operator()(Student s) {
-        // 使用hash的组合哈希
-        return hash<string>()(s.name) ^
-               (hash<int>()(s.id) << 1) ^
-               (hash<int>()(s.grade) << 2);
-    }
-};
-
-// 方式2：特化hash
-namespace std {
-
-    STRUCT hash<Student> {
-        FUNCTION operator()(Student s) {
-            return hash<int>()(s.id);
-        }
-    };
-}
-
-// 常用字符串哈希函数示例：BKDR Hash
-FUNCTION bkdrHash(string str) {
+// BKDR Hash
+size_t bkdrHash(const std::string& s) {
     size_t hash = 0;
-    size_t seed = 131;  // 31, 131, 1313, 13131, 131313
-    for (char c : str) {
+    size_t seed = 131; // 31, 131, 1313 等
+    for (char c : s)
         hash = hash * seed + c;
-    }
     return hash;
 }
 
-FUNCTION main() {
-    PRINT "BKDR哈希 \"hello\": " + bkdrHash("hello") + NEWLINE;
-    PRINT "BKDR哈希 \"world\": " + bkdrHash("world") + NEWLINE;
+// 多项式滚动哈希（前缀哈希，O(1) 获取子串哈希）
+struct StringHasher {
+    using ull = unsigned long long;
+    static const ull P = 131;
+    std::vector<ull> h, p;
 
-    // 使用自定义哈希函数
-    unordered_set<Student, StudentHash> students;
-    students.insert({"Alice", 1001, 3});
-    students.insert({"Bob", 1002, 2});
+    StringHasher(const std::string& s) : h(s.size() + 1), p(s.size() + 1) {
+        p[0] = 1;
+        for (int i = 0; i < s.size(); ++i) {
+            h[i + 1] = h[i] * P + s[i];
+            p[i + 1] = p[i] * P;
+        }
+    }
 
-    PRINT "学生人数: " + students.size() + NEWLINE;
-
-    return 0;
-}
-
+    // 子串 s[l..r] 的哈希值
+    ull getHash(int l, int r) {
+        return h[r + 1] - h[l] * p[r - l + 1];
+    }
+};
 ```
 
 ---
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
 
+## STL 使用
 
-## ==========================================================================
-### 📖 第二节: 实现思路
-## ==========================================================================
+```cpp
+#include <unordered_map>
+#include <unordered_set>
+#include <string>
+#include <iostream>
 
-2.1 unordered_map
---------------------------
+int main() {
+    // unordered_map
+    std::unordered_map<std::string, int> um;
+    um["apple"] = 5;
+    um["banana"] = 3;
+    um.insert({"cherry", 8});
+    um.emplace("date", 2);
 
-```pseudocode
-FUNCTION main() {
-    // 构造
-    unordered_map<string, int> m1;
-    unordered_map<string, int> m2 = {
-        {"apple", 5}, {"banana", 3}, {"cherry", 8}
+    auto it = um.find("apple");
+    if (it != um.end())
+        std::cout << it->first << ": " << it->second << std::endl;
+
+    um.erase("banana");
+    std::cout << "count: " << um.count("apple") << std::endl;
+
+    // 桶接口
+    std::cout << "bucket_count: " << um.bucket_count() << std::endl;
+    std::cout << "load_factor: " << um.load_factor() << std::endl;
+
+    // 预留空间
+    um.reserve(200);  // 设置桶数使负载因子合理
+    um.rehash(100);    // 直接设置桶数
+
+    // unordered_set
+    std::unordered_set<int> us = {3, 1, 4, 1, 5};
+    us.insert(9);
+    for (int x : us) std::cout << x << " "; // 无序输出
+
+    // 自定义哈希
+    struct Person { std::string name; int age; };
+    struct PersonHash {
+        size_t operator()(const Person& p) const {
+            return std::hash<std::string>{}(p.name) ^
+                   (std::hash<int>{}(p.age) << 1);
+        }
     };
-
-    // 插入
-    m1["date"] = 2;                          // operator[]
-    m1.insert({"elderberry", 4});            // pair插入
-    m1.emplace("fig", 6);                    // 就地构造
-    m1.insert({{"grape", 7}, {"honeydew", 1}});  // 批量插入
-
-    // 访问
-    PRINT "apple: " + m2["apple"] + NEWLINE;
-    PRINT "banana: " + m2.at("banana") + NEWLINE;
-    // m2.at("unknown");  // 抛出out_of_range
-
-    // 查找
-    it = m2.find("cherry");
-    if (it != m2.end()) {
-        PRINT "找到: " + it->first + " -> " + it->second + NEWLINE;
-    }
-
-    // 计数
-    PRINT "apple出现次数: " + m2.count("apple") + NEWLINE;
-
-    // 删除
-    m2.erase("banana");
-
-    // 桶接口
-    PRINT "桶数: " + m2.bucket_count() + NEWLINE;
-    PRINT "负载因子: " + m2.load_factor() + NEWLINE;
-    PRINT "最大负载因子: " + m2.max_load_factor() + NEWLINE;
-
-    // 查看每个桶的元素数
-    for (size_t i = 0; i < m2.bucket_count(); ++i) {
-        PRINT "桶 " + i + ": " + m2.bucket_size(i) + "个元素"
-                  + NEWLINE;
-    }
-
-    // 重新哈希
-    m2.rehash(100);      // 设置桶数量
-    m2.reserve(200);     // 预留空间（等价于设置桶数量使得负载因子合理）
-
-    // 遍历
-    for ( [key, value] : m2) {
-        PRINT key + " -> " + value + NEWLINE;
-    }
-
-    return 0;
-}
-
-```
-
----
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
-
-2.2 unordered_set
---------------------------
-
-```pseudocode
-FUNCTION main() {
-    unordered_set<int> s = {5, 3, 1, 3, 2, 5};
-
-    // 插入
-    [it, inserted] = s.insert(4);
-    PRINT "插入4: " + (inserted ? "成功" : "已存在") + NEWLINE;
-
-    tie(it, inserted) = s.insert(3);
-    PRINT "插入3: " + (inserted ? "成功" : "已存在") + NEWLINE;
-
-    // 批量插入
-    s.insert({7, 8, 9});
-
-    // 删除
-    s.erase(1);
-
-    // 查找
-    if (s.find(5) != s.end()) {
-        PRINT "5在集合中" + NEWLINE;
-    }
-
-    // 桶接口
-    PRINT "桶数: " + s.bucket_count() + NEWLINE;
-    PRINT "负载因子: " + s.load_factor() + NEWLINE;
-
-    // 查看元素在哪个桶
-    for (int x : {4, 5, 7}) {
-        PRINT x + " 在桶 " + s.bucket(x) + NEWLINE;
-    }
-
-    // 遍历（无序）
-    for (int x : s) PRINT x + " ";
-    PRINT endl;
-
-    return 0;
-}
-
-```
-
----
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
-
-2.3 自定义哈希与比较
---------------------------
-
-```pseudocode
-STRUCT Person {
-    string first_name;
-    string last_name;
-    int age;
-
-    bool operator==(Person other) {
-        return first_name == other.first_name &&
-               last_name == other.last_name &&
-               age == other.age;
-    }
-};
-
-// 组合哈希函数
-STRUCT PersonHash {
-    FUNCTION operator()(Person p) {
-        size_t h1 = hash<string>()(p.first_name);
-        size_t h2 = hash<string>()(p.last_name);
-        size_t h3 = hash<int>()(p.age);
-
-        // 使用boost的hash_combine思路
-        return h1 ^ (h2 << 7) ^ (h3 << 15) ^ (h2 >> 3) ^ (h3 >> 5);
-    }
-};
-
-FUNCTION main() {
-    unordered_set<Person, PersonHash> people;
-
-    people.insert({"Alice", "Smith", 25});
-    people.insert({"Bob", "Jones", 30});
-    people.insert({"Alice", "Smith", 25});  // 重复，不会插入
-
-    PRINT "人数: " + people.size() + NEWLINE;
-
-    // 自定义默认值（用于operator[]）
-    unordered_map<string, int> word_count;
-    word_count["hello"]++;  // hello不存在时，插入{hello, 0}然后++
-    word_count["world"]++;
-    word_count["hello"]++;
-    // 利用operator[]的默认构造特性实现计数
-
-    for ( [word, count] : word_count) {
-        PRINT word + ": " + count + NEWLINE;
-    }
-
-    return 0;
-}
-
-```
-
----
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
-
-2.4 哈希表与其他容器的对比
-------------------------------
-
-```pseudocode
-// 性能对比：unordered_map vs map
-FUNCTION main() {
-    int N = 100000;
-
-    unordered_map<int, int> umap;
-    map<int, int> rbtree;
-
-    // 插入性能对比
-    start = chrono::high_resolution_clock::now();
-    for (int i = 0; i < N; ++i) {
-        umap[i] = i * 2;
-    }
-    umap_time = chrono::high_resolution_clock::now() - start;
-
-    start = chrono::high_resolution_clock::now();
-    for (int i = 0; i < N; ++i) {
-        rbtree[i] = i * 2;
-    }
-    rbtree_time = chrono::high_resolution_clock::now() - start;
-
-    PRINT "unordered_map 插入" + N + "个: "
-              << chrono::duration_cast<chrono::milliseconds>(
-                     umap_time).count() << "ms" + NEWLINE;
-    PRINT "map 插入" + N + "个: "
-              << chrono::duration_cast<chrono::milliseconds>(
-                     rbtree_time).count() << "ms" + NEWLINE;
-
-    return 0;
-}
-
-```
-
----
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
-
-
-## ==========================================================================
-### 📖 第三节: 应用场景
-## ==========================================================================
-
-案例一：缓存系统（LRU Cache 的哈希表实现）
----------------------------------------------------
-
-```pseudocode
-CLASS LRUCache {
-PRIVATE:
-    int capacity;
-    list<pair<string, string>> items;
-    unordered_map<string,
-                       list<pair<string, string>>::iterator>
-        cache;
-
-PUBLIC:
-    LRUCache(int cap) : capacity(cap) {}
-
-    FUNCTION get(string key) {
-        it = cache.find(key);
-        if (it == cache.end()) return "";
-
-        // 移到头部（最近使用）
-        items.splice(items.begin(), items, it->second);
-        return it->second->second;
-    }
-
-    FUNCTION put(string key, string value) {
-        it = cache.find(key);
-        if (it != cache.end()) {
-            it->second->second = value;
-            items.splice(items.begin(), items, it->second);
-            return;
+    struct PersonEqual {
+        bool operator()(const Person& a, const Person& b) const {
+            return a.name == b.name && a.age == b.age;
         }
-
-        if (items.size() >= capacity) {
-            // 淘汰最久未使用
-            string old_key = items.back().first;
-            cache.erase(old_key);
-            items.pop_back();
-        }
-
-        items.emplace_front(key, value);
-        cache[key] = items.begin();
-    }
-
-    FUNCTION print() {
-        PRINT "缓存 (最近->最久): ";
-        for ( [k, v] : items) {
-            PRINT "[" + k + ":" + v + "] ";
-        }
-        PRINT endl;
-    }
-};
-
-FUNCTION main() {
-    LRUCache cache(3);
-
-    cache.put("A", "Apple");
-    cache.put("B", "Banana");
-    cache.put("C", "Cherry");
-    cache.print();
-
-    PRINT "get(B): " + cache.get("B") + NEWLINE;
-    cache.print();
-
-    cache.put("D", "Date");  // 淘汰最久未使用的A
-    cache.print();
-
-    cache.put("E", "Elderberry");  // 淘汰最久未使用的C
-    cache.print();
+    };
+    std::unordered_set<Person, PersonHash, PersonEqual> people;
 
     return 0;
 }
-
 ```
 
 ---
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
 
+## 应用场景
 
-案例二：词频统计器
--------------------------
-
-```pseudocode
-CLASS WordCounter {
-PRIVATE:
-    unordered_map<string, int> frequency;
-
-PUBLIC:
-    FUNCTION processText(string text) {
-        istringstream iss(text);
-        string word;
-
-        while (iss >> word) {
-            // 清理标点符号
-            word.erase(remove_if(word.begin(), word.end(),
-                         [](char c) { return ispunct(c); }),
-                       word.end());
-
-            // 转小写
-            transform(word.begin(), word.end(), word.begin(),
-                           [](char c) { return tolower(c); });
-
-            if (!word.empty()) {
-                ++frequency[word];  // 自动初始化为0然后++
-            }
-        }
-    }
-
-    FUNCTION getCount(string word) {
-        it = frequency.find(word);
-        return it != frequency.end() ? it->second : 0;
-    }
-
-    vector<pair<string, int>> getTopK(int k) {
-        vector<pair<string, int>> sorted(
-            frequency.begin(), frequency.end());
-
-        partial_sort(sorted.begin(),
-                          sorted.begin() + MIN(k, sorted.size()),
-                          sorted.end(),
-                          []( a,  b) {
-                              return a.second > b.second;
-                          });
-
-        if (sorted.size() > k) sorted.resize(k);
-        return sorted;
-    }
-
-    FUNCTION printAll() {
-        vector<pair<string, int>> items(
-            frequency.begin(), frequency.end());
-        SORT(items.begin(), items.end(),
-                  []( a,  b) {
-                      return a.second > b.second;
-                  });
-
-        for ( [word, count] : items) {
-            PRINT word + ": " + count + NEWLINE;
-        }
-    }
-};
-
-FUNCTION main() {
-    WordCounter wc;
-
-    string text =
-        "The quick brown fox jumps over the lazy dog. "
-        "The dog barks at the fox. "
-        "The quick brown fox is quick and brown.";
-
-    wc.processText(text);
-
-    PRINT "=== 词频统计 ===" + NEWLINE;
-    wc.printAll();
-
-    PRINT "\n=== Top 5 ===" + NEWLINE;
-    for ( [word, count] : wc.getTopK(5)) {
-        PRINT word + ": " + count + NEWLINE;
-    }
-
-    return 0;
-}
-
-```
-
----
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
-
-
-案例三：URL去重爬虫
--------------------------
-
-```pseudocode
-CLASS WebCrawler {
-PRIVATE:
-    unordered_set<string> visited_urls;
-    queue<string> url_queue;
-
-    // 模拟从页面提取链接
-    vector<string> extractLinks(string url) {
-        // 实际场景中会解析HTML
-        return {
-            url + "/page1",
-            url + "/page2",
-            url + "/page3"
-        };
-    }
-
-PUBLIC:
-    FUNCTION crawl(string start_url, int max_pages = 10) {
-        url_queue.push(start_url);
-
-        while (!url_queue.empty() && visited_urls.size() < max_pages) {
-            string url = url_queue.front();
-            url_queue.pop();
-
-            // 检查是否已访问（O(1)）
-            if (visited_urls.find(url) != visited_urls.end()) {
-                continue;
-            }
-
-            visited_urls.insert(url);
-            PRINT "爬取: " + url
-                      << " (已访问: " << visited_urls.size() << ")"
-                      + NEWLINE;
-
-            // 提取链接
-            for ( link : extractLinks(url)) {
-                if (visited_urls.find(link) == visited_urls.end()) {
-                    url_queue.push(link);
-                }
-            }
-        }
-
-        PRINT "\n爬取完成! 共访问 " + visited_urls.size() + " 个页面"
-                  + NEWLINE;
-    }
-
-    FUNCTION hasVisited(string url) {
-        return visited_urls.find(url) != visited_urls.end();
-    }
-};
-
-FUNCTION main() {
-    WebCrawler crawler;
-    crawler.crawl("https://example.com", 8);
-
-    PRINT "\n是否访问过example.com/page1? "
-              << (crawler.hasVisited("https://example.com/page1") ? "是" : "否")
-              + NEWLINE;
-
-    return 0;
-}
-
-```
-
----
-**实现练习**: 用 C 或 C++ 自行实现上述结构。完成后与 AI 对话检查正确性。
----
-
-
-## ==========================================================================
-### 📖 第四节: 课后习题
-## ==========================================================================
-
-1. 基础题：手动实现一个哈希表（开放地址法-线性探测）。
-   - 使用数组实现
-   - 支持 insert、find、erase
-   - 处理冲突使用线性探测
-   - 支持动态扩容
-
-2. 应用题：使用哈希表实现一个"两数之和"求解器。
-   - 给定一个数组和一个目标值target
-   - 找出数组中两个数之和等于target的下标
-   - 要求时间复杂度O(n)
-
-3. 进阶题：实现一个可持久化哈希表（Persistent Hash Table）。
-   - 支持对历史版本的查询
-   - 每次修改创建新版本
-   - 分析时间和空间复杂度
-
-4. 综合题：实现一个布谷鸟哈希（Cuckoo Hashing）。
-   - 使用两个哈希函数和两个表
-   - 插入时如果冲突，将已有元素"踢"到另一个表
-   - 处理插入循环问题
-   - 与链地址法进行性能对比
-
-5. 挑战题：实现一个一致性哈希（Consistent Hashing）。
-   - 用于分布式缓存系统中的数据分布
-   - 添加/删除节点时最小化数据迁移
-   - 实现虚拟节点以提高负载均衡
-   - 模拟节点增删过程
-
-## ==========================================================================
-
-
-## ==========================================================================
-### 📝 章节测试
-## ==========================================================================
-
-> [!question] 判断题 1
-> 哈希表的查找操作在任何情况下都是O(1)时间复杂度 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > 
-> > **解析**: 哈希表的平均查找时间为O(1)，但最坏情况下（所有键都哈希到同一个桶），退化为O(n)。良好的哈希函数和负载因子控制可以尽量避免这种情况。
-
-> [!question] 判断题 2
-> 哈希冲突是不可避免的，因为键空间通常远大于哈希表的桶数 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > 
-> > **解析**: 根据鸽巢原理，如果键的可能取值多于桶的数量，必然存在多个不同的键映射到同一个桶（哈希冲突）。因此冲突解决是哈希表设计的核心问题。
-
-> [!question] 判断题 3
-> 链地址法解决哈希冲突时，每个桶是一个链表 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > 
-> > **解析**: 链地址法（拉链法）中，每个桶维护一个链表（或其他容器），所有哈希到同一位置的元素存储在该链表中。C++ unordered_map默认使用这种方式。
-
-> [!question] 判断题 4
-> 负载因子（Load Factor）是已存储元素数与桶数的比值 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > 
-> > **解析**: 负载因子 = 元素数量 / 桶数量。负载因子越大冲突越多，性能下降。unordered_map默认负载因子上限为1.0，超过时自动rehash扩容。
-
-> [!question] 判断题 5
-> unordered_map 中的元素是按key排序存储的 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > 
-> > **解析**: unordered_map基于哈希表，元素的存储位置由哈希函数决定，不保证任何顺序。需要有序容器应使用map。
-
-> [!question] 判断题 6
-> 开放地址法中，删除元素时可以直接将该位置标记为空 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > 
-> > **解析**: 开放地址法中直接标记为空会破坏探测序列，导致后续冲突元素无法找到。正确做法是使用"墓碑"（tombstone）标记，表示该位置已删除但探测不中断。
-
-> [!question] 判断题 7
-> 好的哈希函数应该使输出尽可能均匀分布 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > 
-> > **解析**: 均匀分布意味着不同的键被映射到各个桶的概率相等，减少冲突。好的哈希函数还应该具有雪崩效应（输入微小变化导致输出巨大变化）。
-
-> [!question] 判断题 8
-> 对自定义类型使用unordered_map时，必须同时提供哈希函数和相等比较函数 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > 
-> > **解析**: unordered_map需要哈希函数将key映射到桶，需要相等比较函数（operator==）判断同一桶中的key是否相同。缺一不可。
-
-> [!question] 判断题 9
-> rehash操作的时间复杂度为O(n)，因为需要将所有元素重新哈希到新桶 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > 
-> > **解析**: rehash时创建更大的桶数组，所有现有元素需要重新计算哈希值并放入新的桶中，时间复杂度为O(n)。这就是为什么应尽量避免频繁rehash。
-
-> [!question] 判断题 10
-> 线性探测法可能产生"聚集"现象，降低哈希表性能 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > 
-> > **解析**: 线性探测法中，冲突元素会占据相邻位置形成"聚集"（clustering），后续冲突的元素需要探测更多位置。二次探测法和双重哈希法可以缓解此问题。
+- **缓存系统**: O(1) 查找，如 LRU 缓存（哈希表 + 双向链表）
+- **词频统计**: 用 unordered_map<string, int> 统计文本中各单词出现次数
+- **去重**: 用 unordered_set 快速判重
+- **两数之和**: O(n) 一遍扫描，哈希表记录已遍历元素
 
 ---
 
-> [!question] 选择题 1
-> 以下哪种不是解决哈希冲突的方法？
-> - [ ] A. 链地址法（拉链法）
-> - [ ] B. 开放地址法（线性探测）
-> - [ ] C. 二叉搜索树法
-> - [ ] D. 双重哈希法
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > 
-> > **解析**: 链地址法、开放地址法（线性探测/二次探测）、双重哈希法都是哈希冲突解决方案。二叉搜索树是独立的数据结构，不属于哈希冲突解决方法。
-
-> [!question] 选择题 2
-> unordered_map 默认的最大负载因子是？
-> - [ ] A. 0.5
-> - [ ] B. 0.75
-> - [ ] C. 1.0
-> - [ ] D. 2.0
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > 
-> > **解析**: C++ unordered_map的默认最大负载因子为1.0。当load_factor()超过max_load_factor()时，自动触发rehash扩容。Java HashMap默认为0.75。
-
-> [!question] 选择题 3
-> 以下哪个操作在unordered_map上的平均时间复杂度不是O(1)？
-> - [ ] A. insert
-> - [ ] B. find
-> - [ ] C. erase
-> - [ ] D. 有序遍历所有元素
->
-> > [!success]- 点击查看答案
-> > 正确答案: D
-> > 
-> > **解析**: unordered_map不保证元素有序，如果需要有序遍历，需要先将所有元素取出排序O(n log n)。insert/find/erase的平均时间复杂度都是O(1)。
-
-> [!question] 选择题 4
-> 字符串 "abc" 和 "cba" 哈希到同一个桶，这种现象叫做？
-> - [ ] A. 哈希溢出
-> - [ ] B. 哈希冲突
-> - [ ] C. 哈希失效
-> - [ ] D. 哈希退化
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > 
-> > **解析**: 不同的键经过哈希函数计算后得到相同的索引值，称为哈希冲突（Hash Collision）。这是哈希表必须处理的核心问题。
-
-> [!question] 选择题 5
-> 以下哪个场景最适合使用哈希表？
-> - [ ] A. 需要按顺序遍历元素
-> - [ ] B. 频繁查找特定元素是否存在
-> - [ ] C. 需要找到第k小的元素
-> - [ ] D. 需要范围查询[low, high]
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > 
-> > **解析**: 哈希表的核心优势是O(1)平均时间的查找/插入/删除。频繁查找某元素是否存在是哈希表的典型应用。有序遍历、第k小、范围查询需要有序数据结构。
-
-> [!question] 选择题 6
-> 开放地址法中的二次探测，探测序列为？
-> - [ ] A. h(k), h(k)+1, h(k)+2, h(k)+3, ...
-> - [ ] B. h(k), h(k)+1, h(k)+4, h(k)+9, ...
-> - [ ] C. h(k), h(k)+h2(k), h(k)+2*h2(k), ...
-> - [ ] D. h(k), h(k)*2, h(k)*3, ...
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > 
-> > **解析**: 二次探测的探测序列为 h(k)+i^2，即步长分别为0, 1, 4, 9, 16...。相比线性探测（步长1,2,3...）可以减少聚集现象。C是双重哈希。
-
-> [!question] 选择题 7
-> unordered_map 的 bucket_count() 返回什么？
-> - [ ] A. 已存储的元素数量
-> - [ ] B. 当前桶的数量
-> - [ ] C. 最大负载因子
-> - [ ] D. 最长链表长度
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > 
-> > **解析**: bucket_count()返回当前哈希表的桶数量。size()返回元素数量，max_load_factor()返回最大负载因子。
-
-> [!question] 选择题 8
-> 布隆过滤器（Bloom Filter）与哈希表相比的特点是？
-> - [ ] A. 查询更慢但更准确
-> - [ ] B. 可能有假阳性（false positive）但不会有假阴性
-> - [ ] C. 支持删除操作
-> - [ ] D. 空间占用更大
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > 
-> > **解析**: 布隆过滤器使用多个哈希函数和位数组，空间极省但可能误判"存在"（假阳性）。如果报告"不存在"则一定不存在（无假阴性）。不支持删除。
-
-> [!question] 选择题 9
-> 一致性哈希（Consistent Hashing）解决的核心问题是？
-> - [ ] A. 哈希冲突
-> - [ ] B. 分布式系统中节点增减时最小化数据迁移
-> - [ ] C. 加速哈希计算
-> - [ ] D. 防止哈希碰撞攻击
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > 
-> > **解析**: 一致性哈希将数据和节点映射到一个环上。节点增减时，只有环上相邻区间的数据需要迁移，实现了最小化数据迁移，广泛用于分布式缓存系统。
-
-> [!question] 选择题 10
-> C++ hash 对于以下哪种类型没有内置特化？
-> - [ ] A. int
-> - [ ] B. string
-> - [ ] C. vector<int>
-> - [ ] D. double
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > 
-> > **解析**: hash对基本类型（int, double等）和string有内置特化，但对vector等容器没有内置的哈希函数。使用vector作为key时需要自定义哈希。
-
----
-
-### 💻 编程大题
-
-> [!note] 编程题 1：实现一个哈希表（链地址法）
-> **要求**：
-> 1. 实现模板类 `HashMap<K, V>`，使用链地址法处理冲突
-> 2. 支持操作：
->    - `void put(const K& key, const V& value)` — 插入/更新
->    - `V* get(const K& key)` — 查找，返回指针（不存在返回nullptr）
->    - `bool remove(const K& key)` — 删除
->    - `size_t size()` / `bool empty()`
-> 3. 实现自动扩容：当负载因子超过0.75时，桶数翻倍并rehash
-> 4. 支持自定义哈希函数（模板参数）
-> 5. 统计冲突次数和最长链表长度
->
-> **提示**: 每个桶用list或自定义链表存储pair<K,V>
-
-> [!note] 编程题 2：字符串哈希实现与应用
-> **要求**：
-> 1. 实现多项式滚动哈希（Polynomial Rolling Hash）
->    - hash(s) = s[0]*p^(n-1) + s[1]*p^(n-2) + ... + s[n-1]*p^0 (mod M)
->    - 其中p为质数底数（如131），M为大质数模数
-> 2. 利用前缀哈希实现O(1)时间获取任意子串的哈希值
-> 3. 应用：
->    - 判断两个子串是否相等（O(1)比较）
->    - 实现字符串匹配（类似Rabin-Karp算法）
->    - 找出字符串中的重复子串
-> 4. 处理哈希碰撞：使用双哈希降低碰撞概率
->
-> **提示**: 子串hash(l,r) = hash(r) - hash(l-1) * p^(r-l+1)
-
-> [!note] 编程题 3：实现LFU缓存（最不经常使用）
-> **要求**：
-> 1. 使用哈希表 + 频率桶实现LFU缓存（Least Frequently Used）
-> 2. 支持操作：
->    - `int get(int key)` — 获取值并增加使用频率，O(1)
->    - `void put(int key, int value)` — 插入，容量满时淘汰使用频率最低的元素，O(1)
-> 3. 数据结构设计：
->    - `unordered_map<key, {value, freq}>` — 键值映射
->    - `unordered_map<freq, list<key>>` — 频率到键列表的映射
->    - `unordered_map<key, list::iterator>` — 键到链表位置的映射
-> 4. 相同频率的元素按LRU（最近最少使用）淘汰
-> 5. 维护当前最小频率以实现O(1)淘汰
->
-> **提示**: 每次get/put后更新元素频率，将其从旧频率链表移到新频率链表
-
-### 🔗 推荐练习题（洛谷）
+## 练习
 
 | 题号 | 题目 | 难度 | 知识点 |
 |------|------|------|--------|
-| [P3370](https://www.luogu.com.cn/problem/P3370) | 字符串哈希 | 普及 | 哈希函数、字符串去重 |
-| [P5018](https://www.luogu.com.cn/problem/P5018) | 对称二叉树 | 普及+ | 哈希判重、树的同构 |
-
----
-
-## --------------------------------------------------------------------------
-## 🔗 知识网络
-## --------------------------------------------------------------------------
-
-- **上一章**: [[Q_排序_八大排序_Sorting]] | **下一章**: [[C_堆_Heap]] | **返回**: [[DSA学习路线]]
-- **相关容器**: [[容器库/11_unordered_set_multiset]] | [[容器库/12_unordered_map_multimap]]
-- **算法技巧**: [[../算法/算法技巧/下标技巧]]
+| P3370 | 字符串哈希 | 普及 | 哈希函数、字符串去重 |
+| P3405 | Cities and States | 普及+ | 哈希计数 |
+| P4305 | 字符串哈希 | 普及 | 滚动哈希 |

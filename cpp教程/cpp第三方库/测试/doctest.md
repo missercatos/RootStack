@@ -29,5 +29,5 @@
 
 - [[Catch2|Catch2]] — 更丰富的测试语法
 - [[GoogleTest|GoogleTest]] — 行业标准测试框架
-- [[../索引|库索引]]
+- 
 - (搜索: doctest C++)

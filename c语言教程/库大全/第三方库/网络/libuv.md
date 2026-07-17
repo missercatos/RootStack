@@ -29,4 +29,4 @@ uv_tcp_connect(&connect_req, &socket, addr, on_connect);
 uv_run(loop, UV_RUN_DEFAULT);
 ```
 
-**跨语言参考**: [[../../2深化/08_标准库深度|C标准库深度剖析]]
+**跨语言参考**: [[../../../2深化/08_标准库深度|C标准库深度剖析]]

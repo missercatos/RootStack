@@ -127,4 +127,4 @@ FUNCTION demo_byte:
 - **string_view**: span 与 `string_view` 理念相同（非拥有视图）
 - **容器**: span 可以指向任何连续容器（vector, array, C数组）
 - **C 对照**: `T* + size_t` 对 / `int flag` + 位运算 / `unsigned char` 替代
-- **返回目录**: [[../索引|C++ 功能库索引]]
+- **返回目录**: 

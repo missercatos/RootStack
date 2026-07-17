@@ -29,6 +29,6 @@ Google 出品的高性能 RPC 框架，使用 protobuf 作为接口定义语言�
 
 - [[../序列化/Protobuf|Protobuf]] — 序列化格式
 - [[Boost.Asio|Boost.Asio]] — 底层传输
-- [[../../c语言教程/库大全/第三方库/相关文件|C 第三方库]]
-- [[../索引|库索引]]
+- 
+- 
 - (搜索: gRPC C++)

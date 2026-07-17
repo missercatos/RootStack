@@ -122,4 +122,4 @@ FUNCTION demo_latch:
 - **原子操作**: [[./atomic|atomic]] — 无锁替代 mutex
 - **异步**: [[./future|future/async]] — 高级同步模式
 - **C 对照**: `pthread_mutex_lock`/`pthread_cond_wait`（POSIX `<pthread.h>`）
-- **返回目录**: [[../索引|C++ 功能库索引]]
+- **返回目录**: 
