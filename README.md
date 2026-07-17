@@ -2,7 +2,7 @@
 <h1 align="center">RootStack</h1>
 
 <p align="center">
-  <em>从 C 出发的类百科式技术栈指导库 —— 覆盖 C 语言、C++、数据结构与算法、Linux 系统、系统内核、汇编、Rust</em>
+  <em>从 C 出发的类百科式技术栈指导库 —— 覆盖 C 语言、C++、数据结构与算法、Linux 系统、系统内核、汇编、Rust、网络安全（红队）</em>
 </p>
 
 <p align="center">
@@ -13,11 +13,12 @@
   <img src="https://img.shields.io/badge/Assembly-525252?style=flat-square&logo=assemblermips&logoColor=white" alt="Assembly"/>
   <img src="https://img.shields.io/badge/数据结构-339933?style=flat-square" alt="数据结构"/>
   <img src="https://img.shields.io/badge/算法-FF6F00?style=flat-square" alt="算法"/>
+  <img src="https://img.shields.io/badge/网络安全-E34F26?style=flat-square" alt="网络安全"/>
   <img src="https://img.shields.io/badge/版本-0.1.1-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
-  <a href="./git.md">Git 指南</a> · <a href="./github-settings.md">GitHub 设置</a> · <a href="./ISSUES.md">参与贡献</a>
+  <a href="./git.md">Git 指南</a> · <a href="./github-settings.md">GitHub 设置</a> · <a href="./red_team/总目录与快速查询.md">红队知识库</a> · <a href="./ISSUES.md">参与贡献</a>
 </p>
 
 ---
@@ -25,6 +26,8 @@
 ## 关于本教程
 
 本教程体系是一套以 C 语言为核心、向上延伸至 C++ 和数据结构、向下探及汇编和内核的完整知识库。教程使用 [Obsidian](https://obsidian.md/) 的双向链接 `[[文件名]]` 组织内容，形成相互引用的知识网络。
+
+**路径说明**: 路径 A-D 是**通识学习路径**，适合所有计算机学习者；路径 E 是**职业分化路径**——网络安全（红队），基于 ArchStrike 体系，已覆盖 ~125 篇知识库文件。通识路径学完后，按兴趣选择职业方向。
 
 **本教程有瑕疵**。教程内容包含 AI 辅助生成的部分，可能存在概念偏差、代码错误或总结不到位的情况。请读者始终保持批判性阅读，不要盲目照搬。如果你发现错误或有改进建议，请见 [[ISSUES|问题讨论区]]——我们非常欢迎你的议题和 Pull Request，项目组在经过实践检验和综合讨论之后会进行修改。
 
@@ -125,6 +128,13 @@ RootStack/                          ├ v0.1.0
 │
 ├── 汇编基础/ (3篇)              x86/ARM 汇编教程
 │
+├── red_team/ (~125篇)          网络安全红队职业路径 (ArchStrike体系)
+│   ├── 网安基础知识/ (10篇)      渗透测试方法论
+│   ├── 前端基础/ (25篇)          实战教程/ (13篇，含14天实训)
+│   ├── archstrike-*教学/ (48篇) 10组ArchStrike工具教程
+│   ├── 服务器部署与运维/ (4篇)   QQ Bot攻防实战
+│   └── ctf_trea/ (7篇)          CTF竞赛知识库
+│
 ├── git.md                       Git 与 GitHub 终端操作指南 (14节)
 ├── github-settings.md           GitHub 网页端设置指南（新增）
 ├── VERSION                      项目版本号: 0.1.0
@@ -208,9 +218,9 @@ Linux 6.1 开始正式支持 Rust 内核模块。未来的趋势不是 C vs Rust
 
 ---
 
-## 学习路径
+## 学习路径（通识）
 
-四条路径均提供章节级阅读顺序、推荐阅读物、语言官方文档链接。
+以下四条路径覆盖 C、C++、DSA 三大方向，适合所有计算机学习者，章节级阅读顺序、推荐阅读物、语言官方文档链接均已标注。
 
 | 路径 | 文件 | 适合人群 |
 |------|------|---------|
@@ -218,6 +228,14 @@ Linux 6.1 开始正式支持 Rust 内核模块。未来的趋势不是 C vs Rust
 | B: C++ 主线 | [[路径B-CPP主线\|路径B-CPP主线]] | 应用开发 + 底层贯通 |
 | C: C→C++ | [[路径C-C向下兼容C++.md\|路径C-C→C++]] | 先 C 后 C++ 向下兼容 |
 | D: DSA 刷题 | [[路径D-DSA算法刷题\|路径D-DSA算法刷题]] | 算法竞赛/面试/洛谷刷题 |
+
+## 职业路径（分支）
+
+以下路径为**职业方向分化**，前四条是通识基础，不分方向都可学习；从这里开始进入具体职业领域，需要通识基础作为前置。
+
+| 路径 | 文件 | 适合人群 |
+|------|------|---------|
+| E: 红队 (ArchStrike) | [[路径E-红队职业路径\|路径E-红队职业路径]] | 网络安全/渗透测试/CTF/红队攻防 |
 
 > 本教程体系可当作类百科全书使用，内容完善但体量庞大。若作为教程从头通读，效率不高。建议按照路径文件中的推荐阅读顺序，结合索引文件进行选择性学习。同时推荐与 AI 进行问答互动学习——在自认为掌握语法或数据结构之后，去 [[洛谷]](https://www.luogu.com.cn/) 刷几道题验证即可。如遇到错误，不建议死磕，可用 AI 辅助纠正思路。
 
@@ -233,6 +251,7 @@ Linux 6.1 开始正式支持 Rust 内核模块。未来的趋势不是 C vs Rust
 | 算法技巧 | [[算法/算法技巧/动态规划\|动态规划]] | 24个算法专题, 语言无关 |
 | 内核 | [[内核/内核索引\|内核总索引]] | 四种内核 + C与Rust新时代 |
 | 汇编 | [[汇编基础/ASM_01_寄存器与指令基础\|寄存器与指令基础]] | x86/ARM 汇编入门 |
+| 红队 | [[red_team/总目录与快速查询\|红队知识库总目录]] | ArchStrike渗透体系, ~125篇, 职业路径 |
 
 ---
 
