@@ -29,5 +29,5 @@ Google 出品的 C++ 测试框架，行业使用最广泛。提供丰富的断�
 
 - [[Catch2|Catch2]] — 现代语法测试框架
 - [[doctest|doctest]] — 极速编译测试框架
-- [[../索引|库索引]]
+- 
 - (搜索: GoogleTest)

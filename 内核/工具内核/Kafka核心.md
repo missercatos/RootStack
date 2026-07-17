@@ -99,15 +99,3 @@ Partition 2:  [msg0:offset=0] [msg1:offset=1] [msg2:offset=2] [msg3:offset=3] ..
 
 ---
 
-## 交叉链接
-
-- [[../../cpp教程/cpp深化教程/13_多线程|C++ 多线程]] -- Kafka 线程模型
-- [[../../cpp教程/cpp深化教程/15_C++标准库|C++ 标准库]] -- Java NIO vs C++ I/O 库
-- [[../../数据结构/F_队列_Queue|队列]] -- 日志的本质是队列
-- [[../../数据结构/O_B树_BTree|B-Tree]] -- 对比: 日志存储 vs B-Tree
-- [[../../数据结构/G_哈希表_HashTable|哈希表]] -- Consumer Group 元数据存储
-- [[../系统内核/03_文件系统|文件系统]] -- 日志文件的零拷贝 sendfile
-- [[../系统内核/06_并发与同步|并发与同步]] -- ISR 的分布式共识
-- [[SQLite内核|SQLite 内核]] -- WAL 日志对比
-- [[Redis内核|Redis 内核]] -- Redis Stream vs Kafka
-- [[MySQL内核|MySQL/InnoDB 内核]] -- Redo log (循环日志) vs Kafka log (无限追加)

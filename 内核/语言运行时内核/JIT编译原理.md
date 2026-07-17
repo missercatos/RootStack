@@ -121,11 +121,3 @@ JIT 拥有运行时实时 profile, 但占用内存和 CPU 资源; PGO 不占运�
 
 ---
 
-## 交叉链接
-
-- [[../../c语言教程/2深化/06_编译链接与ELF|编译链接与 ELF]] -- AOT 编译的完整流程
-- [[../../cpp教程/cpp深化教程/07_面向对象(三)多态与虚函数|C++ 虚函数]] -- vtable 机制 vs 内联缓存
-- [[CPython|CPython 运行时]] -- 为什么 CPython 不 JIT (PyPy 做 JIT)
-- [[V8|V8 引擎]] -- Ignition + TurboFan 的完整 JIT 流水线
-- [[JVM|JVM 运行时]] -- C1/C2 分层编译
-- [[../系统内核/05_中断与系统调用|中断与系统调用]] -- JIT 代码的异常处理 vs 内核中断

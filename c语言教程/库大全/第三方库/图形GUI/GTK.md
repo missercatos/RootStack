@@ -43,4 +43,4 @@ int main(int argc, char **argv) {
 
 **编译**：`gcc $(pkg-config --cflags gtk4) main.c $(pkg-config --libs gtk4)`
 
-**跨语言参考**: [[../../2深化/08_标准库深度|C标准库深度剖析]]
+**跨语言参考**: [[../../../2深化/08_标准库深度|C标准库深度剖析]]

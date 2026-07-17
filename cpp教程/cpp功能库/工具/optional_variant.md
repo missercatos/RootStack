@@ -135,4 +135,4 @@ FUNCTION demo_expected:
 - **智能指针**: [[../内存/smart_ptr|smart_ptr]] — `optional` 也可表达"可能为空"
 - **span**: [[./span_bitset|span / bitset]] — 数组视图
 - **C 对照**: `NULL`/`union`/`void*`/`errno` 均无类型安全
-- **返回目录**: [[../索引|C++ 功能库索引]]
+- **返回目录**: 

@@ -29,5 +29,5 @@
 
 - [[GoogleTest|GoogleTest]] — 行业标准测试框架
 - [[doctest|doctest]] — 极速编译替代
-- [[../索引|库索引]]
+- 
 - (搜索: Catch2)

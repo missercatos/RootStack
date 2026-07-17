@@ -28,6 +28,6 @@ YAML 1.2 规范、人类可读格式、复杂结构支持、配置友好
 
 - [[nlohmann-json|nlohmann/json]] — JSON 格式
 - [[Protobuf|Protobuf]] — 二进制序列化
-- [[../../c语言教程/库大全/第三方库/相关文件|C 第三方库]]
-- [[../索引|库索引]]
+- 
+- 
 - (搜索: yaml-cpp)

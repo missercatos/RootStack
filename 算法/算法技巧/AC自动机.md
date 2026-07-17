@@ -99,7 +99,7 @@ int query(const char t[]) {
 ### 相关链接
 
 - [[数据结构/J_字典树_Trie|Trie 字典树]]
-- [[算法/算法技巧/KMP|KMP 算法]]
-- [[算法/算法技巧/字符串|字符串基础]]
+- [[KMP|KMP 算法]]
+- [[字符串|字符串基础]]
 
 > 内容来源：经本地化改造的 OI-wiki AC 自动机章节。详细推导见 [OI-wiki](https://oi-wiki.org/string/ac-automaton/)。

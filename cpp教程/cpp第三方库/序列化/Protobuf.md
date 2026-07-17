@@ -31,5 +31,5 @@ schema 定义、二进制紧凑、跨语言、向后兼容、结构化验证
 - [[../网络/gRPC|gRPC]] — 基于 protobuf 的 RPC 框架
 - [[nlohmann-json|nlohmann/json]] — JSON 序列化
 - [[yaml-cpp|yaml-cpp]] — YAML 配置格式
-- [[../索引|库索引]]
+- 
 - (搜索: Protocol Buffers C++)

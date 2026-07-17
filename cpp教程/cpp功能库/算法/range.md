@@ -111,4 +111,4 @@ FUNCTION demo_take_drop:
 - **查找统计**: [[./find_count|find / count]] — 传统 `find`/`count` vs `FILTER`
 - **修改算法**: [[./modify|modify]] — 传统修改 vs `TRANSFORM`
 - **函数式**: [[../函数式/lambda|lambda]] — lambda 作为适配器谓词
-- **返回目录**: [[../索引|C++ 功能库索引]]
+- **返回目录**: 

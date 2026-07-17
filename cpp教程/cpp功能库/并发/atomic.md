@@ -113,4 +113,4 @@ FUNCTION demo_memory_order:
 - **线程**: [[./thread|thread]] — 线程创建与管理
 - **无锁数据结构**: 需配合 `memory_order` 细微控制
 - **C 对照**: C11 `_Atomic` / C11 `atomic_*` 函数（`<stdatomic.h>`）
-- **返回目录**: [[../索引|C++ 功能库索引]]
+- **返回目录**: 

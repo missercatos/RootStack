@@ -2,7 +2,7 @@
 <h1 align="center">RootStack</h1>
 
 <p align="center">
-  <em>从 C 出发的类百科式技术栈指导库 —— 覆盖 C 语言、C++、数据结构与算法、Linux 系统、系统内核、汇编、Rust、网络安全（红队）</em>
+  <em>以 C 作为出发点，覆盖多领域、多计算机语言的百科全书式教程 —— C、C++、Python、Rust、数据结构与算法、Linux 系统、系统内核、汇编、网络安全（红队）</em>
 </p>
 
 <p align="center">
@@ -14,7 +14,7 @@
   <img src="https://img.shields.io/badge/数据结构-339933?style=flat-square" alt="数据结构"/>
   <img src="https://img.shields.io/badge/算法-FF6F00?style=flat-square" alt="算法"/>
   <img src="https://img.shields.io/badge/网络安全-E34F26?style=flat-square" alt="网络安全"/>
-  <img src="https://img.shields.io/badge/版本-0.2.0-blue?style=flat-square" alt="version"/>
+  <img src="https://img.shields.io/badge/版本-0.2.3-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
@@ -94,7 +94,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/                          ├ v0.2.0
+RootStack/                          ├ v0.2.3
 ├── README.md                    ← 你在这里
 │
 ├── 路径A-C主线.md               C 主线: 从零到内核
@@ -137,7 +137,7 @@ RootStack/                          ├ v0.2.0
 │
 ├── git.md                       Git 与 GitHub 终端操作指南 (14节)
 ├── github-settings.md           GitHub 网页端设置指南（新增）
-├── VERSION                      项目版本号: 0.2.0
+├── VERSION                      项目版本号: 0.2.3
 └── ISSUES.md                   问题讨论与贡献指南
 ```
 
@@ -325,6 +325,7 @@ git push origin my-feature
 | ---- | ------ | ------------------------------------------- |
 | 7.13 | 首次提交项目 | 将作者以前的cpp_deep,c-learning项目整合起来并删减整理形成的一套教程 |
 | 7.17 | 新增职业路径 | red_team/网络安全模块(~125篇, ArchStrike体系), 路径E红队职业路径, 学习/职业路径区分 |
+| 7.17 | 大规模重构 | cpp基础教程(11篇)/cpp深化教程(16篇)/数据结构(18篇) 重写: 精简案例, 侧重原理与底层, 去emoji/选择题/知识网络/冗余链接 |
 
 ---
 

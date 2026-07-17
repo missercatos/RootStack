@@ -94,4 +94,4 @@ FUNCTION demo_custom_allocator:
 - **容器**: 所有 STL 容器都模板化分配器参数
 - **pmr 容器**: `pmr::vector<T>` = `vector<T, pmr::polymorphic_allocator<T>>`
 - **C 对照**: `malloc`/`free`，pmr 类似 `arena` 分配模式
-- **返回目录**: [[../索引|C++ 功能库索引]]
+- **返回目录**: 

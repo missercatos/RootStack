@@ -80,4 +80,4 @@ FUNCTION demo_nth:
 - **修改算法**: [[./modify|modify]] — `copy`/`replace`/`unique`
 - **Ranges**: [[./range|C++20 ranges]] — 管道式排序
 - **排序原理**: 快排/归并/堆排经典算法
-- **返回目录**: [[../索引|C++ 功能库索引]]
+- **返回目录**: 

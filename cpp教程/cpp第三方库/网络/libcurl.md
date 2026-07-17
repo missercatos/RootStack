@@ -28,6 +28,6 @@
 
 - [[cpp-httplib|cpp-httplib]] — 头文件 HTTP 库
 - [[../加密/OpenSSL|OpenSSL]] — SSL/TLS 后端
-- [[../../c语言教程/库大全/第三方库/索引|C 第三方库]]
-- [[../索引|库索引]]
+- 
+- 
 - (搜索: libcurl C++)

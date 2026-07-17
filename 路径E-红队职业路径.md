@@ -38,7 +38,7 @@
 | 4 | [[red_team/网安基础知识/03-操作系统基础]] | Linux/Windows系统管理 | [[c语言教程/c目录\|C语言教程]] (系统编程理解) |
 | 5 | [[red_team/网安基础知识/06-安全基础概念]] | CIA/STRIDE/CVE/CVSS | - |
 | 6 | [[red_team/网安基础知识/07-渗透测试方法论]] | PTES/Kill Chain/MITRE ATT&CK | - |
-| 7 | [[red_team/网安基础知识/04-密码学基础]] | 哈希/对称/非对称/PKI | [[算法/数学/]] (数论基础) |
+| 7 | [[red_team/网安基础知识/04-密码学基础]] | 哈希/对称/非对称/PKI | [[|]] (数论基础) |
 | 8-10 | [[red_team/网安基础知识/08-数据库基础]] / [[red_team/网安基础知识/09-认证与授权基础]] / [[red_team/网安基础知识/10-虚拟化与容器基础]] | 数据库/JWT/OAuth/Docker | - |
 
 > **Python 练习**: 在学习编程基础时，配合 [[red_team/python\|Python 洛谷练习精选]] 做算法验证。洛谷题目按安全相关性分组，边学边练。
@@ -53,13 +53,13 @@ ArchStrike base 工具组教程，覆盖红队基本操作流程：信息收集 
 
 | 序号 | 文件 | 核心工具 | 关联RootStack |
 |------|------|---------|--------------|
-| 01 | [[red_team/archstrike-base教学/01-基础命令与Linux安全操作]] | bash/chmod/SSH | [[c语言教程/1入门/]] (Linux基础) |
+| 01 | [[red_team/archstrike-base教学/01-基础命令与Linux安全操作]] | bash/chmod/SSH | [[|]] (Linux基础) |
 | 02 | [[red_team/archstrike-base教学/02-信息收集与侦察技术]] | theharvester/recon-ng | - |
 | 03 | [[red_team/archstrike-base教学/03-网络扫描与枚举技术]] | nmap/masscan | - |
 | 04 | [[red_team/archstrike-base教学/04-漏洞评估与利用基础]] | Metasploit/searchsploit | - |
-| 05 | [[red_team/archstrike-base教学/05-密码攻击与破解技术]] | hydra/john | [[算法/数学/]] (哈希与数论) |
+| 05 | [[red_team/archstrike-base教学/05-密码攻击与破解技术]] | hydra/john | [[|]] (哈希与数论) |
 | 06 | [[red_team/archstrike-base教学/06-网络嗅探与中间人攻击]] | Wireshark/bettercap | [[汇编基础/ASM_01_寄存器与指令基础]] (网络协议底层) |
-| 07 | [[red_team/archstrike-base教学/07-后渗透与权限维持]] | Meterpreter | [[内核/系统内核/]] (权限模型) |
+| 07 | [[red_team/archstrike-base教学/07-后渗透与权限维持]] | Meterpreter | [[|]] (权限模型) |
 | 08 | [[red_team/archstrike-base教学/08-痕迹清除与渗透报告]] | shred/logs | - |
 
 ---

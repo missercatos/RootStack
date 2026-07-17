@@ -30,7 +30,7 @@
 |------|------|------|
 | 改仓库名 | Settings → General → Repository name | 改后旧地址自动 301 跳转 |
 | 改描述 | Settings → General → Description | 显示在仓库页顶部名称下方 |
-| 加标签 | 仓库页顶部齿轮图标 ⚙ 或 Settings → General → Topics | 输 `c` `cpp` `algorithm` 按回车添加 |
+| 加标签 | 仓库页顶部齿轮图标  (齿轮图标)  或 Settings → General → Topics | 输 `c` `cpp` `algorithm` 按回车添加 |
 
 Topics 让其他人在 GitHub Explore 搜索标签时能搜到你的仓库。
 
