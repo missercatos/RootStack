@@ -57,6 +57,6 @@ for (int i = 2; i <= n; ++i)
 - [[快速幂与模运算]]
 - [[素数筛]]
 - [[中国剩余定理]]
-- [[路径D-DSA算法刷题]]
+- [[../../路径D-DSA算法刷题]]
 
 > 来源：OI-wiki [gcd.md](https://oi-wiki.org/math/number-theory/gcd/) & [inverse.md](https://oi-wiki.org/math/number-theory/inverse/)

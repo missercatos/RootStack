@@ -96,7 +96,7 @@ FUNCTION demo_weak:
 
 ---
 
-- **内存分配器**: [[./allocator|allocator]] — 自定义分配策略
+- **内存分配器**: [[allocator|allocator]] — 自定义分配策略
 - **线程安全**: `shared_ptr` 引用计数是原子的，但对象本身需 mutex 保护
 - **并发**: [[../并发/mutex|mutex]] — 保护智能指针指向的对象
 - **C 对照**: `malloc`/`free` 手动管理，无智能指针

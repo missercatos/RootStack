@@ -1,4 +1,4 @@
-# B 栈 Stack
+
 
 建议先阅读: [[A_容器_Container|A 容器 Container]]
 

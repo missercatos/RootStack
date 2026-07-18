@@ -110,7 +110,7 @@ FUNCTION demo_fill:
 
 ---
 
-- **查找**: [[./find_count|find / count]] — 先查找再修改
-- **排序**: [[./sort_search|sort / search]] — `sort`+`unique` 组合去重
+- **查找**: [[find_count|find / count]] — 先查找再修改
+- **排序**: [[sort_search|sort / search]] — `sort`+`unique` 组合去重
 - **lambda**: [[../函数式/lambda|lambda]] — 变换/过滤谓词
 - **返回目录**: 

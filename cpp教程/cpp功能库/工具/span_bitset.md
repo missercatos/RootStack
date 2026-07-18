@@ -122,8 +122,8 @@ FUNCTION demo_byte:
 
 ---
 
-- **pair / tuple**: [[./pair_tuple|pair / tuple]] — 多值聚合
-- **optional / variant**: [[./optional_variant|optional / variant / any / expected]] — 可选值与变体
+- **pair / tuple**: [[pair_tuple|pair / tuple]] — 多值聚合
+- **optional / variant**: [[optional_variant|optional / variant / any / expected]] — 可选值与变体
 - **string_view**: span 与 `string_view` 理念相同（非拥有视图）
 - **容器**: span 可以指向任何连续容器（vector, array, C数组）
 - **C 对照**: `T* + size_t` 对 / `int flag` + 位运算 / `unsigned char` 替代

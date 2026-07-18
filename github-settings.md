@@ -371,6 +371,6 @@ Settings → General → Features
 <a id="nav-links"></a>
 ## 相关链接 ^nav-links
 
-- [[git.md|Git 与 GitHub 终端操作指南]]
+- [[git|Git 与 GitHub 终端操作指南]]
 - [[ISSUES|问题讨论与贡献指南]]
 - 本仓库地址：https://github.com/missercatos/RootStack

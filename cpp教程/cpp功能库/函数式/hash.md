@@ -104,8 +104,8 @@ FUNCTION demo_hash_combine:
 
 ---
 
-- **function / bind**: [[./function|function / bind]] — 可调用对象包装器
-- **lambda**: [[./lambda|lambda]] — 用 lambda 实现自定义哈希
+- **function / bind**: [[function|function / bind]] — 可调用对象包装器
+- **lambda**: [[lambda|lambda]] — 用 lambda 实现自定义哈希
 - **关联容器**: `unordered_set` / `unordered_map` 直接使用 `hash`
 - **C 对照**: 无标准哈希函数，需手写或使用第三方
 - **返回目录**: 

@@ -86,8 +86,8 @@ FUNCTION demo_all_any_none:
 
 ---
 
-- **二分搜索**: [[./sort_search|sort/search]] — 有序数据用二分查找
-- **修改算法**: [[./modify|modify]] — `replace`/`remove`/`copy`
+- **二分搜索**: [[sort_search|sort/search]] — 有序数据用二分查找
+- **修改算法**: [[modify|modify]] — `replace`/`remove`/`copy`
 - **函数式**: [[../函数式/lambda|lambda]] — lambda 作为谓词
-- **Ranges**: [[./range|C++20 ranges]] — `FILTER` 流水线替代 `find_if` + `count_if`
+- **Ranges**: [[range|C++20 ranges]] — `FILTER` 流水线替代 `find_if` + `count_if`
 - **返回目录**: 

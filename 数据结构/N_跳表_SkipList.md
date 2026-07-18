@@ -1,4 +1,4 @@
-# N 跳表 SkipList
+
 
 建议先阅读: [[D_链表_LinkedList|D 链表 LinkedList]]
 

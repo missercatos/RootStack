@@ -84,6 +84,6 @@ int main() {
 
 ### 相关链接
 
-[[路径D-DSA算法刷题]] | [[双向搜索]] | [[IDA星算法]]
+[[../../路径D-DSA算法刷题]] | [[双向搜索]] | [[IDA星算法]]
 
 > 来源：[OI-wiki A\* 算法](https://oi-wiki.org/search/astar/)

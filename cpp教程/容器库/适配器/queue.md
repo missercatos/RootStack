@@ -134,6 +134,6 @@ while not pq.empty():
 
 ## 相关链接
 
-- queue: [[../../数据结构/F_队列_Queue]] | [[../../../c语言教程/3数据结构/F_队列_Queue]]
-- priority_queue: [[../../数据结构/C_堆_Heap]] | [[../../../c语言教程/3数据结构/C_堆_Heap]]
-- [[./stack]]
+- queue: [[../../../数据结构/F_队列_Queue]] | [[../../../数据结构/F_队列_Queue]]
+- priority_queue: [[../../../数据结构/C_堆_Heap]] | [[../../../数据结构/C_堆_Heap]]
+- [[stack]]

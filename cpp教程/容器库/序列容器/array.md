@@ -62,6 +62,6 @@ legacy_function(arr.data(), arr.size())
 
 ## 相关链接
 
-- [[../../数据结构/A_容器_Container]]
-- [[../../../c语言教程/3数据结构/A_容器_Container]]
-- [[./vector]]
+- [[../../../数据结构/A_容器_Container]]
+- [[../../../数据结构/A_容器_Container]]
+- [[vector]]

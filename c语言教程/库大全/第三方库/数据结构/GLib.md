@@ -30,4 +30,4 @@ char *val = g_hash_table_lookup(ht, "key");
 g_hash_table_destroy(ht);
 ```
 
-**跨语言参考**: [[../../../cpp教程/cpp深化教程/04_动态内存|C++动态内存]]
+**跨语言参考**: [[../../../../cpp教程/cpp深化教程/04_动态内存|C++动态内存]]

@@ -8,13 +8,13 @@
 
 利用回文的对称性，避免重复计算。维护当前已知的最右回文边界 $r$ 及其中心 $c$。
 
-![[assets/images/string/manacher1.png]]
+!![](assets/images/string/manacher1.png)
 *上图展示了以某个中心扩展回文的过程*
 
-![[assets/images/string/manacher2.png]]
+!![](assets/images/string/manacher2.png)
 *利用对称性快速确定回文半径*
 
-![[assets/images/string/manacher3.png]]
+!![](assets/images/string/manacher3.png)
 *当对称点半径触及右边界时，仍需中心扩展*
 
 ### 算法步骤
@@ -80,7 +80,7 @@ $d[i]$ 表示扩展半径（包含中心自身），原始字符串中的回文�
 
 ### 相关链接
 
-- [[字符串|字符串基础]]
+- [[../../cpp教程/cpp基础教程/11_字符串基础|字符串基础]]
 - [[字符串哈希|字符串哈希]]（回文串的哈希解法）
 - [[KMP|KMP 算法]]
 

@@ -90,7 +90,7 @@ FUNCTION demo_custom_allocator:
 
 ---
 
-- **智能指针**: [[./smart_ptr|smart_ptr]] — 高层内存管理
+- **智能指针**: [[smart_ptr|smart_ptr]] — 高层内存管理
 - **容器**: 所有 STL 容器都模板化分配器参数
 - **pmr 容器**: `pmr::vector<T>` = `vector<T, pmr::polymorphic_allocator<T>>`
 - **C 对照**: `malloc`/`free`，pmr 类似 `arena` 分配模式

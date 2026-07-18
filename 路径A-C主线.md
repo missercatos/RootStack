@@ -152,18 +152,18 @@
 - [[c语言教程/库大全/容器类库/图/邻接矩阵|图-邻接矩阵]]
 
 功能类库：
-- [[c语言教程/库大全/功能类库/输入输出/stdio.h.md|stdio.h]]
+- [[c语言教程/库大全/功能类库/输入输出/stdio.h|stdio.h]]
 - [[c语言教程/库大全/功能类库/输入输出/文件操作补充|文件操作]]
-- [[c语言教程/库大全/功能类库/内存/stdlib.h.md|stdlib.h]]
+- [[c语言教程/库大全/功能类库/内存/stdlib.h|stdlib.h]]
 - [[c语言教程/库大全/功能类库/内存/字符串|string.h]]
-- [[c语言教程/库大全/功能类库/数学/math.h.md|math.h]]
-- [[c语言教程/库大全/功能类库/时间/time.h.md|time.h]]
-- [[c语言教程/库大全/功能类库/字符/ctype.h.md|ctype.h]]
-- [[c语言教程/库大全/功能类库/调试/assert.h.md|assert.h]]
-- [[c语言教程/库大全/功能类库/调试/errno.h.md|errno.h]]
-- [[c语言教程/库大全/功能类库/可变参数/stdarg.h.md|stdarg.h]]
-- [[c语言教程/库大全/功能类库/控制流/setjmp.h.md|setjmp.h]]
-- [[c语言教程/库大全/功能类库/控制流/signal.h.md|signal.h]]
+- [[c语言教程/库大全/功能类库/数学/math.h|math.h]]
+- [[c语言教程/库大全/功能类库/时间/time.h|time.h]]
+- [[c语言教程/库大全/功能类库/字符/ctype.h|ctype.h]]
+- [[c语言教程/库大全/功能类库/调试/assert.h|assert.h]]
+- [[c语言教程/库大全/功能类库/调试/errno.h|errno.h]]
+- [[c语言教程/库大全/功能类库/可变参数/stdarg.h|stdarg.h]]
+- [[c语言教程/库大全/功能类库/控制流/setjmp.h|setjmp.h]]
+- [[c语言教程/库大全/功能类库/控制流/signal.h|signal.h]]
 
 ---
 

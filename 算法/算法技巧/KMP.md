@@ -55,13 +55,13 @@ vector<int> kmp(const string &t, const string &p) {
 
 前缀函数的递推过程如下图所示，展示了如何利用已计算的 $\pi$ 值进行高效计算：
 
-![[assets/images/string/prefix_str_1.svg]]
-![[assets/images/string/prefix_str_2.svg]]
-![[assets/images/string/prefix_str_3.svg]]
+!![](assets/images/string/prefix_str_1.svg)
+!![](assets/images/string/prefix_str_2.svg)
+!![](assets/images/string/prefix_str_3.svg)
 
 ### 匹配过程示意
 
-![[assets/images/string/strstr_kmp_indices.svg]]
+!![](assets/images/string/strstr_kmp_indices.svg)
 
 **前缀函数匹配过程**:
 ```
@@ -91,7 +91,7 @@ vector<int> kmp(const string &t, const string &p) {
 
 ### 相关链接
 
-- [[字符串|字符串基础]]
+- [[../../cpp教程/cpp基础教程/11_字符串基础|字符串基础]]
 - [[字符串哈希|字符串哈希]]
 - [[AC自动机|AC 自动机]]（KMP 的多模式串扩展）
 

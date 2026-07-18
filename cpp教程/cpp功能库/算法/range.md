@@ -107,8 +107,8 @@ FUNCTION demo_take_drop:
 
 ---
 
-- **传统算法**: [[./sort_search|sort / search]] — 基于迭代器的排序/搜索
-- **查找统计**: [[./find_count|find / count]] — 传统 `find`/`count` vs `FILTER`
-- **修改算法**: [[./modify|modify]] — 传统修改 vs `TRANSFORM`
+- **传统算法**: [[sort_search|sort / search]] — 基于迭代器的排序/搜索
+- **查找统计**: [[find_count|find / count]] — 传统 `find`/`count` vs `FILTER`
+- **修改算法**: [[modify|modify]] — 传统修改 vs `TRANSFORM`
 - **函数式**: [[../函数式/lambda|lambda]] — lambda 作为适配器谓词
 - **返回目录**: 

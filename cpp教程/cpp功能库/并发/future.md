@@ -124,7 +124,7 @@ FUNCTION demo_packaged_task:
 
 ---
 
-- **线程**: [[./thread|thread]] — 底层线程管理
-- **互斥**: [[./mutex|mutex]] — 保护共享数据
-- **原子操作**: [[./atomic|atomic]] — `future` 内部依赖原子同步
+- **线程**: [[thread|thread]] — 底层线程管理
+- **互斥**: [[mutex|mutex]] — 保护共享数据
+- **原子操作**: [[atomic|atomic]] — `future` 内部依赖原子同步
 - **返回目录**: 

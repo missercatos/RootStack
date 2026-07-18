@@ -92,6 +92,6 @@ fl.erase_after(fl.begin())              // 0, 2, 3
 
 ## 相关链接
 
-- [[../../数据结构/D_链表_LinkedList]]
-- [[../../../c语言教程/3数据结构/D_链表_LinkedList]]
-- [[./vector]] | [[./deque]]
+- [[../../../数据结构/D_链表_LinkedList]]
+- [[../../../数据结构/D_链表_LinkedList]]
+- [[vector]] | [[deque]]

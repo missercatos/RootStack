@@ -100,7 +100,7 @@ FUNCTION demo_arithmetic:
 
 ---
 
-- **随机数**: [[./random|random]] — 用 `steady_clock::now()` 做种子
+- **随机数**: [[random|random]] — 用 `steady_clock::now()` 做种子
 - **线程休眠**: [[../并发/thread|thread]] — `sleep_for` / `sleep_until`
 - **C 对照**: `time()`/`clock()`/`gettimeofday()`（`<time.h>` `<sys/time.h>`）
 - **返回目录**: 

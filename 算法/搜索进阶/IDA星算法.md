@@ -89,6 +89,6 @@ int solve(int a, int b) {
 
 ### 相关链接
 
-[[路径D-DSA算法刷题]] | [[双向搜索]] | [[A星算法]]
+[[../../路径D-DSA算法刷题]] | [[双向搜索]] | [[A星算法]]
 
 > 来源：[OI-wiki IDA\* 算法](https://oi-wiki.org/search/idastar/)
