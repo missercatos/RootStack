@@ -16,6 +16,7 @@
 - [[#^nav-12|12 版本标签与发布]]
 - [[#^nav-13|13 网页端操作]]
 - [[#^nav-14|14 签名提交]]
+- [[#^nav-15|15 子模块 (Submodule)]]
 - [[#^nav-recommended|推荐阅读]]
 
 ---
@@ -789,7 +790,106 @@ git log --show-signature -1
 
 ---
 
-<a id="nav-recommended"></a>
+<a id="nav-15"></a>
+## 15 子模块 (Submodule) ^nav-15
+
+子模块允许你在一个 Git 仓库中嵌入另一个 Git 仓库的特定版本。
+
+### 子模块的本质
+
+子模块不是文件拷贝，而是**指针引用**——Git 记录的是目标仓库的 commit hash（模式 `160000`），而非实际文件内容：
+
+```bash
+# 查看子模块的 gitlink 条目（160000 表示子模块）
+git ls-tree HEAD red_team/
+# → 160000 commit a1b2c3d4...  red_team
+```
+
+- GitHub 仓库页面上，子模块目录会显示 `->` 箭头（如 `red_team ->`）
+- 箭头后面的 commit hash 指向被嵌入仓库的某个版本
+- 子模块信息存储在仓库根目录的 `.gitmodules` 文件中
+
+### 添加子模块
+
+```bash
+git submodule add https://github.com/用户名/外部仓库.git 本地目录名
+```
+
+执行后：
+1. 创建 `.gitmodules` 文件（记录子模块路径和 URL）
+2. 在 Git 索引中添加一个 `160000` 类型的 gitlink 条目
+3. 自动 clone 外部仓库到指定目录
+
+### 克隆包含子模块的仓库
+
+```bash
+# 方式一：克隆时一并拉取子模块
+git clone --recursive https://github.com/用户名/仓库名.git
+
+# 方式二：已克隆后初始化子模块
+git clone https://github.com/用户名/仓库名.git
+cd 仓库名
+git submodule update --init         # 拉取所有子模块
+git submodule update --init --recursive  # 嵌套子模块也拉取
+```
+
+如果没有 `--recursive` 或不执行 `submodule update`，子模块目录在本地就是空的。
+
+### 更新子模块到最新版本
+
+```bash
+# 进入子模块目录，拉取最新
+cd 子模块目录
+git pull origin main
+cd ..
+
+# 提交更新后的子模块指针
+git add 子模块目录
+git commit -m "chore: 更新子模块到最新"
+```
+
+### 子模块解耦为普通文件
+
+当不需要子模块的独立性（如想直接在父仓库中管理内容）时，将子模块转为普通文件：
+
+```bash
+# 1. 删除子模块的 gitlink（从索引移除，保留工作区文件）
+git rm --cached 子模块目录
+
+# 2. 删除 .gitmodules 中的对应条目（如果不再需要任何子模块）
+# rm .gitmodules
+
+# 3. 删除子模块元数据
+rm -rf .git/modules/子模块目录
+
+# 4. 将实际文件添加到父仓库
+git add 子模块目录
+git commit -m "子模块解耦为普通文件"
+```
+
+执行后，GitHub 上的 `->` 箭头消失，clone 也能直接拉下全部文件。
+
+### 删除子模块
+
+```bash
+# 1. 从索引和 .gitmodules 移除
+git submodule deinit -f 子模块目录
+# 2. 从文件系统删除
+rm -rf 子模块目录
+# 3. 从 Git 跟踪中移除
+git rm -f 子模块目录
+# 4. 提交
+git commit -m "移除子模块"
+```
+
+### 子模块常见问题
+
+| 问题 | 原因 | 解决 |
+|------|------|------|
+| 克隆后子模块目录是空的 | 未执行 `submodule update --init` | 执行 `git submodule update --init --recursive` |
+| 子模块在 GitHub 上显示 `->` 箭头 | 子模块是 git link，不是普通文件 | 执行解耦操作（见上） |
+| 修改了子模块内容但父仓库不认 | 需要在子模块目录内先 commit | 进入子模块目录 `git add && git commit`，再回父仓库 `git add && git commit` |
+| 子模块 detached HEAD | 子模块默认处于分离头指针状态 | 进入子模块目录 `git checkout main` |
 ## 推荐阅读 ^nav-recommended
 
 - [Pro Git 中文版 (官方书籍)](https://git-scm.com/book/zh/v2)
