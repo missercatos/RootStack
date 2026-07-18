@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "cpp教程/cpp深化教程/14_Web编程.md",
+                "file": "red_team/ctf_trea/签到题.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "14_Web编程"
+              "title": "签到题"
             }
           }
         ]
@@ -200,6 +200,11 @@
   },
   "active": "56c6b4ef1cef63c6",
   "lastOpenFiles": [
+    "red_team/ctf_trea/竞赛模式.md",
+    "red_team/ctf_trea/签到题.md",
+    "red_team/ctf_trea/题目类型.md",
+    "cpp教程/cpp目录.md",
+    "cpp教程/cpp深化教程/14_Web编程.md",
     "cpp教程/cpp深化教程/12_信号处理.md",
     "cpp教程/cpp深化教程/15_C++标准库.md",
     "cpp教程/cpp深化教程/01_命名空间.md",
@@ -231,11 +236,6 @@
     "算法/算法技巧/数组.md",
     "数据结构/DSA学习路线.md",
     "内核/C与Rust的内核新时代.md.tmp",
-    "路径E-红队职业路径.md",
-    "ISSUES.md",
-    "数据结构/Q_排序_八大排序_Sorting.md",
-    "数据结构/P_图的高级算法_AdvancedGraph.md",
-    "数据结构/O_B树_BTree.md",
     "assets/images/qrcode_1783954615606.jpg",
     "assets/images/misc/cdq-divide.svg",
     "assets/images/geometry/2d-seg2.svg",
