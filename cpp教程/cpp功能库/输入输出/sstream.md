@@ -84,8 +84,8 @@ FUNCTION safe_convert:
 
 ---
 
-- **控制台 IO**: [[./iostream|iostream]] — `cin`/`cout`
-- **文件流**: [[./fstream|fstream]] — 文件 IO
+- **控制台 IO**: [[iostream|iostream]] — `cin`/`cout`
+- **文件流**: [[fstream|fstream]] — 文件 IO
 - **字符串基础**: [[../字符串/string|string]] — `string` 和 `string_view`
 - **C 对照**: `sprintf`/`sscanf`（`<stdio.h>`）
 - **返回目录**: 

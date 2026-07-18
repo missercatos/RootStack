@@ -101,9 +101,9 @@ FUNCTION demo_tls:
 
 ---
 
-- **互斥与同步**: [[./mutex|mutex]] — 保护线程间共享数据
-- **原子操作**: [[./atomic|atomic]] — 无锁线程安全操作
-- **异步任务**: [[./future|future/async]] — 高级线程抽象
+- **互斥与同步**: [[mutex|mutex]] — 保护线程间共享数据
+- **原子操作**: [[atomic|atomic]] — 无锁线程安全操作
+- **异步任务**: [[future|future/async]] — 高级线程抽象
 - **返回值共享**: 线程不返回值的替代方案是 `future` + `promise`
 - **C 对照**: `pthread_create`/`pthread_join`（POSIX `<pthread.h>`）
 - **返回目录**: 

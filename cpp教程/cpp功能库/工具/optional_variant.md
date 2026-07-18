@@ -131,8 +131,8 @@ FUNCTION demo_expected:
 
 ---
 
-- **pair / tuple**: [[./pair_tuple|pair / tuple]] — 多值聚合
+- **pair / tuple**: [[pair_tuple|pair / tuple]] — 多值聚合
 - **智能指针**: [[../内存/smart_ptr|smart_ptr]] — `optional` 也可表达"可能为空"
-- **span**: [[./span_bitset|span / bitset]] — 数组视图
+- **span**: [[span_bitset|span / bitset]] — 数组视图
 - **C 对照**: `NULL`/`union`/`void*`/`errno` 均无类型安全
 - **返回目录**: 

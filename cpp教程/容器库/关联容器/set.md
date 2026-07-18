@@ -72,6 +72,6 @@ ms.erase(ms.find(5))      // 仅删除一个 5
 
 ## 相关链接
 
-- [[../../数据结构/I_树_Tree_BST_AVL]]
-- [[../../../c语言教程/3数据结构/I_树_Tree_BST_AVL]]
+- [[../../../数据结构/I_树_Tree_BST_AVL]]
+- [[../../../数据结构/I_树_Tree_BST_AVL]]
 - [[../无序容器/unordered_set]]

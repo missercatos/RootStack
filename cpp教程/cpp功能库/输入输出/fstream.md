@@ -73,8 +73,8 @@ FUNCTION demo_append_binary:
 
 ---
 
-- **控制台 IO**: [[./iostream|iostream]] — `cin`/`cout`
-- **字符串流**: [[./sstream|sstream]] — 内存格式化
-- **文件系统**: [[./filesystem|filesystem]] — 目录遍历、路径操作
+- **控制台 IO**: [[iostream|iostream]] — `cin`/`cout`
+- **字符串流**: [[sstream|sstream]] — 内存格式化
+- **文件系统**: [[filesystem|filesystem]] — 目录遍历、路径操作
 - **C 对照**: `fopen`/`fclose`/`fprintf`/`fscanf`（`<stdio.h>`）
 - **返回目录**: 

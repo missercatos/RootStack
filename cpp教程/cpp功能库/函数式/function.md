@@ -95,8 +95,8 @@ FUNCTION demo_ref:
 
 ---
 
-- **lambda**: [[./lambda|lambda]] — 最常用的可调用对象
-- **hash**: [[./hash|hash]] — 哈希函数对象
+- **lambda**: [[lambda|lambda]] — 最常用的可调用对象
+- **hash**: [[hash|hash]] — 哈希函数对象
 - **算法配合**: `function` 作为 `sort`/`for_each` 等算法的参数
 - **C 对照**: 函数指针（`void (*f)(int)`），无闭包能力
 - **返回目录**: 

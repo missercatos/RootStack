@@ -107,8 +107,8 @@ FUNCTION demo_iile:
 
 ---
 
-- **function / bind**: [[./function|function / bind]] — 可调用对象包装器
-- **hash**: [[./hash|hash]] — `hash` 函数对象
+- **function / bind**: [[function|function / bind]] — 可调用对象包装器
+- **hash**: [[hash|hash]] — `hash` 函数对象
 - **算法**: lambda 作为 `sort`/`find_if`/`transform` 等算法的谓词
 - **C 对照**: 无 lambda，需手写函数或函数指针
 - **返回目录**: 

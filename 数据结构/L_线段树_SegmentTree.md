@@ -1,4 +1,4 @@
-# L 线段树 SegmentTree
+
 
 建议先阅读: [[A_容器_Container|A 容器 Container]], [[../算法/算法技巧/递推递归|递推递归]]
 

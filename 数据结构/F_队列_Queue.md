@@ -1,4 +1,4 @@
-# F 队列 Queue
+
 
 建议先阅读: [[A_容器_Container|A 容器 Container]], [[B_栈_Stack|B 栈 Stack]]
 

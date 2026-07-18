@@ -96,8 +96,8 @@ FUNCTION demo_advanced:
 
 ---
 
-- **optional / variant**: [[./optional_variant|optional / variant / any]] — 其他值语义工具
-- **span / bitset**: [[./span_bitset|span / bitset]] — 视图与位集
+- **optional / variant**: [[optional_variant|optional / variant / any]] — 其他值语义工具
+- **span / bitset**: [[span_bitset|span / bitset]] — 视图与位集
 - **结构化绑定**: 适用于 `pair`/`tuple`/`struct`/`array`
 - **C 对照**: `struct { T1 first; T2 second; }` 手动定义
 - **返回目录**: 

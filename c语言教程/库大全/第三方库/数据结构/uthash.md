@@ -36,4 +36,4 @@ HASH_FIND_INT(users, &search_id, user);  // 查找
 HASH_DEL(users, user);  // 删除
 ```
 
-**跨语言参考**: [[../../../cpp教程/cpp深化教程/04_动态内存|C++动态内存]]
+**跨语言参考**: [[../../../../cpp教程/cpp深化教程/04_动态内存|C++动态内存]]

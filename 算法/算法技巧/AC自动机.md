@@ -16,7 +16,7 @@ AC 自动机 = **Trie** 的结构 + **KMP** 的思想。它本质上是一个 Tr
 
 #### 2. 构建 fail 指针（BFS）
 
-![[assets/images/ac_automaton/ac-automaton1.gif]]
+!![](assets/images/ac_automaton/ac-automaton1.gif)
 *GIF 演示：以模式串 i、he、his、she、hers 构建 fail 指针的过程*
 
 对于结点 $u$，其父结点为 $p$，通过字符 $c$ 到达 $u$：
@@ -51,10 +51,10 @@ void build() {
 
 #### 3. 多模式匹配
 
-![[assets/images/ac_automaton/ac-automaton4.png]]
+!![](assets/images/ac_automaton/ac-automaton4.png)
 *构建完毕的 AC 自动机状态*
 
-![[assets/images/ac_automaton/ac-automaton2.gif]]
+!![](assets/images/ac_automaton/ac-automaton2.gif)
 *字典图构建（结点 5 遍历时的转移优化，蓝色/黑色边表示自动机新增的转移）*
 
 沿着字典图遍历文本串，每次沿 fail 指针统计所有匹配的模式串。
@@ -98,8 +98,8 @@ int query(const char t[]) {
 
 ### 相关链接
 
-- [[数据结构/J_字典树_Trie|Trie 字典树]]
+- [[../../数据结构/J_字典树_Trie|Trie 字典树]]
 - [[KMP|KMP 算法]]
-- [[字符串|字符串基础]]
+- [[../../cpp教程/cpp基础教程/11_字符串基础|字符串基础]]
 
 > 内容来源：经本地化改造的 OI-wiki AC 自动机章节。详细推导见 [OI-wiki](https://oi-wiki.org/string/ac-automaton/)。

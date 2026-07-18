@@ -76,8 +76,8 @@ FUNCTION demo_state:
 
 ---
 
-- **文件流**: [[./fstream|fstream]] — 文件 IO
-- **字符串流**: [[./sstream|sstream]] — 内存中的格式化
-- **文件系统**: [[./filesystem|filesystem]] — 目录与文件操作
+- **文件流**: [[fstream|fstream]] — 文件 IO
+- **字符串流**: [[sstream|sstream]] — 内存中的格式化
+- **文件系统**: [[filesystem|filesystem]] — 目录与文件操作
 - **C 对照**: `printf`/`scanf`/`getchar`（`<stdio.h>`）
 - **返回目录**: 
