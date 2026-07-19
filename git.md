@@ -618,12 +618,12 @@ git push origin --delete v0.1.0 # 删除远程
 # 5. 点击 "Publish release"
 ```
 
-| 操作 | 终端命令 | 网页入口 |
-|------|---------|---------|
-| 创建 tag | `git tag -a v0.1.0 -m "msg"` + `git push origin v0.1.0` | 仓库页 → Releases → Draft a new release |
-| 查看 tag | `git tag -l` | 仓库页 → Tags |
-| 删除 tag | `git tag -d v0.1.0` + `git push --delete origin v0.1.0` | Releases → 对应 release → Delete |
-| 发布 Release | `gh release create v0.1.0 --title "v0.1.0" --notes "changelog"` | 创建 release 页面 → Publish release |
+| 操作         | 终端命令                                                            | 网页入口                                 |
+| ---------- | --------------------------------------------------------------- | ------------------------------------ |
+| 创建 tag     | `git tag -a v0.1.0 -m "msg"` + `git push origin v0.1.0`         | 仓库页 → Releases → Draft a new release |
+| 查看 tag     | `git tag -l`                                                    | 仓库页 → Tags                           |
+| 删除 tag     | `git tag -d v0.1.0` + `git push --delete origin v0.1.0`         | Releases → 对应 release → Delete       |
+| 发布 Release | `gh release create v0.1.0 --title "v0.1.0" --notes "changelog"` | 创建 release 页面 → Publish release      |
 
 ---
 

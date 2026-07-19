@@ -1,6 +1,8 @@
 # 05 — Rust 红队工具链与系统入侵
 
-> 哲学：Rust 不是一门「未来」的语言——它已经来了。actix-web 是全球最快的 Web 框架之一，hyper 是底层 HTTP 引擎，tokio 是异步运行时的事实标准，surrealDB 是新锐数据库，Cloudflare 的整个边缘计算平台都在用 Rust 重写。越来越多的关键基础设施正在被 Rust 生态吞没。红队如果不懂 Rust，就永远比对手慢一步。
+> Rust 系统教程：[[../../rust/rust目录|Rust 教程总目录]] | [[../../路径F-Rust学习路径|Rust 学习路径]]
+
+> 哲学：Rust 不是一门"未来"的语言——它已经来了。actix-web 是全球最快的 Web 框架之一，hyper 是底层 HTTP 引擎，tokio 是异步运行时的事实标准，surrealDB 是新锐数据库，Cloudflare 的整个边缘计算平台都在用 Rust 重写。越来越多的关键基础设施正在被 Rust 生态吞没。红队如果不懂 Rust，就永远比对手慢一步。
 >
 > 环境：Arch Linux，rustup 已安装，cargo 可用。
 >
