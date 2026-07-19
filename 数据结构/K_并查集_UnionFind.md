@@ -39,94 +39,124 @@
 
 ### 标准并查集（路径压缩 + 按秩合并）
 
-```cpp
-#include <vector>
-#include <numeric>
+```c
+#include <stdlib.h>
 
-class UnionFind {
-private:
-    std::vector<int> parent;
-    std::vector<int> rank;
-    int count; // 连通分量数
+typedef struct {
+    int* parent;
+    int* rank;
+    int count;    // 连通分量数
+} UnionFind;
 
-public:
-    UnionFind(int n) : parent(n), rank(n, 0), count(n) {
-        std::iota(parent.begin(), parent.end(), 0);
+void uf_init(UnionFind* uf, int n) {
+    uf->parent = malloc(n * sizeof(int));
+    uf->rank = calloc(n, sizeof(int));
+    uf->count = n;
+    for (int i = 0; i < n; i++)
+        uf->parent[i] = i;
+}
+
+void uf_destroy(UnionFind* uf) {
+    free(uf->parent);
+    free(uf->rank);
+}
+
+int uf_find(UnionFind* uf, int x) {
+    if (uf->parent[x] != x)
+        uf->parent[x] = uf_find(uf, uf->parent[x]);  // 路径压缩
+    return uf->parent[x];
+}
+
+int uf_unite(UnionFind* uf, int x, int y) {
+    int px = uf_find(uf, x);
+    int py = uf_find(uf, y);
+    if (px == py) return 0;
+
+    if (uf->rank[px] < uf->rank[py]) {
+        int t = px; px = py; py = t;
     }
+    uf->parent[py] = px;
+    if (uf->rank[px] == uf->rank[py])
+        uf->rank[px]++;
+    uf->count--;
+    return 1;
+}
 
-    int find(int x) {
-        if (parent[x] != x)
-            parent[x] = find(parent[x]); // 路径压缩
-        return parent[x];
-    }
+int uf_connected(UnionFind* uf, int x, int y) {
+    return uf_find(uf, x) == uf_find(uf, y);
+}
 
-    bool unite(int x, int y) {
-        int px = find(x), py = find(y);
-        if (px == py) return false;
-
-        if (rank[px] < rank[py]) std::swap(px, py);
-        parent[py] = px;
-        if (rank[px] == rank[py]) ++rank[px];
-        --count;
-        return true;
-    }
-
-    bool connected(int x, int y) {
-        return find(x) == find(y);
-    }
-
-    int getCount() const { return count; }
-};
+int uf_get_count(UnionFind* uf) { return uf->count; }
 ```
 
 ### 带权并查集
 
-维护元素与父节点之间的权值关系（如距离、差值）：
+维护元素与父节点之间的权值关系（如距离、差值），合并时同步更新权值：
 
-```cpp
-class WeightedUnionFind {
-private:
-    std::vector<int> parent, rank;
-    std::vector<int> weight; // weight[i] = i 到 parent[i] 的权值差
+```c
+typedef struct {
+    int* parent;
+    int* rank;
+    int* weight;   // weight[i] = i 到 parent[i] 的权值差
+} WeightedUnionFind;
 
-public:
-    WeightedUnionFind(int n) : parent(n), rank(n, 0), weight(n, 0) {
-        std::iota(parent.begin(), parent.end(), 0);
+void wuf_init(WeightedUnionFind* uf, int n) {
+    uf->parent = malloc(n * sizeof(int));
+    uf->rank = calloc(n, sizeof(int));
+    uf->weight = calloc(n, sizeof(int));
+    for (int i = 0; i < n; i++)
+        uf->parent[i] = i;
+}
+
+void wuf_destroy(WeightedUnionFind* uf) {
+    free(uf->parent);
+    free(uf->rank);
+    free(uf->weight);
+}
+
+int wuf_find(WeightedUnionFind* uf, int x, int* out_weight) {
+    if (uf->parent[x] == x) {
+        *out_weight = 0;
+        return x;
     }
+    int w;
+    int root = wuf_find(uf, uf->parent[x], &w);
+    uf->parent[x] = root;
+    uf->weight[x] += w;
+    *out_weight = uf->weight[x];
+    return root;
+}
 
-    std::pair<int, int> find(int x) {
-        if (parent[x] == x) return {x, 0};
-        auto [root, w] = find(parent[x]);
-        parent[x] = root;
-        weight[x] += w;
-        return {root, weight[x]};
+// 声明: value(y) - value(x) = w
+// 返回 1 合并成功，0 表示 x 和 y 已连通且与 w 矛盾
+int wuf_unite(WeightedUnionFind* uf, int x, int y, int w) {
+    int wx, wy;
+    int px = wuf_find(uf, x, &wx);
+    int py = wuf_find(uf, y, &wy);
+    if (px == py)
+        return (wy - wx) == w;
+
+    if (uf->rank[px] < uf->rank[py]) {
+        uf->parent[px] = py;
+        uf->weight[px] = wy - wx - w;
+    } else {
+        uf->parent[py] = px;
+        uf->weight[py] = wx - wy + w;
+        if (uf->rank[px] == uf->rank[py])
+            uf->rank[px]++;
     }
+    return 1;
+}
 
-    // 声明: x 和 y 的权值之差为 w (即 value(y) - value(x) = w)
-    bool unite(int x, int y, int w) {
-        auto [px, wx] = find(x);
-        auto [py, wy] = find(y);
-        if (px == py) return (wy - wx) == w; // 验证一致性
-
-        if (rank[px] < rank[py]) {
-            parent[px] = py;
-            weight[px] = wy - wx - w;
-        } else {
-            parent[py] = px;
-            weight[py] = wx - wy + w;
-            if (rank[px] == rank[py]) ++rank[px];
-        }
-        return true;
-    }
-
-    bool query(int x, int y, int& diff) {
-        auto [px, wx] = find(x);
-        auto [py, wy] = find(y);
-        if (px != py) return false;
-        diff = wy - wx;
-        return true;
-    }
-};
+// 查询 x 和 y 的权值差，不连通时返回 0
+int wuf_query(WeightedUnionFind* uf, int x, int y, int* diff) {
+    int wx, wy;
+    int px = wuf_find(uf, x, &wx);
+    int py = wuf_find(uf, y, &wy);
+    if (px != py) return 0;
+    *diff = wy - wx;
+    return 1;
+}
 ```
 
 ---

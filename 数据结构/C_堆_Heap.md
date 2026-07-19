@@ -33,7 +33,27 @@
 
 **上浮（sift-up）**: 新元素放在数组末尾，与父节点比较，违反堆性质则交换，重复直到满足或到根节点。
 
+```mermaid
+flowchart TD
+    A["将新元素 x 放到数组末尾"] --> B{"与父节点比较\nx > parent?"}
+    B -->|是| C["交换 x 与父节点"]
+    C --> D{"到达根节点?"}
+    D -->|否| B
+    D -->|是| E["结束"]
+    B -->|否| E
+```
+
 **下沉（sift-down）**: 新根与较大子节点比较（最大堆），违反堆性质则交换，重复直到满足或到叶节点。
+
+```mermaid
+flowchart TD
+    A["将根（或某节点）记为 cur"] --> B{"cur 有子节点\n且 cur < max(左,右)?"}
+    B -->|是| C["将 cur 与较大的子节点交换"]
+    C --> D{"cur 到达叶节点?"}
+    D -->|否| B
+    D -->|是| E["结束"]
+    B -->|否| E
+```
 
 ### Floyd 建堆 O(n) 证明
 
@@ -45,157 +65,141 @@
 
 ### 最大堆
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <stdexcept>
+```c
+#include <stdlib.h>
 
-template <typename T>
-class MaxHeap {
-private:
-    std::vector<T> data;
+typedef struct {
+    int* data;
+    size_t size;
+    size_t capacity;
+} MaxHeap;
 
-    void siftUp(size_t idx) {
-        while (idx > 0) {
-            size_t parent = (idx - 1) / 2;
-            if (data[parent] >= data[idx]) break;
-            std::swap(data[parent], data[idx]);
-            idx = parent;
-        }
+void mh_init(MaxHeap* h) {
+    h->data = NULL;
+    h->size = 0;
+    h->capacity = 0;
+}
+
+void mh_destroy(MaxHeap* h) {
+    free(h->data);
+    h->data = NULL;
+    h->size = 0;
+    h->capacity = 0;
+}
+
+static void swap(int* a, int* b) { int t = *a; *a = *b; *b = t; }
+
+// 上浮：末尾新元素向上调整
+static void sift_up(MaxHeap* h, size_t idx) {
+    while (idx > 0) {
+        size_t parent = (idx - 1) / 2;
+        if (h->data[parent] >= h->data[idx]) break;
+        swap(&h->data[parent], &h->data[idx]);
+        idx = parent;
     }
+}
 
-    void siftDown(size_t idx) {
-        size_t n = data.size();
-        while (true) {
-            size_t largest = idx;
-            size_t left = 2 * idx + 1;
-            size_t right = 2 * idx + 2;
-            if (left < n && data[left] > data[largest])
-                largest = left;
-            if (right < n && data[right] > data[largest])
-                largest = right;
-            if (largest == idx) break;
-            std::swap(data[idx], data[largest]);
-            idx = largest;
-        }
+// 下沉：堆顶向下调整
+static void sift_down(MaxHeap* h, size_t idx) {
+    size_t n = h->size;
+    while (1) {
+        size_t largest = idx;
+        size_t left = 2 * idx + 1;
+        size_t right = 2 * idx + 2;
+        if (left < n && h->data[left] > h->data[largest])
+            largest = left;
+        if (right < n && h->data[right] > h->data[largest])
+            largest = right;
+        if (largest == idx) break;
+        swap(&h->data[idx], &h->data[largest]);
+        idx = largest;
     }
+}
 
-public:
-    MaxHeap() = default;
+static int mh_expand(MaxHeap* h) {
+    size_t new_cap = h->capacity == 0 ? 8 : h->capacity * 2;
+    int* new_data = realloc(h->data, new_cap * sizeof(int));
+    if (!new_data) return -1;
+    h->data = new_data;
+    h->capacity = new_cap;
+    return 0;
+}
 
-    // Floyd 建堆：O(n)
-    MaxHeap(const std::vector<T>& arr) : data(arr) {
-        for (int i = data.size() / 2 - 1; i >= 0; --i)
-            siftDown(i);
-    }
+int mh_push(MaxHeap* h, int value) {
+    if (h->size >= h->capacity)
+        if (mh_expand(h) != 0) return -1;
+    h->data[h->size++] = value;
+    sift_up(h, h->size - 1);
+    return 0;
+}
 
-    void push(const T& value) {
-        data.push_back(value);
-        siftUp(data.size() - 1);
-    }
+int mh_extract_max(MaxHeap* h, int* out) {
+    if (h->size == 0) return -1;
+    *out = h->data[0];
+    h->data[0] = h->data[--h->size];
+    if (h->size > 0) sift_down(h, 0);
+    return 0;
+}
 
-    T extractMax() {
-        if (data.empty()) throw std::underflow_error("heap empty");
-        T maxVal = data[0];
-        data[0] = data.back();
-        data.pop_back();
-        if (!data.empty()) siftDown(0);
-        return maxVal;
-    }
+int mh_top(MaxHeap* h, int* out) {
+    if (h->size == 0) return -1;
+    *out = h->data[0];
+    return 0;
+}
 
-    const T& top() const {
-        if (data.empty()) throw std::underflow_error("heap empty");
-        return data[0];
-    }
+int mh_empty(MaxHeap* h) { return h->size == 0; }
+size_t mh_size(MaxHeap* h) { return h->size; }
 
-    bool empty() const { return data.empty(); }
-    size_t size() const { return data.size(); }
-};
+// Floyd 建堆：从最后一个非叶节点开始下沉，时间复杂度 O(n)
+void mh_build(MaxHeap* h, int* arr, size_t n) {
+    free(h->data);
+    h->data = arr;
+    h->size = n;
+    h->capacity = n;
+    for (int i = (int)n / 2 - 1; i >= 0; i--)
+        sift_down(h, (size_t)i);
+}
 ```
 
 ### 堆排序
 
-```cpp
-void heapSort(std::vector<int>& arr) {
-    // 建堆 O(n)
-    for (int i = arr.size() / 2 - 1; i >= 0; --i) {
-        // siftDown 逻辑（内联）
-        int n = arr.size();
-        int idx = i;
-        while (true) {
-            int largest = idx;
-            int left = 2 * idx + 1, right = 2 * idx + 2;
-            if (left < n && arr[left] > arr[largest]) largest = left;
-            if (right < n && arr[right] > arr[largest]) largest = right;
-            if (largest == idx) break;
-            std::swap(arr[idx], arr[largest]);
-            idx = largest;
-        }
+```c
+static void sift_down_range(int* arr, size_t n, size_t idx) {
+    while (1) {
+        size_t largest = idx;
+        size_t left = 2 * idx + 1;
+        size_t right = 2 * idx + 2;
+        if (left < n && arr[left] > arr[largest]) largest = left;
+        if (right < n && arr[right] > arr[largest]) largest = right;
+        if (largest == idx) break;
+        int t = arr[idx]; arr[idx] = arr[largest]; arr[largest] = t;
+        idx = largest;
     }
+}
+
+void heap_sort(int* arr, size_t n) {
+    // 建堆 O(n)
+    for (int i = (int)n / 2 - 1; i >= 0; i--)
+        sift_down_range(arr, n, (size_t)i);
     // 逐一提取最大值 O(n log n)
-    for (int i = arr.size() - 1; i > 0; --i) {
-        std::swap(arr[0], arr[i]);
-        // siftDown on reduced heap
-        int n = i, idx = 0;
-        while (true) {
-            int largest = idx;
-            int left = 2 * idx + 1, right = 2 * idx + 2;
-            if (left < n && arr[left] > arr[largest]) largest = left;
-            if (right < n && arr[right] > arr[largest]) largest = right;
-            if (largest == idx) break;
-            std::swap(arr[idx], arr[largest]);
-            idx = largest;
-        }
+    for (size_t i = n - 1; i > 0; i--) {
+        int t = arr[0]; arr[0] = arr[i]; arr[i] = t;
+        sift_down_range(arr, i, 0);
     }
 }
 ```
 
 ---
 
-## STL 使用
+## 各语言标准库对比
 
-```cpp
-#include <queue>
-#include <vector>
-#include <iostream>
-
-int main() {
-    // 默认最大堆（大顶堆）
-    std::priority_queue<int> max_pq;
-    max_pq.push(30);
-    max_pq.push(10);
-    max_pq.push(50);
-    while (!max_pq.empty()) {
-        std::cout << max_pq.top() << " "; // 50 30 10
-        max_pq.pop();
-    }
-
-    // 最小堆（小顶堆）
-    std::priority_queue<int, std::vector<int>, std::greater<int>> min_pq;
-    min_pq.push(30);
-    min_pq.push(10);
-    min_pq.push(50);
-    while (!min_pq.empty()) {
-        std::cout << min_pq.top() << " "; // 10 30 50
-        min_pq.pop();
-    }
-
-    // 自定义比较器
-    auto cmp = [](int a, int b) { return a % 10 < b % 10; };
-    std::priority_queue<int, std::vector<int>, decltype(cmp)> custom_pq(cmp);
-
-    // STL 堆算法（操作 vector）
-    std::vector<int> v = {3, 1, 4, 1, 5, 9};
-    std::make_heap(v.begin(), v.end());          // 建堆
-    v.push_back(10);
-    std::push_heap(v.begin(), v.end());          // 插入
-    std::pop_heap(v.begin(), v.end());           // 弹出堆顶到末尾
-    int maxVal = v.back(); v.pop_back();
-    std::sort_heap(v.begin(), v.end());          // 堆排序
-
-    return 0;
-}
-```
+| 语言 | 优先队列 / 堆 | 堆算法 |
+|------|--------------|--------|
+| C | 无（手写） | 无（手写） |
+| C++ | priority_queue | make_heap / push_heap / pop_heap |
+| Java | PriorityQueue | 无（手写或用 Collections.sort） |
+| Python | heapq（最小堆） | heapq.heapify / heappush / heappop |
+| Rust | BinaryHeap（最大堆） | 无独立堆算法 |
 
 ---
 

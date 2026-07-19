@@ -33,249 +33,279 @@
 
 ### 基于动态数组的栈
 
-```cpp
-#include <iostream>
-#include <stdexcept>
+```c
+#include <stdlib.h>
 
-template <typename T>
-class ArrayStack {
-private:
-    T* _data;
-    size_t _capacity;
-    size_t _top; // 栈顶指针（指向下一个空位）
+typedef struct {
+    int* data;
+    size_t capacity;
+    size_t top;   // 指向下一个空位，同时也是元素个数
+} ArrayStack;
 
-    void expand() {
-        size_t new_cap = (_capacity == 0) ? 8 : _capacity * 2;
-        T* new_data = new T[new_cap];
-        for (size_t i = 0; i < _top; ++i)
-            new_data[i] = _data[i];
-        delete[] _data;
-        _data = new_data;
-        _capacity = new_cap;
-    }
+void as_init(ArrayStack* s) {
+    s->data = NULL;
+    s->capacity = 0;
+    s->top = 0;
+}
 
-public:
-    ArrayStack() : _data(nullptr), _capacity(0), _top(0) {}
-    ~ArrayStack() { delete[] _data; }
+void as_destroy(ArrayStack* s) {
+    free(s->data);
+    s->data = NULL;
+    s->capacity = 0;
+    s->top = 0;
+}
 
-    void push(const T& value) {
-        if (_top >= _capacity) expand();
-        _data[_top++] = value;
-    }
+int as_expand(ArrayStack* s) {
+    size_t new_cap = s->capacity == 0 ? 8 : s->capacity * 2;
+    int* new_data = realloc(s->data, new_cap * sizeof(int));
+    if (!new_data) return -1;
+    s->data = new_data;
+    s->capacity = new_cap;
+    return 0;
+}
 
-    void pop() {
-        if (_top == 0) throw std::underflow_error("stack empty");
-        --_top;
-    }
+int as_push(ArrayStack* s, int value) {
+    if (s->top >= s->capacity)
+        if (as_expand(s) != 0) return -1;
+    s->data[s->top++] = value;
+    return 0;
+}
 
-    T& top() {
-        if (_top == 0) throw std::underflow_error("stack empty");
-        return _data[_top - 1];
-    }
+int as_pop(ArrayStack* s) {
+    if (s->top == 0) return -1;
+    s->top--;
+    return 0;
+}
 
-    bool empty() const { return _top == 0; }
-    size_t size() const { return _top; }
-};
+int as_top(ArrayStack* s, int* out) {
+    if (s->top == 0) return -1;
+    *out = s->data[s->top - 1];
+    return 0;
+}
+
+int as_empty(ArrayStack* s) { return s->top == 0; }
+size_t as_size(ArrayStack* s) { return s->top; }
 ```
 
 ### 基于链表的栈
 
-```cpp
-template <typename T>
-class LinkedStack {
-private:
-    struct Node {
-        T data;
-        Node* next;
-        Node(const T& val, Node* nxt = nullptr) : data(val), next(nxt) {}
-    };
-    Node* _head; // 栈顶
-    size_t _count;
+```c
+#include <stdlib.h>
 
-public:
-    LinkedStack() : _head(nullptr), _count(0) {}
-    ~LinkedStack() {
-        while (_head) {
-            Node* tmp = _head;
-            _head = _head->next;
-            delete tmp;
-        }
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+typedef struct {
+    Node* head;   // 栈顶
+    size_t count;
+} LinkedStack;
+
+void ls_init(LinkedStack* s) {
+    s->head = NULL;
+    s->count = 0;
+}
+
+void ls_destroy(LinkedStack* s) {
+    while (s->head) {
+        Node* tmp = s->head;
+        s->head = s->head->next;
+        free(tmp);
     }
+    s->count = 0;
+}
 
-    void push(const T& value) {
-        _head = new Node(value, _head);
-        ++_count;
-    }
+int ls_push(LinkedStack* s, int value) {
+    Node* node = malloc(sizeof(Node));
+    if (!node) return -1;
+    node->data = value;
+    node->next = s->head;
+    s->head = node;
+    s->count++;
+    return 0;
+}
 
-    void pop() {
-        if (!_head) throw std::underflow_error("stack empty");
-        Node* tmp = _head;
-        _head = _head->next;
-        delete tmp;
-        --_count;
-    }
+int ls_pop(LinkedStack* s) {
+    if (!s->head) return -1;
+    Node* tmp = s->head;
+    s->head = s->head->next;
+    free(tmp);
+    s->count--;
+    return 0;
+}
 
-    T& top() {
-        if (!_head) throw std::underflow_error("stack empty");
-        return _head->data;
-    }
+int ls_top(LinkedStack* s, int* out) {
+    if (!s->head) return -1;
+    *out = s->head->data;
+    return 0;
+}
 
-    bool empty() const { return _head == nullptr; }
-    size_t size() const { return _count; }
-};
+int ls_empty(LinkedStack* s) { return s->head == NULL; }
+size_t ls_size(LinkedStack* s) { return s->count; }
 ```
 
 ### 最小栈（MinStack）
 
-在 O(1) 时间内获取栈中最小值的栈：
+在 O(1) 时间内获取栈中最小值的栈，用两个普通栈模拟：
 
-```cpp
-#include <stack>
-#include <algorithm>
+```c
+#include <stdlib.h>
+#include <limits.h>
 
-template <typename T>
-class MinStack {
-private:
-    std::stack<T> data_stack;
-    std::stack<T> min_stack;
+typedef struct {
+    int* data;
+    int* min;
+    size_t capacity;
+    size_t top;
+} MinStack;
 
-public:
-    void push(const T& value) {
-        data_stack.push(value);
-        if (min_stack.empty() || value <= min_stack.top())
-            min_stack.push(value);
+void ms_init(MinStack* s) {
+    s->capacity = 16;
+    s->data = malloc(s->capacity * sizeof(int));
+    s->min  = malloc(s->capacity * sizeof(int));
+    s->top = 0;
+}
+
+void ms_destroy(MinStack* s) {
+    free(s->data);
+    free(s->min);
+}
+
+int ms_push(MinStack* s, int value) {
+    if (s->top >= s->capacity) {
+        s->capacity *= 2;
+        s->data = realloc(s->data, s->capacity * sizeof(int));
+        s->min  = realloc(s->min,  s->capacity * sizeof(int));
     }
+    s->data[s->top] = value;
+    s->min[s->top]  = (s->top == 0) ? value
+                    : (value < s->min[s->top - 1] ? value : s->min[s->top - 1]);
+    s->top++;
+    return 0;
+}
 
-    void pop() {
-        if (data_stack.top() == min_stack.top())
-            min_stack.pop();
-        data_stack.pop();
-    }
+int ms_pop(MinStack* s) {
+    if (s->top == 0) return -1;
+    s->top--;
+    return 0;
+}
 
-    T top() const { return data_stack.top(); }
-    T getMin() const { return min_stack.top(); }
-    bool empty() const { return data_stack.empty(); }
-};
-```
+int ms_top(MinStack* s, int* out) {
+    if (s->top == 0) return -1;
+    *out = s->data[s->top - 1];
+    return 0;
+}
 
----
-
-## STL 使用
-
-```cpp
-#include <stack>
-#include <iostream>
-
-int main() {
-    std::stack<int> stk;
-
-    stk.push(10);
-    stk.push(20);
-    stk.push(30);
-
-    std::cout << "top: " << stk.top() << std::endl; // 30
-    std::cout << "size: " << stk.size() << std::endl; // 3
-
-    stk.pop(); // 弹出 30
-
-    while (!stk.empty()) {
-        std::cout << stk.top() << " ";
-        stk.pop();
-    }
-    // 输出: 20 10
-
+int ms_get_min(MinStack* s, int* out) {
+    if (s->top == 0) return -1;
+    *out = s->min[s->top - 1];
     return 0;
 }
 ```
 
-stack 默认底层容器是 deque，可指定为 vector 或 list：`std::stack<int, std::vector<int>> stk;`
+---
 
-### 核心算法：括号匹配
+## 各语言标准库对比
 
-```cpp
-#include <string>
-#include <stack>
+| 语言 | 栈类型 | 说明 |
+|------|--------|------|
+| C | 无（手写） | 标准库不提供，需自行实现 |
+| C++ | stack | 默认底层为 deque，可指定 vector 或 list |
+| Java | Stack / ArrayDeque | Stack 是遗留类，推荐 ArrayDeque |
+| Python | 无（用 list） | list.append / list.pop 模拟栈 |
+| Rust | Vec | push / pop 方法天然实现栈 |
 
-bool isBalanced(const std::string& expr) {
-    std::stack<char> stk;
-    for (char ch : expr) {
+---
+
+## 经典算法示例
+
+以下算法演示栈的核心应用，用 C 实现以展示本质逻辑。
+
+### 括号匹配
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+int is_balanced(const char* expr) {
+    int len = strlen(expr);
+    char* stk = malloc(len);
+    int top = 0;
+    for (int i = 0; i < len; i++) {
+        char ch = expr[i];
         if (ch == '(' || ch == '[' || ch == '{') {
-            stk.push(ch);
+            stk[top++] = ch;
         } else if (ch == ')' || ch == ']' || ch == '}') {
-            if (stk.empty()) return false;
-            char top = stk.top(); stk.pop();
-            if ((ch == ')' && top != '(') ||
-                (ch == ']' && top != '[') ||
-                (ch == '}' && top != '{'))
-                return false;
+            if (top == 0) { free(stk); return 0; }
+            char t = stk[--top];
+            if ((ch == ')' && t != '(') ||
+                (ch == ']' && t != '[') ||
+                (ch == '}' && t != '{')) {
+                free(stk); return 0;
+            }
         }
     }
-    return stk.empty();
+    int ok = (top == 0);
+    free(stk);
+    return ok;
 }
 ```
 
-### 核心算法：后缀表达式求值
+### 中缀转后缀（调度场算法）
 
-```cpp
-#include <string>
-#include <sstream>
+调度场算法由 Dijkstra 提出，用栈处理运算符优先级，将人类易读的**中缀表达式**（如 `3 + 4 * 2`）转为计算机易算的**后缀表达式**（如 `3 4 2 * +`）。
 
-int evalRPN(const std::string& expr) {
-    std::stack<int> stk;
-    std::istringstream iss(expr);
-    std::string token;
-    while (iss >> token) {
-        if (token == "+" || token == "-" || token == "*" || token == "/") {
-            int b = stk.top(); stk.pop();
-            int a = stk.top(); stk.pop();
-            if (token == "+") stk.push(a + b);
-            else if (token == "-") stk.push(a - b);
-            else if (token == "*") stk.push(a * b);
-            else stk.push(a / b);
-        } else {
-            stk.push(std::stoi(token));
-        }
-    }
-    return stk.top();
-}
-```
+核心规则：
+- 操作数直接输出
+- 左括号入栈
+- 右括号弹出直到左括号
+- 运算符：弹掉栈顶所有优先级 >= 它的运算符，再入栈
+- 结束后弹出栈中所有剩余运算符
 
-### 核心算法：中缀转后缀
+示例推演：`3 + 4 * 2`
 
-```cpp
-#include <string>
-#include <cctype>
+| 输入 | 输出（后缀） | 栈 | 说明 |
+|------|-------------|-----|------|
+| 3 | 3 | | 操作数直接输出 |
+| + | 3 | + | 栈空，入栈 |
+| 4 | 3 4 | + | 操作数直接输出 |
+| * | 3 4 | + * | * 优先级 > +，入栈 |
+| 2 | 3 4 2 | + * | 操作数直接输出 |
+| 结束 | 3 4 2 * + | | 弹出所有运算符 |
 
+```c
 int precedence(char op) {
     if (op == '+' || op == '-') return 1;
     if (op == '*' || op == '/') return 2;
     return 0;
 }
 
-std::string infixToPostfix(const std::string& expr) {
-    std::stack<char> stk;
-    std::string output;
-    for (char ch : expr) {
-        if (std::isalnum(ch)) {
-            output += ch;
+// 中缀表达式转后缀，输入保证无空格，操作数为单个字母/数字
+void infix_to_postfix(const char* expr, char* output) {
+    int len = strlen(expr);
+    char* stk = malloc(len);
+    int top = 0, out_idx = 0;
+    for (int i = 0; i < len; i++) {
+        char ch = expr[i];
+        if (ch >= '0' && ch <= '9') {
+            output[out_idx++] = ch;
         } else if (ch == '(') {
-            stk.push(ch);
+            stk[top++] = ch;
         } else if (ch == ')') {
-            while (!stk.empty() && stk.top() != '(') {
-                output += stk.top(); stk.pop();
-            }
-            stk.pop(); // 弹出 '('
-        } else { // 运算符
-            while (!stk.empty() && precedence(stk.top()) >= precedence(ch)) {
-                output += stk.top(); stk.pop();
-            }
-            stk.push(ch);
+            while (top > 0 && stk[top - 1] != '(')
+                output[out_idx++] = stk[--top];
+            top--;  // 弹出 '('
+        } else {  // 运算符
+            while (top > 0 && precedence(stk[top - 1]) >= precedence(ch))
+                output[out_idx++] = stk[--top];
+            stk[top++] = ch;
         }
     }
-    while (!stk.empty()) {
-        output += stk.top(); stk.pop();
-    }
-    return output;
+    while (top > 0)
+        output[out_idx++] = stk[--top];
+    output[out_idx] = '\0';
+    free(stk);
 }
 ```
 

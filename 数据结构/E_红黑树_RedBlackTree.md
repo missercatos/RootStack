@@ -16,6 +16,37 @@
 4. 红色节点的两个子节点必须是黑色（不能有连续的红色）
 5. 从任意节点到其每个叶子的所有路径包含相同数目的黑色节点
 
+```mermaid
+graph TD
+    subgraph 红黑树示例（B=黑, R=红）
+        N11["11 B"] --> N21["2 R"]
+        N11 --> N31["14 B"]
+        N21 --> N41["1 B"]
+        N21 --> N51["7 B"]
+        N31 --> N61["15 R"]
+        N31 --> N71["NIL"]
+        N41 --> N81["NIL"]
+        N41 --> N91["NIL"]
+        N51 --> N101["5 R"]
+        N51 --> N111["8 R"]
+        N61 --> N121["NIL"]
+        N61 --> N131["NIL"]
+    end
+    style N11 fill:#333,color:#fff
+    style N31 fill:#333,color:#fff
+    style N41 fill:#333,color:#fff
+    style N51 fill:#333,color:#fff
+    style N21 fill:#f00,color:#fff
+    style N61 fill:#f00,color:#fff
+    style N101 fill:#f00,color:#fff
+    style N111 fill:#f00,color:#fff
+    style N71 fill:#999,color:#fff
+    style N81 fill:#999,color:#fff
+    style N91 fill:#999,color:#fff
+    style N121 fill:#999,color:#fff
+    style N131 fill:#999,color:#fff
+```
+
 ### 复杂度
 
 | 操作 | 平均 | 最坏 | 说明 |
@@ -24,6 +55,19 @@
 | 插入 | O(log n) | O(log n) | BST 插入 + 最多 2 次旋转 |
 | 删除 | O(log n) | O(log n) | BST 删除 + 最多 3 次旋转 |
 | 空间 | O(n) | O(n) | 每个节点额外 1 bit |
+
+### 红黑树高度上界证明
+
+**定理**：一棵有 n 个内部节点的红黑树，其高度 h ≤ 2·log₂(n+1)
+
+**证明**：
+1. 将红黑树中所有红色节点"合并"到其父节点（黑色），得到一棵 2-3-4 树
+2. 合并后所有叶子在同一层，每个节点有 2~4 个子节点
+3. 合并后的树高度为 bh（黑色高度），满足 n+1 ≥ 2^bh
+4. 由于红色节点不能连续，bh ≥ h/2
+5. 由 n+1 ≥ 2^(h/2)，两边取对数得 h ≤ 2·log₂(n+1)
+
+**推论**：红黑树的查找、插入、删除时间复杂度均为 O(log n)
 
 ### 红黑树 vs AVL 树
 
@@ -40,197 +84,305 @@
 
 ### 红黑树插入（含修复）
 
-```cpp
-#include <iostream>
+```c
+#include <stdlib.h>
 
-enum class Color { RED, BLACK };
+typedef enum { RED, BLACK } Color;
 
-template <typename T>
-class RBTree {
-private:
-    struct Node {
-        T data;
-        Color color;
-        Node *left, *right, *parent;
-        Node(T val) : data(val), color(Color::RED),
-                      left(nullptr), right(nullptr), parent(nullptr) {}
-    };
+typedef struct RBNode {
+    int data;
+    Color color;
+    struct RBNode *left, *right, *parent;
+} RBNode;
 
-    Node* root;
-    Node* NIL; // 哨兵空节点（黑色）
+typedef struct {
+    RBNode* root;
+    RBNode* NIL;     // 哨兵空节点（黑色）
+} RBTree;
 
-    void leftRotate(Node* x) {
-        Node* y = x->right;
-        x->right = y->left;
-        if (y->left != NIL) y->left->parent = x;
-        y->parent = x->parent;
-        if (x->parent == nullptr) root = y;
-        else if (x == x->parent->left) x->parent->left = y;
-        else x->parent->right = y;
-        y->left = x;
-        x->parent = y;
-    }
+RBNode* rb_create_node(int val) {
+    RBNode* node = malloc(sizeof(RBNode));
+    node->data = val;
+    node->color = RED;
+    node->left = node->right = node->parent = NULL;
+    return node;
+}
 
-    void rightRotate(Node* y) {
-        Node* x = y->left;
-        y->left = x->right;
-        if (x->right != NIL) x->right->parent = y;
-        x->parent = y->parent;
-        if (y->parent == nullptr) root = x;
-        else if (y == y->parent->left) y->parent->left = x;
-        else y->parent->right = x;
-        x->right = y;
-        y->parent = x;
-    }
+void rb_init(RBTree* t) {
+    t->NIL = malloc(sizeof(RBNode));
+    t->NIL->color = BLACK;
+    t->NIL->left = t->NIL->right = t->NIL->parent = NULL;
+    t->root = t->NIL;
+}
 
-    void insertFixup(Node* z) {
-        while (z->parent && z->parent->color == Color::RED) {
-            if (z->parent == z->parent->parent->left) {
-                Node* y = z->parent->parent->right; // 叔叔
-                if (y->color == Color::RED) {
-                    // 情况 1: 叔叔是红色 -> 变色上移
-                    z->parent->color = Color::BLACK;
-                    y->color = Color::BLACK;
-                    z->parent->parent->color = Color::RED;
-                    z = z->parent->parent;
-                } else {
-                    if (z == z->parent->right) {
-                        // 情况 2: 三角 -> 左旋
-                        z = z->parent;
-                        leftRotate(z);
-                    }
-                    // 情况 3: 直线 -> 右旋+变色
-                    z->parent->color = Color::BLACK;
-                    z->parent->parent->color = Color::RED;
-                    rightRotate(z->parent->parent);
-                }
+static void rb_left_rotate(RBTree* t, RBNode* x) {
+    RBNode* y = x->right;
+    x->right = y->left;
+    if (y->left != t->NIL) y->left->parent = x;
+    y->parent = x->parent;
+    if (x->parent == t->NIL) t->root = y;
+    else if (x == x->parent->left) x->parent->left = y;
+    else x->parent->right = y;
+    y->left = x;
+    x->parent = y;
+}
+
+static void rb_right_rotate(RBTree* t, RBNode* y) {
+    RBNode* x = y->left;
+    y->left = x->right;
+    if (x->right != t->NIL) x->right->parent = y;
+    x->parent = y->parent;
+    if (y->parent == t->NIL) t->root = x;
+    else if (y == y->parent->left) y->parent->left = x;
+    else y->parent->right = x;
+    x->right = y;
+    y->parent = x;
+}
+
+static void rb_insert_fixup(RBTree* t, RBNode* z) {
+    while (z->parent != t->NIL && z->parent->color == RED) {
+        if (z->parent == z->parent->parent->left) {
+            RBNode* y = z->parent->parent->right;
+            if (y->color == RED) {
+                z->parent->color = BLACK;
+                y->color = BLACK;
+                z->parent->parent->color = RED;
+                z = z->parent->parent;
             } else {
-                // 对称情况（parent 是右孩子）
-                Node* y = z->parent->parent->left;
-                if (y->color == Color::RED) {
-                    z->parent->color = Color::BLACK;
-                    y->color = Color::BLACK;
-                    z->parent->parent->color = Color::RED;
-                    z = z->parent->parent;
-                } else {
-                    if (z == z->parent->left) {
-                        z = z->parent;
-                        rightRotate(z);
-                    }
-                    z->parent->color = Color::BLACK;
-                    z->parent->parent->color = Color::RED;
-                    leftRotate(z->parent->parent);
+                if (z == z->parent->right) {
+                    z = z->parent;
+                    rb_left_rotate(t, z);
                 }
+                z->parent->color = BLACK;
+                z->parent->parent->color = RED;
+                rb_right_rotate(t, z->parent->parent);
+            }
+        } else {
+            RBNode* y = z->parent->parent->left;
+            if (y->color == RED) {
+                z->parent->color = BLACK;
+                y->color = BLACK;
+                z->parent->parent->color = RED;
+                z = z->parent->parent;
+            } else {
+                if (z == z->parent->left) {
+                    z = z->parent;
+                    rb_right_rotate(t, z);
+                }
+                z->parent->color = BLACK;
+                z->parent->parent->color = RED;
+                rb_left_rotate(t, z->parent->parent);
             }
         }
-        root->color = Color::BLACK;
     }
+    t->root->color = BLACK;
+}
 
-    void inorderPrint(Node* node) {
-        if (node == NIL) return;
-        inorderPrint(node->left);
-        std::cout << node->data
-                  << (node->color == Color::RED ? "(R) " : "(B) ");
-        inorderPrint(node->right);
+int rb_insert(RBTree* t, int value) {
+    RBNode* z = rb_create_node(value);
+    z->left = z->right = t->NIL;
+
+    RBNode* y = t->NIL;
+    RBNode* x = t->root;
+    while (x != t->NIL) {
+        y = x;
+        if (z->data < x->data) x = x->left;
+        else if (z->data > x->data) x = x->right;
+        else { free(z); return 0; }  // 不允许重复
     }
+    z->parent = y;
+    if (y == t->NIL) t->root = z;
+    else if (z->data < y->data) y->left = z;
+    else y->right = z;
 
-    void destroy(Node* node) {
-        if (node == NIL) return;
-        destroy(node->left);
-        destroy(node->right);
-        delete node;
+    rb_insert_fixup(t, z);
+    return 1;
+}
+
+int rb_search(RBTree* t, int value) {
+    RBNode* cur = t->root;
+    while (cur != t->NIL) {
+        if (value == cur->data) return 1;
+        cur = (value < cur->data) ? cur->left : cur->right;
     }
+    return 0;
+}
 
-public:
-    RBTree() {
-        NIL = new Node(T());
-        NIL->color = Color::BLACK;
-        NIL->left = NIL->right = NIL->parent = nullptr;
-        root = NIL;
-    }
+static void rb_destroy_rec(RBTree* t, RBNode* node) {
+    if (node == t->NIL) return;
+    rb_destroy_rec(t, node->left);
+    rb_destroy_rec(t, node->right);
+    free(node);
+}
 
-    ~RBTree() {
-        destroy(root);
-        delete NIL;
-    }
-
-    void insert(T value) {
-        Node* z = new Node(value);
-        z->left = z->right = NIL;
-
-        Node* y = nullptr;
-        Node* x = root;
-        while (x != NIL) {
-            y = x;
-            if (z->data < x->data) x = x->left;
-            else if (z->data > x->data) x = x->right;
-            else { delete z; return; } // 不允许重复
-        }
-
-        z->parent = y;
-        if (y == nullptr) root = z;
-        else if (z->data < y->data) y->left = z;
-        else y->right = z;
-
-        insertFixup(z);
-    }
-
-    bool search(T value) const {
-        Node* cur = root;
-        while (cur != NIL) {
-            if (value == cur->data) return true;
-            cur = (value < cur->data) ? cur->left : cur->right;
-        }
-        return false;
-    }
-
-    void print() {
-        inorderPrint(root);
-        std::cout << std::endl;
-    }
-};
+void rb_destroy(RBTree* t) {
+    rb_destroy_rec(t, t->root);
+    free(t->NIL);
+    t->root = t->NIL = NULL;
+}
 ```
 
-### 插入修复的三种情况
+### 插入修复的三种情况详解
 
-1. **叔叔是红色**: 父和叔变黑，祖父变红，当前节点移到祖父继续修复
-2. **叔叔是黑色，当前节点与父节点同侧（直线）**: 旋转父节点 + 变色
-3. **叔叔是黑色，当前节点与父节点异侧（三角）**: 先旋转到同侧，再按情况 2 处理
+假设新插入节点为 z（红色），其父节点 p 为红色（违反性质 4），叔叔节点为 u。
+
+#### 情况 1：叔叔 u 是红色
+
+**操作**：p 和 u 变黑，祖父 g 变红，z 上移到 g 继续修复
+
+**原理**：父叔同时变黑不会改变黑色高度，但祖父变红可能向上传播冲突
+
+```mermaid
+graph TD
+    subgraph 情况1：叔叔是红色
+        direction TB
+        G1["g(黑)"] --> P1["p(红) ✗"]
+        G1 --> U1["u(红)"]
+        P1 --> Z1["z(红) NEW"]
+        P1 --> NIL1["NIL"]
+        U1 --> NIL2["NIL"]
+        U1 --> NIL3["NIL"]
+        style G1 fill:#333,color:#fff
+        style P1 fill:#f00,color:#fff
+        style U1 fill:#f00,color:#fff
+        style Z1 fill:#f00,color:#fff
+        style NIL1 fill:#999,color:#fff
+        style NIL2 fill:#999,color:#fff
+        style NIL3 fill:#999,color:#fff
+    end
+    subgraph 变色后
+        direction TB
+        G2["g(红)"] --> P2["p(黑) ✓"]
+        G2 --> U2["u(黑) ✓"]
+        P2 --> Z2["z(红)"]
+        P2 --> NIL4["NIL"]
+        U2 --> NIL5["NIL"]
+        U2 --> NIL6["NIL"]
+        style G2 fill:#f00,color:#fff
+        style P2 fill:#333,color:#fff
+        style U2 fill:#333,color:#fff
+        style Z2 fill:#f00,color:#fff
+        style NIL4 fill:#999,color:#fff
+        style NIL5 fill:#999,color:#fff
+        style NIL6 fill:#999,color:#fff
+    end
+    G1 -->|"p,u 变黑 → g 变红 → z=g"| G2
+```
+
+#### 情况 2：叔叔 u 是黑色，z 与 p 同侧（直线型）
+
+**操作**：以 g 为支点旋转 + 变色（p 变黑，g 变红）
+
+**原理**：旋转降低树高，变色恢复黑色高度
+
+```mermaid
+graph TD
+    subgraph 情况2（左左型）：叔叔黑色+直线
+        direction TB
+        G1["g(黑)"] --> P1["p(红) ✗"]
+        G1 --> U1["u(黑)"]
+        P1 --> Z1["z(红) NEW"]
+        P1 --> NIL1["NIL"]
+        Z1 --> NIL2["NIL"]
+        Z1 --> NIL3["NIL"]
+        U1 --> NIL4["NIL"]
+        U1 --> NIL5["NIL"]
+        style G1 fill:#f00,color:#fff
+        style P1 fill:#f00,color:#fff
+        style U1 fill:#333,color:#fff
+        style Z1 fill:#f00,color:#fff
+        style NIL1 fill:#999,color:#fff
+        style NIL2 fill:#999,color:#fff
+        style NIL3 fill:#999,color:#fff
+        style NIL4 fill:#999,color:#fff
+        style NIL5 fill:#999,color:#fff
+    end
+    subgraph 右旋+变色后
+        direction TB
+        P2["p(黑) ✓"] --> Z2["z(红)"]
+        P2 --> G2["g(红)"]
+        Z2 --> NIL6["NIL"]
+        Z2 --> NIL7["NIL"]
+        G2 --> NIL8["NIL"]
+        G2 --> U2["u(黑)"]
+        style P2 fill:#333,color:#fff
+        style Z2 fill:#f00,color:#fff
+        style G2 fill:#f00,color:#fff
+        style U2 fill:#333,color:#fff
+        style NIL6 fill:#999,color:#fff
+        style NIL7 fill:#999,color:#fff
+        style NIL8 fill:#999,color:#fff
+    end
+    G1 -->|"右旋 g + p变黑,g变红"| P2
+```
+
+如果 z 是 p 的右孩子（右左型），则先左旋 p 转为左左型 → 按左左型处理。
+
+#### 情况 3：叔叔 u 是黑色，z 与 p 异侧（三角型）
+
+**操作**：先用一次旋转转为直线型，再按情况 2 处理
+
+**原理**：三角型无法通过单次旋转恢复，需两次旋转
+
+```mermaid
+graph TD
+    subgraph 情况3（左右型）：叔叔黑色+三角
+        direction TB
+        G1["g(黑)"] --> P1["p(红) ✗"]
+        G1 --> U1["u(黑)"]
+        P1 --> NIL1["NIL"]
+        P1 --> Z1["z(红) NEW"]
+        Z1 --> NIL2["NIL"]
+        Z1 --> NIL3["NIL"]
+        U1 --> NIL4["NIL"]
+        U1 --> NIL5["NIL"]
+        style G1 fill:#f00,color:#fff
+        style P1 fill:#f00,color:#fff
+        style U1 fill:#333,color:#fff
+        style Z1 fill:#f00,color:#fff
+        style NIL1 fill:#999,color:#fff
+        style NIL2 fill:#999,color:#fff
+        style NIL3 fill:#999,color:#fff
+        style NIL4 fill:#999,color:#fff
+        style NIL5 fill:#999,color:#fff
+    end
+    subgraph 左旋p后（转为左左型）
+        direction TB
+        G2["g(黑)"] --> Z2["z(红)"]
+        G2 --> U2["u(黑)"]
+        Z2 --> P2["p(红)"]
+        Z2 --> NIL6["NIL"]
+        P2 --> NIL7["NIL"]
+        P2 --> NIL8["NIL"]
+        U2 --> NIL9["NIL"]
+        U2 --> NIL10["NIL"]
+        style G2 fill:#f00,color:#fff
+        style Z2 fill:#f00,color:#fff
+        style U2 fill:#333,color:#fff
+        style P2 fill:#f00,color:#fff
+        style NIL6 fill:#999,color:#fff
+        style NIL7 fill:#999,color:#fff
+        style NIL8 fill:#999,color:#fff
+        style NIL9 fill:#999,color:#fff
+        style NIL10 fill:#999,color:#fff
+    end
+    G1 -->|"左旋 p"| G2
+    G2 -.->|"再按情况2 右旋 g + 变色"| END["✓ 平衡"]
+```
 
 ---
 
-## STL 使用
+## 各语言标准库对比
 
-```cpp
-#include <set>
-#include <map>
-#include <iostream>
+红黑树在工程中通常不直接暴露，而是作为有序集合/映射的底层实现：
 
-int main() {
-    // set -- 有序集合（红黑树）
-    std::set<int> s = {3, 1, 4, 1, 5};
-    s.insert(9);
-    s.erase(1);
-    auto it = s.lower_bound(3); // 第一个 >= 3 的元素
-    auto it2 = s.upper_bound(3); // 第一个 > 3 的元素
-
-    for (int x : s) std::cout << x << " "; // 1 3 4 5 9
-
-    // map -- 有序映射（红黑树）
-    std::map<std::string, int> m;
-    m["apple"] = 5;
-    m["banana"] = 3;
-    // 范围查询
-    auto lb = m.lower_bound("a");
-    auto ub = m.upper_bound("c");
-    for (auto it = lb; it != ub; ++it)
-        std::cout << it->first << ": " << it->second << std::endl;
-
-    // multimap / multiset -- 允许重复键
-
-    return 0;
-}
-```
+| 语言 | 有序集合（红黑树） | 有序映射（红黑树） |
+|------|--------------------|--------------------|
+| C | 无（手写） | 无（手写） |
+| C++ | set / multiset | map / multimap |
+| Java | TreeSet | TreeMap |
+| Python | 无（bisect + list 模拟） | 无（可用 sortedcontainers） |
+| Rust | BTreeSet | BTreeMap |
 
 ---
 

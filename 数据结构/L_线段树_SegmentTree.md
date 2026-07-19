@@ -14,6 +14,19 @@
 - 每个内部节点对应其子节点区间的并集
 - 根节点对应整个数组区间 [0, n-1]
 
+以下图展示数组 `[1, 3, 5, 7]` 构建的区间和线段树：
+
+```mermaid
+flowchart TD
+    R["[0,3] sum=16"]
+    R --> A["[0,1] sum=4"]
+    R --> B["[2,3] sum=12"]
+    A --> A0["[0,0] = 1"]
+    A --> A1["[1,1] = 3"]
+    B --> B0["[2,2] = 5"]
+    B --> B1["[3,3] = 7"]
+```
+
 ### 时间复杂度
 
 | 操作 | 复杂度 | 说明 |
@@ -40,119 +53,137 @@
 
 ### 区间和线段树（带懒标记）
 
-```cpp
-#include <vector>
-#include <iostream>
+```c
+#include <stdlib.h>
+#include <string.h>
 
-class LazySegmentTree {
-private:
-    std::vector<long long> tree, lazy;
+typedef struct {
+    long long* tree;
+    long long* lazy;
     int n;
+} LazySegmentTree;
 
-    void build(const std::vector<int>& arr, int node, int l, int r) {
-        if (l == r) {
-            tree[node] = arr[l];
-            return;
-        }
-        int mid = l + (r - l) / 2;
-        build(arr, node * 2, l, mid);
-        build(arr, node * 2 + 1, mid + 1, r);
-        tree[node] = tree[node * 2] + tree[node * 2 + 1];
+static void seg_build(LazySegmentTree* seg, const int* arr, int node, int l, int r) {
+    if (l == r) {
+        seg->tree[node] = arr[l];
+        return;
     }
+    int mid = l + (r - l) / 2;
+    seg_build(seg, arr, node * 2, l, mid);
+    seg_build(seg, arr, node * 2 + 1, mid + 1, r);
+    seg->tree[node] = seg->tree[node * 2] + seg->tree[node * 2 + 1];
+}
 
-    void pushDown(int node, int l, int r) {
-        if (lazy[node] == 0) return;
-        int mid = l + (r - l) / 2;
-        int left = node * 2, right = node * 2 + 1;
+void seg_init(LazySegmentTree* seg, const int* arr, int n) {
+    seg->n = n;
+    seg->tree = calloc(4 * n, sizeof(long long));
+    seg->lazy = calloc(4 * n, sizeof(long long));
+    seg_build(seg, arr, 1, 0, n - 1);
+}
 
-        tree[left] += lazy[node] * (mid - l + 1);
-        tree[right] += lazy[node] * (r - mid);
-        lazy[left] += lazy[node];
-        lazy[right] += lazy[node];
-        lazy[node] = 0;
+void seg_destroy(LazySegmentTree* seg) {
+    free(seg->tree);
+    free(seg->lazy);
+}
+
+static void push_down(LazySegmentTree* seg, int node, int l, int r) {
+    if (seg->lazy[node] == 0) return;
+    int mid = l + (r - l) / 2;
+    int left = node * 2, right = node * 2 + 1;
+    seg->tree[left] += seg->lazy[node] * (mid - l + 1);
+    seg->tree[right] += seg->lazy[node] * (r - mid);
+    seg->lazy[left] += seg->lazy[node];
+    seg->lazy[right] += seg->lazy[node];
+    seg->lazy[node] = 0;
+}
+
+static void range_add(LazySegmentTree* seg, int node, int l, int r, int ql, int qr, long long val) {
+    if (qr < l || r < ql) return;
+    if (ql <= l && r <= qr) {
+        seg->tree[node] += val * (r - l + 1);
+        seg->lazy[node] += val;
+        return;
     }
+    push_down(seg, node, l, r);
+    int mid = l + (r - l) / 2;
+    range_add(seg, node * 2, l, mid, ql, qr, val);
+    range_add(seg, node * 2 + 1, mid + 1, r, ql, qr, val);
+    seg->tree[node] = seg->tree[node * 2] + seg->tree[node * 2 + 1];
+}
 
-    void rangeAdd(int node, int l, int r, int ql, int qr, long long val) {
-        if (qr < l || r < ql) return;
-        if (ql <= l && r <= qr) {
-            tree[node] += val * (r - l + 1);
-            lazy[node] += val;
-            return;
-        }
-        pushDown(node, l, r);
-        int mid = l + (r - l) / 2;
-        rangeAdd(node * 2, l, mid, ql, qr, val);
-        rangeAdd(node * 2 + 1, mid + 1, r, ql, qr, val);
-        tree[node] = tree[node * 2] + tree[node * 2 + 1];
-    }
+void seg_add(LazySegmentTree* seg, int l, int r, long long val) {
+    range_add(seg, 1, 0, seg->n - 1, l, r, val);
+}
 
-    long long rangeQuery(int node, int l, int r, int ql, int qr) {
-        if (qr < l || r < ql) return 0;
-        if (ql <= l && r <= qr) return tree[node];
-        pushDown(node, l, r);
-        int mid = l + (r - l) / 2;
-        return rangeQuery(node * 2, l, mid, ql, qr) +
-               rangeQuery(node * 2 + 1, mid + 1, r, ql, qr);
-    }
+static long long range_query(LazySegmentTree* seg, int node, int l, int r, int ql, int qr) {
+    if (qr < l || r < ql) return 0;
+    if (ql <= l && r <= qr) return seg->tree[node];
+    push_down(seg, node, l, r);
+    int mid = l + (r - l) / 2;
+    return range_query(seg, node * 2, l, mid, ql, qr) +
+           range_query(seg, node * 2 + 1, mid + 1, r, ql, qr);
+}
 
-public:
-    LazySegmentTree(const std::vector<int>& arr) {
-        n = arr.size();
-        tree.resize(4 * n);
-        lazy.resize(4 * n);
-        build(arr, 1, 0, n - 1);
-    }
-
-    void add(int l, int r, long long val) {
-        rangeAdd(1, 0, n - 1, l, r, val);
-    }
-
-    long long sum(int l, int r) {
-        return rangeQuery(1, 0, n - 1, l, r);
-    }
-};
+long long seg_sum(LazySegmentTree* seg, int l, int r) {
+    return range_query(seg, 1, 0, seg->n - 1, l, r);
+}
 ```
 
 ### 最大值线段树（无懒标记）
 
-```cpp
-class MaxSegmentTree {
-private:
-    std::vector<int> tree;
+```c
+#include <limits.h>
+
+typedef struct {
+    int* tree;
     int n;
+} MaxSegmentTree;
 
-    void build(const std::vector<int>& arr, int node, int l, int r) {
-        if (l == r) { tree[node] = arr[l]; return; }
-        int mid = l + (r - l) / 2;
-        build(arr, node * 2, l, mid);
-        build(arr, node * 2 + 1, mid + 1, r);
-        tree[node] = std::max(tree[node * 2], tree[node * 2 + 1]);
-    }
+static void max_build(MaxSegmentTree* seg, const int* arr, int node, int l, int r) {
+    if (l == r) { seg->tree[node] = arr[l]; return; }
+    int mid = l + (r - l) / 2;
+    max_build(seg, arr, node * 2, l, mid);
+    max_build(seg, arr, node * 2 + 1, mid + 1, r);
+    int left = seg->tree[node * 2];
+    int right = seg->tree[node * 2 + 1];
+    seg->tree[node] = left > right ? left : right;
+}
 
-    void update(int node, int l, int r, int idx, int val) {
-        if (l == r) { tree[node] = val; return; }
-        int mid = l + (r - l) / 2;
-        if (idx <= mid) update(node * 2, l, mid, idx, val);
-        else update(node * 2 + 1, mid + 1, r, idx, val);
-        tree[node] = std::max(tree[node * 2], tree[node * 2 + 1]);
-    }
+void max_seg_init(MaxSegmentTree* seg, const int* arr, int n) {
+    seg->n = n;
+    seg->tree = malloc(4 * n * sizeof(int));
+    max_build(seg, arr, 1, 0, n - 1);
+}
 
-    int query(int node, int l, int r, int ql, int qr) {
-        if (qr < l || r < ql) return INT_MIN;
-        if (ql <= l && r <= qr) return tree[node];
-        int mid = l + (r - l) / 2;
-        return std::max(query(node * 2, l, mid, ql, qr),
-                        query(node * 2 + 1, mid + 1, r, ql, qr));
-    }
+void max_seg_destroy(MaxSegmentTree* seg) {
+    free(seg->tree);
+}
 
-public:
-    MaxSegmentTree(const std::vector<int>& arr) : n(arr.size()) {
-        tree.resize(4 * n);
-        build(arr, 1, 0, n - 1);
-    }
-    void update(int idx, int val) { update(1, 0, n - 1, idx, val); }
-    int maxVal(int l, int r) { return query(1, 0, n - 1, l, r); }
-};
+static void max_update(MaxSegmentTree* seg, int node, int l, int r, int idx, int val) {
+    if (l == r) { seg->tree[node] = val; return; }
+    int mid = l + (r - l) / 2;
+    if (idx <= mid) max_update(seg, node * 2, l, mid, idx, val);
+    else max_update(seg, node * 2 + 1, mid + 1, r, idx, val);
+    int left = seg->tree[node * 2], right = seg->tree[node * 2 + 1];
+    seg->tree[node] = left > right ? left : right;
+}
+
+void max_seg_update(MaxSegmentTree* seg, int idx, int val) {
+    max_update(seg, 1, 0, seg->n - 1, idx, val);
+}
+
+static int max_query(MaxSegmentTree* seg, int node, int l, int r, int ql, int qr) {
+    if (qr < l || r < ql) return INT_MIN;
+    if (ql <= l && r <= qr) return seg->tree[node];
+    int mid = l + (r - l) / 2;
+    int left = max_query(seg, node * 2, l, mid, ql, qr);
+    int right = max_query(seg, node * 2 + 1, mid + 1, r, ql, qr);
+    return left > right ? left : right;
+}
+
+int max_seg_max(MaxSegmentTree* seg, int l, int r) {
+    return max_query(seg, 1, 0, seg->n - 1, l, r);
+}
 ```
 
 ---
