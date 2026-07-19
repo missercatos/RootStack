@@ -124,23 +124,7 @@
 
 ---
 
-### Step 8: [[数据结构/C_堆_Heap|C 堆 Heap]] (2 天)
-
-**重点**: siftUp/siftDown、建堆 O(n)、STL priority_queue
-**必须手写**: MaxHeap (insert/extractMax/heapify)
-**配合算法**: [[算法/算法技巧/贪心|贪心]] (优先队列应用)
-**回顾**: [[数据结构/Q_排序_八大排序_Sorting|堆排序部分]]
-
-| 平台 | 题目编号 | 题目名 | 说明 |
-|------|---------|--------|------|
-| 洛谷 | P1090 | 合并果子 | 贪心+优先队列 |
-| 洛谷 | P1168 | 中位数 | 对顶堆 |
-| LeetCode | 215 | Kth Largest Element | 堆解法 |
-| LeetCode | 347 | Top K Frequent Elements | 堆+哈希 |
-
----
-
-### Step 9: [[数据结构/I_树_Tree_BST_AVL|I 树 / BST / AVL]] (3 天)
+### Step 8: [[数据结构/I_树_Tree_BST_AVL|I 树 / BST / AVL]] (3 天)
 
 **重点**: 四种遍历 (递归+迭代)、BST 增删查、AVL 四种旋转
 **必须手写**: BST (insert/search/delete)
@@ -153,6 +137,22 @@
 | LeetCode | 94 | Binary Tree Inorder Traversal | 中序遍历 |
 | LeetCode | 98 | Validate Binary Search Tree | BST 判定 |
 | LeetCode | 104 | Maximum Depth of Binary Tree | 树高 |
+
+---
+
+### Step 9: [[数据结构/C_堆_Heap|C 堆 Heap]] (2 天)
+
+**重点**: siftUp/siftDown、建堆 O(n)、STL priority_queue
+**必须手写**: MaxHeap (insert/extractMax/heapify)
+**配合算法**: [[算法/算法技巧/贪心|贪心]] (优先队列应用) — 需要树的二叉树概念作为前置
+**回顾**: [[数据结构/Q_排序_八大排序_Sorting|堆排序部分]]
+
+| 平台 | 题目编号 | 题目名 | 说明 |
+|------|---------|--------|------|
+| 洛谷 | P1090 | 合并果子 | 贪心+优先队列 |
+| 洛谷 | P1168 | 中位数 | 对顶堆 |
+| LeetCode | 215 | Kth Largest Element | 堆解法 |
+| LeetCode | 347 | Top K Frequent Elements | 堆+哈希 |
 
 ---
 

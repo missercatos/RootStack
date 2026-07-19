@@ -108,22 +108,7 @@
 
 ---
 
-### Step 8: [[C_堆_Heap]] -- 堆与优先队列
-
-重点: 堆的完全二叉树数组表示、siftUp/siftDown、建堆 O(n) 证明。
-
-配合算法:
-- [[../算法/算法技巧/贪心]] -- 优先队列在贪心中的应用
-- 回到 [[Q_排序_八大排序_Sorting]] 复习堆排序
-
-必须手写的结构: MaxHeap (insert / extractMax / heapify)
-
-洛谷刷题: P1090 合并果子、P1168 中位数
-
-
----
-
-### Step 9: [[I_树_Tree_BST_AVL]] -- 树、BST、AVL
+### Step 8: [[I_树_Tree_BST_AVL]] -- 树、BST、AVL
 
 重点: 二叉树概念与四种遍历、BST 增删查实现、AVL 四种旋转。
 
@@ -134,6 +119,23 @@
 必须手写的结构: BST (insert/search/delete)、AVL 四种旋转
 
 洛谷刷题: P3369 普通平衡树、P1364 医院设置
+
+
+---
+
+### Step 9: [[C_堆_Heap]] -- 堆与优先队列
+
+重点: 堆的完全二叉树数组表示、siftUp/siftDown、建堆 O(n) 证明。
+
+前置: Step 8 树的前三节（二叉树概念 + 完全二叉树 + 数组表示）
+
+配合算法:
+- [[../算法/算法技巧/贪心]] -- 优先队列在贪心中的应用
+- 回到 [[Q_排序_八大排序_Sorting]] 复习堆排序
+
+必须手写的结构: MaxHeap (insert / extractMax / heapify)
+
+洛谷刷题: P1090 合并果子、P1168 中位数
 
 
 ---

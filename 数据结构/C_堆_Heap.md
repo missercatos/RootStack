@@ -1,6 +1,6 @@
 
 
-建议先阅读: [[A_容器_Container|A 容器 Container]]
+建议先阅读: [[A_容器_Container|A 容器 Container]], [[I_树_Tree_BST_AVL|I 树 BST AVL]]（前三个小节：二叉树概念 + 完全二叉树 + 数组表示）
 
 ---
 
