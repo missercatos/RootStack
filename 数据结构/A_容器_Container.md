@@ -121,6 +121,7 @@ typedef struct {
     int* data;
     size_t size;
     size_t capacity;
+    //size是已用元素数，capacity是容量大小
 } SimpleVector;
 
 void sv_init(SimpleVector* v) {
@@ -130,7 +131,7 @@ void sv_init(SimpleVector* v) {
 }
 
 void sv_destroy(SimpleVector* v) {
-    free(v->data);
+    free(v->data);  //free()函数来自stdlib.h,作用是释放之前由malloc,calloc,realloc分配的堆内存。
     v->data = NULL;
     v->size = 0;
     v->capacity = 0;
@@ -139,7 +140,12 @@ void sv_destroy(SimpleVector* v) {
 // 扩容：容量不足时翻倍
 int sv_expand(SimpleVector* v) {
     size_t new_cap = v->capacity == 0 ? 1 : v->capacity * 2;
+    //void* realloc(void* ptr,size_t new_size)函数作用：在ptr指针原有内存上调整大小，如果能原地扩展就原地扩展，如果不能就分配新内存->拷贝就旧数据->释放旧内存
+    //void* malloc(size_t size)用于分配size字节上的堆内存，内容不初始化，保留垃圾值
+    //void* calloc(size_t n,size_t size)分配n*size字节，全部清零，多一个溢出保护，比malloc安全
     int* new_data = realloc(v->data, new_cap * sizeof(int));
+    //这里已经包含了分配->拷贝->释放旧的全过程
+    //下面当realloc对data扩容失败的时候返回-1,扩容成功就进行指针赋值
     if (!new_data) return -1;
     v->data = new_data;
     v->capacity = new_cap;
@@ -147,18 +153,20 @@ int sv_expand(SimpleVector* v) {
 }
 
 int sv_push_back(SimpleVector* v, int value) {
-    if (v->size >= v->capacity)
+    if (v->size >= v->capacity)//这里是判断元素总量是否超量，如果超量或者用满则进行扩容，调用扩容函数，扩容失败则返回-1
         if (sv_expand(v) != 0) return -1;
-    v->data[v->size++] = value;
+    v->data[v->size++] = value; //扩容成功在data[size]位置写入value,然后size++。保证size是新的元素个数
     return 0;
 }
 
 void sv_pop_back(SimpleVector* v) {
-    if (v->size > 0) v->size--;
+    if (v->size > 0) v->size--;//直接看这里是当满足元素数量大于零则删除尾部元素，其实没有清零，只是把size上限-1,让外部无法访问末位元素罢了，数据还在，下次push_back会覆盖
+    //假如说这里直接free清空，下次push_back会进行扩容产生额外开销，标准做法就是只减size,不清零内存，让数据被自然覆盖，这样均摊才会O(1)
 }
 
 int sv_at(SimpleVector* v, size_t index) {
     return v->data[index];  // 调用者保证 index < size
+    //该函数用于返回索引为index的值
 }
 
 size_t sv_size(SimpleVector* v) { return v->size; }
@@ -168,7 +176,8 @@ int sv_empty(SimpleVector* v) { return v->size == 0; }
 void sv_clear(SimpleVector* v) { v->size = 0; }
 ```
 
-扩容机制与 C++ vector 相同：容量不足时分配 2 倍新内存，将旧元素拷贝/移动到新内存，释放旧内存。单次扩容 O(n)，均摊后 push_back 为 O(1)。
+扩容机制与 C++ vector 相同：容量不足时分配 2 倍新内存，将旧元素拷贝/移动到新内存，释放旧内存。单次扩容 O(n)，均摊后 push_back 为 O(1)。>区别具体情况可以自行去看看CPP[[vector]]章节内容
+*有些朋友可能在学完CPP之后就来学数据结构了，没有提前了解过C语言，这里来提前解释一下，C语言没有成员函数，所以在main（）里直接调用的时候直接使用自定义库里的函数，比如实例化一个对象a,在CPP里可能是使用a.函数()来进行操作，但是在C里面要这样用： 函数（&a),所以我们每个函数都要提前加上前缀_来区分不同数据类型的“同名”函数*
 
 #### realloc 的陷阱
 
