@@ -14,7 +14,7 @@
   <img src="https://img.shields.io/badge/数据结构-339933?style=flat-square" alt="数据结构"/>
   <img src="https://img.shields.io/badge/算法-FF6F00?style=flat-square" alt="算法"/>
   <img src="https://img.shields.io/badge/网络安全-E34F26?style=flat-square" alt="网络安全"/>
-  <img src="https://img.shields.io/badge/版本-0.2.4-blue?style=flat-square" alt="version"/>
+  <img src="https://img.shields.io/badge/版本-0.2.5-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
@@ -94,7 +94,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/                          ├ v0.2.4
+RootStack/                          ├ v0.2.5
 ├── README.md                    ← 你在这里
 │
 ├── 路径A-C主线.md               C 主线: 从零到内核
