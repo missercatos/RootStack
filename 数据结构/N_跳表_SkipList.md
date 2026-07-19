@@ -38,131 +38,127 @@
 
 ## 实现
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <random>
-#include <climits>
+```c
+#include <stdlib.h>
+#include <time.h>
 
-template <typename K, typename V>
-class SkipList {
-private:
-    struct Node {
-        K key;
-        V value;
-        std::vector<Node*> forward; // 各层后继指针
-        Node(const K& k, const V& v, int level)
-            : key(k), value(v), forward(level + 1, nullptr) {}
-    };
+#define MAX_LEVEL 16
 
-    Node* header;
-    int maxLevel;
+typedef struct SLNode {
+    int key;
+    int value;
+    struct SLNode** forward;  // 各层后继指针
+} SLNode;
+
+typedef struct {
+    SLNode* header;
     int currentLevel;
     double probability;
-    std::mt19937 rng;
-    std::uniform_real_distribution<double> dist;
+} SkipList;
 
-    int randomLevel() {
-        int level = 0;
-        while (dist(rng) < probability && level < maxLevel)
-            ++level;
-        return level;
+static SLNode* sl_create_node(int key, int value, int level) {
+    SLNode* node = malloc(sizeof(SLNode));
+    node->key = key;
+    node->value = value;
+    node->forward = calloc(level + 1, sizeof(SLNode*));
+    return node;
+}
+
+static int sl_random_level(double prob) {
+    int level = 0;
+    while ((double)rand() / RAND_MAX < prob && level < MAX_LEVEL)
+        level++;
+    return level;
+}
+
+void sl_init(SkipList* sl) {
+    srand((unsigned)time(NULL));
+    sl->probability = 0.5;
+    sl->currentLevel = 0;
+    sl->header = sl_create_node(0, 0, MAX_LEVEL);
+}
+
+void sl_destroy(SkipList* sl) {
+    SLNode* cur = sl->header->forward[0];
+    while (cur) {
+        SLNode* next = cur->forward[0];
+        free(cur->forward);
+        free(cur);
+        cur = next;
+    }
+    free(sl->header->forward);
+    free(sl->header);
+}
+
+int sl_search(SkipList* sl, int key, int* out_value) {
+    SLNode* cur = sl->header;
+    for (int i = sl->currentLevel; i >= 0; i--) {
+        while (cur->forward[i] && cur->forward[i]->key < key)
+            cur = cur->forward[i];
+    }
+    cur = cur->forward[0];
+    if (cur && cur->key == key) {
+        *out_value = cur->value;
+        return 1;
+    }
+    return 0;
+}
+
+void sl_insert(SkipList* sl, int key, int value) {
+    SLNode* update[MAX_LEVEL + 1];
+    SLNode* cur = sl->header;
+
+    for (int i = sl->currentLevel; i >= 0; i--) {
+        while (cur->forward[i] && cur->forward[i]->key < key)
+            cur = cur->forward[i];
+        update[i] = cur;
+    }
+    cur = cur->forward[0];
+
+    if (cur && cur->key == key) {
+        cur->value = value;
+        return;
     }
 
-public:
-    SkipList(int maxLvl = 16, double p = 0.5)
-        : maxLevel(maxLvl), currentLevel(0), probability(p),
-          rng(std::random_device{}()), dist(0.0, 1.0) {
-        header = new Node(K(), V(), maxLevel);
+    int new_level = sl_random_level(sl->probability);
+    if (new_level > sl->currentLevel) {
+        for (int i = sl->currentLevel + 1; i <= new_level; i++)
+            update[i] = sl->header;
+        sl->currentLevel = new_level;
     }
 
-    ~SkipList() {
-        Node* cur = header->forward[0];
-        while (cur) {
-            Node* next = cur->forward[0];
-            delete cur;
-            cur = next;
-        }
-        delete header;
+    SLNode* new_node = sl_create_node(key, value, new_level);
+    for (int i = 0; i <= new_level; i++) {
+        new_node->forward[i] = update[i]->forward[i];
+        update[i]->forward[i] = new_node;
     }
+}
 
-    bool search(const K& key, V& value) {
-        Node* cur = header;
-        for (int i = currentLevel; i >= 0; --i) {
-            while (cur->forward[i] && cur->forward[i]->key < key)
-                cur = cur->forward[i];
-        }
-        cur = cur->forward[0];
-        if (cur && cur->key == key) { value = cur->value; return true; }
-        return false;
+int sl_remove(SkipList* sl, int key) {
+    SLNode* update[MAX_LEVEL + 1];
+    SLNode* cur = sl->header;
+
+    for (int i = sl->currentLevel; i >= 0; i--) {
+        while (cur->forward[i] && cur->forward[i]->key < key)
+            cur = cur->forward[i];
+        update[i] = cur;
     }
+    cur = cur->forward[0];
 
-    void insert(const K& key, const V& value) {
-        std::vector<Node*> update(maxLevel + 1, nullptr);
-        Node* cur = header;
+    if (!cur || cur->key != key) return 0;
 
-        // 记录每层的前驱
-        for (int i = currentLevel; i >= 0; --i) {
-            while (cur->forward[i] && cur->forward[i]->key < key)
-                cur = cur->forward[i];
-            update[i] = cur;
-        }
-        cur = cur->forward[0];
-
-        // 键已存在，更新值
-        if (cur && cur->key == key) { cur->value = value; return; }
-
-        int newLevel = randomLevel();
-        if (newLevel > currentLevel) {
-            for (int i = currentLevel + 1; i <= newLevel; ++i)
-                update[i] = header;
-            currentLevel = newLevel;
-        }
-
-        Node* newNode = new Node(key, value, newLevel);
-        for (int i = 0; i <= newLevel; ++i) {
-            newNode->forward[i] = update[i]->forward[i];
-            update[i]->forward[i] = newNode;
-        }
+    for (int i = 0; i <= sl->currentLevel; i++) {
+        if (update[i]->forward[i] != cur) break;
+        update[i]->forward[i] = cur->forward[i];
     }
+    free(cur->forward);
+    free(cur);
 
-    bool remove(const K& key) {
-        std::vector<Node*> update(maxLevel + 1, nullptr);
-        Node* cur = header;
+    while (sl->currentLevel > 0 && !sl->header->forward[sl->currentLevel])
+        sl->currentLevel--;
 
-        for (int i = currentLevel; i >= 0; --i) {
-            while (cur->forward[i] && cur->forward[i]->key < key)
-                cur = cur->forward[i];
-            update[i] = cur;
-        }
-        cur = cur->forward[0];
-
-        if (!cur || cur->key != key) return false;
-
-        for (int i = 0; i <= currentLevel; ++i) {
-            if (update[i]->forward[i] != cur) break;
-            update[i]->forward[i] = cur->forward[i];
-        }
-        delete cur;
-
-        while (currentLevel > 0 && !header->forward[currentLevel])
-            --currentLevel;
-
-        return true;
-    }
-
-    void print() {
-        for (int i = currentLevel; i >= 0; --i) {
-            std::cout << "Level " << i << ": ";
-            Node* cur = header->forward[i];
-            while (cur) {
-                std::cout << "(" << cur->key << "," << cur->value << ") ";
-                cur = cur->forward[i];
-            }
-            std::cout << std::endl;
-        }
-    }
-};
+    return 1;
+}
 ```
 
 ---

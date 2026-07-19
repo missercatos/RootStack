@@ -35,162 +35,158 @@
 
 ### 循环队列
 
-```cpp
-#include <iostream>
-#include <stdexcept>
+```c
+#include <stdlib.h>
 
-template <typename T>
-class CircularQueue {
-private:
-    T* _data;
-    size_t _head;  // 队首位置
-    size_t _tail;  // 队尾位置（下一个插入位置）
-    size_t _capacity;
-    size_t _count;
+typedef struct {
+    int* data;
+    size_t head;     // 队首位置
+    size_t tail;     // 队尾位置（下一个插入位置）
+    size_t capacity;
+    size_t count;
+} CircularQueue;
 
-    void resize(size_t new_cap) {
-        T* new_data = new T[new_cap];
-        for (size_t i = 0; i < _count; ++i)
-            new_data[i] = _data[(_head + i) % _capacity];
-        delete[] _data;
-        _data = new_data;
-        _head = 0;
-        _tail = _count;
-        _capacity = new_cap;
-    }
+void cq_init(CircularQueue* q, size_t cap) {
+    q->data = malloc(cap * sizeof(int));
+    q->head = 0;
+    q->tail = 0;
+    q->capacity = cap;
+    q->count = 0;
+}
 
-public:
-    CircularQueue(size_t cap = 8)
-        : _data(new T[cap]), _head(0), _tail(0), _capacity(cap), _count(0) {}
+void cq_destroy(CircularQueue* q) {
+    free(q->data);
+}
 
-    ~CircularQueue() { delete[] _data; }
+static int cq_resize(CircularQueue* q) {
+    size_t new_cap = q->capacity * 2;
+    int* new_data = malloc(new_cap * sizeof(int));
+    if (!new_data) return -1;
+    for (size_t i = 0; i < q->count; i++)
+        new_data[i] = q->data[(q->head + i) % q->capacity];
+    free(q->data);
+    q->data = new_data;
+    q->head = 0;
+    q->tail = q->count;
+    q->capacity = new_cap;
+    return 0;
+}
 
-    void push(const T& value) {
-        if (_count >= _capacity)
-            resize(_capacity * 2);
-        _data[_tail] = value;
-        _tail = (_tail + 1) % _capacity;
-        ++_count;
-    }
+int cq_push(CircularQueue* q, int value) {
+    if (q->count >= q->capacity)
+        if (cq_resize(q) != 0) return -1;
+    q->data[q->tail] = value;
+    q->tail = (q->tail + 1) % q->capacity;
+    q->count++;
+    return 0;
+}
 
-    void pop() {
-        if (_count == 0)
-            throw std::underflow_error("queue empty");
-        _head = (_head + 1) % _capacity;
-        --_count;
-    }
+int cq_pop(CircularQueue* q) {
+    if (q->count == 0) return -1;
+    q->head = (q->head + 1) % q->capacity;
+    q->count--;
+    return 0;
+}
 
-    T& front() {
-        if (_count == 0)
-            throw std::underflow_error("queue empty");
-        return _data[_head];
-    }
+int cq_front(CircularQueue* q, int* out) {
+    if (q->count == 0) return -1;
+    *out = q->data[q->head];
+    return 0;
+}
 
-    T& back() {
-        if (_count == 0)
-            throw std::underflow_error("queue empty");
-        return _data[(_tail + _capacity - 1) % _capacity];
-    }
+int cq_back(CircularQueue* q, int* out) {
+    if (q->count == 0) return -1;
+    *out = q->data[(q->tail + q->capacity - 1) % q->capacity];
+    return 0;
+}
 
-    bool empty() const { return _count == 0; }
-    size_t size() const { return _count; }
-};
+int cq_empty(CircularQueue* q) { return q->count == 0; }
+size_t cq_size(CircularQueue* q) { return q->count; }
 ```
 
 ### 链表队列
 
-```cpp
-template <typename T>
-class LinkedQueue {
-private:
-    struct Node {
-        T data;
-        Node* next;
-        Node(const T& val) : data(val), next(nullptr) {}
-    };
-    Node* _head; // 队首
-    Node* _tail; // 队尾
-    size_t _count;
+```c
+#include <stdlib.h>
 
-public:
-    LinkedQueue() : _head(nullptr), _tail(nullptr), _count(0) {}
+typedef struct QNode {
+    int data;
+    struct QNode* next;
+} QNode;
 
-    ~LinkedQueue() {
-        while (_head) {
-            Node* tmp = _head;
-            _head = _head->next;
-            delete tmp;
-        }
+typedef struct {
+    QNode* head;  // 队首
+    QNode* tail;  // 队尾
+    size_t count;
+} LinkedQueue;
+
+void lq_init(LinkedQueue* q) {
+    q->head = NULL;
+    q->tail = NULL;
+    q->count = 0;
+}
+
+void lq_destroy(LinkedQueue* q) {
+    while (q->head) {
+        QNode* tmp = q->head;
+        q->head = q->head->next;
+        free(tmp);
     }
+    q->tail = NULL;
+    q->count = 0;
+}
 
-    void push(const T& value) {
-        Node* node = new Node(value);
-        if (_tail) _tail->next = node;
-        else _head = node;
-        _tail = node;
-        ++_count;
-    }
+int lq_push(LinkedQueue* q, int value) {
+    QNode* node = malloc(sizeof(QNode));
+    if (!node) return -1;
+    node->data = value;
+    node->next = NULL;
+    if (q->tail)
+        q->tail->next = node;
+    else
+        q->head = node;
+    q->tail = node;
+    q->count++;
+    return 0;
+}
 
-    void pop() {
-        if (!_head) throw std::underflow_error("queue empty");
-        Node* tmp = _head;
-        _head = _head->next;
-        if (!_head) _tail = nullptr;
-        delete tmp;
-        --_count;
-    }
+int lq_pop(LinkedQueue* q) {
+    if (!q->head) return -1;
+    QNode* tmp = q->head;
+    q->head = q->head->next;
+    if (!q->head) q->tail = NULL;
+    free(tmp);
+    q->count--;
+    return 0;
+}
 
-    T& front() {
-        if (!_head) throw std::underflow_error("queue empty");
-        return _head->data;
-    }
+int lq_front(LinkedQueue* q, int* out) {
+    if (!q->head) return -1;
+    *out = q->head->data;
+    return 0;
+}
 
-    T& back() {
-        if (!_tail) throw std::underflow_error("queue empty");
-        return _tail->data;
-    }
+int lq_back(LinkedQueue* q, int* out) {
+    if (!q->tail) return -1;
+    *out = q->tail->data;
+    return 0;
+}
 
-    bool empty() const { return _head == nullptr; }
-    size_t size() const { return _count; }
-};
+int lq_empty(LinkedQueue* q) { return q->head == NULL; }
+size_t lq_size(LinkedQueue* q) { return q->count; }
 ```
 
 ---
 
-## STL 使用
+## 各语言标准库对比
 
-```cpp
-#include <queue>
-#include <deque>
-#include <iostream>
-
-int main() {
-    // queue -- 默认底层容器为 deque
-    std::queue<int> q;
-    q.push(10);
-    q.push(20);
-    q.push(30);
-    std::cout << "front: " << q.front() << std::endl; // 10
-    std::cout << "back: " << q.back() << std::endl;   // 30
-    q.pop(); // 弹出 10
-    while (!q.empty()) {
-        std::cout << q.front() << " ";
-        q.pop();
-    } // 输出: 20 30
-
-    // deque -- 双端队列
-    std::deque<int> dq;
-    dq.push_back(10);
-    dq.push_front(5);
-    dq.pop_back();
-    dq.pop_front();
-    int val = dq[0]; // 支持随机访问
-
-    return 0;
-}
-```
-
-queue 默认底层容器为 deque，可指定为 list：`std::queue<int, std::list<int>> q;`
+| 语言 | 队列 | 双端队列 |
+|------|------|----------|
+| C | 无（手写） | 无（手写） |
+| C++ | queue（deque 封装） | deque |
+| Java | LinkedList / ArrayDeque | ArrayDeque |
+| Python | collections.deque | collections.deque |
+| Rust | VecDeque | VecDeque |
 
 ---
 
@@ -203,25 +199,38 @@ queue 默认底层容器为 deque，可指定为 list：`std::queue<int, std::li
 
 ### 单调队列求滑动窗口最大值
 
-```cpp
-#include <deque>
-#include <vector>
+核心思想：维护一个**递减队列**，队头始终是当前窗口的最大值。每次窗口右移时，移除过期元素（出左边），加入新元素（踢掉比它小的队尾），队头即为答案。
 
-std::vector<int> maxSlidingWindow(const std::vector<int>& nums, int k) {
-    std::vector<int> result;
-    std::deque<int> dq; // 存储下标，队头到队尾为递减
-    for (int i = 0; i < nums.size(); ++i) {
-        // 移除超出窗口的元素
-        while (!dq.empty() && dq.front() <= i - k)
-            dq.pop_front();
+```mermaid
+flowchart LR
+    A["窗口右移一步"] --> B["移除左端出界元素"]
+    B --> C{"新元素 x > 队尾元素？"}
+    C -->|是| D["弹出队尾"]
+    D --> C
+    C -->|否| E["x 入队尾"]
+    E --> F["队头即为窗口最大值"]
+```
+
+```c
+// 返回结果需要调用者 free
+int* max_sliding_window(const int* nums, int n, int k, int* result_size) {
+    int* result = malloc((n - k + 1) * sizeof(int));
+    int* dq = malloc(n * sizeof(int));  // 存下标，队头到队尾递减
+    int head = 0, tail = 0;
+    int ri = 0;
+    for (int i = 0; i < n; i++) {
+        // 移除超出窗口的队头
+        while (tail > head && dq[head] <= i - k)
+            head++;
         // 保持递减
-        while (!dq.empty() && nums[dq.back()] <= nums[i])
-            dq.pop_back();
-        dq.push_back(i);
-        // 记录窗口最大值
+        while (tail > head && nums[dq[tail - 1]] <= nums[i])
+            tail--;
+        dq[tail++] = i;
         if (i >= k - 1)
-            result.push_back(nums[dq.front()]);
+            result[ri++] = nums[dq[head]];
     }
+    *result_size = ri;
+    free(dq);
     return result;
 }
 ```

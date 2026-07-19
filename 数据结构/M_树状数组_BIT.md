@@ -52,160 +52,163 @@ BIT[i] 管理的区间为 [i - lowbit(i) + 1, i]。
 
 ### 标准 BIT（单点修改 + 区间查询）
 
-```cpp
-#include <vector>
+```c
+#include <stdlib.h>
 
-class BIT {
-private:
-    std::vector<int> tree;
+#define LOWBIT(x) ((x) & -(x))
+
+typedef struct {
+    int* tree;
     int n;
+} BIT;
 
-    int lowbit(int x) { return x & -x; }
+void bit_init(BIT* b, int size) {
+    b->n = size;
+    b->tree = calloc(size + 1, sizeof(int));
+}
 
-public:
-    BIT(int size) : n(size), tree(size + 1, 0) {}
+void bit_destroy(BIT* b) {
+    free(b->tree);
+}
 
-    // O(n log n) 建树
-    BIT(const std::vector<int>& arr) : n(arr.size()), tree(arr.size() + 1, 0) {
-        for (int i = 0; i < n; ++i)
-            add(i + 1, arr[i]);
+// O(n) 建树
+void bit_build(BIT* b, const int* arr, int n) {
+    b->n = n;
+    free(b->tree);
+    b->tree = calloc(n + 1, sizeof(int));
+    for (int i = 1; i <= n; i++) {
+        b->tree[i] += arr[i - 1];
+        int parent = i + LOWBIT(i);
+        if (parent <= n) b->tree[parent] += b->tree[i];
     }
+}
 
-    // O(n) 建树
-    void build(const std::vector<int>& arr) {
-        n = arr.size();
-        tree.assign(n + 1, 0);
-        for (int i = 1; i <= n; ++i) {
-            tree[i] += arr[i - 1];
-            int parent = i + lowbit(i);
-            if (parent <= n) tree[parent] += tree[i];
-        }
+void bit_add(BIT* b, int pos, int delta) {
+    while (pos <= b->n) {
+        b->tree[pos] += delta;
+        pos += LOWBIT(pos);
     }
+}
 
-    void add(int pos, int delta) {
-        while (pos <= n) {
-            tree[pos] += delta;
-            pos += lowbit(pos);
-        }
+int bit_prefix_sum(BIT* b, int pos) {
+    int sum = 0;
+    while (pos > 0) {
+        sum += b->tree[pos];
+        pos -= LOWBIT(pos);
     }
+    return sum;
+}
 
-    int prefixSum(int pos) {
-        int sum = 0;
-        while (pos > 0) {
-            sum += tree[pos];
-            pos -= lowbit(pos);
-        }
-        return sum;
-    }
-
-    int rangeSum(int l, int r) {
-        return prefixSum(r) - prefixSum(l - 1);
-    }
-};
+int bit_range_sum(BIT* b, int l, int r) {
+    return bit_prefix_sum(b, r) - bit_prefix_sum(b, l - 1);
+}
 ```
 
 ### 区间修改 + 单点查询（差分 BIT）
 
-```cpp
-class DiffBIT {
-private:
-    std::vector<int> tree;
+```c
+typedef struct {
+    int* tree;
     int n;
-    int lowbit(int x) { return x & -x; }
+} DiffBIT;
 
-    void add(int pos, int delta) {
-        while (pos <= n) {
-            tree[pos] += delta;
-            pos += lowbit(pos);
-        }
-    }
-    int query(int pos) {
-        int sum = 0;
-        while (pos > 0) { sum += tree[pos]; pos -= lowbit(pos); }
-        return sum;
-    }
+void diff_bit_init(DiffBIT* b, int size) {
+    b->n = size;
+    b->tree = calloc(size + 1, sizeof(int));
+}
 
-public:
-    DiffBIT(int size) : n(size), tree(size + 1, 0) {}
+void diff_bit_destroy(DiffBIT* b) { free(b->tree); }
 
-    void rangeAdd(int l, int r, int val) {
-        add(l, val);
-        add(r + 1, -val);
-    }
+static void diff_add(DiffBIT* b, int pos, int delta) {
+    while (pos <= b->n) { b->tree[pos] += delta; pos += LOWBIT(pos); }
+}
 
-    int pointQuery(int pos) {
-        return query(pos);
-    }
-};
+void diff_bit_range_add(DiffBIT* b, int l, int r, int val) {
+    diff_add(b, l, val);
+    diff_add(b, r + 1, -val);
+}
+
+int diff_bit_point_query(DiffBIT* b, int pos) {
+    int sum = 0;
+    while (pos > 0) { sum += b->tree[pos]; pos -= LOWBIT(pos); }
+    return sum;
+}
 ```
 
 ### 区间修改 + 区间查询（双 BIT）
 
-```cpp
-class RangeBIT {
-private:
-    std::vector<long long> t1, t2; // t1: diff[i], t2: i * diff[i]
+```c
+typedef struct {
+    long long* t1;   // diff[i]
+    long long* t2;   // i * diff[i]
     int n;
-    int lowbit(int x) { return x & -x; }
+} RangeBIT;
 
-    void add(std::vector<long long>& t, int pos, long long delta) {
-        while (pos <= n) { t[pos] += delta; pos += lowbit(pos); }
-    }
-    long long sum(std::vector<long long>& t, int pos) {
-        long long s = 0;
-        while (pos > 0) { s += t[pos]; pos -= lowbit(pos); }
-        return s;
-    }
+void range_bit_init(RangeBIT* b, int size) {
+    b->n = size;
+    b->t1 = calloc(size + 1, sizeof(long long));
+    b->t2 = calloc(size + 1, sizeof(long long));
+}
 
-public:
-    RangeBIT(int size) : n(size), t1(size + 1), t2(size + 1) {}
+void range_bit_destroy(RangeBIT* b) { free(b->t1); free(b->t2); }
 
-    void rangeAdd(int l, int r, long long val) {
-        add(t1, l, val);
-        add(t1, r + 1, -val);
-        add(t2, l, val * (l - 1));
-        add(t2, r + 1, -val * r);
-    }
+static void range_add_arr(long long* t, int n, int pos, long long delta) {
+    while (pos <= n) { t[pos] += delta; pos += LOWBIT(pos); }
+}
 
-    long long prefixSum(int pos) {
-        return sum(t1, pos) * pos - sum(t2, pos);
-    }
+static long long range_sum_arr(long long* t, int pos) {
+    long long s = 0;
+    while (pos > 0) { s += t[pos]; pos -= LOWBIT(pos); }
+    return s;
+}
 
-    long long rangeSum(int l, int r) {
-        return prefixSum(r) - prefixSum(l - 1);
-    }
-};
+void range_bit_add(RangeBIT* b, int l, int r, long long val) {
+    range_add_arr(b->t1, b->n, l, val);
+    range_add_arr(b->t1, b->n, r + 1, -val);
+    range_add_arr(b->t2, b->n, l, val * (l - 1));
+    range_add_arr(b->t2, b->n, r + 1, -val * r);
+}
+
+long long range_bit_prefix_sum(RangeBIT* b, int pos) {
+    return range_sum_arr(b->t1, pos) * pos - range_sum_arr(b->t2, pos);
+}
+
+long long range_bit_range_sum(RangeBIT* b, int l, int r) {
+    return range_bit_prefix_sum(b, r) - range_bit_prefix_sum(b, l - 1);
+}
 ```
 
 ### 权值 BIT 求第 K 小
 
-```cpp
-class KthBIT {
-private:
-    std::vector<int> tree;
+```c
+typedef struct {
+    int* tree;
     int n;
-    int lowbit(int x) { return x & -x; }
+} KthBIT;
 
-public:
-    KthBIT(int maxVal) : n(maxVal), tree(maxVal + 1, 0) {}
+void kth_bit_init(KthBIT* b, int max_val) {
+    b->n = max_val;
+    b->tree = calloc(max_val + 1, sizeof(int));
+}
 
-    void add(int val, int delta = 1) {
-        for (int i = val; i <= n; i += lowbit(i))
-            tree[i] += delta;
-    }
+void kth_bit_destroy(KthBIT* b) { free(b->tree); }
 
-    int kth(int k) {
-        int pos = 0;
-        for (int i = 20; i >= 0; --i) { // 2^20 足够 n <= 10^6
-            int next = pos + (1 << i);
-            if (next <= n && tree[next] < k) {
-                k -= tree[next];
-                pos = next;
-            }
+void kth_bit_add(KthBIT* b, int val, int delta) {
+    for (int i = val; i <= b->n; i += LOWBIT(i))
+        b->tree[i] += delta;
+}
+
+int kth_bit_kth(KthBIT* b, int k) {
+    int pos = 0;
+    for (int i = 20; i >= 0; i--) {
+        int next = pos + (1 << i);
+        if (next <= b->n && b->tree[next] < k) {
+            k -= b->tree[next];
+            pos = next;
         }
-        return pos + 1;
     }
-};
+    return pos + 1;
+}
 ```
 
 ---

@@ -1,7 +1,8 @@
 
 
 建议先阅读: 无（本章为数据结构系列的第一章）
-在本教程的数据结构部分，基本上列举的实例来自cpp的标准库，如果只是单纯想明白数据结构类型的实现原理，其实只需要阅读带有演示图和解释的核心部分，学起来并不困难。
+
+本章只讲述数据结构的设计原理和实现思想，不绑定任何特定语言。代码演示用 C 语言，因为 C 标准库几乎不提供数据结构，能完整展示底层实现细节。每种主流语言对该结构的封装形式见末尾的对比表。
 
 ---
 
@@ -33,9 +34,17 @@
 ### vector 扩容机制
 
 vector 内部维护三个指针：`_start`（起始）、`_finish`（已用末尾）、`_end_of_storage`（容量末尾）。当 `_finish == _end_of_storage` 时触发扩容：
-1. 分配新内存（通常 1.5~2 倍当前容量）
-2. 将旧元素移动/拷贝到新内存
-3. 释放旧内存
+
+```mermaid
+flowchart TD
+    A["push_back 新元素"] --> B{"_finish == _end_of_storage?"}
+    B -->|否| C["直接写入 _finish 位置\n_finish++"]
+    B -->|是| D["分配 2 倍新容量内存"]
+    D --> E["将旧元素逐个拷贝到新内存"]
+    E --> F["释放旧内存"]
+    F --> G["更新 _start / _finish / _end_of_storage"]
+    G --> C
+```
 
 单次扩容为 O(n)，但均摊后 push_back 仍为 O(1)。
 
@@ -55,138 +64,81 @@ vector 内部维护三个指针：`_start`（起始）、`_finish`（已用末�
 
 ## 实现
 
-手写一个简易动态数组 SimpleVector：
+手写一个简易动态数组 SimpleVector（仅为 int 类型演示，通用化可将 int 替换为 void* 加类型参数）：
 
-```cpp
-#include <iostream>
-#include <stdexcept>
+```c
+#include <stdlib.h>
+#include <string.h>
 
-template <typename T>
-class SimpleVector {
-private:
-    T* _data;
-    size_t _size;
-    size_t _capacity;
+typedef struct {
+    int* data;
+    size_t size;
+    size_t capacity;
+} SimpleVector;
 
-    void reallocate(size_t new_cap) {
-        T* new_data = new T[new_cap];
-        for (size_t i = 0; i < _size; ++i)
-            new_data[i] = _data[i];
-        delete[] _data;
-        _data = new_data;
-        _capacity = new_cap;
-    }
+void sv_init(SimpleVector* v) {
+    v->data = NULL;
+    v->size = 0;
+    v->capacity = 0;
+}
 
-public:
-    SimpleVector() : _data(nullptr), _size(0), _capacity(0) {}
+void sv_destroy(SimpleVector* v) {
+    free(v->data);
+    v->data = NULL;
+    v->size = 0;
+    v->capacity = 0;
+}
 
-    ~SimpleVector() { delete[] _data; }
+// 扩容：容量不足时翻倍
+int sv_expand(SimpleVector* v) {
+    size_t new_cap = v->capacity == 0 ? 1 : v->capacity * 2;
+    int* new_data = realloc(v->data, new_cap * sizeof(int));
+    if (!new_data) return -1;
+    v->data = new_data;
+    v->capacity = new_cap;
+    return 0;
+}
 
-    // 拷贝构造
-    SimpleVector(const SimpleVector& other)
-        : _size(other._size), _capacity(other._size) {
-        _data = new T[_capacity];
-        for (size_t i = 0; i < _size; ++i)
-            _data[i] = other._data[i];
-    }
+int sv_push_back(SimpleVector* v, int value) {
+    if (v->size >= v->capacity)
+        if (sv_expand(v) != 0) return -1;
+    v->data[v->size++] = value;
+    return 0;
+}
 
-    // 移动构造
-    SimpleVector(SimpleVector&& other) noexcept
-        : _data(other._data), _size(other._size), _capacity(other._capacity) {
-        other._data = nullptr;
-        other._size = other._capacity = 0;
-    }
+void sv_pop_back(SimpleVector* v) {
+    if (v->size > 0) v->size--;
+}
 
-    void push_back(const T& value) {
-        if (_size >= _capacity) {
-            size_t new_cap = (_capacity == 0) ? 1 : _capacity * 2;
-            reallocate(new_cap);
-        }
-        _data[_size++] = value;
-    }
+int sv_at(SimpleVector* v, size_t index) {
+    return v->data[index];  // 调用者保证 index < size
+}
 
-    void pop_back() {
-        if (_size > 0) --_size;
-    }
+size_t sv_size(SimpleVector* v) { return v->size; }
+size_t sv_capacity(SimpleVector* v) { return v->capacity; }
+int sv_empty(SimpleVector* v) { return v->size == 0; }
 
-    T& at(size_t index) {
-        if (index >= _size) throw std::out_of_range("index out of range");
-        return _data[index];
-    }
-
-    T& operator[](size_t index) { return _data[index]; }
-    const T& operator[](size_t index) const { return _data[index]; }
-
-    size_t size() const { return _size; }
-    size_t capacity() const { return _capacity; }
-    bool empty() const { return _size == 0; }
-
-    T* begin() { return _data; }
-    T* end() { return _data + _size; }
-
-    void clear() { _size = 0; }
-};
+void sv_clear(SimpleVector* v) { v->size = 0; }
 ```
+
+扩容机制与 C++ vector 相同：容量不足时分配 2 倍新内存，将旧元素拷贝/移动到新内存，释放旧内存。单次扩容 O(n)，均摊后 push_back 为 O(1)。
 
 ---
 
-## STL 使用
+## 各语言标准库对比
 
-```cpp
-#include <vector>
-#include <list>
-#include <deque>
-#include <set>
-#include <map>
-#include <unordered_map>
-#include <iostream>
+本章介绍的几种容器类型在各主流语言中都有对应封装，只是名称和接口略有差异：
 
-int main() {
-    // vector -- 动态数组
-    std::vector<int> v = {1, 2, 3};
-    v.push_back(4);       // 尾插
-    v.pop_back();          // 尾删
-    int a = v[0];          // 随机访问
-    int b = v.at(0);       // 带边界检查
-    v.reserve(100);        // 预留容量
-    v.shrink_to_fit();     // 收缩容量
+| 语言 | 动态数组 | 双向链表 | 双端队列 | 有序集合 | 有序映射 | 哈希集合 | 哈希映射 |
+|------|----------|----------|----------|----------|----------|----------|----------|
+| C | 无（手写） | 无（手写） | 无（手写） | 无（手写） | 无（手写） | 无（手写） | 无（手写） |
+| C++ | vector | list | deque | set | map | unordered_set | unordered_map |
+| Java | ArrayList | LinkedList | ArrayDeque | TreeSet | TreeMap | HashSet | HashMap |
+| Python | list | 无（用 deque） | collections.deque | 无（需 sortedcontainers） | 无 | set | dict |
+| Rust | Vec | LinkedList | VecDeque | BTreeSet | BTreeMap | HashSet | HashMap |
+| Go | slice | container/list | 无 | 无（需第三方） | 无 | map[K]struct{} | map[K]V |
 
-    // list -- 双向链表
-    std::list<int> lst = {1, 2, 3};
-    lst.push_front(0);
-    lst.push_back(4);
-    lst.sort();            // 链表排序（归并）
-    lst.reverse();         // 反转
-
-    // deque -- 双端队列
-    std::deque<int> dq = {1, 2, 3};
-    dq.push_front(0);
-    dq.push_back(4);
-    dq.pop_front();
-
-    // set -- 有序集合（红黑树）
-    std::set<int> s;
-    s.insert(3);
-    s.insert(1);
-    s.insert(4);
-    for (int x : s) std::cout << x << " "; // 输出: 1 3 4
-    auto it = s.lower_bound(3); // 第一个 >= 3 的元素
-
-    // map -- 有序映射（红黑树）
-    std::map<std::string, int> m;
-    m["apple"] = 5;
-    m["banana"] = 3;
-    for (auto& [k, v] : m)
-        std::cout << k << ": " << v << " ";
-
-    // unordered_map -- 哈希表
-    std::unordered_map<std::string, int> um;
-    um["hello"] = 1;
-    um["world"] = 2;
-
-    return 0;
-}
-```
+C 标准库不提供任何通用容器，所有数据结构需手动实现，这正是本章用 C 演示实现的原因。
 
 ---
 
@@ -207,9 +159,3 @@ int main() {
 | P3156 | 询问学号 | 入门 | vector 基础 |
 | P1427 | 小鱼的数字游戏 | 入门 | vector 反向遍历 |
 
-[^1]: 
-
-[^2]: 
-
-[^3]: 有序关联容器内部是红黑树实现，元素按照键大小关系排序
-	> 与之对应的是哈希表实现，通过键值对，遍历无序

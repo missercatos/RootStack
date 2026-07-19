@@ -33,199 +33,245 @@
 
 ## 实现
 
-### 邻接表图 + BFS/DFS
+### 加权邻接表
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <stack>
-#include <list>
+无权图的 BFS 只能求最短路径长度（边数），而 Dijkstra 需要边权重。我们用加权邻接表：
 
-class Graph {
-private:
+```c
+#include <stdlib.h>
+#include <limits.h>
+
+// 加权邻接表边节点
+typedef struct WeightedAdjNode {
+    int vertex;
+    int weight;
+    struct WeightedAdjNode* next;
+} WeightedAdjNode;
+
+typedef struct {
     int V;
-    std::vector<std::list<int>> adj;
+    WeightedAdjNode** adj;
+} WeightedGraph;
 
-public:
-    Graph(int v) : V(v), adj(v) {}
+WeightedAdjNode* create_wadj_node(int v, int w) {
+    WeightedAdjNode* node = malloc(sizeof(WeightedAdjNode));
+    node->vertex = v;
+    node->weight = w;
+    node->next = NULL;
+    return node;
+}
 
-    void addEdge(int u, int v, bool directed = false) {
-        adj[u].push_back(v);
-        if (!directed) adj[v].push_back(u);
-    }
+void wgraph_init(WeightedGraph* g, int V) {
+    g->V = V;
+    g->adj = calloc(V, sizeof(WeightedAdjNode*));
+}
 
-    // BFS
-    void bfs(int start) {
-        std::vector<bool> visited(V, false);
-        std::queue<int> q;
-        visited[start] = true;
-        q.push(start);
-
-        while (!q.empty()) {
-            int u = q.front(); q.pop();
-            std::cout << u << " ";
-            for (int v : adj[u])
-                if (!visited[v]) {
-                    visited[v] = true;
-                    q.push(v);
-                }
+void wgraph_destroy(WeightedGraph* g) {
+    for (int i = 0; i < g->V; i++) {
+        WeightedAdjNode* cur = g->adj[i];
+        while (cur) {
+            WeightedAdjNode* tmp = cur;
+            cur = cur->next;
+            free(tmp);
         }
-        std::cout << std::endl;
     }
+    free(g->adj);
+}
 
-    // DFS（递归）
-    void dfs(int start) {
-        std::vector<bool> visited(V, false);
-        dfsHelper(start, visited);
-        std::cout << std::endl;
+// directed=1 有向，directed=0 无向
+void wgraph_add_edge(WeightedGraph* g, int u, int v, int w, int directed) {
+    WeightedAdjNode* node = create_wadj_node(v, w);
+    node->next = g->adj[u];
+    g->adj[u] = node;
+    if (!directed)
+        wgraph_add_edge(g, v, u, w, 1);
+}
+```
+
+### BFS / DFS 遍历（无权图）
+
+```c
+typedef struct AdjNode { int vertex; struct AdjNode* next; } AdjNode;
+
+void graph_bfs(AdjNode** adj, int V, int start) {
+    int* visited = calloc(V, sizeof(int));
+    int* queue = malloc(V * sizeof(int));
+    int head = 0, tail = 0;
+    visited[start] = 1;
+    queue[tail++] = start;
+    while (head < tail) {
+        int u = queue[head++];
+        for (AdjNode* cur = adj[u]; cur; cur = cur->next)
+            if (!visited[cur->vertex]) {
+                visited[cur->vertex] = 1;
+                queue[tail++] = cur->vertex;
+            }
     }
+    free(visited); free(queue);
+}
 
-    // DFS（迭代）
-    void dfsIterative(int start) {
-        std::vector<bool> visited(V, false);
-        std::stack<int> stk;
-        stk.push(start);
-        while (!stk.empty()) {
-            int u = stk.top(); stk.pop();
-            if (visited[u]) continue;
-            visited[u] = true;
-            std::cout << u << " ";
-            for (auto it = adj[u].rbegin(); it != adj[u].rend(); ++it)
-                if (!visited[*it]) stk.push(*it);
-        }
-        std::cout << std::endl;
+void graph_dfs(AdjNode** adj, int V, int start) {
+    int* visited = calloc(V, sizeof(int));
+    int stack[V], top = 0;
+    stack[top++] = start;
+    while (top > 0) {
+        int u = stack[--top];
+        if (visited[u]) continue;
+        visited[u] = 1;
+        for (AdjNode* cur = adj[u]; cur; cur = cur->next)
+            if (!visited[cur->vertex])
+                stack[top++] = cur->vertex;
     }
-
-    // BFS 最短路径（无权图）
-    std::vector<int> shortestPath(int start, int end) {
-        std::vector<bool> visited(V, false);
-        std::vector<int> parent(V, -1);
-        std::queue<int> q;
-        visited[start] = true;
-        q.push(start);
-
-        while (!q.empty()) {
-            int u = q.front(); q.pop();
-            if (u == end) break;
-            for (int v : adj[u])
-                if (!visited[v]) {
-                    visited[v] = true;
-                    parent[v] = u;
-                    q.push(v);
-                }
-        }
-
-        std::vector<int> path;
-        if (!visited[end]) return path;
-        for (int v = end; v != -1; v = parent[v])
-            path.push_back(v);
-        std::reverse(path.begin(), path.end());
-        return path;
-    }
-
-private:
-    void dfsHelper(int u, std::vector<bool>& visited) {
-        visited[u] = true;
-        std::cout << u << " ";
-        for (int v : adj[u])
-            if (!visited[v]) dfsHelper(v, visited);
-    }
-};
+    free(visited);
+}
 ```
 
 ### Dijkstra 最短路径
 
-```cpp
-#include <vector>
-#include <queue>
-#include <climits>
+Dijkstra 的核心思想是**贪心**：每次从未确定的顶点中选出距离起点最近的顶点，用它去松弛其邻居。重复 V 次，每次选最近顶点需要 O(V)，总 O(V^2)。用最小堆优化后选顶点降为 O(log V)，总 O((V+E)log V)。
 
-// 加权图
-class WeightedGraph {
-private:
-    int V;
-    std::vector<std::list<std::pair<int, int>>> adj; // {neighbor, weight}
+```mermaid
+flowchart TD
+    A["dist[start]=0, 其余 dist=INF"] --> B{"所有顶点已确定？"}
+    B -->|否| C["从未确定顶点中选 dist 最小的 u"]
+    C --> D["标记 u 为已确定"]
+    D --> E["遍历 u 的每个邻居 v"]
+    E --> F{"dist[u] + w(u,v) < dist[v]?"}
+    F -->|是| G["更新 dist[v]"]
+    G --> H["将 (v, dist[v]) 入堆"]
+    H --> E
+    E --> B
+    B -->|是| I["结束，dist 数组即为最短路径"]
+```
 
-public:
-    WeightedGraph(int v) : V(v), adj(v) {}
+C 实现：用数组模拟最小堆作为优先队列。
 
-    void addEdge(int u, int v, int w, bool directed = false) {
-        adj[u].push_back({v, w});
-        if (!directed) adj[v].push_back({u, w});
+```c
+// ---------- 最小堆优先队列 ----------
+typedef struct { int dist; int vertex; } PQNode;
+
+typedef struct { PQNode* data; int size; int cap; } MinPQ;
+
+void pq_init(MinPQ* pq, int cap) {
+    pq->data = malloc(cap * sizeof(PQNode));
+    pq->size = 0; pq->cap = cap;
+}
+void pq_destroy(MinPQ* pq) { free(pq->data); }
+
+static void pq_swap(PQNode* a, PQNode* b) {
+    PQNode t = *a; *a = *b; *b = t;
+}
+
+void pq_push(MinPQ* pq, int dist, int v) {
+    int i = pq->size++;
+    pq->data[i] = (PQNode){dist, v};
+    while (i > 0) {
+        int p = (i - 1) / 2;
+        if (pq->data[p].dist <= pq->data[i].dist) break;
+        pq_swap(&pq->data[p], &pq->data[i]);
+        i = p;
     }
+}
 
-    std::vector<int> dijkstra(int start) {
-        std::vector<int> dist(V, INT_MAX);
-        std::vector<bool> visited(V, false);
-        // 最小堆: {距离, 顶点}
-        std::priority_queue<std::pair<int, int>,
-                            std::vector<std::pair<int, int>>,
-                            std::greater<>> pq;
+int pq_pop(MinPQ* pq, int* out_dist, int* out_v) {
+    if (pq->size == 0) return -1;
+    *out_dist = pq->data[0].dist;
+    *out_v = pq->data[0].vertex;
+    pq->data[0] = pq->data[--pq->size];
+    int i = 0;
+    while (1) {
+        int smallest = i;
+        int left = 2 * i + 1, right = 2 * i + 2;
+        if (left < pq->size && pq->data[left].dist < pq->data[smallest].dist)
+            smallest = left;
+        if (right < pq->size && pq->data[right].dist < pq->data[smallest].dist)
+            smallest = right;
+        if (smallest == i) break;
+        pq_swap(&pq->data[i], &pq->data[smallest]);
+        i = smallest;
+    }
+    return 0;
+}
 
-        dist[start] = 0;
-        pq.push({0, start});
+int pq_empty(MinPQ* pq) { return pq->size == 0; }
+// ---------- 堆结束 ----------
 
-        while (!pq.empty()) {
-            int u = pq.top().second; pq.pop();
-            if (visited[u]) continue;
-            visited[u] = true;
+void dijkstra(WeightedGraph* g, int start, int* dist) {
+    for (int i = 0; i < g->V; i++) dist[i] = INT_MAX / 2;
+    dist[start] = 0;
 
-            for (auto& [v, w] : adj[u]) {
-                if (!visited[v] && dist[u] + w < dist[v]) {
-                    dist[v] = dist[u] + w;
-                    pq.push({dist[v], v});
-                }
+    MinPQ pq;
+    pq_init(&pq, g->V * 2);
+    pq_push(&pq, 0, start);
+
+    while (!pq_empty(&pq)) {
+        int d, u;
+        pq_pop(&pq, &d, &u);
+        if (d != dist[u]) continue;   // 过期条目跳过
+
+        for (WeightedAdjNode* cur = g->adj[u]; cur; cur = cur->next) {
+            int v = cur->vertex, w = cur->weight;
+            if (dist[u] + w < dist[v]) {
+                dist[v] = dist[u] + w;
+                pq_push(&pq, dist[v], v);
             }
         }
-        return dist;
     }
-};
+    pq_destroy(&pq);
+}
 ```
 
 ### Kruskal 最小生成树
 
-```cpp
-#include <vector>
-#include <algorithm>
+Kruskal 的核心思想：将所有边按权重排序，从小到大依次加入，若加入后不形成环则保留，直到有 V-1 条边。
 
-struct Edge { int u, v, w; };
+```mermaid
+flowchart LR
+    A["所有边按 w 排序"] --> B["依次取最小边 (u,v,w)"]
+    B --> C{"u 和 v 已连通？"}
+    C -->|否| D["加入此边，合并 u 和 v"]
+    C -->|是| E["跳过"]
+    D --> F{"已有 V-1 条边？"}
+    E --> B
+    F -->|否| B
+    F -->|是| G["生成树完成"]
+```
 
-class UnionFind {
-    std::vector<int> parent, rank;
-public:
-    UnionFind(int n) : parent(n), rank(n, 0) {
-        for (int i = 0; i < n; ++i) parent[i] = i;
-    }
-    int find(int x) {
-        if (parent[x] != x) parent[x] = find(parent[x]);
-        return parent[x];
-    }
-    bool unite(int x, int y) {
-        int px = find(x), py = find(y);
-        if (px == py) return false;
-        if (rank[px] < rank[py]) std::swap(px, py);
-        parent[py] = px;
-        if (rank[px] == rank[py]) ++rank[px];
-        return true;
-    }
-};
+C 实现需要并查集，这里直接内联一个简易版：
 
-int kruskal(int V, std::vector<Edge> edges) {
-    std::sort(edges.begin(), edges.end(),
-              [](Edge& a, Edge& b) { return a.w < b.w; });
+```c
+#include <stdlib.h>
 
-    UnionFind uf(V);
-    int total_weight = 0;
-    int cnt = 0;
+typedef struct { int u, v, w; } KEdge;
 
-    for (auto& e : edges) {
-        if (uf.unite(e.u, e.v)) {
-            total_weight += e.w;
-            ++cnt;
-            if (cnt == V - 1) break;
+int kedge_cmp(const void* a, const void* b) {
+    return ((KEdge*)a)->w - ((KEdge*)b)->w;
+}
+
+static int kruskal_find(int* parent, int x) {
+    return parent[x] == x ? x : (parent[x] = kruskal_find(parent, parent[x]));
+}
+
+int kruskal(int V, KEdge* edges, int E) {
+    int* parent = malloc(V * sizeof(int));
+    int* rank = calloc(V, sizeof(int));
+    for (int i = 0; i < V; i++) parent[i] = i;
+
+    qsort(edges, E, sizeof(KEdge), kedge_cmp);
+
+    int total_weight = 0, cnt = 0;
+    for (int i = 0; i < E && cnt < V - 1; i++) {
+        int pu = kruskal_find(parent, edges[i].u);
+        int pv = kruskal_find(parent, edges[i].v);
+        if (pu != pv) {
+            if (rank[pu] < rank[pv]) { int t = pu; pu = pv; pv = t; }
+            parent[pv] = pu;
+            if (rank[pu] == rank[pv]) rank[pu]++;
+            total_weight += edges[i].w;
+            cnt++;
         }
     }
+    free(parent); free(rank);
     return total_weight;
 }
 ```

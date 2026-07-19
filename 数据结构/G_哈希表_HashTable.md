@@ -38,181 +38,180 @@
 
 ### 链地址法 HashMap
 
-```cpp
-#include <iostream>
-#include <vector>
-#include <list>
-#include <functional>
+```c
+#include <stdlib.h>
+#include <string.h>
 
-template <typename K, typename V>
-class HashMap {
-private:
-    struct Entry {
-        K key;
-        V value;
-        Entry(const K& k, const V& v) : key(k), value(v) {}
-    };
+typedef struct Entry {
+    int key;
+    int value;
+    struct Entry* next;
+} Entry;
 
-    std::vector<std::list<Entry>> buckets;
+typedef struct {
+    Entry** buckets;   // 桶数组，每个桶是一个链表的头指针
+    size_t bucket_count;
     size_t num_elements;
     float max_load_factor;
+} HashMap;
 
-    size_t getBucketIndex(const K& key) const {
-        return std::hash<K>{}(key) % buckets.size();
-    }
+size_t hash_int(int key, size_t bucket_count) {
+    return (size_t)((unsigned)key) % bucket_count;
+}
 
-    void rehash(size_t new_bucket_count) {
-        auto old_buckets = std::move(buckets);
-        buckets.resize(new_bucket_count);
-        num_elements = 0;
-        for (auto& bucket : old_buckets)
-            for (auto& entry : bucket)
-                insert(entry.key, entry.value);
-    }
+void hm_init(HashMap* hm, size_t init_size) {
+    hm->bucket_count = init_size;
+    hm->buckets = calloc(init_size, sizeof(Entry*));
+    hm->num_elements = 0;
+    hm->max_load_factor = 0.75f;
+}
 
-public:
-    HashMap(size_t initial_size = 16)
-        : buckets(initial_size), num_elements(0), max_load_factor(0.75) {}
-
-    void insert(const K& key, const V& value) {
-        if ((num_elements + 1.0) / buckets.size() > max_load_factor)
-            rehash(buckets.size() * 2);
-
-        size_t idx = getBucketIndex(key);
-        for (auto& entry : buckets[idx]) {
-            if (entry.key == key) {
-                entry.value = value; // 更新
-                return;
-            }
+void hm_destroy(HashMap* hm) {
+    for (size_t i = 0; i < hm->bucket_count; i++) {
+        Entry* e = hm->buckets[i];
+        while (e) {
+            Entry* tmp = e;
+            e = e->next;
+            free(tmp);
         }
-        buckets[idx].emplace_back(key, value);
-        ++num_elements;
     }
+    free(hm->buckets);
+    hm->buckets = NULL;
+    hm->bucket_count = 0;
+    hm->num_elements = 0;
+}
 
-    V* find(const K& key) {
-        size_t idx = getBucketIndex(key);
-        for (auto& entry : buckets[idx])
-            if (entry.key == key)
-                return &entry.value;
-        return nullptr;
-    }
-
-    bool remove(const K& key) {
-        size_t idx = getBucketIndex(key);
-        auto& bucket = buckets[idx];
-        for (auto it = bucket.begin(); it != bucket.end(); ++it) {
-            if (it->key == key) {
-                bucket.erase(it);
-                --num_elements;
-                return true;
-            }
+static int hm_rehash(HashMap* hm, size_t new_bucket_count) {
+    Entry** new_buckets = calloc(new_bucket_count, sizeof(Entry*));
+    if (!new_buckets) return -1;
+    for (size_t i = 0; i < hm->bucket_count; i++) {
+        Entry* e = hm->buckets[i];
+        while (e) {
+            Entry* next = e->next;
+            size_t idx = hash_int(e->key, new_bucket_count);
+            e->next = new_buckets[idx];
+            new_buckets[idx] = e;
+            e = next;
         }
-        return false;
     }
+    free(hm->buckets);
+    hm->buckets = new_buckets;
+    hm->bucket_count = new_bucket_count;
+    return 0;
+}
 
-    V& operator[](const K& key) {
-        V* found = find(key);
-        if (found) return *found;
-        insert(key, V{});
-        return *find(key);
+int hm_insert(HashMap* hm, int key, int value) {
+    if ((hm->num_elements + 1.0f) / hm->bucket_count > hm->max_load_factor)
+        if (hm_rehash(hm, hm->bucket_count * 2) != 0) return -1;
+
+    size_t idx = hash_int(key, hm->bucket_count);
+    Entry* e = hm->buckets[idx];
+    while (e) {
+        if (e->key == key) {
+            e->value = value;  // 更新
+            return 0;
+        }
+        e = e->next;
     }
+    Entry* new_e = malloc(sizeof(Entry));
+    if (!new_e) return -1;
+    new_e->key = key;
+    new_e->value = value;
+    new_e->next = hm->buckets[idx];
+    hm->buckets[idx] = new_e;
+    hm->num_elements++;
+    return 0;
+}
 
-    size_t size() const { return num_elements; }
-    bool empty() const { return num_elements == 0; }
-};
+int hm_find(HashMap* hm, int key, int* out_value) {
+    size_t idx = hash_int(key, hm->bucket_count);
+    Entry* e = hm->buckets[idx];
+    while (e) {
+        if (e->key == key) {
+            *out_value = e->value;
+            return 0;
+        }
+        e = e->next;
+    }
+    return -1;
+}
+
+int hm_remove(HashMap* hm, int key) {
+    size_t idx = hash_int(key, hm->bucket_count);
+    Entry* e = hm->buckets[idx];
+    Entry* prev = NULL;
+    while (e) {
+        if (e->key == key) {
+            if (prev) prev->next = e->next;
+            else hm->buckets[idx] = e->next;
+            free(e);
+            hm->num_elements--;
+            return 0;
+        }
+        prev = e;
+        e = e->next;
+    }
+    return -1;
+}
+
+size_t hm_size(HashMap* hm) { return hm->num_elements; }
+int hm_empty(HashMap* hm) { return hm->num_elements == 0; }
 ```
 
 ### 字符串哈希
 
-```cpp
-#include <string>
+```c
+#include <string.h>
 
 // BKDR Hash
-size_t bkdrHash(const std::string& s) {
+size_t bkdr_hash(const char* s) {
     size_t hash = 0;
-    size_t seed = 131; // 31, 131, 1313 等
-    for (char c : s)
-        hash = hash * seed + c;
+    size_t seed = 131;
+    while (*s)
+        hash = hash * seed + (unsigned char)*s++;
     return hash;
 }
 
-// 多项式滚动哈希（前缀哈希，O(1) 获取子串哈希）
-struct StringHasher {
-    using ull = unsigned long long;
-    static const ull P = 131;
-    std::vector<ull> h, p;
+// 多项式滚动哈希（前缀哈希，O(1) 获取子串哈希值）
+typedef struct {
+    unsigned long long* h;
+    unsigned long long* p;
+    size_t len;
+} StringHasher;
 
-    StringHasher(const std::string& s) : h(s.size() + 1), p(s.size() + 1) {
-        p[0] = 1;
-        for (int i = 0; i < s.size(); ++i) {
-            h[i + 1] = h[i] * P + s[i];
-            p[i + 1] = p[i] * P;
-        }
+void sh_init(StringHasher* sh, const char* s) {
+    sh->len = strlen(s);
+    sh->h = malloc((sh->len + 1) * sizeof(unsigned long long));
+    sh->p = malloc((sh->len + 1) * sizeof(unsigned long long));
+    sh->p[0] = 1;
+    for (size_t i = 0; i < sh->len; i++) {
+        sh->h[i + 1] = sh->h[i] * 131 + (unsigned char)s[i];
+        sh->p[i + 1] = sh->p[i] * 131;
     }
+}
 
-    // 子串 s[l..r] 的哈希值
-    ull getHash(int l, int r) {
-        return h[r + 1] - h[l] * p[r - l + 1];
-    }
-};
+void sh_destroy(StringHasher* sh) {
+    free(sh->h);
+    free(sh->p);
+}
+
+// 子串 s[l..r] 的哈希值（包含两端）
+unsigned long long sh_get(StringHasher* sh, int l, int r) {
+    return sh->h[r + 1] - sh->h[l] * sh->p[r - l + 1];
+}
 ```
 
 ---
 
-## STL 使用
+## 各语言标准库对比
 
-```cpp
-#include <unordered_map>
-#include <unordered_set>
-#include <string>
-#include <iostream>
-
-int main() {
-    // unordered_map
-    std::unordered_map<std::string, int> um;
-    um["apple"] = 5;
-    um["banana"] = 3;
-    um.insert({"cherry", 8});
-    um.emplace("date", 2);
-
-    auto it = um.find("apple");
-    if (it != um.end())
-        std::cout << it->first << ": " << it->second << std::endl;
-
-    um.erase("banana");
-    std::cout << "count: " << um.count("apple") << std::endl;
-
-    // 桶接口
-    std::cout << "bucket_count: " << um.bucket_count() << std::endl;
-    std::cout << "load_factor: " << um.load_factor() << std::endl;
-
-    // 预留空间
-    um.reserve(200);  // 设置桶数使负载因子合理
-    um.rehash(100);    // 直接设置桶数
-
-    // unordered_set
-    std::unordered_set<int> us = {3, 1, 4, 1, 5};
-    us.insert(9);
-    for (int x : us) std::cout << x << " "; // 无序输出
-
-    // 自定义哈希
-    struct Person { std::string name; int age; };
-    struct PersonHash {
-        size_t operator()(const Person& p) const {
-            return std::hash<std::string>{}(p.name) ^
-                   (std::hash<int>{}(p.age) << 1);
-        }
-    };
-    struct PersonEqual {
-        bool operator()(const Person& a, const Person& b) const {
-            return a.name == b.name && a.age == b.age;
-        }
-    };
-    std::unordered_set<Person, PersonHash, PersonEqual> people;
-
-    return 0;
-}
-```
+| 语言 | 哈希集合 | 哈希映射 |
+|------|----------|----------|
+| C | 无（手写） | 无（手写） |
+| C++ | unordered_set | unordered_map |
+| Java | HashSet | HashMap |
+| Python | set | dict |
+| Rust | HashSet | HashMap |
 
 ---
 

@@ -25,236 +25,297 @@
 
 ### 拓扑排序（Kahn 算法）
 
-```cpp
-#include <vector>
-#include <queue>
+```c
+#include <stdlib.h>
 
-std::vector<int> topologicalSort(int V,
-    const std::vector<std::vector<int>>& adj) {
-    std::vector<int> inDegree(V, 0);
-    for (int u = 0; u < V; ++u)
-        for (int v : adj[u])
-            ++inDegree[v];
+// 邻接表图结构（沿用 H_图的定义）
+// 返回结果需要调用者 free
+int* topological_sort(int V, int** adj, int* adj_sizes, int* result_size) {
+    int* in_degree = calloc(V, sizeof(int));
+    for (int u = 0; u < V; u++)
+        for (int j = 0; j < adj_sizes[u]; j++)
+            in_degree[adj[u][j]]++;
 
-    std::queue<int> q;
-    for (int i = 0; i < V; ++i)
-        if (inDegree[i] == 0) q.push(i);
+    int* queue = malloc(V * sizeof(int));
+    int head = 0, tail = 0;
+    for (int i = 0; i < V; i++)
+        if (in_degree[i] == 0) queue[tail++] = i;
 
-    std::vector<int> result;
-    while (!q.empty()) {
-        int u = q.front(); q.pop();
-        result.push_back(u);
-        for (int v : adj[u])
-            if (--inDegree[v] == 0)
-                q.push(v);
+    int* result = malloc(V * sizeof(int));
+    int ri = 0;
+    while (head < tail) {
+        int u = queue[head++];
+        result[ri++] = u;
+        for (int j = 0; j < adj_sizes[u]; j++) {
+            int v = adj[u][j];
+            if (--in_degree[v] == 0)
+                queue[tail++] = v;
+        }
     }
+    free(in_degree);
+    free(queue);
 
-    // result.size() < V 则存在环
+    if (ri < V) {  // 存在环
+        free(result);
+        *result_size = 0;
+        return NULL;
+    }
+    *result_size = ri;
     return result;
 }
 ```
 
 ### Tarjan SCC
 
-```cpp
-#include <vector>
-#include <stack>
-#include <algorithm>
+```c
+#include <stdlib.h>
+#include <string.h>
 
-class TarjanSCC {
-private:
-    std::vector<std::vector<int>> adj;
-    std::vector<int> dfn, low, sccId;
-    std::vector<bool> onStack;
-    std::stack<int> stk;
-    int timer, sccCount;
+typedef struct {
+    int* dfn, *low, *scc_id;
+    int* stack;
+    int* on_stack;
+    int timer, scc_count, stack_top;
+    int V;
+    int** adj;
+    int* adj_sizes;
+} TarjanSCC;
 
-    void dfs(int u) {
-        dfn[u] = low[u] = ++timer;
-        stk.push(u);
-        onStack[u] = true;
+void tarjan_init(TarjanSCC* ts, int V) {
+    ts->V = V;
+    ts->dfn = calloc(V, sizeof(int));
+    ts->low = calloc(V, sizeof(int));
+    ts->scc_id = calloc(V, sizeof(int));
+    ts->stack = malloc(V * sizeof(int));
+    ts->on_stack = calloc(V, sizeof(int));
+    ts->timer = 0;
+    ts->scc_count = 0;
+    ts->stack_top = 0;
+}
 
-        for (int v : adj[u]) {
-            if (!dfn[v]) {
-                dfs(v);
-                low[u] = std::min(low[u], low[v]);
-            } else if (onStack[v]) {
-                low[u] = std::min(low[u], dfn[v]);
-            }
-        }
+void tarjan_destroy(TarjanSCC* ts) {
+    free(ts->dfn); free(ts->low); free(ts->scc_id);
+    free(ts->stack); free(ts->on_stack);
+}
 
-        if (dfn[u] == low[u]) { // u 是 SCC 的根
-            ++sccCount;
-            while (true) {
-                int v = stk.top(); stk.pop();
-                onStack[v] = false;
-                sccId[v] = sccCount;
-                if (v == u) break;
-            }
+static void tarjan_dfs(TarjanSCC* ts, int u) {
+    ts->dfn[u] = ts->low[u] = ++ts->timer;
+    ts->stack[ts->stack_top++] = u;
+    ts->on_stack[u] = 1;
+
+    for (int j = 0; j < ts->adj_sizes[u]; j++) {
+        int v = ts->adj[u][j];
+        if (!ts->dfn[v]) {
+            tarjan_dfs(ts, v);
+            if (ts->low[v] < ts->low[u]) ts->low[u] = ts->low[v];
+        } else if (ts->on_stack[v]) {
+            if (ts->dfn[v] < ts->low[u]) ts->low[u] = ts->dfn[v];
         }
     }
 
-public:
-    TarjanSCC(int V) : adj(V), dfn(V, 0), low(V, 0),
-                        sccId(V, 0), onStack(V, false),
-                        timer(0), sccCount(0) {}
-
-    void addEdge(int u, int v) { adj[u].push_back(v); }
-
-    int solve() {
-        for (int i = 0; i < adj.size(); ++i)
-            if (!dfn[i]) dfs(i);
-        return sccCount;
+    if (ts->dfn[u] == ts->low[u]) {
+        ts->scc_count++;
+        while (1) {
+            int v = ts->stack[--ts->stack_top];
+            ts->on_stack[v] = 0;
+            ts->scc_id[v] = ts->scc_count;
+            if (v == u) break;
+        }
     }
+}
 
-    int getSCCId(int u) { return sccId[u]; }
-};
+int tarjan_solve(TarjanSCC* ts) {
+    for (int i = 0; i < ts->V; i++)
+        if (!ts->dfn[i]) tarjan_dfs(ts, i);
+    return ts->scc_count;
+}
 ```
 
 ### Floyd-Warshall
 
-```cpp
-#include <vector>
-#include <climits>
+```c
+#include <limits.h>
+#include <stdlib.h>
 
-class FloydWarshall {
-private:
+typedef struct {
+    long long** dist;
     int V;
-    std::vector<std::vector<long long>> dist;
-    const long long INF = LLONG_MAX / 2;
+} FloydWarshall;
 
-public:
-    FloydWarshall(int v) : V(v), dist(v, std::vector<long long>(v, INF)) {
-        for (int i = 0; i < V; ++i) dist[i][i] = 0;
+void floyd_init(FloydWarshall* fw, int V) {
+    fw->V = V;
+    fw->dist = malloc(V * sizeof(long long*));
+    for (int i = 0; i < V; i++) {
+        fw->dist[i] = malloc(V * sizeof(long long));
+        for (int j = 0; j < V; j++)
+            fw->dist[i][j] = (i == j) ? 0 : LLONG_MAX / 2;
     }
+}
 
-    void addEdge(int u, int v, int w) {
-        dist[u][v] = w;
-    }
+void floyd_destroy(FloydWarshall* fw) {
+    for (int i = 0; i < fw->V; i++) free(fw->dist[i]);
+    free(fw->dist);
+}
 
-    bool solve() {
-        for (int k = 0; k < V; ++k)
-            for (int i = 0; i < V; ++i)
-                for (int j = 0; j < V; ++j)
-                    if (dist[i][k] < INF && dist[k][j] < INF)
-                        dist[i][j] = std::min(dist[i][j],
-                                              dist[i][k] + dist[k][j]);
+void floyd_add_edge(FloydWarshall* fw, int u, int v, int w) {
+    fw->dist[u][v] = w;
+}
 
-        // 检测负环
-        for (int i = 0; i < V; ++i)
-            if (dist[i][i] < 0) return false;
-        return true;
-    }
+// 返回 1 成功，0 表示存在负环
+int floyd_solve(FloydWarshall* fw) {
+    int V = fw->V;
+    for (int k = 0; k < V; k++)
+        for (int i = 0; i < V; i++)
+            for (int j = 0; j < V; j++)
+                if (fw->dist[i][k] < LLONG_MAX / 2 &&
+                    fw->dist[k][j] < LLONG_MAX / 2 &&
+                    fw->dist[i][k] + fw->dist[k][j] < fw->dist[i][j])
+                    fw->dist[i][j] = fw->dist[i][k] + fw->dist[k][j];
 
-    long long getDist(int u, int v) { return dist[u][v]; }
-};
+    for (int i = 0; i < V; i++)
+        if (fw->dist[i][i] < 0) return 0;
+    return 1;
+}
+
+long long floyd_get_dist(FloydWarshall* fw, int u, int v) {
+    return fw->dist[u][v];
+}
 ```
 
 ### Bellman-Ford
 
-```cpp
-#include <vector>
-#include <climits>
+```c
+#include <limits.h>
+#include <stdlib.h>
 
-struct Edge { int from, to, weight; };
+typedef struct { int from, to, weight; } Edge;
 
-std::pair<bool, std::vector<long long>>
-bellmanFord(int V, const std::vector<Edge>& edges, int start) {
-    const long long INF = LLONG_MAX / 2;
-    std::vector<long long> dist(V, INF);
+// 返回结果需要调用者 free，has_neg_cycle 为 1 表示存在负环
+long long* bellman_ford(int V, const Edge* edges, int E, int start, int* has_neg_cycle) {
+    long long* dist = malloc(V * sizeof(long long));
+    for (int i = 0; i < V; i++) dist[i] = LLONG_MAX / 2;
     dist[start] = 0;
 
-    // V-1 轮松弛
-    for (int i = 0; i < V - 1; ++i) {
-        bool updated = false;
-        for (auto& e : edges) {
-            if (dist[e.from] < INF && dist[e.from] + e.weight < dist[e.to]) {
-                dist[e.to] = dist[e.from] + e.weight;
-                updated = true;
+    for (int i = 0; i < V - 1; i++) {
+        int updated = 0;
+        for (int j = 0; j < E; j++) {
+            if (dist[edges[j].from] < LLONG_MAX / 2 &&
+                dist[edges[j].from] + edges[j].weight < dist[edges[j].to]) {
+                dist[edges[j].to] = dist[edges[j].from] + edges[j].weight;
+                updated = 1;
             }
         }
         if (!updated) break;
     }
 
-    // 第 V 轮检测负环
-    for (auto& e : edges) {
-        if (dist[e.from] < INF && dist[e.from] + e.weight < dist[e.to])
-            return {false, dist}; // 存在负环
+    *has_neg_cycle = 0;
+    for (int j = 0; j < E; j++) {
+        if (dist[edges[j].from] < LLONG_MAX / 2 &&
+            dist[edges[j].from] + edges[j].weight < dist[edges[j].to]) {
+            *has_neg_cycle = 1;
+            break;
+        }
     }
-    return {true, dist};
+    return dist;
 }
 ```
 
 ### Dinic 最大流
 
-```cpp
-#include <vector>
-#include <queue>
-#include <climits>
-#include <algorithm>
+```c
+#include <limits.h>
+#include <stdlib.h>
+#include <string.h>
 
-struct FlowEdge {
-    int to, rev;
-    long long cap;
-};
+typedef struct { int to, rev; long long cap; } FlowEdge;
 
-class Dinic {
-private:
+typedef struct {
+    FlowEdge** graph;
+    int* graph_sizes;
+    int* graph_caps;
+    int* level;
+    int* iter;
     int V;
-    std::vector<std::vector<FlowEdge>> graph;
-    std::vector<int> level, iter;
+} Dinic;
 
-    bool bfs(int s, int t) {
-        level.assign(V, -1);
-        std::queue<int> q;
-        level[s] = 0; q.push(s);
-        while (!q.empty()) {
-            int u = q.front(); q.pop();
-            for (auto& e : graph[u]) {
-                if (e.cap > 0 && level[e.to] < 0) {
-                    level[e.to] = level[u] + 1;
-                    q.push(e.to);
-                }
+void dinic_init(Dinic* dn, int V) {
+    dn->V = V;
+    dn->graph = calloc(V, sizeof(FlowEdge*));
+    dn->graph_sizes = calloc(V, sizeof(int));
+    dn->graph_caps = calloc(V, sizeof(int));
+    dn->level = malloc(V * sizeof(int));
+    dn->iter = malloc(V * sizeof(int));
+}
+
+void dinic_destroy(Dinic* dn) {
+    for (int i = 0; i < dn->V; i++) free(dn->graph[i]);
+    free(dn->graph); free(dn->graph_sizes); free(dn->graph_caps);
+    free(dn->level); free(dn->iter);
+}
+
+static void dinic_add_edge_inner(Dinic* dn, int from, int to, long long cap) {
+    if (dn->graph_sizes[from] >= dn->graph_caps[from]) {
+        dn->graph_caps[from] = dn->graph_caps[from] ? dn->graph_caps[from] * 2 : 4;
+        dn->graph[from] = realloc(dn->graph[from],
+                                   dn->graph_caps[from] * sizeof(FlowEdge));
+    }
+    dn->graph[from][dn->graph_sizes[from]++] = (FlowEdge){to, 0, cap};
+}
+
+void dinic_add_edge(Dinic* dn, int from, int to, long long cap) {
+    dinic_add_edge_inner(dn, from, to, cap);
+    dinic_add_edge_inner(dn, to, from, 0);
+    int from_idx = dn->graph_sizes[from] - 1;
+    int to_idx = dn->graph_sizes[to] - 1;
+    dn->graph[from][from_idx].rev = to_idx;
+    dn->graph[to][to_idx].rev = from_idx;
+}
+
+static int dinic_bfs(Dinic* dn, int s, int t) {
+    for (int i = 0; i < dn->V; i++) dn->level[i] = -1;
+    int* q = malloc(dn->V * sizeof(int));
+    int head = 0, tail = 0;
+    dn->level[s] = 0; q[tail++] = s;
+    while (head < tail) {
+        int u = q[head++];
+        for (int i = 0; i < dn->graph_sizes[u]; i++) {
+            FlowEdge* e = &dn->graph[u][i];
+            if (e->cap > 0 && dn->level[e->to] < 0) {
+                dn->level[e->to] = dn->level[u] + 1;
+                q[tail++] = e->to;
             }
         }
-        return level[t] >= 0;
     }
+    free(q);
+    return dn->level[t] >= 0;
+}
 
-    long long dfs(int u, int t, long long f) {
-        if (u == t) return f;
-        for (int& i = iter[u]; i < graph[u].size(); ++i) {
-            auto& e = graph[u][i];
-            if (e.cap > 0 && level[e.to] == level[u] + 1) {
-                long long d = dfs(e.to, t, std::min(f, e.cap));
-                if (d > 0) {
-                    e.cap -= d;
-                    graph[e.to][e.rev].cap += d;
-                    return d;
-                }
+static long long dinic_dfs(Dinic* dn, int u, int t, long long f) {
+    if (u == t) return f;
+    for (int* i = &dn->iter[u]; *i < dn->graph_sizes[u]; (*i)++) {
+        FlowEdge* e = &dn->graph[u][*i];
+        if (e->cap > 0 && dn->level[e->to] == dn->level[u] + 1) {
+            long long d = dinic_dfs(dn, e->to, t, f < e->cap ? f : e->cap);
+            if (d > 0) {
+                e->cap -= d;
+                dn->graph[e->to][e->rev].cap += d;
+                return d;
             }
         }
-        return 0;
     }
+    return 0;
+}
 
-public:
-    Dinic(int v) : V(v), graph(v) {}
-
-    void addEdge(int from, int to, long long cap) {
-        graph[from].push_back({to, (int)graph[to].size(), cap});
-        graph[to].push_back({from, (int)graph[from].size() - 1, 0});
+long long dinic_max_flow(Dinic* dn, int s, int t) {
+    long long flow = 0;
+    while (dinic_bfs(dn, s, t)) {
+        for (int i = 0; i < dn->V; i++) dn->iter[i] = 0;
+        long long f;
+        while ((f = dinic_dfs(dn, s, t, LLONG_MAX)) > 0)
+            flow += f;
     }
-
-    long long maxFlow(int s, int t) {
-        long long flow = 0;
-        while (bfs(s, t)) {
-            iter.assign(V, 0);
-            long long f;
-            while ((f = dfs(s, t, LLONG_MAX)) > 0)
-                flow += f;
-        }
-        return flow;
-    }
-};
+    return flow;
+}
 ```
 
 ---

@@ -41,125 +41,152 @@
 
 ### 数组版（仅小写字母）
 
-```cpp
-#include <iostream>
-#include <string>
+```c
+#include <stdlib.h>
 
-class Trie {
-private:
-    struct TrieNode {
-        TrieNode* children[26] = {};
-        bool isEnd = false;
-        int prefixCount = 0; // 经过该节点的单词数
-    };
+#define ALPHABET_SIZE 26
+
+typedef struct TrieNode {
+    struct TrieNode* children[ALPHABET_SIZE];
+    int isEnd;
+    int prefixCount;   // 经过该节点的单词数
+} TrieNode;
+
+typedef struct {
     TrieNode* root;
+} Trie;
 
-    void destroy(TrieNode* node) {
-        if (!node) return;
-        for (int i = 0; i < 26; ++i)
-            destroy(node->children[i]);
-        delete node;
+TrieNode* trie_create_node(void) {
+    TrieNode* node = calloc(1, sizeof(TrieNode));
+    return node;
+}
+
+void trie_init(Trie* t) {
+    t->root = trie_create_node();
+}
+
+static void trie_destroy_node(TrieNode* node) {
+    if (!node) return;
+    for (int i = 0; i < ALPHABET_SIZE; i++)
+        trie_destroy_node(node->children[i]);
+    free(node);
+}
+
+void trie_destroy(Trie* t) {
+    trie_destroy_node(t->root);
+}
+
+void trie_insert(Trie* t, const char* word) {
+    TrieNode* cur = t->root;
+    for (const char* p = word; *p; p++) {
+        int idx = *p - 'a';
+        if (!cur->children[idx])
+            cur->children[idx] = trie_create_node();
+        cur = cur->children[idx];
+        cur->prefixCount++;
     }
+    cur->isEnd = 1;
+}
 
-public:
-    Trie() { root = new TrieNode(); }
-    ~Trie() { destroy(root); }
-
-    void insert(const std::string& word) {
-        TrieNode* cur = root;
-        for (char c : word) {
-            int idx = c - 'a';
-            if (!cur->children[idx])
-                cur->children[idx] = new TrieNode();
-            cur = cur->children[idx];
-            cur->prefixCount++;
-        }
-        cur->isEnd = true;
+int trie_search(Trie* t, const char* word) {
+    TrieNode* cur = t->root;
+    for (const char* p = word; *p; p++) {
+        int idx = *p - 'a';
+        if (!cur->children[idx]) return 0;
+        cur = cur->children[idx];
     }
+    return cur->isEnd;
+}
 
-    bool search(const std::string& word) {
-        TrieNode* cur = root;
-        for (char c : word) {
-            int idx = c - 'a';
-            if (!cur->children[idx]) return false;
-            cur = cur->children[idx];
-        }
-        return cur->isEnd;
+int trie_starts_with(Trie* t, const char* prefix) {
+    TrieNode* cur = t->root;
+    for (const char* p = prefix; *p; p++) {
+        int idx = *p - 'a';
+        if (!cur->children[idx]) return 0;
+        cur = cur->children[idx];
     }
+    return 1;
+}
 
-    bool startsWith(const std::string& prefix) {
-        TrieNode* cur = root;
-        for (char c : prefix) {
-            int idx = c - 'a';
-            if (!cur->children[idx]) return false;
-            cur = cur->children[idx];
-        }
-        return true;
+int trie_count_prefix(Trie* t, const char* prefix) {
+    TrieNode* cur = t->root;
+    for (const char* p = prefix; *p; p++) {
+        int idx = *p - 'a';
+        if (!cur->children[idx]) return 0;
+        cur = cur->children[idx];
     }
-
-    int countPrefix(const std::string& prefix) {
-        TrieNode* cur = root;
-        for (char c : prefix) {
-            int idx = c - 'a';
-            if (!cur->children[idx]) return 0;
-            cur = cur->children[idx];
-        }
-        return cur->prefixCount;
-    }
-};
+    return cur->prefixCount;
+}
 ```
 
 ### 01 字典树（求最大异或值）
 
-```cpp
-#include <vector>
-#include <algorithm>
+```c
+#include <stdlib.h>
 
-class XORTrie {
-private:
-    struct Node {
-        Node* children[2] = {};
-    };
-    Node* root;
+typedef struct XorNode {
+    struct XorNode* children[2];
+} XorNode;
 
-public:
-    XORTrie() { root = new Node(); }
+typedef struct {
+    XorNode* root;
+} XORTrie;
 
-    void insert(int num) {
-        Node* cur = root;
-        for (int i = 31; i >= 0; --i) {
-            int bit = (num >> i) & 1;
-            if (!cur->children[bit])
-                cur->children[bit] = new Node();
+XorNode* xor_create_node(void) {
+    return calloc(1, sizeof(XorNode));
+}
+
+void xor_trie_init(XORTrie* t) {
+    t->root = xor_create_node();
+}
+
+static void xor_destroy_node(XorNode* node) {
+    if (!node) return;
+    xor_destroy_node(node->children[0]);
+    xor_destroy_node(node->children[1]);
+    free(node);
+}
+
+void xor_trie_destroy(XORTrie* t) {
+    xor_destroy_node(t->root);
+}
+
+void xor_trie_insert(XORTrie* t, int num) {
+    XorNode* cur = t->root;
+    for (int i = 31; i >= 0; i--) {
+        int bit = (num >> i) & 1;
+        if (!cur->children[bit])
+            cur->children[bit] = xor_create_node();
+        cur = cur->children[bit];
+    }
+}
+
+// 查询与 num 异或能得到的最大值
+int xor_trie_query_max(XORTrie* t, int num) {
+    XorNode* cur = t->root;
+    int result = 0;
+    for (int i = 31; i >= 0; i--) {
+        int bit = (num >> i) & 1;
+        int want = 1 - bit;  // 贪心：尽量走相反方向
+        if (cur->children[want]) {
+            result |= (1 << i);
+            cur = cur->children[want];
+        } else {
             cur = cur->children[bit];
         }
     }
+    return result;
+}
 
-    int queryMaxXor(int num) {
-        Node* cur = root;
-        int result = 0;
-        for (int i = 31; i >= 0; --i) {
-            int bit = (num >> i) & 1;
-            int want = 1 - bit; // 贪心：尽量走相反方向
-            if (cur->children[want]) {
-                result |= (1 << i);
-                cur = cur->children[want];
-            } else {
-                cur = cur->children[bit];
-            }
-        }
-        return result;
+int xor_trie_find_max_pair(XORTrie* t, int* nums, int n) {
+    int max_xor = 0;
+    for (int i = 0; i < n; i++) {
+        xor_trie_insert(t, nums[i]);
+        int cur = xor_trie_query_max(t, nums[i]);
+        if (cur > max_xor) max_xor = cur;
     }
-
-    int findMaxXorPair(const std::vector<int>& nums) {
-        int maxXor = 0;
-        for (int num : nums) {
-            insert(num);
-            maxXor = std::max(maxXor, queryMaxXor(num));
-        }
-        return maxXor;
-    }
-};
+    return max_xor;
+}
 ```
 
 ---
