@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "密码学/初等数论/01-整数.md",
+                "file": "README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "01-整数"
+              "title": "README"
             }
           }
         ]
@@ -200,8 +200,10 @@
   },
   "active": "56ebee7b4d241e9c",
   "lastOpenFiles": [
-    "密码学/初等数论/02-素数与最大公因数.md",
+    "assets/警示.png",
+    "assets/99EC8F8EED05C14B5EF72AB5FBF57DB9.png",
     "密码学/初等数论/01-整数.md",
+    "密码学/初等数论/02-素数与最大公因数.md",
     "密码学/初等数论/08-密码学基础.md",
     "数据结构/A_容器_Container.md",
     "算法/算法技巧/差分.md",
@@ -225,7 +227,6 @@
     "密码学/密码学导读.md",
     "密码学/综合/综合导读.md",
     "密码学/工具/工具导读.md",
-    "密码学/格密码/格密码导读.md",
     "密码学/工具",
     "密码学/综合",
     "密码学/量子密码",
@@ -246,7 +247,6 @@
     "assets/images/geometry/rotating-calipers2.png",
     "assets/images/geometry/rotating-calipers1.png",
     "assets/images/geometry/hpi7.svg",
-    "assets/images/geometry/hpi6.svg",
-    "assets/images/geometry/hpi5.svg"
+    "assets/images/geometry/hpi6.svg"
   ]
 }

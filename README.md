@@ -21,8 +21,8 @@
   <a href="./git.md">Git 指南</a> · <a href="./github-settings.md">GitHub 设置</a> · <a href="./red_team/总目录与快速查询.md">红队知识库</a> · <a href="./ISSUES.md">参与贡献</a>
 </p>
 
-<div align="center" style="padding: 22px 16px; background: repeating-linear-gradient(45deg, #1a1a00 0px, #1a1a00 20px, #ffcc00 20px, #ffcc00 40px); border: 3px solid #333; border-radius: 4px; margin: 24px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-  <div style="background: rgba(0,0,0,0.85); padding: 18px 24px; border-radius: 4px;">
+<div align="center" style="padding: 22px 16px; background-image: url('assets/警示.png'); background-repeat: repeat; border: 3px solid #333; border-radius: 4px; margin: 24px 0;">
+  <div style="background-color: #1a1a00; padding: 18px 24px; border-radius: 4px;">
     <h3 style="color: #ffcc00; margin: 0 0 10px 0; font-size: 20px;">
       项目需要你的帮助
     </h3>
