@@ -21,42 +21,12 @@
   <a href="./git.md">Git 指南</a> · <a href="./github-settings.md">GitHub 设置</a> · <a href="./red_team/总目录与快速查询.md">红队知识库</a> · <a href="./ISSUES.md">参与贡献</a>
 </p>
 
-<svg xmlns="http://www.w3.org/2000/svg" width="800" height="330" viewBox="0 0 800 330" style="margin: 24px auto; max-width: 100%; display: block;">
-  <defs>
-    <pattern id="stripe" patternUnits="userSpaceOnUse" width="40" height="40" patternTransform="rotate(45)">
-      <rect width="20" height="40" fill="#1a1a00"/>
-      <rect x="20" width="20" height="40" fill="#ffcc00"/>
-    </pattern>
-  </defs>
-  <rect width="800" height="330" fill="url(#stripe)"/>
-  <rect width="800" height="330" fill="#000" opacity="0.82"/>
-  <text x="400" y="46" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="bold" fill="#ff3333">项目需要你的帮助</text>
-  <text x="30" y="80" font-family="sans-serif" font-size="14" fill="#eee">
-    RootStack 的核心工作是<tspan font-weight="bold" fill="#fff">整合已有教材与开源教程</tspan>为体系化知识库，
-  </text>
-  <text x="43" y="102" font-family="sans-serif" font-size="14" fill="#eee">
-    同时<tspan font-weight="bold" fill="#fff">补全互联网上缺乏的中文教程空白</tspan>，
-  </text>
-  <text x="43" y="124" font-family="sans-serif" font-size="14" fill="#eee">
-    在<tspan font-weight="bold" fill="#fff">多个知名开源项目之间搭建桥接教程</tspan>。
-  </text>
-  <text x="30" y="158" font-family="sans-serif" font-size="14" fill="#ddd">
-    由于内容来自不同来源，
-  </text>
-  <text x="30" y="180" font-family="sans-serif" font-size="14" fill="#ddd">
-    <tspan font-weight="bold" fill="#ff6666">知识漏洞和概念偏差在所难免</tspan>，
-  </text>
-  <text x="43" y="202" font-family="sans-serif" font-size="14" fill="#eee">
-    亟需社区的力量进行<tspan font-weight="bold" fill="#fff">审查、校对和补充</tspan>。
-  </text>
-  <text x="30" y="236" font-family="sans-serif" font-size="14" fill="#ddd">
-    无论你是初学者还是资深开发者，提一个 Issue、改一个错字、补一段代码，都是巨大的帮助。
-  </text>
-  <a href="#加入交流群">
-    <rect x="310" y="268" width="180" height="40" rx="4" ry="4" fill="#ffcc00" stroke="#e6b800" stroke-width="1"/>
-    <text x="400" y="294" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="bold" fill="#1a1a00">加入我们</text>
-  </a>
-</svg>
+<p align="center">
+  <img src="assets/help.png" alt="项目需要你的帮助" style="max-width: 100%;">
+</p>
+<p align="center" style="margin-top: 12px;">
+  <a href="#加入交流群" style="display: inline-block; background: #ffcc00; color: #1a1a00; padding: 10px 36px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 16px; border: 1px solid #e6b800;">加入我们</a>
+</p>
 
 ---
 
