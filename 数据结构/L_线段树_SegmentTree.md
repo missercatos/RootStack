@@ -204,4 +204,4 @@ int max_seg_max(MaxSegmentTree* seg, int l, int r) {
 | P3373 | 线段树 2 | 提高 | 区间乘 + 区间加 |
 | P4588 | 数学计算 | 提高 | 线段树维护操作序列 |
 
-> 力扣 (LeetCode) 有对应题型，竞赛方向推荐洛谷/Codeforces。
+> 力扣 (LeetCode) 有对应题型，竞赛方向推荐力扣/Codeforces。
