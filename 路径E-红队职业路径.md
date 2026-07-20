@@ -41,7 +41,7 @@
 | 7 | [[red_team/网安基础知识/04-密码学基础]] | 哈希/对称/非对称/PKI | [[|]] (数论基础) |
 | 8-10 | [[red_team/网安基础知识/08-数据库基础]] / [[red_team/网安基础知识/09-认证与授权基础]] / [[red_team/网安基础知识/10-虚拟化与容器基础]] | 数据库/JWT/OAuth/Docker | - |
 
-> **Python 练习**: 在学习编程基础时，配合 [[ISSUES|Python 洛谷练习精选]] 做算法验证。洛谷题目按安全相关性分组，边学边练。
+> **Python 练习**: 在学习编程基础时，配合 [[ISSUES|Python 力扣练习精选]] 做算法验证。力扣题目按安全相关性分组，边学边练。
 
 ---
 
@@ -128,19 +128,114 @@ ArchStrike 工具组覆盖 10 个安全领域，每个领域 2-7 篇教程。
 
 ---
 
-## 第六阶段 -- CTF 竞赛 (持续)
+## 第六阶段 -- CTF 竞赛：分化与方向选择
 
-> 入口: [[ISSUES|CTF知识库总目录]]
+> 入口: [[ISSUES|CTF知识库总目录]] | [[red_team/ctf_trea/CTF简介|CTF 简介]] | [[red_team/ctf_trea/签到题|签到题全解]]
 
-| 文件 | 内容 |
-|------|------|
-| [[red_team/ctf_trea/CTF简介]] | CTF历史、题目类型、团队构成 |
-| [[red_team/ctf_trea/竞赛模式]] | Jeopardy / AwD / AWP / RHG / KoH |
-| [[red_team/ctf_trea/题目类型]] | Web / Pwn / Reverse / Crypto / Misc |
-| [[ISSUES|CTF思维框架]] | 攻击面分析、提权链思考、侦察优先 |
-| [[ISSUES|CTF实战路线图]] | 从Web基础到域渗透, 6阶段进阶 |
+CTF 是检验网络安全能力的**试金石**——不需要成为顶级选手才算成功。CTF 的价值在于帮你**判断自己是否适合红队方向**，以及帮你**发现自己的技术偏好**。
 
-CTF 对算法和编程能力有较高要求。建议边学 CTF 边回顾路径 D 的算法内容（[[ISSUES|DSA刷题路线图]]）以及 Python 编程练习（[[ISSUES|Python洛谷练习]]）。
+### CTF 作为自我检测工具
+
+```
+          完成第一阶段基础知识 + 第二阶段渗透测试
+                        │
+                        ▼
+              ┌── CTF 入门练习 ──┐
+              │  (签到题 + Web基础)  │
+              └────────┬─────────┘
+                        │
+            ┌───────────┴───────────┐
+            ▼                       ▼
+    做起来有感觉、能找到乐趣      做起来吃力、不感兴趣
+            │                       │
+            ▼                       ▼
+      继续深入 CTF            考虑其他方向:
+            │                  SRC漏洞挖掘 / 安全开发
+    ┌───────┴───────┐          / 安全运维(DevSecOps)
+    ▼               ▼          / 安全咨询 / 合规审计
+  CTF 竞赛路线    SRC / Bug Bounty
+```
+
+### CTF 入门练习指南
+
+本教程已完成的 CTF 内容（持续建设中）：
+
+| 内容 | 文件 | 说明 |
+|------|------|------|
+| CTF 概述 | [[red_team/ctf_trea/CTF简介]] | CTF 历史、题目类型、团队构成 |
+| 竞赛模式 | [[red_team/ctf_trea/竞赛模式]] | Jeopardy / AwD / AWP / RHG |
+| 题目类型 | [[red_team/ctf_trea/题目类型]] | Web / Pwn / Reverse / Crypto / Misc |
+| 签到题全解 | [[red_team/ctf_trea/签到题]] | 10 大类签到题陷阱 + Windows/Linux/macOS 三系统解法 |
+| Web 入门 | [[red_team/ctf_trea/Web/Web]] | Web 类 CTF 前置技能 |
+
+> 先从 [[red_team/ctf_trea/签到题|签到题]] 入手。签到题覆盖了 CTF 中最常见的文件转换、编码解码、网页隐写、图片隐写、流量分析等基础操作。**如果能独立解决签到题，说明你有红队的思维习惯。**
+
+### 路径分化一：CTF 竞赛路线
+
+如果 CTF 入门后发现自己对比赛感兴趣，继续深入：
+
+```
+Web基础 → SQLi/XSS/命令注入深度 → PWN 二进制漏洞利用 → Reverse 逆向
+    → Crypto 密码学 → 混合题型 → Jeopardy 团队赛 → AwD 攻防对抗
+```
+
+| 阶段 | 内容 | 参考资源 |
+|------|------|---------|
+| CTF 基础 | 签到题 + Web 类题目 | [[red_team/ctf_trea/签到题]] [[red_team/ctf_trea/Web/Web]] |
+| 专项突破 | PWN / Reverse / Crypto | [[red_team/ctf_trea/题目类型]] |
+| 实战比赛 | CTFtime 平台各大赛事 | https://ctftime.org/ |
+| 国内平台 | NSSCTF / CTFHub / Bugku | 在线训练环境 |
+
+### 路径分化二：SRC / 漏洞挖掘 / 渗透测试
+
+如果 CTF 让你确认了自己对实战攻防的兴趣，但比赛的压力和题目设计不是你的菜：
+
+```
+CTF基础训练 (培养攻击思维)
+    │
+    ├─► SRC 漏洞响应平台 (补天、漏洞盒子、HackerOne)
+    │   └─ 实战挖洞：Web 漏洞、逻辑漏洞、越权
+    │
+    ├─► Bug Bounty (HackerOne / Bugcrowd / Immunefi)
+    │   └─ 国际化众测，Web3/智能合约新方向
+    │
+    ├─► 企业内部红队 (Red Team Operations)
+    │   └─ 渗透测试 → 红蓝对抗 → APT 模拟
+    │
+    ├─► 安全研究 (Vulnerability Research)
+    │   └─ 0day 挖掘、内核漏洞、浏览器沙箱逃逸
+    │
+    └─► 安全工具开发
+        └─ Rust/Go/Python 编写自动化扫描器、C2框架
+```
+
+### 路径分化三：CTF 之外的网络安全职业
+
+不是所有人都适合做攻击者。网络安全是一个**进攻与防御并重**的领域：
+
+| 方向 | 内容 | 前置 |
+|------|------|------|
+| 安全运维 (DevSecOps) | CI/CD 安全、容器安全、云安全 | 路径A + 网安基础 |
+| 安全开发 | 安全 SDK / 加密库 / WAF 开发 | 路径B + Rust/Go |
+| 安全咨询 | 等保测评、ISO 27001、风险评估 | 网安基础 + 项目管理 |
+| 威胁情报 | APT 追踪、IOC 分析、威胁建模 | CTF 逆向经验 + 英语 |
+| 电子取证 | 磁盘取证、内存取证、手机取证 | 逆向基础 + 文件系统 |
+| 区块链安全 | 智能合约审计、DeFi 攻击分析 | Solidity + CTF Crypto |
+
+---
+
+### CTF 学习资源
+
+| 资源 | 链接 | 说明 |
+|------|------|------|
+| CTF Wiki | https://ctf-wiki.org/ | 中文 CTF 百科 |
+| CTFtime | https://ctftime.org/ | 国际 CTF 赛历 |
+| NSSCTF | https://www.nssctf.cn/ | 国内在线 CTF 训练平台 |
+| CTFHub | https://www.ctfhub.com/ | 技能树式训练 |
+| Bugku | https://ctf.bugku.com/ | 各类题型训练 |
+| Pwn College | https://pwn.college/ | 二进制安全系统课程 |
+
+> CTF 对算法和编程能力有较高要求。建议边学 CTF 边回顾路径 D 的算法内容（[[ISSUES|DSA刷题路线图]]）以及 Python 编程练习（[[ISSUES|Python力扣练习]]）。
 
 ---
 
@@ -174,7 +269,7 @@ Rust 在红队中的优势（性能、内存安全、跨平台编译）、端口
     ▼
 前置: Arch Linux + ArchStrike 安装
     │
-    ├─► 网安基础知识 (10篇, 2-4周) ── Python 练习 ([[ISSUES|洛谷]] + [[red_team/补充-Python黑客脚本基础]])
+    ├─► 网安基础知识 (10篇, 2-4周) ── Python 练习 ([[ISSUES|力扣]] + [[red_team/补充-Python黑客脚本基础]])
     │
     ├─► 渗透测试基础 (8篇, 2-3周)
     │

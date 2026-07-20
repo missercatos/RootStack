@@ -338,3 +338,5 @@ long long dinic_max_flow(Dinic* dn, int s, int t) {
 | P3387 | 缩点 | 提高 | Tarjan + DAG 上 DP |
 | P3385 | 负环 | 提高 | Bellman-Ford/SPFA |
 | P3376 | 最大流 | 提高 | Dinic 网络流 |
+
+> 力扣 (LeetCode) 有对应题型，竞赛方向推荐洛谷/Codeforces。

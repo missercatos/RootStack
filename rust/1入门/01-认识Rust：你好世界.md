@@ -83,11 +83,11 @@ edition = "2021"
 
 ## 实践
 
-### 洛谷问题
+### 力扣问题
 
 对于入门阶段，熟悉编译运行流程即可：
 
-洛谷: [B2002](https://www.luogu.com.cn/problem/B2002) Hello,World!
+力扣: 力扣 Hello,World! 练习
 
 ```rust
 fn main() {

@@ -165,3 +165,10 @@ Z 函数的朴素算法复杂度为 $O(n^2)$：
 -   [Leetcode 2223 - Sum of Scores of Built Strings](https://leetcode.com/problems/sum-of-scores-of-built-strings/)
 
 **本页面主要译自博文 [Z-функция строки и её вычисление](http://e-maxx.ru/algo/z_function) 与其英文翻译版 [Z-function and its calculation](https://cp-algorithms.com/string/z-function.html)．其中俄文版版权协议为 Public Domain + Leave a Link；英文版版权协议为 CC-BY-SA 4.0．**
+
+## 多平台练习
+
+| 洛谷 | [本题单](https://www.luogu.com.cn/) | 竞赛基础 |
+| POJ (北大) | [PKU JudgeOnline](http://poj.org/) | 经典题目，适合巩固 |
+| HDU (杭电) | [HDU OJ](https://acm.hdu.edu.cn/) | 暑期多校训练 |
+| Codeforces | [Codeforces](https://codeforces.com/) | 国际竞赛，适合提升 |

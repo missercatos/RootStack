@@ -96,3 +96,11 @@ vector<int> kmp(const string &t, const string &p) {
 - [[AC自动机|AC 自动机]]（KMP 的多模式串扩展）
 
 > 内容来源：经本地化改造的 OI-wiki KMP 章节。详细推导见 [OI-wiki](https://oi-wiki.org/string/kmp/)。
+
+
+## 多平台练习
+
+| 洛谷 | [本题单](https://www.luogu.com.cn/) | 竞赛基础 |
+| POJ (北大) | [PKU JudgeOnline](http://poj.org/) | 经典题目，适合巩固 |
+| HDU (杭电) | [HDU OJ](https://acm.hdu.edu.cn/) | 暑期多校训练 |
+| Codeforces | [Codeforces](https://codeforces.com/) | 国际竞赛，适合提升 |

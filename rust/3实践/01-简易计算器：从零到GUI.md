@@ -56,9 +56,9 @@ fn main() -> Result<(), eframe::Error> {
 
 ## 实践
 
-### 洛谷问题
+### 力扣问题
 
-洛谷: [P1981](https://www.luogu.com.cn/problem/P1981) 表达式求值 — 基础表达式解析
+力扣: 力扣表达式求值 — 基础表达式解析
 
 ```rust
 fn eval(expr: &str) -> i64 {

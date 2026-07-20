@@ -92,3 +92,10 @@ $$
 将 $n$ 拆为 $A$ 和 $B$ 两部分．枚举其中一个即可得出另一个．将满足 $\sum T_1 = A$ 的 $T_1$ 个数和 $\sum T_2 = B$ 的 $T_2$ 个数求出，乘起来，对所有的 $A$ 求和便是最终结果．
 
 由于在计算 $T_1$ 个数的过程中，$M \le \sqrt n$，所以我们利用解法 1 计算 $T_1$ 的时间复杂度为 $\Theta(n^{3/2})$．同样地，由于在计算 $T_2$ 个数的过程中，$|T_2| \le \dfrac{\sum T_2}{\sqrt n} \le \dfrac{n}{\sqrt n} = \sqrt n$，所以我们利用解法 2 计算 $T_2$ 的时间复杂度也是 $\Theta(n^{3/2})$．所以总时间复杂度为 $\Theta(n^{3/2})$．
+
+## 多平台练习
+
+| 洛谷 | [本题单](https://www.luogu.com.cn/) | 竞赛基础 |
+| POJ (北大) | [PKU JudgeOnline](http://poj.org/) | 经典题目，适合巩固 |
+| HDU (杭电) | [HDU OJ](https://acm.hdu.edu.cn/) | 暑期多校训练 |
+| Codeforces | [Codeforces](https://codeforces.com/) | 国际竞赛，适合提升 |

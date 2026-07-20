@@ -260,6 +260,10 @@
 | LeetCode | 200 | Number of Islands | DFS/BFS |
 | LeetCode | 46 | Permutations | 回溯 |
 
+> POJ 经典搜索题: POJ 2386 Lake Counting, POJ 1979 Red and Black
+> HDU 搜索训练: HDU 1010 Tempter of the Bone, HDU 1043 Eight
+> Codeforces 搜索 tag → 按 rating 1500+ 筛选
+
 ---
 
 ### Step 17: [[算法/算法技巧/动态规划|动态规划]] (3-4 天)
@@ -280,6 +284,10 @@
 | LeetCode | 1143 | Longest Common Subsequence | LCS |
 | LeetCode | 53 | Maximum Subarray | 最大子数组 |
 | LeetCode | 198 | House Robber | 线性 DP |
+
+> POJ DP 经典: POJ 1163 The Triangle, POJ 1458 Common Subsequence, POJ 3624 Charm Bracelet
+> HDU DP 训练: HDU 2084 数塔, HDU 1176 免费馅饼, HDU 1114 Piggy-Bank
+> Codeforces DP tag → 按 rating 1400+ 筛选
 
 ---
 
@@ -324,6 +332,10 @@
 | 洛谷 | P3385 | 负环 | Bellman-Ford / SPFA |
 | LeetCode | 210 | Course Schedule II | 拓扑排序 |
 | LeetCode | 787 | Cheapest Flights | Bellman-Ford / DP |
+
+> POJ 图论经典: POJ 2387 Til the Cows Come Home, POJ 1258 Agri-Net, POJ 1860 Currency Exchange
+> HDU 图论训练: HDU 2544 最短路, HDU 1874 畅通工程续, HDU 1875 畅通工程再续
+> Codeforces 图论 tag → 按 rating 1500+ 筛选
 
 ---
 
@@ -372,6 +384,10 @@
 
 **前置**: 链表 + 哈希
 (概率型快速查找结构)
+
+> POJ 线段树/树状数组: POJ 3468 A Simple Problem with Integers, POJ 2352 Stars
+> HDU 线段树: HDU 1166 敌兵布阵, HDU 1754 I Hate It
+> Codeforces 线段树 tag → 按 rating 1600+ 筛选
 
 ---
 
@@ -532,6 +548,10 @@ TheAlgorithms 社区在多个语言中提供了算法实现，所有代码均为
 | LeetCode | 5 | Longest Palindromic Substring | 最长回文子串 |
 | LeetCode | 647 | Palindromic Substrings | 回文子串计数 |
 
+> POJ 字符串经典: POJ 3461 Oulipo (KMP), POJ 2406 Power Strings (KMP period)
+> HDU 字符串训练: HDU 2087 剪花布条 (KMP), HDU 1711 Number Sequence (KMP)
+> Codeforces 字符串 tag → 按 rating 1500+ 筛选
+
 ---
 
 ## Phase 7 -- 数论基础 (建议 10 天)
@@ -592,6 +612,10 @@ TheAlgorithms 社区在多个语言中提供了算法实现，所有代码均为
 | 洛谷 | P1044 | 栈 | 卡特兰数 |
 | 洛谷 | P1450 | 硬币购物 | 容斥原理 |
 
+> POJ 数论经典: POJ 1995 Raising Modulo Numbers (快速幂), POJ 1845 Sumdiv (模运算+分治)
+> HDU 数论训练: HDU 2035 人见人爱A^B, HDU 1576 A/B (逆元)
+> Codeforces 数论 tag → 按 rating 1400+ 筛选
+
 ---
 
 ## Phase 8 -- 搜索进阶 (建议 7 天)
@@ -639,6 +663,10 @@ TheAlgorithms 社区在多个语言中提供了算法实现，所有代码均为
 |------|---------|--------|------|
 | 洛谷 | P4929 | DLX 模板 | 精确覆盖模板 |
 
+> POJ 搜索进阶: POJ 1077 Eight (A*), POJ 2449 Remmarguts' Date (K短路)
+> HDU 搜索训练: HDU 1043 Eight (多种解法), HDU 3567 Eight II
+> Codeforces 搜索 tag → 按 rating 1700+ 筛选
+
 ---
 
 ## Phase 9 -- DP 优化 (建议 7 天)
@@ -678,6 +706,10 @@ TheAlgorithms 社区在多个语言中提供了算法实现，所有代码均为
 |------|---------|--------|------|
 | 洛谷 | P4767 | 邮局 | 决策单调性 |
 | 洛谷 | P1912 | 诗人小G | 四边形不等式 |
+
+> POJ DP 优化: POJ 3709 K-Anonymous Sequence (斜率优化), POJ 1180 Batch Scheduling (DP优化)
+> HDU DP 优化: HDU 3507 Print Article (斜率优化), HDU 2829 Lawrence (DP优化)
+> Codeforces DP tag → 按 rating 1800+ 筛选
 
 ---
 
@@ -730,6 +762,10 @@ TheAlgorithms 社区在多个语言中提供了算法实现，所有代码均为
 | 洛谷 | P2787 | 语文1 | ODT 应用 |
 | 洛谷 | CF896C | Willem, Chtholly and Seniorious | ODT 出处题 |
 
+> POJ 分治: POJ 2299 Ultra-QuickSort (归并/逆序对), POJ 2104 K-th Number (主席树/整体二分)
+> HDU 数据结构: HDU 2665 Kth number (主席树), HDU 4417 Super Mario
+> Codeforces 数据结构 tag → 按 rating 1800+ 筛选
+
 ---
 
 ## Phase 11 -- 计算几何入门 (建议 5 天)
@@ -764,6 +800,10 @@ TheAlgorithms 社区在多个语言中提供了算法实现，所有代码均为
 | 平台 | 题目编号 | 题目名 | 说明 |
 |------|---------|--------|------|
 | 洛谷 | P4196 | 半平面交模板 | 多边形的核 |
+
+> POJ 计算几何: POJ 2318 TOYS (点线位置), POJ 1113 Wall (凸包), POJ 2007 Scrambled Polygon (极角排序)
+> HDU 计算几何: HDU 1392 Surround the Trees (凸包), HDU 2036 改革春风吹满地 (多边形面积)
+> Codeforces 几何 tag → 按 rating 1500+ 筛选
 
 ---
 
@@ -860,6 +900,10 @@ while (l < r) {
 | 洛谷 | P1948 | 交互题模板 | 交互基本实现 |
 | Codeforces | 交互标签 | 大量练习题 | 搜索交互标签 |
 
+> POJ 竞赛实务: POJ 1000-5000 经典题单按序号刷, POJ 3278 Catch That Cow (基础BFS)
+> HDU 竞赛实务: HDU 1000-2000 入门题单, HDU 1043 Eight (多解法对比)
+> Codeforces 按 rating 分级 → 从 800 开始逐级上分
+
 ---
 
 ## 推荐阅读物
@@ -877,3 +921,22 @@ while (l < r) {
 - LeetCode: https://leetcode.com/
 - AtCoder: https://atcoder.jp/
 - Codeforces: https://codeforces.com/
+
+---
+
+## 竞赛进阶资源
+
+以下平台适合有志于ACM/ICPC/OI竞赛的学习者：
+
+| 平台 | 链接 | 特点 |
+|------|------|------|
+| 洛谷 | https://www.luogu.com.cn/ | 中文社区，题解丰富，难度分级清晰 |
+| POJ (北大OJ) | http://poj.org/ | 经典题库，适合打基础 |
+| HDU (杭电OJ) | https://acm.hdu.edu.cn/ | 多校训练，暑期集训 |
+| Codeforces | https://codeforces.com/ | 国际竞赛，实时rating |
+| AtCoder | https://atcoder.jp/ | 日本竞赛，题目质量高 |
+| Virtual Judge | https://vjudge.net/ | 聚合平台，多OJ一站式刷题 |
+| 牛客竞赛 | https://ac.nowcoder.com/ | 国内校招+竞赛 |
+
+普通学习/面试 → 力扣 (LeetCode) 足够
+竞赛道路 → 洛谷 + Codeforces + POJ/HDU 必不可少

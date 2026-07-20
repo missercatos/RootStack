@@ -90,9 +90,9 @@ fn print_info(x: &(impl Area + Perimeter)) { }
 
 ## 实践
 
-### 洛谷问题
+### 力扣问题
 
-洛谷: [P5742](https://www.luogu.com.cn/problem/P5742) 评等级 — trait + derive
+力扣: 力扣排序题 — trait + derive
 
 ```rust
 #[derive(Debug)]
