@@ -309,4 +309,4 @@ int kruskal(int V, KEdge* edges, int E) {
 | P3366 | 最小生成树 | 普及+ | Kruskal/Prim |
 | P5318 | 查找文献 | 入门 | BFS/DFS 遍历 |
 
-> 力扣 (LeetCode) 有对应题型，竞赛方向推荐洛谷/Codeforces。
+> 力扣 (LeetCode) 有对应题型，竞赛方向推荐力扣/Codeforces。

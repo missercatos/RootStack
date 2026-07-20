@@ -230,4 +230,4 @@ int kth_bit_kth(KthBIT* b, int k) {
 | P3368 | 树状数组 2 | 普及 | 区间修改 + 单点查询 |
 | P1908 | 逆序对 | 普及+ | 树状数组求逆序对 |
 
-> 力扣 (LeetCode) 有对应题型，竞赛方向推荐洛谷/Codeforces。
+> 力扣 (LeetCode) 有对应题型，竞赛方向推荐力扣/Codeforces。

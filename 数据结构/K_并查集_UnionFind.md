@@ -179,4 +179,4 @@ int wuf_query(WeightedUnionFind* uf, int x, int y, int* diff) {
 | P2024 | 食物链 | 提高 | 带权并查集 |
 | P1197 | 星球大战 | 提高 | 逆向并查集 |
 
-> 力扣 (LeetCode) 有对应题型，竞赛方向推荐洛谷/Codeforces。
+> 力扣 (LeetCode) 有对应题型，竞赛方向推荐力扣/Codeforces。

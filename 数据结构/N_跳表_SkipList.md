@@ -178,4 +178,4 @@ int sl_remove(SkipList* sl, int key) {
 | P3369 | 普通平衡树 | 提高 | 可用跳表替代平衡树实现 |
 | P6136 | 普通平衡树（加强版） | 提高+ | 跳表或平衡树 |
 
-> 力扣 (LeetCode) 有对应题型，竞赛方向推荐洛谷/Codeforces。
+> 力扣 (LeetCode) 有对应题型，竞赛方向推荐力扣/Codeforces。

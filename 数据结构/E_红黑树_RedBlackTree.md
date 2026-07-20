@@ -401,4 +401,4 @@ graph TD
 | P3369 | 普通平衡树 | 提高 | 平衡树基本操作 |
 | P6136 | 普通平衡树（数据加强版） | 提高+ | 红黑树/Treap/Splay |
 
-> 力扣 (LeetCode) 有对应题型，竞赛方向推荐洛谷/Codeforces。
+> 力扣 (LeetCode) 有对应题型，竞赛方向推荐力扣/Codeforces。
