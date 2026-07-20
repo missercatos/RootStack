@@ -176,3 +176,10 @@ DFS 进入某个节点的时候记录一个左括号 `(`，退出某个节点的
 在 DFS 过程中，通过记录每个节点从哪个点访问而来，可以建立一个树结构，称为 DFS 树．DFS 树是原图的一个生成树．
 
 [DFS 树](./scc.md#dfs-生成树) 有很多性质，比如可以用来求 [强连通分量](./scc.md)．
+
+## 多平台练习
+
+| 洛谷 | [本题单](https://www.luogu.com.cn/) | 竞赛基础 |
+| POJ (北大) | [PKU JudgeOnline](http://poj.org/) | 经典题目，适合巩固 |
+| HDU (杭电) | [HDU OJ](https://acm.hdu.edu.cn/) | 暑期多校训练 |
+| Codeforces | [Codeforces](https://codeforces.com/) | 国际竞赛，适合提升 |

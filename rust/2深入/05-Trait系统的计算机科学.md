@@ -61,9 +61,9 @@ trait Sized {}      // 编译时已知大小（默认绑定）
 
 ## 实践
 
-### 洛谷问题
+### 力扣问题
 
-洛谷: [P1093](https://www.luogu.com.cn/problem/P1093) 奖学金 — sort_by trait
+力扣: 力扣排序 — sort_by trait
 
 ```rust
 students.sort_by(|a, b| b.total.cmp(&a.total)

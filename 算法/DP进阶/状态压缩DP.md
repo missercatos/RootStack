@@ -68,3 +68,10 @@ $$
 -   [「NOI2001」炮兵阵地](https://loj.ac/problem/10173)
 -   [「USACO06NOV」玉米田 Corn Fields](https://www.luogu.com.cn/problem/P1879)
 -   [「九省联考 2018」一双木棋](https://loj.ac/problem/2471)
+
+## 多平台练习
+
+| 洛谷 | [本题单](https://www.luogu.com.cn/) | 竞赛基础 |
+| POJ (北大) | [PKU JudgeOnline](http://poj.org/) | 经典题目，适合巩固 |
+| HDU (杭电) | [HDU OJ](https://acm.hdu.edu.cn/) | 暑期多校训练 |
+| Codeforces | [Codeforces](https://codeforces.com/) | 国际竞赛，适合提升 |

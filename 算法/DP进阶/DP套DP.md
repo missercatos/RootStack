@@ -142,3 +142,10 @@ $$
 -   [CF979E Kuro and Topological Parity](https://codeforces.com/problemset/problem/979/E)
 -   [\[TJOI2018\] 游园会](https://loj.ac/p/2575)
 -   [\[NOI2022\] 移除石子](https://loj.ac/p/3848)
+
+## 多平台练习
+
+| 洛谷 | [本题单](https://www.luogu.com.cn/) | 竞赛基础 |
+| POJ (北大) | [PKU JudgeOnline](http://poj.org/) | 经典题目，适合巩固 |
+| HDU (杭电) | [HDU OJ](https://acm.hdu.edu.cn/) | 暑期多校训练 |
+| Codeforces | [Codeforces](https://codeforces.com/) | 国际竞赛，适合提升 |

@@ -217,3 +217,10 @@ while (队列不为空) {
 -   [CF1063B. Labyrinth](https://codeforces.com/problemset/problem/1063/B)
 -   [CF173B. Chamber of Secrets](https://codeforces.com/problemset/problem/173/B)
 -   [「BalticOI 2011 Day1」打开灯泡 Switch the Lamp On](https://loj.ac/p/2632)
+
+## 多平台练习
+
+| 洛谷 | [本题单](https://www.luogu.com.cn/) | 竞赛基础 |
+| POJ (北大) | [PKU JudgeOnline](http://poj.org/) | 经典题目，适合巩固 |
+| HDU (杭电) | [HDU OJ](https://acm.hdu.edu.cn/) | 暑期多校训练 |
+| Codeforces | [Codeforces](https://codeforces.com/) | 国际竞赛，适合提升 |

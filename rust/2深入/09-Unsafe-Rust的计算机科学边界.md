@@ -74,7 +74,7 @@ unsafe impl UnsafeTrait for i32 { }
 
 ## 实践
 
-### 洛谷问题
+### 力扣问题
 
 对于算法竞赛，unsafe 通常不必要。注重标准安全 API 即可。
 

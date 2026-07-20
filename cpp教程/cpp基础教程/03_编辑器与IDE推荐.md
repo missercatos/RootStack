@@ -104,6 +104,6 @@ sudo apt install neovim clangd
 | SSH 远程开发 | Neovim |
 | 快速测试/查看汇编 | Godbolt |
 
-洛谷: [B2002](https://www.luogu.com.cn/problem/B2002) — Hello,World! (用所选编辑器的编译调试功能完成)
+力扣: Hello,World! 练习 (用所选编辑器的编译调试功能完成)
 
 AI 自检提示：询问 AI "VSCode 中 tasks.json 和 launch.json 各负责什么，如何关联"。

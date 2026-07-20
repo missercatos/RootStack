@@ -178,3 +178,5 @@ int wuf_query(WeightedUnionFind* uf, int x, int y, int* diff) {
 | P1551 | 亲戚 | 普及 | 并查集应用 |
 | P2024 | 食物链 | 提高 | 带权并查集 |
 | P1197 | 星球大战 | 提高 | 逆向并查集 |
+
+> 力扣 (LeetCode) 有对应题型，竞赛方向推荐洛谷/Codeforces。

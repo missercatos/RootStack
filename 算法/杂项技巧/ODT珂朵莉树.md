@@ -65,3 +65,11 @@ void assign(int l, int r, int v) {
 
 - 与 [[CDQ分治]] 结合可维护含区间赋值的数颜色问题
 - 见 [[../../路径D-DSA算法刷题]] 获取更多练习题
+
+
+## 多平台练习
+
+| 洛谷 | [本题单](https://www.luogu.com.cn/) | 竞赛基础 |
+| POJ (北大) | [PKU JudgeOnline](http://poj.org/) | 经典题目，适合巩固 |
+| HDU (杭电) | [HDU OJ](https://acm.hdu.edu.cn/) | 暑期多校训练 |
+| Codeforces | [Codeforces](https://codeforces.com/) | 国际竞赛，适合提升 |

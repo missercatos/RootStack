@@ -308,3 +308,5 @@ int kruskal(int V, KEdge* edges, int E) {
 | P4779 | 单源最短路径（标准版） | 提高 | 堆优化 Dijkstra |
 | P3366 | 最小生成树 | 普及+ | Kruskal/Prim |
 | P5318 | 查找文献 | 入门 | BFS/DFS 遍历 |
+
+> 力扣 (LeetCode) 有对应题型，竞赛方向推荐洛谷/Codeforces。

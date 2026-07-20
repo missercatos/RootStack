@@ -103,3 +103,11 @@ int query(const char t[]) {
 - [[../../cpp教程/cpp基础教程/11_字符串基础|字符串基础]]
 
 > 内容来源：经本地化改造的 OI-wiki AC 自动机章节。详细推导见 [OI-wiki](https://oi-wiki.org/string/ac-automaton/)。
+
+
+## 多平台练习
+
+| 洛谷 | [本题单](https://www.luogu.com.cn/) | 竞赛基础 |
+| POJ (北大) | [PKU JudgeOnline](http://poj.org/) | 经典题目，适合巩固 |
+| HDU (杭电) | [HDU OJ](https://acm.hdu.edu.cn/) | 暑期多校训练 |
+| Codeforces | [Codeforces](https://codeforces.com/) | 国际竞赛，适合提升 |
