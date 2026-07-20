@@ -14,12 +14,35 @@
   <img src="https://img.shields.io/badge/数据结构-339933?style=flat-square" alt="数据结构"/>
   <img src="https://img.shields.io/badge/算法-FF6F00?style=flat-square" alt="算法"/>
   <img src="https://img.shields.io/badge/网络安全-E34F26?style=flat-square" alt="网络安全"/>
-  <img src="https://img.shields.io/badge/版本-0.3.1-blue?style=flat-square" alt="version"/>
+  <img src="https://img.shields.io/badge/版本-0.4.0-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
   <a href="./git.md">Git 指南</a> · <a href="./github-settings.md">GitHub 设置</a> · <a href="./red_team/总目录与快速查询.md">红队知识库</a> · <a href="./ISSUES.md">参与贡献</a>
 </p>
+
+<div align="center" style="padding: 22px 16px; background: repeating-linear-gradient(45deg, #1a1a00 0px, #1a1a00 20px, #ffcc00 20px, #ffcc00 40px); border: 3px solid #333; border-radius: 4px; margin: 24px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+  <div style="background: rgba(0,0,0,0.85); padding: 18px 24px; border-radius: 4px;">
+    <h3 style="color: #ffcc00; margin: 0 0 10px 0; font-size: 20px;">
+      项目需要你的帮助
+    </h3>
+    <p style="color: #eee; font-size: 15px; line-height: 1.7; margin: 0 0 4px 0;">
+      RootStack 的核心工作是<strong style="color:#fff;">整合已有教材与开源教程</strong>为体系化知识库，
+      同时<strong style="color:#fff;">补全互联网上缺乏的中文教程空白</strong>，
+      在<strong style="color:#fff;">多个知名开源项目之间搭建桥接教程</strong>。
+    </p>
+    <p style="color: #ddd; font-size: 15px; line-height: 1.7; margin: 0 0 14px 0;">
+      由于内容来自不同来源，<strong style="color:#ff6666;">知识漏洞和概念偏差在所难免</strong>，
+      亟需社区的力量进行<strong style="color:#fff;">审查、校对和补充</strong>。
+      无论你是初学者还是资深开发者，提一个 Issue、改一个错字、补一段代码，都是巨大的帮助。
+    </p>
+    <p style="margin: 0;">
+      <a href="#加入交流群" style="display: inline-block; background: #ffcc00; color: #1a1a00; padding: 10px 32px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 16px; border: 1px solid #e6b800;">
+        加入我们
+      </a>
+    </p>
+  </div>
+</div>
 
 ---
 
@@ -94,7 +117,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/                          ├ v0.3.1
+RootStack/                          ├ v0.4.0
 ├── README.md                    ← 你在这里
 │
 ├── 路径A-C主线.md               C 主线: 从零到内核
