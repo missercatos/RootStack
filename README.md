@@ -14,7 +14,7 @@
   <img src="https://img.shields.io/badge/数据结构-339933?style=flat-square" alt="数据结构"/>
   <img src="https://img.shields.io/badge/算法-FF6F00?style=flat-square" alt="算法"/>
   <img src="https://img.shields.io/badge/网络安全-E34F26?style=flat-square" alt="网络安全"/>
-  <img src="https://img.shields.io/badge/版本-0.4.2-blue?style=flat-square" alt="version"/>
+  <img src="https://img.shields.io/badge/版本-0.4.3-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
@@ -26,6 +26,12 @@
 </p>
 <p align="center" style="margin-top: 12px;">
   <a href="#加入交流群" style="display: inline-block; background: #a29bfe; color: #ffffff; padding: 12px 40px; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(162, 155, 254, 0.4);">加入我们 ♡</a>
+</p>
+
+---
+
+<p align="center">
+  <b>📖 静态网站：<a href="https://misser.top/rootstack-site/">https://misser.top/rootstack-site/</a></b>
 </p>
 
 ---
@@ -101,7 +107,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/                          ├ v0.4.0
+RootStack/                          ├ v0.4.3
 ├── README.md                    ← 你在这里
 │
 ├── 路径A-C主线.md               C 主线: 从零到内核
