@@ -1,5 +1,5 @@
 ---
-C++ 功能库 — sstream
+title: "C++ 功能库 — sstream"
 ---
 
 ## 概述

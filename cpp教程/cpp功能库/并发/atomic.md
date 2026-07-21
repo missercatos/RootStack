@@ -1,5 +1,5 @@
 ---
-C++ 功能库 — atomic
+title: "C++ 功能库 — atomic"
 ---
 
 ## 概述

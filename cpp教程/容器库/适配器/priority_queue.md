@@ -1,6 +1,6 @@
 ---
-template <typename T, typename Container = vector<T>, typename Compare = less<typename Container::value_type>>
-class priority_queue
+title: "template <typename T, typename Container = vector<T>, typename Compare = less<typename Container::value_type>>
+class priority_queue"
 ---
 
 ## 底层数据结构

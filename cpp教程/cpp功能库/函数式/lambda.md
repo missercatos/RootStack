@@ -1,5 +1,5 @@
 ---
-C++ 功能库 — lambda
+title: "C++ 功能库 — lambda"
 ---
 
 ## 概述

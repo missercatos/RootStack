@@ -1,5 +1,5 @@
 ---
-C++ 功能库 — numeric
+title: "C++ 功能库 — numeric"
 ---
 
 ## 概述

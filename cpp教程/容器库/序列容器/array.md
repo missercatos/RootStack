@@ -1,6 +1,6 @@
 ---
-template <typename T, size_t N>
-class array
+title: "template <typename T, size_t N>
+class array"
 ---
 
 ## 底层数据结构

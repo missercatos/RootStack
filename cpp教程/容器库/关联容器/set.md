@@ -1,8 +1,8 @@
 ---
-template <typename Key, typename Compare = less<Key>>
+title: "template <typename Key, typename Compare = less<Key>>
 class set
 template <typename Key, typename Compare = less<Key>>
-class multiset
+class multiset"
 ---
 
 ## 底层数据结构

@@ -1,8 +1,8 @@
 ---
-template <typename Key, typename Value, typename Hash = hash<Key>, typename Equal = equal_to<Key>>
+title: "template <typename Key, typename Value, typename Hash = hash<Key>, typename Equal = equal_to<Key>>
 class unordered_map
 template <typename Key, typename Value, typename Hash, typename Equal>
-class unordered_multimap
+class unordered_multimap"
 ---
 
 ## 底层数据结构

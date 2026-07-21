@@ -1,5 +1,5 @@
 ---
-C++ 功能库 — function / bind
+title: "C++ 功能库 — function / bind"
 ---
 
 ## 概述

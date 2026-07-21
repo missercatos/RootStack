@@ -1,5 +1,5 @@
 ---
-C++ 功能库 — string
+title: "C++ 功能库 — string"
 ---
 
 ## 概述

@@ -1,6 +1,6 @@
 ---
-template <size_t N>
-class bitset
+title: "template <size_t N>
+class bitset"
 ---
 
 ## 底层数据结构

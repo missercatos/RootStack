@@ -1,8 +1,8 @@
 ---
-template <typename Key, typename Value, typename Compare = less<Key>>
+title: "template <typename Key, typename Value, typename Compare = less<Key>>
 class map
 template <typename Key, typename Value, typename Compare = less<Key>>
-class multimap
+class multimap"
 ---
 
 ## 底层数据结构

@@ -1,8 +1,8 @@
 ---
-template <typename T>
+title: "template <typename T>
 class list
 template <typename T>
-class forward_list
+class forward_list"
 ---
 
 ## 底层数据结构
