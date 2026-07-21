@@ -1,6 +1,0 @@
-node_modules
-public
-.quartz/.cache
-.quartz/plugins/**
-docs
-.quartz-cache
