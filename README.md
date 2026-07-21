@@ -14,18 +14,18 @@
   <img src="https://img.shields.io/badge/数据结构-339933?style=flat-square" alt="数据结构"/>
   <img src="https://img.shields.io/badge/算法-FF6F00?style=flat-square" alt="算法"/>
   <img src="https://img.shields.io/badge/网络安全-E34F26?style=flat-square" alt="网络安全"/>
-  <img src="https://img.shields.io/badge/版本-0.4.0-blue?style=flat-square" alt="version"/>
+  <img src="https://img.shields.io/badge/版本-0.4.2-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
-  <a href="./git.md">Git 指南</a> · <a href="./github-settings.md">GitHub 设置</a> · <a href="./red_team/总目录与快速查询.md">红队知识库</a> · <a href="./ISSUES.md">参与贡献</a>
+  <a href="./git.md">Git 指南</a> · <a href="./github-settings.md">GitHub 设置</a> · <a href="./科学上网.md">科学上网</a> · <a href="./国际付费操作.md">国际付费</a> · <a href="./red_team/总目录与快速查询.md">红队知识库</a> · <a href="./ISSUES.md">参与贡献</a>
 </p>
 
 <p align="center">
-  <img src="assets/help.png" alt="项目需要你的帮助" style="max-width: 100%;">
+  <img src="assets/help.png" alt="我们需要你的帮助" style="max-width: 100%;">
 </p>
 <p align="center" style="margin-top: 12px;">
-  <a href="#加入交流群" style="display: inline-block; background: #ffcc00; color: #1a1a00; padding: 10px 36px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 16px; border: 1px solid #e6b800;">加入我们</a>
+  <a href="#加入交流群" style="display: inline-block; background: #a29bfe; color: #ffffff; padding: 12px 40px; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(162, 155, 254, 0.4);">加入我们 ♡</a>
 </p>
 
 ---
@@ -356,8 +356,6 @@ git push origin my-feature
 | 7.18 | Rust 教程整合 | 新增 Rust 教程体系 (~55篇: 入门14+深入11+实践6+工程12+重构6)，路径F-Rust学习路径，rust目录.md 索引，Rust内核融入 内核/Rust内核/，跨模块双链接 |
 | 7.20 | 新增密码学     | 密码学是计算领域的一门重要学科，所以创建密码学部分。专门列一个类目。                                                               |
 
-
----
 
 ## 加入交流群
 
