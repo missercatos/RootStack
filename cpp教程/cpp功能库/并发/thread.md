@@ -1,5 +1,5 @@
 ---
-C++ 功能库 — thread
+title: "C++ 功能库 — thread"
 ---
 
 ## 概述

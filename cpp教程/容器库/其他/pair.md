@@ -1,6 +1,6 @@
 ---
-template <typename T1, typename T2>
-struct pair
+title: "template <typename T1, typename T2>
+struct pair"
 ---
 
 ## 底层数据结构

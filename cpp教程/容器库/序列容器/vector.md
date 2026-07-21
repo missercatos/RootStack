@@ -1,6 +1,6 @@
 ---
-template <typename T>
-class vector
+title: "template <typename T>
+class vector"
 ---
 
 ## 底层数据结构

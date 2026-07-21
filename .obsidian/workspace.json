@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "README.md",
+                "file": "密码学/初等数论/初等数论导读.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "README"
+              "title": "初等数论导读"
             }
           }
         ]
@@ -200,9 +200,9 @@
   },
   "active": "56ebee7b4d241e9c",
   "lastOpenFiles": [
+    "README.md",
     "科学上网.md",
     "国际付费操作.md",
-    "README.md",
     "路径A-C主线.md",
     "assets/言谈警告.png",
     "assets/2026-07-21_11-11-56.png",

@@ -1,8 +1,8 @@
 ---
-template <typename Key, typename Hash = hash<Key>, typename Equal = equal_to<Key>>
+title: "template <typename Key, typename Hash = hash<Key>, typename Equal = equal_to<Key>>
 class unordered_set
 template <typename Key, typename Hash, typename Equal>
-class unordered_multiset
+class unordered_multiset"
 ---
 
 ## 底层数据结构

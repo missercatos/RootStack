@@ -1,6 +1,6 @@
 ---
-template <typename T>
-class deque
+title: "template <typename T>
+class deque"
 ---
 
 ## 底层数据结构

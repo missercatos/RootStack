@@ -1,6 +1,6 @@
 ---
-template <typename T, typename Container = deque<T>>
-class stack
+title: "template <typename T, typename Container = deque<T>>
+class stack"
 ---
 
 ## 底层数据结构

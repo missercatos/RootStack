@@ -1,8 +1,8 @@
 ---
-template <typename T, typename Container = deque<T>>
+title: "template <typename T, typename Container = deque<T>>
 class queue
 template <typename T, typename Container = vector<T>, typename Compare = less<typename Container::value_type>>
-class priority_queue
+class priority_queue"
 ---
 
 queue 和 priority_queue 均为**容器适配器**。queue 封装底层容器实现先进先出（FIFO）：队尾插入，队首删除。priority_queue 基于堆实现，保证队首始终为优先级最高的元素（默认最大值）。

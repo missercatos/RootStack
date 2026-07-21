@@ -1,5 +1,5 @@
 ---
-C++ 功能库 — future
+title: "C++ 功能库 — future"
 ---
 
 ## 概述

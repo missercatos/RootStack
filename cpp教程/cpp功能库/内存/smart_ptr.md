@@ -1,5 +1,5 @@
 ---
-C++ 功能库 — smart_ptr
+title: "C++ 功能库 — smart_ptr"
 ---
 
 ## 概述

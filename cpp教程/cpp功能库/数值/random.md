@@ -1,5 +1,5 @@
 ---
-C++ 功能库 — random
+title: "C++ 功能库 — random"
 ---
 
 ## 概述
