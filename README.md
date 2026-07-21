@@ -18,6 +18,10 @@
 </p>
 
 <p align="center">
+  🌐 <b><a href="https://rootstack-site.misser.top">rootstack-site.misser.top</a></b> — 免代理访问的在线教程
+</p>
+
+<p align="center">
   <a href="./git.md">Git 指南</a> · <a href="./github-settings.md">GitHub 设置</a> · <a href="./科学上网.md">科学上网</a> · <a href="./国际付费操作.md">国际付费</a> · <a href="./red_team/总目录与快速查询.md">红队知识库</a> · <a href="./ISSUES.md">参与贡献</a>
 </p>
 
@@ -29,10 +33,6 @@
 </p>
 
 ---
-
-<p align="center">
-  <b>📖 静态网站：<a href="https://misser.top/rootstack-site/">https://misser.top/rootstack-site/</a></b>
-</p>
 
 ---
 
