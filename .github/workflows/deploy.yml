@@ -28,14 +28,14 @@ jobs:
       - name: Build Quartz
         run: npx quartz build --directory ".."
         working-directory: _build
+      - name: Install Wrangler
+        run: npm i -g wrangler
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: pages deploy public --project-name=rootstack
-          workingDirectory: _build
+        run: wrangler pages deploy public --project-name=rootstack
+        working-directory: _build
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       - name: Set Custom Domain
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: pages domain set rootstack rootstack.misser.top
+        run: wrangler pages domain set rootstack rootstack.misser.top
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
