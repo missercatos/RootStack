@@ -14,7 +14,7 @@
   <img src="https://img.shields.io/badge/数据结构-339933?style=flat-square" alt="数据结构"/>
   <img src="https://img.shields.io/badge/算法-FF6F00?style=flat-square" alt="算法"/>
   <img src="https://img.shields.io/badge/网络安全-E34F26?style=flat-square" alt="网络安全"/>
-  <img src="https://img.shields.io/badge/版本-0.4.3-blue?style=flat-square" alt="version"/>
+  <img src="https://img.shields.io/badge/版本-0.5.0-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
@@ -50,23 +50,21 @@
 
 本教程涉及编译、链接、系统调用、内核模块、汇编等底层内容。在 Windows 下学习 C/系统编程，频繁遇到 PATH 差异、缺少标准工具链、权限模型不一致、ABI 不同步等问题，每个问题都在分散你对核心知识的注意力。**推荐使用 Linux 作为学习环境**，一次解决所有环境问题，把精力留给真正要学的东西。
 
-### 为什么推荐 Arch Linux
+### 新手推荐：Linux Mint
 
-> 以下为**作者个人观点**： Arch Linux 是最好的日用 Linux 发行版。***这不代表它在所有场景下都是最佳选择——服务器部署推荐 Debian/RHEL，嵌入式推荐 Yocto/Buildroot，但作为**个人日常桌面学习和开发环境**，Arch Linux 的优势明显。
+最推荐新手用来踩坑的发行版是 [**Linux Mint**](https://linuxmint.com/)。
+- 基于 Ubuntu LTS，软件兼容性好，apt 生态成熟
+- Cinnamon 桌面体验接近 Windows，上手成本低
+- 开箱即用，不需要折腾就能进入学习状态
 
-- **滚动更新** — 安装即是最新内核（6.x）、最新 glibc、最新 gcc、最新 LLVM。不需要重装系统来升级，`pacman -Syu` 一次全部更新
-- **Arch Linux Archive (ALA)** — 如果真的需要回滚某个包，ALA 保存了所有历史版本，用 `downgrade` 工具即可指定版本
-- **AUR (Arch User Repository)** — 几乎任何软件的安装都是一个命令：`yay -S obsidian`、`yay -S github-cli`、`yay -S visual-studio-code-bin`，不需要手动编译或找第三方源
-- **ArchWiki** — 业界公认最详尽的 Linux 文档库。一个问题在 ArchWiki 上通常能找到完整的解决方案，比翻论坛帖子快 10 倍
-- **贴近上游** — Arch 的包几乎不修改上游源码，配置最接近 Linux 内核和 GNU 工具链的原始行为。这对学习 C/系统编程非常有利——你遇到的问题就是上游的问题，不会因为发行版打了奇怪的补丁而困惑
-- **不想折腾？** 如果不想手动安装 Arch，推荐 [EndeavourOS](https://endeavouros.com/)——基于 Arch 的衍生版，有图形安装器，安装后直接获得完整的 Arch 体验。或者archinstall一键安装
-- **自由灵活**  这就是Arch最适合作为日用linux系统的原因。arch具有极高的灵活性，从内核选择到桌面环境（de还是wm）完全自由，可根据喜好灵活搭配，社区活跃。
-- **问题**  以上有很多都是问题，aur，滚动更新，会导致一些冲突，滚挂，因此在工作环境和服务器中并不推荐。但是作为日常使用，其体验无与伦比。
+至于 Ubuntu 和 RHEL/Fedora，它们广为人知更多是因为企业/服务器市场占有率大（大多为企业程序员在使用），而非对新手友好。Mint 在桌面体验上反而更适合初学者。
+
+如果你已经对 Linux 有一定了解，Debian、Fedora、openSUSE 都是不错的选择。想深入系统底层的话，Arch Linux 也值得尝试，但不建议作为入门首选。
 
 ### 快速入门
 
-- [Shorin ArchLinux Guide](https://github.com/SHORiN-KiWATA/Shorin-ArchLinux-Guide) — shorin老师的教程，很完善，适合新手入门
-- [ArchWiki 官网](https://wiki.archlinux.org/) — 官网，基本上所有linux的问题这里都能看到答案
+- [Linux Mint 官网](https://linuxmint.com/) — 下载安装、查看文档
+- [Linux Mint 中文社区](https://linuxmint.com.cn/) — 中文资料与交流
 
 ---
 
@@ -77,6 +75,9 @@
 ### Linux
 
 ```bash
+# Linux Mint / Ubuntu
+sudo apt install obsidian
+
 # Arch Linux
 sudo pacman -S obsidian
 
@@ -107,7 +108,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/                          ├ v0.4.3
+RootStack/                          ├ v0.5.0
 ├── README.md                    ← 你在这里
 │
 ├── 路径A-C主线.md               C 主线: 从零到内核
@@ -162,7 +163,7 @@ RootStack/                          ├ v0.4.3
 │
 ├── git.md                       Git 与 GitHub 终端操作指南 (14节)
 ├── github-settings.md           GitHub 网页端设置指南（新增）
-├── VERSION                      项目版本号: 0.3.0
+├── VERSION                      项目版本号: 0.5.0
 └── ISSUES.md                   问题讨论与贡献指南
 ```
 
@@ -263,7 +264,21 @@ Linux 6.1 开始正式支持 Rust 内核模块。未来的趋势不是 C vs Rust
 |------|------|---------|
 | E: 红队 (ArchStrike) | [[ISSUES|路径E-红队职业路径]] | 网络安全/渗透测试/CTF/红队攻防，含CTF→SRC/比赛分化 |
 
-> 本教程体系可当作类百科全书使用，内容完善但体量庞大。若作为教程从头通读，效率不高。建议按照路径文件中的推荐阅读顺序，结合索引文件进行选择性学习。同时推荐与 AI 进行问答互动学习——在自认为掌握语法或数据结构之后，去 [力扣](https://leetcode.cn/) 做几道题验证即可。如遇到错误，不建议死磕，可用 AI 辅助纠正思路。
+---
+
+## 关于网络安全发行版
+
+目前主流的面向网络安全的专用 Linux 发行版主要分三个体系：
+
+1. **Kali Linux**（Debian 系）—— 由 Offensive Security 维护，最广为人知，工具齐全，基于 Debian 稳定版，适合从 Debian/Ubuntu 转过来的用户
+2. **Arch 系（BlackArch / ArchStrike）** —— 滚动更新，工具库极大（BlackArch 有 2800+ 工具），DIY 程度高，适合熟悉 Arch 的用户
+3. **Parrot OS**（Debian 系，独立分支）—— 轻量、注重隐私和开发环境，CTF 场景常见，介于 Kali 和日常使用之间
+
+每个体系各有优劣：Kali 装完即用但臃肿；Arch 系灵活但需要一定 Linux 基础；Parrot 在资源和功能之间平衡较好。
+
+RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求使用者掌握 Arch Linux 的基本操作。但网安知识本身与发行版无关——即使你使用其他体系，知识点仍然适用。
+
+另外，不一定要装专门的网安系统。**Windows + 合适的工具 + 自己写的脚本**，同样可以完成出色的安全测试工作。选择哪个发行版取决于你的使用习惯和具体场景。
 
 ---
 
@@ -333,6 +348,12 @@ git push origin my-feature
 
 ---
 
+## ⭐ 求 Star
+
+如果这个项目对你有帮助，欢迎在 [GitHub](https://github.com/missercatos/RootStack) 点个 **Star** ⭐ (｡>﹏<｡) 你的支持是我们更新的动力！
+
+---
+
 ## 致谢
 
 本教程体系的开发过程中使用了以下 AI 辅助工具：
@@ -361,6 +382,8 @@ git push origin my-feature
 | 7.18 | OI-wiki移植 | 从 OI-wiki 移植 32 篇算法文件: 图论(15篇) + 字符串扩展(8篇) + DP进阶(9篇), 新建 算法/图论/ 算法/字符串扩展/ 算法/DP进阶/              |
 | 7.18 | Rust 教程整合 | 新增 Rust 教程体系 (~55篇: 入门14+深入11+实践6+工程12+重构6)，路径F-Rust学习路径，rust目录.md 索引，Rust内核融入 内核/Rust内核/，跨模块双链接 |
 | 7.20 | 新增密码学     | 密码学是计算领域的一门重要学科，所以创建密码学部分。专门列一个类目。                                                               |
+| 7.22 | 网站上线       | 部署至 Cloudflare Pages，域名 rootstack.misser.top，GitHub Actions 自动发布                            |
+| 7.22 | 内容更新       | Linux 推荐改为 Mint，新增网安发行版说明，增加求 Star 链接，版本升至 0.5.0
 
 
 ## 加入交流群
