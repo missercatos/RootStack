@@ -176,6 +176,76 @@ int lq_empty(LinkedQueue* q) { return q->head == NULL; }
 size_t lq_size(LinkedQueue* q) { return q->count; }
 ```
 
+### 双端队列（deque）的原理与设计
+
+deque 是"分段连续存储"的典型代表。它用**中控指针数组（map）** + 若干**定长缓冲区块（block）** 实现：
+
+```
+map:  [block*][block*][block*][block*]...
+         |       |       |       |
+         v       v       v       v
+block: [0..B-1][0..B-1][0..B-1][0..B-1]    (B 为 block 大小，通常是 8 或 64)
+         ^                      ^
+       head                   tail
+```
+
+- **map**：一个动态数组，每个元素是指向 block 的指针
+- **block**：固定大小的连续数组（如 8 个 int），是真正存数据的地方
+- **迭代器**：内部维护 `block` 指针 + `position` 偏移量
+
+#### 核心操作
+
+| 操作 | 行为 | 时间复杂度 |
+|------|------|:---------:|
+| `push_back` | 在 tail block 末尾写入，block 满则申请新的 block 并追加到 map | O(1) |
+| `push_front` | 在 head block 头部写入，block 满则申请新 block 插入 map 之前 | O(1) |
+| `pop_back` / `pop_front` | 移动 tail/head 位置，block 变空则释放 | O(1) |
+| `operator[i]` | `map[(i + head_offset) / B][(i + head_offset) % B]` | O(1) |
+| 中间插入 | 移动目标位置后的所有元素，最坏触发 block 分裂 | O(n) |
+
+#### map 扩容
+
+当 `push_front` 或 `push_back` 时 map 的首/尾已无空闲指针位，则分配更大的 map（通常是 2 倍），将原 map 拷贝到新 map 的**中央区域**，预留两侧空间供后续两端插入：
+
+```
+旧 map:  [b0][b1][b2][b3]             (两侧无空闲指针)
+新 map:  [  ][  ][b0][b1][b2][b3][  ][  ]
+                  ↑ 中央对齐
+```
+
+#### 为什么 deque 能兼顾 O(1) 两端插入和 O(1) 随机访问？
+
+- **两端 O(1)**：map 两端预留指针位，block 本身就是连续数组，头尾写入只需在 block 边界时申请/释放一个 block
+- **随机访问 O(1)**：元素地址 = `map[(i + start_offset) / B][(i + start_offset) % B]`，两个简单算术运算
+- **内存利用率**：不会像 vector 那样大量预留尾部空间，也不会像 list 那样每个元素多两个指针
+- **缓存友好性**：遍历 deque 时同一 block 内连续命中缓存，跨 block 时大概率 cache miss，整体介于 vector 和 list 之间
+
+#### 简易实现示意
+
+```c
+#define BLOCK_SIZE 8
+
+typedef struct {
+    int** map;          // 中控数组
+    int   map_size;     // map 总容量（指针位个数）
+    int   map_first;    // map 中第一个有效 block 的索引
+    int   block_count;  // 已使用的 block 数
+    int   head;         // 第一个 block 内的偏移
+    int   tail;         // 最后一个 block 内的偏移（下一个空位）
+    int   total;        // 总元素数
+} SimpleDeque;
+
+// 随机访问：arr[i] 对应的内存地址
+// 伪代码，完整实现需处理边界
+int sd_at(SimpleDeque* dq, int index) {
+    int block_idx = dq->map_first + (dq->head + index) / BLOCK_SIZE;
+    int elem_idx  = (dq->head + index) % BLOCK_SIZE;
+    return dq->map[block_idx][elem_idx];
+}
+```
+
+deque 的巧妙之处在于：**用 block 级的分段连续存储，在两端的 O(1) 插入和 O(1) 随机访问之间做了最佳权衡**。这也是 C++ 标准库默认用 deque 作为 stack 和 queue 底层容器的原因。
+
 ---
 
 ## 各语言标准库对比
