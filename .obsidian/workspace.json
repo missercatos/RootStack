@@ -27,12 +27,26 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "数据结构/A_容器_Container.md",
+                "file": "计算机原理/计算机原理_索引.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "A_容器_Container"
+              "title": "计算机原理_索引"
+            }
+          },
+          {
+            "id": "bfc32f5c25ff73a8",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "README.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "README"
             }
           },
           {
@@ -50,7 +64,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -227,12 +241,32 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "c03853e5c8af0b75",
+  "active": "bfc32f5c25ff73a8",
   "lastOpenFiles": [
+    "计算机原理/计算机原理_索引.md",
+    "操作系统/操作系统_索引.md",
+    "计算机原理/A_数据表示.md",
+    "数据结构/A_容器_Container.md",
+    "VERSION",
+    "操作系统/I_进程间通信.md",
+    "操作系统/H_文件系统.md",
+    "计算机原理/E_指令集体系结构.md",
+    "计算机原理/D_内存层次结构.md",
+    "操作系统/E_同步与死锁.md",
+    "操作系统/D_CPU调度.md",
+    "计算机原理/C_CPU架构.md",
+    "操作系统/C_线程与并发.md",
+    "操作系统/G_内存分配器.md",
+    "操作系统/F_内存管理.md",
+    "计算机原理/B_缓存层级.md",
+    "操作系统/B_进程管理.md",
+    "操作系统/A_操作系统概述.md",
+    "计算机原理",
+    "操作系统",
+    "README.md",
+    "数据结构/B_栈_Stack.md",
     "数据结构/DSA学习路线.md",
     "数据结构/D_链表_LinkedList.md",
-    "数据结构/B_栈_Stack.md",
-    "README.md",
     "public/路径F-Rust学习路径.html",
     "public/路径E-红队职业路径.html",
     "public/路径D-DSA算法刷题.html",
@@ -240,9 +274,6 @@
     "public/路径B-CPP主线.html",
     "public/路径A-C主线.html",
     "public/算法/题目/小Z的袜子.html",
-    "public/算法/题目/小B的询问.html",
-    "public/算法/题目/HH的项链.html",
-    "public/算法/题目/CF896C.html",
     "public/assets/images/string/strstr_kmp_indices.svg",
     "public/assets/images/string/prefix_str_3.svg",
     "public/assets/images/string/prefix_str_2.svg",
@@ -257,24 +288,6 @@
     "node_modules/@quartz-community/utils/CHANGELOG.md",
     "node_modules/rxjs/README.md",
     "node_modules/rxjs/CODE_OF_CONDUCT.md",
-    "node_modules/rxjs/CHANGELOG.md",
-    "node_modules/@quartz-community/types/README.md",
-    "node_modules/typescript/SECURITY.md",
-    "node_modules/typescript/README.md",
-    "node_modules/@bufbuild/protobuf/README.md",
-    "node_modules/@img/sharp-libvips-linuxmusl-x64/README.md",
-    "node_modules/@img/sharp-libvips-linux-x64/README.md",
-    "node_modules/colorjs.io/README.md",
-    "node_modules/sass-embedded/README.md",
-    "node_modules/yaml/README.md",
-    "node_modules/@esbuild/linux-x64/README.md",
-    "node_modules/preact/README.md",
-    "node_modules/resolve/SECURITY.md",
-    "node_modules/mdast-util-to-markdown/readme.md",
-    "node_modules/sass-embedded-linux-musl-x64/README.md",
-    "node_modules/micromark-core-commonmark/readme.md",
-    "node_modules/sass/README.md",
-    "node_modules/sass-embedded-linux-x64/README.md",
     "docs/Canvas.canvas",
     "密码学/未命名.canvas",
     "未命名.canvas"
