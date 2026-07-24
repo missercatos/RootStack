@@ -1,0 +1,813 @@
+# 17 - Arch Linux 深度玩法
+
+> 超出桌面使用，进入系统工程师领域——内核定制、启动钩子、包管理自动化、系统救援。
+
+---
+
+## 17.1 mkinitcpio 定制
+
+### 配置文件
+
+```bash
+# /etc/mkinitcpio.conf
+# 这个文件决定 initramfs（启动镜像）的内容和行为
+
+MODULES=()          # 手动加载的内核模块
+BINARIES=()         # 额外二进制文件
+FILES=()            # 引导时需要的配置文件
+HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block filesystems fsck)
+```
+
+### HOOKS 详解
+
+| Hook | 作用 | 何时需要 |
+|------|------|----------|
+| `base` | 基础环境（必须） | 永远 |
+| `udev` | 设备管理 | 永远 |
+| `autodetect` | 只保留当前硬件需要的模块（减小镜像） | 单机使用 |
+| `microcode` | 加载 CPU 微码（intel-ucode/amd-ucode） | 永远 |
+| `modconf` | 加载 /etc/modprobe.d 配置 | 永远 |
+| `kms` | 尽早启动图形模式 | 有图形界面 |
+| `keyboard` | 键盘驱动 | 加密文件系统 |
+| `keymap` | 键盘布局 | 加密 + 非 US 键盘 |
+| `consolefont` | 控制台字体 | TTY 美化 |
+| `block` | 块设备 | 永远 |
+| `filesystems` | 文件系统驱动 | 永远 |
+| `fsck` | 文件系统检查 | 永远 |
+| `encrypt` | 解密 LUKS | 加密根分区 |
+| `lvm2` | LVM 支持 | 使用 LVM |
+| `btrfs` | Btrfs 工具 | 使用 Btrfs |
+| `resume` | 休眠恢复 | 使用休眠 |
+| `plymouth` | 启动画面 | 美化启动过程 |
+
+### 优化示例
+
+```bash
+# 极简系统（无加密、无 LVM）
+HOOKS=(base udev autodetect microcode modconf kms keyboard consolefont block filesystems fsck)
+
+# 加密 Btrfs 系统
+HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt btrfs filesystems fsck)
+
+# LVM + 加密
+HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt lvm2 filesystems fsck resume)
+
+# 重建 initramfs
+sudo mkinitcpio -P
+```
+
+### 压缩选择
+
+```bash
+# /etc/mkinitcpio.conf
+COMPRESSION="lz4"       # 最快解压（推荐桌面用户）
+# COMPRESSION="zstd"    # 平衡
+# COMPRESSION="xz"      # 最小（嵌入式/慢启动）
+# COMPRESSION="cat"     # 不压缩（调试用）
+
+COMPRESSION_OPTIONS=()  # lz4 的 -l 选项自动加
+```
+
+---
+
+## 17.2 内核选择与编译
+
+### Arch 官方内核
+
+```bash
+# 查看可用内核
+pacman -Ss ^linux$
+
+linux           # 主线稳定（推荐）
+linux-lts       # 长期支持（服务器）
+linux-zen       # 桌面优化（MuQSS 调度器、更低延迟）
+linux-hardened  # 安全加固
+```
+
+### 安装 linux-zen（桌面用户推荐）
+
+```bash
+sudo pacman -S linux-zen linux-zen-headers
+sudo grub-mkconfig -o /boot/grub/grub.cfg    # 更新引导菜单
+```
+
+### 编译自定义内核
+
+```bash
+# 1. 获取源码
+git clone https://github.com/archlinux/linux.git
+cd linux
+
+# 2. 基于当前配置调整
+zcat /proc/config.gz > .config
+# 或复制 Arch 默认的：
+# cp /usr/src/linux/config .config
+
+# 3. 配置（三选一）
+make nconfig     # ncurses 菜单（推荐）
+make menuconfig  # 传统菜单
+make xconfig     # Qt 图形界面
+
+# 4. 关键优化项
+# General setup → Local version → 写 "-custom" 作为版本后缀
+# Processor type → 选你自己的 CPU 系列
+# 禁用不需要的驱动（减少编译时间 90%）
+
+# 5. 编译
+make -j$(nproc)         # 用全部核心
+make modules_install
+cp arch/x86/boot/bzImage /boot/vmlinuz-linux-custom
+sudo mkinitcpio -k /boot/vmlinuz-linux-custom -g /boot/initramfs-linux-custom.img
+
+# 6. 更新 GRUB
+sudo grub-mkconfig -o /boot/grub/grub.cfg
+```
+
+### 内核模块管理
+
+```bash
+# 立即加载模块
+sudo modprobe vfio-pci
+
+# 启动时加载
+echo "vfio-pci" | sudo tee /etc/modules-load.d/vfio.conf
+
+# 禁用模块
+echo "blacklist nouveau" | sudo tee /etc/modprobe.d/blacklist-nvidia.conf
+echo "blacklist pcspkr" | sudo tee /etc/modprobe.d/nobeep.conf   # 禁用主板蜂鸣器
+
+# 模块参数
+echo "options snd_hda_intel power_save=0" | sudo tee /etc/modprobe.d/audio.conf
+```
+
+---
+
+## 17.3 Pacman Hooks —— 自动化系统管理
+
+```bash
+# 目录：/etc/pacman.d/hooks/
+# 每次 pacman 操作后自动触发
+
+# 示例 1：更新引导菜单（每次内核/GRUB 更新后）
+```
+
+```ini
+# /etc/pacman.d/hooks/grub.hook
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Type = File
+Target = usr/lib/modules/*/vmlinuz
+Target = usr/lib/systemd/boot/efi/*
+Target = boot/*-ucode.img
+
+[Action]
+Description = Updating GRUB config
+When = PostTransaction
+Exec = /usr/bin/grub-mkconfig -o /boot/grub/grub.cfg
+```
+
+### 实用 Hooks 大全
+
+```bash
+# 1. 清理 pacman 缓存（安装/更新后清理旧版本）
+```
+
+```ini
+# /etc/pacman.d/hooks/paccache.hook
+[Trigger]
+Operation = Upgrade
+Operation = Install
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = Cleaning pacman cache...
+When = PostTransaction
+Exec = /usr/bin/env bash -c "paccache -rk1"
+```
+
+```bash
+# 2. systemd-boot 自动更新
+```
+
+```ini
+[Trigger]
+Type = File
+Operation = Install
+Operation = Upgrade
+Target = usr/lib/systemd/boot/efi/systemd-bootx64.efi
+
+[Action]
+Description = Updating systemd-boot
+When = PostTransaction
+Exec = /usr/bin/bootctl update
+```
+
+```bash
+# 3. Flatpak 更新后清理
+```
+
+```ini
+[Trigger]
+Type = Package
+Operation = Upgrade
+Operation = Install
+Target = flatpak
+
+[Action]
+Description = Removing unused Flatpak runtimes...
+When = PostTransaction
+Exec = /usr/bin/flatpak uninstall --unused -y
+```
+
+```bash
+# 4. 更新后发送通知
+```
+
+```ini
+[Trigger]
+Operation = Upgrade
+Type = Package
+Target = *
+
+[Action]
+Description = Notifying about upgrade
+When = PostTransaction
+Exec = /usr/bin/notify-send "System Updated" "Pacman upgrade completed" -i package
+```
+
+```bash
+# 5. 检测 .pacnew 文件（配置更新冲突）
+```
+
+```ini
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = *
+
+[Action]
+Description = Checking for .pacnew files
+When = PostTransaction
+Exec = /usr/bin/env bash -c "pacnew=$(find /etc -name '*.pacnew' 2>/dev/null); [ -n \"$pacnew\" ] && notify-send 'Pacnew Files Found' \"$pacnew\" -u critical"
+```
+
+---
+
+## 17.4 系统救援
+
+### 从 Live USB 修复系统
+
+```bash
+# 1. 启动 Arch Live USB
+# 2. 挂载系统分区
+
+# Btrfs 系统：
+mount -o subvol=/@,compress=zstd:3 /dev/nvme0n1p2 /mnt
+mount -o subvol=/@home /dev/nvme0n1p2 /mnt/home
+mount /dev/nvme0n1p1 /mnt/boot
+
+# 3. chroot
+arch-chroot /mnt
+
+# 4. 修复
+pacman -Syu                    # 重新同步更新
+pacman -S linux                # 重新安装内核（如果误删）
+mkinitcpio -P                  # 重建 initramfs
+grub-mkconfig -o /boot/grub/grub.cfg   # 重建 GRUB 配置
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+```
+
+### 忘记密码恢复
+
+```bash
+# 1. 在 GRUB 菜单按 e 进入编辑
+# 2. 在 linux 开头的行末尾加：
+init=/bin/bash
+# 3. Ctrl+X 启动
+# 4. 在 root shell 中：
+mount -o remount,rw /
+passwd your_username
+# 5. 重启
+reboot -f
+```
+
+### 修复 Pacman 数据库损坏
+
+```bash
+# 检查数据库
+sudo pacman -Dk
+
+# 修复
+sudo rm /var/lib/pacman/db.lck         # 如果锁文件残留
+sudo pacman -Syy                       # 强制刷新数据库
+sudo pacman -S filesystem              # 重新安装基础文件系统
+```
+
+---
+
+## 17.5 包管理高级技巧
+
+### 找出不需要的包
+
+```bash
+# 孤立包（不再被任何包依赖）
+pacman -Qdt
+
+# 显式安装的包
+pacman -Qe
+
+# 作为依赖安装的包
+pacman -Qd
+
+# 来自非官方仓库的包
+pacman -Qm
+
+# 查看包反向依赖（什么包依赖这个包）
+pacman -Qi glibc | grep "Required By"
+
+# 找出占用最多的包
+pacman -Qi | awk '/^Name/{name=$3} /^Installed Size/{size=$4; unit=$5; if(unit=="KiB"){s=size/1024} else if(unit=="MiB"){s=size} else if(unit=="GiB"){s=size*1024} else{s=0}; printf "%.2fMiB\t%s\n", s, name}' | sort -rh | head -20
+```
+
+### 安装包的特定版本（降级）
+
+```bash
+# pacman 缓存
+ls /var/cache/pacman/pkg/linux-*.pkg.tar.zst
+sudo pacman -U /var/cache/pacman/pkg/linux-6.8.1.arch1-1-x86_64.pkg.tar.zst
+
+# Arch Linux Archive
+# https://archive.archlinux.org/packages/
+```
+
+### 重建所有包的依赖关系
+
+```bash
+# 如果系统损坏严重，重建所有 ABI 依赖
+for pkg in $(pacman -Qq); do
+    sudo pacman -S --asdeps --noconfirm "$pkg" 2>/dev/null
+done
+```
+
+---
+
+## 17.6 启动分析
+
+```bash
+# 启动耗时分析
+systemd-analyze
+systemd-analyze blame          # 按耗时排序
+systemd-analyze critical-chain # 关键路径
+systemd-analyze plot > boot.svg
+
+# 禁用不必要的服务
+systemctl list-unit-files --state=enabled
+sudo systemctl disable bluetooth.service        # 不用蓝牙
+sudo systemctl mask lvm2-monitor.service        # 不用 LVM
+
+# 并行启动（改善启动时间）
+sudo systemctl edit --full systemd-udev-settle.service
+# ExecStart 改为 /bin/true（如果不需要等待 udev settle）
+```
+
+---
+
+## 17.7 安全加固
+
+### 基本加固
+
+```bash
+# 1. 防火墙
+sudo pacman -S ufw
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw enable
+sudo systemctl enable ufw
+
+# 2. 内核参数加固
+```
+
+```bash
+# /etc/sysctl.d/99-security.conf
+kernel.kptr_restrict=2           # 限制内核指针暴露
+kernel.dmesg_restrict=1          # 限制 dmesg 访问
+kernel.unprivileged_bpf_disabled=1
+net.core.bpf_jit_harden=2
+kernel.yama.ptrace_scope=2       # 限制 ptrace
+fs.protected_symlinks=1
+fs.protected_hardlinks=1
+fs.suid_dumpable=0
+```
+
+```bash
+sudo sysctl -p /etc/sysctl.d/99-security.conf
+```
+
+### USBGuard
+
+```bash
+sudo pacman -S usbguard
+sudo systemctl enable --now usbguard
+
+# 生成初始策略（当前插的设备都允许）
+sudo usbguard generate-policy > /etc/usbguard/rules.conf
+```
+
+### 强制访问控制 (AppArmor)
+
+```bash
+sudo pacman -S apparmor
+sudo systemctl enable --now apparmor
+
+# 需要在内核参数中启用：
+# /etc/default/grub
+GRUB_CMDLINE_LINUX="... apparmor=1 lsm=landlock,lockdown,yama,apparmor,bpf"
+```
+
+---
+
+## 17.8 性能优化
+
+### 实时调优
+
+```bash
+# CPU 调度器
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+
+# 安装守护进程管理
+sudo pacman -S power-profiles-daemon
+sudo systemctl enable --now power-profiles-daemon
+powerprofilesctl set balanced
+
+# GPU 性能模式
+# AMD:
+echo "high" | sudo tee /sys/class/drm/card0/device/power_dpm_force_performance_level
+
+# I/O 调度器
+# NVMe SSD → none (noop)
+# SATA SSD → mq-deadline
+# HDD → bfq
+echo "mq-deadline" | sudo tee /sys/block/sda/queue/scheduler
+```
+
+### zram 内存压缩
+
+```bash
+sudo pacman -S zram-generator
+```
+
+```ini
+# /etc/systemd/zram-generator.conf
+[zram0]
+zram-size = ram / 2
+compression-algorithm = zstd
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl start systemd-zram-setup@zram0
+
+# 查看
+zramctl
+```
+
+### 预加载优化
+
+```bash
+# preload — 预加载常用程序
+paru -S preload
+sudo systemctl enable --now preload
+
+# 或用 systemd-readahead
+```
+
+---
+
+## 17.9 电源管理
+
+```bash
+# 休眠配置
+# 1. 确保 swap 足够大（>= RAM 大小）
+# 2. 找到 resume 设备
+sudo blkid | grep swap
+# 3. 配置 initramfs
+```
+
+```bash
+# /etc/mkinitcpio.conf
+HOOKS=(... resume ...)
+
+# /etc/default/grub
+GRUB_CMDLINE_LINUX="... resume=UUID=your-swap-uuid"
+
+# 重建
+sudo mkinitcpio -P
+sudo grub-mkconfig -o /boot/grub/grub.cfg
+```
+
+```bash
+# 合盖休眠（笔记本）
+```
+
+```bash
+# /etc/systemd/logind.conf
+HandleLidSwitch=suspend
+HandleLidSwitchExternalPower=lock
+HandleLidSwitchDocked=ignore
+LidSwitchIgnoreInhibited=yes
+```
+
+---
+
+## 17.10 无噪声日志系统
+
+```bash
+# 限制 journald 日志大小
+```
+
+```bash
+# /etc/systemd/journald.conf
+SystemMaxUse=500M
+RuntimeMaxUse=100M
+MaxRetentionSec=2week
+MaxFileSec=1week
+```
+
+```bash
+# 禁用内核消息刷到 tty（防止 dmesg 污染 TTY）
+echo "kernel.printk = 3 3 3 3" | sudo tee /etc/sysctl.d/20-quiet-printk.conf
+
+# 隐藏启动日志（plymouth 或 quiet 参数）
+# /etc/default/grub
+GRUB_CMDLINE_LINUX_DEFAULT="quiet loglevel=3 udev.log_level=3"
+```
+
+---
+
+## 17.11 自定义 systemd 服务
+
+### 用户服务示例
+
+```bash
+# ~/.config/systemd/user/my-app.service
+[Unit]
+Description=My Custom App
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/my-app
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target
+```
+
+```bash
+systemctl --user daemon-reload
+systemctl --user enable --now my-app.service
+```
+
+### 定时器示例
+
+```bash
+# ~/.config/systemd/user/pacman-cleanup.timer
+[Unit]
+Description=Weekly pacman cache cleanup
+
+[Timer]
+OnCalendar=weekly
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+
+# ~/.config/systemd/user/pacman-cleanup.service
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/paccache -rk2
+```
+
+---
+
+## 17.12 mirrorlist 自动管理
+
+```bash
+# 安装 reflector
+sudo pacman -S reflector
+
+# 手动更新为中国最快镜像
+sudo reflector --country China --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+
+# systemd 定时自动更新
+sudo systemctl enable --now reflector.timer
+
+# /etc/xdg/reflector/reflector.conf
+--country China,Japan,Singapore
+--age 12
+--protocol https
+--sort rate
+--save /etc/pacman.d/mirrorlist
+```
+
+---
+
+## 17.13 VFIO / GPU 直通（虚拟化精华）
+
+```bash
+# 显卡直通给 Windows 虚拟机打游戏
+
+# 1. 确认 IOMMU 已启用
+dmesg | grep -i iommu
+# 内核参数：intel_iommu=on 或 amd_iommu=on
+
+# 2. 隔离 GPU（让 vfio-pci 抢占）
+```
+
+```bash
+# /etc/modprobe.d/vfio.conf
+options vfio-pci ids=10de:2484,10de:228b    # GPU 音频 + GPU 视频
+```
+
+```bash
+# /etc/mkinitcpio.conf
+MODULES=(vfio_pci vfio vfio_iommu_type1 vfio_virqfd)
+```
+
+```bash
+# 3. QEMU/KVM + libvirt
+sudo pacman -S qemu libvirt virt-manager edk2-ovmf
+sudo systemctl enable --now libvirtd
+sudo usermod -aG libvirt $USER
+
+# 4. 在 virt-manager 中创建 VM，添加 PCI 直通的 GPU
+```
+
+---
+
+## 17.14 杂项高级技巧
+
+```bash
+# 降级单个包到特定日期
+# 使用 Arch Linux Archive
+
+# 搜索哪些包包含某文件
+pacman -F /usr/lib/libfoo.so
+
+# 获取包的构建日期
+pacman -Qi glibc | grep "Build Date"
+
+# 查找系统中大于 100M 的文件
+sudo find / -type f -size +100M -exec ls -lh {} \; 2>/dev/null | sort -k5 -h
+
+# 查看哪些进程在使用已删除的文件（释放磁盘空间）
+sudo lsof +L1
+
+# 查看硬件信息
+sudo dmidecode -t system    # BIOS/主板
+lspci -nnk                   # PCI 设备及驱动
+lsusb -t                     # USB 设备树
+sudo hdparm -I /dev/nvme0n1  # NVMe 详细信息
+
+# 测试磁盘性能
+sudo hdparm -Tt /dev/nvme0n1
+# 或
+sudo fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 \
+    --name=test --filename=test --bs=4k --iodepth=64 --size=4G \
+    --readwrite=randread --time_based --ramp_time=4 --runtime=10
+```
+
+---
+
+## 17.15 自制 Arch 工具链（总结）
+
+```
+你的 Arch 工具箱应该包括：
+
+系统层：
+  ✓ mkinitcpio 定制     → 精确控制启动镜像
+  ✓ 自定义内核           → linux-zen 或自己编译的
+  ✓ pacman hooks        → 自动化所有安装后操作
+  ✓ snapper + 快照       → 更新前的安全网
+  ✓ btrfs-assistant      → GUI 管理
+
+桌面层：
+  ✓ Niri/Hyprland       → Wayland 合成器
+  ✓ DMS                 → 面板/启动器/锁屏/通知一体化
+  ✓ matugen             → 壁纸驱动的全局主题
+  ✓ fuzzel + kitty      → 启动器 + 终端
+  ✓ QuickShell           → 自定义 Shell 组件
+
+开发层：
+  ✓ PKGBUILD + AUR      → 打包发布
+  ✓ fish + starship     → Shell 环境
+  ✓ scripts in ~/.local/bin → 日常自动化
+```
+
+---
+
+## 17.16 本章测验
+
+> [!example] 📝 自测题目
+
+> [!question]- 选择题 1：mkinitcpio 中 autodetect hook 的作用是什么？
+> - A. 自动检测并修复系统错误
+> - B. 只保留当前硬件需要的模块（减小 initramfs 镜像体积）
+> - C. 自动检测新硬件并安装驱动
+> - D. 检测磁盘坏道
+>
+> > [!success]- 点击查看答案
+> > **B**
+> > autodetect hook 扫描当前系统硬件，只将需要的模块打包进 initramfs，大幅减小镜像体积。
+
+> [!question]- 选择题 2：linux-zen 内核相比标准 linux 内核的主要优势是什么？
+> - A. 更好的安全加固
+> - B. 桌面优化（更低延迟、MuQSS 调度器）
+> - C. 更长的支持周期
+> - D. 更小的内核体积
+>
+> > [!success]- 点击查看答案
+> > **B**
+> > linux-zen 是面向桌面用户的优化内核，包含更低延迟的调度器和桌面响应优化。linux-hardened 是安全加固，linux-lts 是长期支持。
+
+> [!question]- 选择题 3：Pacman Hook 中 When = PostTransaction 表示什么时机触发？
+> - A. 每个包安装前
+> - B. 整个 pacman 事务完成后
+> - C. 系统启动时
+> - D. 每小时定时触发
+>
+> > [!success]- 点击查看答案
+> > **B**
+> > PostTransaction 表示整个 pacman 操作事务完成后触发，PreTransaction 则是事务开始前。
+
+> [!question]- 判断题 4：在 GRUB 菜单中添加 init=/bin/bash 可以绕过密码直接获得 root shell
+> - A. ✓ 正确
+> - B. ✗ 错误
+>
+> > [!success]- 点击查看答案
+> > **A. ✓ 正确**
+> > 在 GRUB 的 linux 行末尾添加 init=/bin/bash 会跳过正常的 init 进程直接进入 root shell，可用于忘记密码时恢复。这也是为什么需要 GRUB 密码保护。
+
+> [!question]- 选择题 5：查找系统中孤立包（不再被任何包依赖）的命令是？
+> - A. pacman -Qe
+> - B. pacman -Qdt
+> - C. pacman -Qm
+> - D. pacman -Qs orphan
+>
+> > [!success]- 点击查看答案
+> > **B**
+> > `pacman -Qdt` 列出孤立包——作为依赖安装但现在不再被任何已安装包所需要的包。
+
+> [!question]- 选择题 6：zram 的作用是什么？
+> - A. 将 RAM 中的数据加密
+> - B. 在内存中创建压缩的交换空间
+> - C. 加速磁盘读写
+> - D. 扩展显存
+>
+> > [!success]- 点击查看答案
+> > **B**
+> > zram 在内存中创建压缩块设备作为 swap，比使用磁盘 swap 快得多，通过压缩有效扩展可用内存。
+
+> [!question]- 判断题 7：kernel.dmesg_restrict=1 可以限制非 root 用户访问内核日志
+> - A. ✓ 正确
+> - B. ✗ 错误
+>
+> > [!success]- 点击查看答案
+> > **A. ✓ 正确**
+> > 设置 kernel.dmesg_restrict=1 后，只有具有 CAP_SYSLOG 权限的进程（通常是 root）才能读取 dmesg 内核日志，防止信息泄露。
+
+> [!question]- 选择题 8：VFIO/GPU 直通中，vfio-pci 模块的作用是什么？
+> - A. 为 GPU 安装驱动
+> - B. 抢占隔离 GPU，使其可以直通给虚拟机
+> - C. 优化 GPU 性能
+> - D. 监控 GPU 温度
+>
+> > [!success]- 点击查看答案
+> > **B**
+> > vfio-pci 模块绑定到指定 PCI 设备（GPU），阻止宿主机驱动加载，使该设备可以直通给虚拟机使用。
+
+> [!question]- 选择题 9：reflector 工具的用途是什么？
+> - A. 自动备份系统配置
+> - B. 自动更新 pacman 镜像列表（按速度/地区排序）
+> - C. 反射性测试网络延迟
+> - D. 镜像本地仓库到远程
+>
+> > [!success]- 点击查看答案
+> > **B**
+> > reflector 自动从 Arch 镜像列表中按国家、协议、速度等条件筛选并排序，生成最优的 /etc/pacman.d/mirrorlist。
+
+> [!question]- 判断题 10：mkinitcpio 中 COMPRESSION="lz4" 选择 lz4 压缩的原因是它解压速度最快，适合桌面用户追求快速启动
+> - A. ✓ 正确
+> - B. ✗ 错误
+>
+> > [!success]- 点击查看答案
+> > **A. ✓ 正确**
+> > lz4 压缩率不如 zstd/xz，但解压速度最快，对桌面用户来说可以加快启动过程中 initramfs 的解压速度。
