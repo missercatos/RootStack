@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <a href="./git.md">Git 指南</a> · <a href="./github-settings.md">GitHub 设置</a> · <a href="./科学上网.md">科学上网</a> · <a href="./国际付费操作.md">国际付费</a> · <a href="./red_team/总目录与快速查询.md">红队知识库</a> · <a href="./ISSUES.md">参与贡献</a>
+  <a href="./git.md">Git 指南</a> · <a href="./github-settings.md">GitHub 设置</a> · <a href="./科学上网.md">科学上网</a> · <a href="./linux/">Linux 教程</a> · <a href="./国际付费操作.md">国际付费</a> · <a href="./red_team/总目录与快速查询.md">红队知识库</a> · <a href="./ISSUES.md">参与贡献</a>
 </p>
 
 <p align="center">
@@ -50,6 +50,16 @@
 
 本教程涉及编译、链接、系统调用、内核模块、汇编等底层内容。在 Windows 下学习 C/系统编程，频繁遇到 PATH 差异、缺少标准工具链、权限模型不一致、ABI 不同步等问题，每个问题都在分散你对核心知识的注意力。**推荐使用 Linux 作为学习环境**，一次解决所有环境问题，把精力留给真正要学的东西。
 
+### 什么是 Linux
+
+Linux 是一个自由开源的操作系统内核，由 [Linus Torvalds](https://github.com/torvalds/linux) 于 1991 年创建，在 GPL 下发布。它和 GNU 工具集一起构成了 GNU/Linux 操作系统。Linux 内核是**全世界最重要的开源项目之一** — 运行着全球 90% 以上的服务器、100% 的超级计算机、数十亿台 Android 设备，以及越来越多的桌面计算机。
+
+- [Linux 内核源码仓库](https://github.com/torvalds/linux) — 全世界最重要的项目之一
+- [kernel.org](https://kernel.org) — Linux 内核官方站点
+- [Arch Wiki](https://wiki.archlinux.org/) — 几乎所有 Linux 问题都能在这里找到答案，不仅限于 Arch 用户
+
+> **本教程体系包含完整的 Linux 百科全书式教程** — 62 章从入门到系统底层，涵盖 Shell 编程、系统管理、操作系统原理、服务器运维、容器技术、新型技术栈，以及 Arch/Debian/RedHat/Nix 四大发行版的完整指南。**[这是通识路径之一，推荐所有学习者修读。](linux/)**
+
 ### 新手推荐：Linux Mint
 
 最推荐新手用来踩坑的发行版是 [**Linux Mint**](https://linuxmint.com/)。
@@ -65,6 +75,7 @@
 
 - [Linux Mint 官网](https://linuxmint.com/) — 下载安装、查看文档
 - [Linux Mint 中文社区](https://linuxmint.com.cn/) — 中文资料与交流
+- [[linux/README|RootStack Linux 教程]] — 从零到精通的完整学习路径 (62章 + 4发行版)
 
 ---
 
@@ -117,6 +128,17 @@ RootStack/                          ├ v0.7.0
 ├── 路径D-DSA算法刷题.md         竞赛策略完全路线图 (力扣 + 多OJ)
 ├── 路径E-红队职业路径.md        网络安全职业路径 (含CTF→SRC/比赛分化)
 ├── 路径F-Rust学习路径.md        Rust 学习路径 (含力扣练习与竞赛OJ)
+│
+├── linux/                         Linux 百科全书式教程 (62章 + 4发行版完整指南)
+│   ├── README.md                  Linux 教程总览与学习路线
+│   ├── 01-Linux概述与历史.md          → 62-自定义系统打包与分发.md (62章主线)
+│   ├── distro/
+│   │   ├── arch/                  Arch Linux 完整指南
+│   │   ├── debian/                Debian/Ubuntu 完整指南
+│   │   ├── redhat/                RHEL/CentOS/Fedora/Rocky 完整指南
+│   │   └── nix/                   NixOS 声明式配置指南
+│   └── resources/                 命令速查表 + 术语对照表
+│
 ├── 算法/                         算法竞赛内容 (仅供 Path D 学习者)
 │   ├── 算法技巧/ (28篇)          基础算法技巧 (数组/搜索/DP/图论等)
 │   ├── 数学/ (5篇)               数论/组合数学/CRT (Phase 7)
@@ -266,6 +288,7 @@ Linux 6.1 开始正式支持 Rust 内核模块。未来的趋势不是 C vs Rust
 | D: DSA 刷题 | [[ISSUES|路径D-DSA算法刷题]] | 数据结构与算法/力扣练习/竞赛入门 |
 | F: Rust 学习 | [[ISSUES|路径F-Rust学习路径]] | C++ 之后的系统编程进阶 |
 | G: 深入底层 | [[操作系统/操作系统_索引|操作系统教程]] + [[计算机原理/计算机原理_索引|计算机原理教程]] | 数据结构之后的底层原理深入（v0.6.0 新增） |
+| H: Linux 系统 | [[linux/README|Linux 百科全书式教程]] | Linux 从入门到精通（所有路径推荐学习） |
 
 ## 职业路径（分支）
 
@@ -305,6 +328,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | 计算机原理 | [[计算机原理/计算机原理_索引|计算机原理教程]] | 大学本科课标 + 深入底层 (6篇) |
 | 内核 | [[ISSUES|内核总索引]] | 四种内核 + C与Rust新时代 |
 | 汇编 | [[ISSUES|寄存器与指令基础]] | x86/ARM 汇编入门 |
+| Linux 教程 | [[linux/README|Linux 百科全书式教程]] | 62章 + 4发行版指南 + Shell编程 + 服务器运维 |
 | 红队 | [[ISSUES|红队知识库总目录]] | ArchStrike渗透体系, ~125篇, 职业路径 |
 
 ---
@@ -400,6 +424,7 @@ git push origin my-feature
 | 7.23 | 重写数据结构    | 数据结构内容太过碎片化。而且涵盖不完全。有些内容是超出大学本科课程。有些则是没有涵盖到大学本科课程。我们这里以本科课程为标准是因为考虑到大多数阅读教程者是本科生。因此将做到涵盖本科教程的基础上深入底层。 |
 | 7.23 | 新增操作系统 + 计算机原理 | 新建操作系统/ (10篇) 和 计算机原理/ (6篇) 两个目录。涵盖大学本科课标，并进一步深入硬件底层和分配器架构。双链接接入数据结构、路径A、README。版本升至 0.6.0。 |
 | 7.24 | 重排数据结构 | 数据结构 A-T 全部重新编号排序，按教学逻辑从数组→字符串→稀疏矩阵→容器→链表→栈→队列→排序→堆→树→红黑树→Trie→B树→哈希→并查集→跳表→线段树→树状数组→图→图高级。修复全部双链接。重写 DSA学习路线，删除"大学课标"用语。14个章节新增动手实验题、洛谷练习题全面替换为力扣。版本升至 0.7.0。 |
+| 7.24 | Linux 教程全面重构 | linux-tutorial/ → linux/，全面重构为百科全书式 Linux 教程 (~94篇)。从 Arch 拆分扩展到 4 大发行版 (Arch/Debian/RedHat/Nix)，新增 Shell 编程深入 (16~20)、操作系统原理 (27~35)、服务器运维 (54~62) 等板块。主教程 62章 + 4个 distro/ 发行版完整指南。 |
 
 
 ## 加入交流群
