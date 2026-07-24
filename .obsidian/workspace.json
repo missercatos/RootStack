@@ -55,12 +55,89 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "README.md",
+                "file": "linux/README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
               "title": "README"
+            }
+          }
+        ],
+        "currentTab": 3
+      },
+      {
+        "id": "46bdb00f0573527b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "6c76fa29ec7344a6",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "数据结构/A_数组_Array.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "A_数组_Array"
+            }
+          },
+          {
+            "id": "1dfd5e80b8ba8a3c",
+            "type": "leaf",
+            "state": {
+              "type": "webviewer",
+              "state": {
+                "url": "https://leetcode.cn/problems/merge-sorted-array/description/",
+                "title": "88. 合并两个有序数组 - 力扣（LeetCode）",
+                "mode": "webview"
+              },
+              "icon": "globe-2",
+              "title": "88. 合并两个有序数组 - 力扣（LeetCode）"
+            }
+          },
+          {
+            "id": "bfc9f12fa9086a9d",
+            "type": "leaf",
+            "state": {
+              "type": "webviewer",
+              "state": {
+                "url": "https://leetcode.cn/problems/move-zeroes/submissions/737755671/",
+                "title": "283. 移动零 - 力扣（LeetCode）",
+                "mode": "webview"
+              },
+              "icon": "globe-2",
+              "title": "283. 移动零 - 力扣（LeetCode）"
+            }
+          },
+          {
+            "id": "7ee3127be558464e",
+            "type": "leaf",
+            "state": {
+              "type": "webviewer",
+              "state": {
+                "url": "https://leetcode.cn/problems/remove-element/",
+                "title": "27. 移除元素 - 力扣（LeetCode）",
+                "mode": "webview"
+              },
+              "icon": "globe-2",
+              "title": "27. 移除元素 - 力扣（LeetCode）"
+            }
+          },
+          {
+            "id": "7a3a71b452d5e870",
+            "type": "leaf",
+            "state": {
+              "type": "webviewer",
+              "state": {
+                "url": "https://leetcode.cn/problems/remove-duplicates-from-sorted-array/submissions/737747300/",
+                "title": "26. 删除有序数组中的重复项 - 力扣（LeetCode）",
+                "mode": "webview"
+              },
+              "icon": "globe-2",
+              "title": "26. 删除有序数组中的重复项 - 力扣（LeetCode）"
             }
           }
         ],
@@ -241,44 +318,44 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "c8e2d7c1de62bbc2",
+  "active": "bfc32f5c25ff73a8",
   "lastOpenFiles": [
-    "linux-tutorial/43-硬件玩法与外设进阶.md",
-    "linux-tutorial/42-终端常用工具大全.md",
-    "linux-tutorial/41-压缩与归档工具大全.md",
-    "linux-tutorial/diy-tablet-guide.md",
-    "linux-tutorial/40-dm-verity与完整性保护.md",
-    "linux-tutorial/34-FUSE与虚拟文件系统.md",
-    "linux-tutorial/37-Docker与容器技术.md",
-    "linux-tutorial/39-PipeWire与WirePlumber详解.md",
-    "linux-tutorial/33-不可变系统与系统扩展.md",
-    "linux-tutorial/36-Linux安全执行环境.md",
-    "linux-tutorial/38-Wayland深入指南.md",
-    "linux-tutorial/32-systemd全面指南.md",
-    "linux-tutorial/35-BPF与系统追踪.md",
-    "linux-tutorial/20-手动安装ArchLinux完全指南.md",
-    "linux-tutorial/26-蓝牙驱动配置.md",
-    "linux-tutorial/29-Linux内核对比与应用场景.md",
-    "linux-tutorial/31-自定义系统打包与分发.md",
-    "linux-tutorial/23-systemd-homed用户管理.md",
-    "linux-tutorial/19-Init进程与启动流程.md",
-    "linux-tutorial/25-音频驱动配置.md",
-    "linux-tutorial/28-系统错误排查与日志分析.md",
-    "linux-tutorial/30-新型Linux与传统CentOS文件结构对比.md",
-    "linux-tutorial/22-内核编译与定制.md",
-    "linux-tutorial/24-显卡驱动配置.md",
-    "linux-tutorial/27-硬件驱动大全与视频多媒体.md",
-    "linux-tutorial/Linux 免修教程.md",
+    "README.md",
+    "linux/README.md",
+    "linux/05-文本编辑器(Vim+Nano).md",
+    "linux.md",
+    "linux/resources/术语对照表.md",
+    "linux/resources/发行版命令速查表.md",
+    "linux/distro/nix/03-nixpkgs与包管理.md",
+    "linux/distro/nix/02-Nix语言与flake.md",
+    "linux/distro/nix/01-NixOS安装与声明式配置.md",
+    "linux/distro/redhat/05-firewalld与nmcli.md",
+    "linux/distro/redhat/04-SELinux深入.md",
+    "linux/distro/redhat/03-RPM打包与仓库.md",
+    "linux/61-高可用与集群.md",
+    "linux/distro/redhat/02-RHEL-CentOS安装与配置.md",
+    "linux/60-Ansible与配置管理.md",
+    "linux/distro/redhat/01-dnf-yum包管理.md",
+    "linux/59-CI-CD基础.md",
+    "linux/distro/debian/04-netplan与NetworkManager.md",
+    "linux/58-监控系统(Prometheus+Grafana).md",
+    "linux/distro/debian/03-dpkg与deb打包.md",
+    "linux/57-DNS服务器搭建.md",
+    "linux/distro/debian/02-Debian安装与服务器配置.md",
+    "linux/52-Device Mapper与存储栈.md",
+    "linux/56-数据库运维(主从+备份+优化).md",
+    "linux/distro/debian/01-apt包管理.md",
+    "linux/distro/arch/02-pacman包管理高级.md",
+    "linux/resources",
+    "linux/distro/arch/desktop",
+    "linux/distro/redhat",
+    "linux/distro/nix",
+    "linux/distro/debian",
+    "linux/distro/arch",
+    "linux/distro",
+    "linux",
     "linux-tutorial",
     "sedJVPa34",
-    "VERSION",
-    "计算机原理",
-    "操作系统",
-    "public/路径F-Rust学习路径.html",
-    "public/路径E-红队职业路径.html",
-    "public/路径D-DSA算法刷题.html",
-    "public/路径C-C向下兼容C++.html",
-    "public/路径B-CPP主线.html",
     "public/assets/images/string/strstr_kmp_indices.svg",
     "public/assets/images/string/prefix_str_3.svg",
     "public/assets/images/string/prefix_str_2.svg",

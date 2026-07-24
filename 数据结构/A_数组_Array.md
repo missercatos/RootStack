@@ -500,7 +500,6 @@ int sa_set(StaticArray* a, size_t index, int value) {
 ### 连续二维数组（平坦数组）
 
 在 C 语言中，用一维数组手动计算下标索引，是实现真连续二维数组的最通用方式——工作在所有 C/C++ 版本，且保证缓存最优：
-
 ```c
 #include <stdlib.h>
 
