@@ -77,4 +77,4 @@ CAS 是无锁数据结构（lock-free queue、lock-free stack、无锁哈希表�
 
 - 缓存一致性导致的伪共享 → [[../计算机原理/B_缓存层级#伪共享]]
 - 原子操作与锁的关系 → [[E_同步与死锁]]
-- 无锁数据结构 → [[../数据结构/N_跳表_SkipList|跳表 SkipList]]
+- 无锁数据结构 → [[../数据结构/P_跳表_SkipList|跳表 SkipList]]

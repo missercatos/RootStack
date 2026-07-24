@@ -81,6 +81,6 @@ for it = range.first; it != range.second; ++it:
 
 ## 相关链接
 
-- [[../../../数据结构/I_树_Tree_BST_AVL]]
-- [[../../../数据结构/I_树_Tree_BST_AVL]]
+- [[../../../数据结构/J_树_Tree_BST_AVL]]
+- [[../../../数据结构/J_树_Tree_BST_AVL]]
 - [[../无序容器/unordered_map]] | [[../其他/pair]]

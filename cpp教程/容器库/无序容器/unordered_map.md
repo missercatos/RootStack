@@ -79,6 +79,6 @@ for it = range.first; it != range.second; ++it:
 
 ## 相关链接
 
-- [[../../../数据结构/G_哈希表_HashTable]]
-- [[../../../数据结构/G_哈希表_HashTable]]
+- [[../../../数据结构/N_哈希表_HashTable]]
+- [[../../../数据结构/N_哈希表_HashTable]]
 - [[../关联容器/map]] | [[../其他/pair]]
