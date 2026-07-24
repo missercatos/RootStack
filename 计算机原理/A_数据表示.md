@@ -137,6 +137,6 @@ int is_power_of_two(size_t n) { return n && !(n & (n - 1)); }
 
 ### 本章与其他模块的链接
 
-- 内存对齐在容器选型中的实际影响 → [[../数据结构/A_容器_Container|容器 Container#内存对齐与 padding]]
-- 浮点数精度与 `std::set` 的关系 → [[../数据结构/A_容器_Container|容器 Container]]
+- 内存对齐在容器选型中的实际影响 → [[../数据结构/D_容器_Container|容器 Container#内存对齐与 padding]]
+- 浮点数精度与 `std::set` 的关系 → [[../数据结构/D_容器_Container|容器 Container]]
 - 缓存如何利用对齐地址做快速读取 → [[B_缓存层级]]

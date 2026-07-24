@@ -1,23 +1,74 @@
 
 
-建议先阅读: [[H_图_Graph|H 图 Graph]]
+建议先阅读: [[S_图_Graph|S 图 Graph]]
 
 ---
 
 ## 原理
 
-本章介绍图论中的高级算法：拓扑排序、强连通分量（Tarjan）、多源最短路径（Floyd-Warshall）、含负权边的单源最短路径（Bellman-Ford）、网络流等。
+本章涵盖图论中超越 BFS/Dijkstra 的算法。它们共享一个深层模式：**通过放宽限制（负权、全源、流量限制）来扩展基本图算法的适用范围**。
 
-### 算法总览
+### 算法全景
 
-| 算法 | 用途 | 时间复杂度 | 条件 |
-|------|------|-----------|------|
-| Kahn 拓扑排序 | DAG 线性排序 | O(V+E) | 有向无环图 |
-| Tarjan SCC | 强连通分量 | O(V+E) | 有向图 |
-| Floyd-Warshall | 全源最短路径 | O(V^3) | 任意权图（无负环） |
-| Bellman-Ford | 单源最短路径（负权） | O(VE) | 可检负环 |
-| SPFA | Bellman-Ford 队列优化 | O(VE) 最坏 | 平均较快 |
-| Dinic | 最大流 | O(V^2 E) | 流量网络 |
+| 算法 | 问题 | 时间复杂度 | 核心洞见 |
+|------|------|:----------:|---------|
+| Kahn | DAG 拓扑排序 | $O(V+E)$ | 零入度节点的队列驱逐 |
+| Tarjan SCC | 强连通分量 | $O(V+E)$ | DFS 生成树 + low-link 值判定跨分量边 |
+| Bellman-Ford | 单源含负权最短路径 | $O(VE)$ | 至多 $V-1$ 轮松弛——超过即有负环 |
+| Floyd-Warshall | 全源最短路径 | $O(V^3)$ | DP：$d(i,j) = \min(d(i,j), d(i,k) + d(k,j))$ |
+| Dinic | 最大流 | $O(V^2E)$ | BFS 分层图 + DFS 阻塞流 |
+
+### 拓扑排序（Kahn 算法）
+
+适用于**有向无环图（DAG）**。统计每个顶点的入度——入度为 0 的顶点没有未解决的前驱依赖，可立即输出。输出后将被其指向的顶点的入度减 1，新产生的入度 0 顶点入队。若最终输出的顶点数 $< V$，则图中存在环。拓扑排序是编译器构建系统（Makefile、Gradle 任务）和任务依赖调度（PERT 网络）的基础。
+
+### Tarjan 强连通分量（SCC）
+
+Tarjan 算法在一次 DFS 中同时完成 SCC 的发现和划分。核心是两个时间戳：
+
+- **dfn[v]**（discovery/finish number）：DFS 首次访问 $v$ 的时间（时间戳递增）
+- **low[v]**：$v$ 通过最多一条回边能到达的顶点中 dfn 的最小值
+
+当 `dfn[v] == low[v]` 时，$v$ 是其 SCC 的根——构成该 SCC 的所有顶点都在 DFS 栈中、在 $v$ 之上。
+
+```c
+// Tarjan SCC 核心
+void tarjan(int u, int* dfn, int* low, int* in_stack, int* stk, int* top, int* timer) {
+    dfn[u] = low[u] = ++(*timer);
+    stk[(*top)++] = u; in_stack[u] = 1;
+
+    for (each neighbor v of u) {
+        if (dfn[v] == 0) {                // 树边
+            tarjan(v, dfn, low, in_stack, stk, top, timer);
+            low[u] = MIN(low[u], low[v]);  // 子节点的 low 值回传
+        } else if (in_stack[v]) {          // 回边（当前栈中的后裔）
+            low[u] = MIN(low[u], dfn[v]);
+        }
+        // 横跨边：忽略（dfn[v] 已定且不在栈中）
+    }
+
+    if (low[u] == dfn[u]) {               // u 是 SCC 的根
+        // 弹出栈直到 u，所有弹出的顶点构成一个 SCC
+        while (stk[--(*top)] != u) { ... }
+    }
+}
+```
+
+### Bellman-Ford 与负环检测
+
+Bellman-Ford 的每一轮松弛（relaxation）都检查每条边 $(u, v)$：如果当前 $d[u] + w(u, v) < d[v]$，则更新 $d[v]$。$|V|-1$ 轮后，所有最短路径（至多 $|V|-1$ 条边）均已找到。若第 $|V|$ 轮仍能更新任何 $d[v]$，则存在**负权环**——因为正确的最短路径不会超过 $|V|-1$ 条边。
+
+Bellman-Ford 是动态规划在最短路径上的直接体现——第 $k$ 轮松弛等价于"至多使用 $k$ 条边的最短路径"。
+
+### Floyd-Warshall 的 DP 递推
+
+Floyd-Warshall 是经典的动态规划全源最短路径算法：
+
+$$
+d^{(k)}(i, j) = \min\left(d^{(k-1)}(i, j),\; d^{(k-1)}(i, k) + d^{(k-1)}(k, j)\right)
+$$
+
+含义：加入顶点 $k$ 作为中间节点后，$i$ 到 $j$ 的最短路径要么不经过 $k$（保持原值），要么经过 $k$（路径分为 $i \to k$ 和 $k \to j$ 两段）。三重循环 $O(V^3)$ 但常数因子极小——3 层嵌套循环访问连续的二维数组，cache 利用率高。
 
 ---
 
@@ -332,11 +383,18 @@ long long dinic_max_flow(Dinic* dn, int s, int t) {
 
 ## 练习
 
-| 题号 | 题目 | 难度 | 知识点 |
-|------|------|------|--------|
-| P1113 | 杂务 | 普及 | 拓扑排序 |
-| P3387 | 缩点 | 提高 | Tarjan + DAG 上 DP |
-| P3385 | 负环 | 提高 | Bellman-Ford/SPFA |
-| P3376 | 最大流 | 提高 | Dinic 网络流 |
+| 题号 | 题目 | 说明 |
+|------|------|------|
+| [207](https://leetcode.cn/problems/course-schedule/) | 课程表 | 拓扑排序 |
+| [210](https://leetcode.cn/problems/course-schedule-ii/) | 课程表 II | 拓扑排序输出序列 |
+| [787](https://leetcode.cn/problems/cheapest-flights-within-k-stops/) | K 站中转最便宜航班 | Bellman-Ford / DP |
+| [1192](https://leetcode.cn/problems/critical-connections-in-a-network/) | 查找集群内的关键连接 | Tarjan SCC |
 
 > 力扣 (LeetCode) 有对应题型，竞赛方向推荐力扣/Codeforces。
+
+## 动手实验
+
+| 编号 | 题目 | 说明 |
+|:----:|------|------|
+| E1 | 有向无环图拓扑排序 | 生成一个 20 个节点的随机 DAG，分别用 Kahn 算法和 DFS 后序遍历输出拓扑序列，验证结果正确性（序列中所有边从左指向右） |
+| E2 | Bellman-Ford vs SPFA | 随机生成含负权边的稀疏图，分别用 Bellman-Ford 和 SPFA 求最短路径，对比迭代次数和运行时间。构造一个 Worst Case 让 SPFA 退化 |

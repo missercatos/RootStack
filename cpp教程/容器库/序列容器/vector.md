@@ -67,6 +67,6 @@ vector<vector<int>> mat(3, vector<int>(4, 0))
 
 ## 相关链接
 
-- [[../../../数据结构/A_容器_Container]]
-- [[../../../数据结构/A_容器_Container]]
+- [[../../../数据结构/D_容器_Container]]
+- [[../../../数据结构/D_容器_Container]]
 - [[array]] | [[deque]]
