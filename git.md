@@ -375,6 +375,8 @@ gh repo create 新仓库名 --public      # 直接指定公开
 gh repo create 新仓库名 --private     # 直接指定私有
 gh repo create 组织名/新仓库名        # 在组织下创建仓库
 gh repo create 新仓库名 --clone       # 创建后自动 clone 到本地
+gh repo create 仓库名 --public --source=. --remote=origin --push
+创建新仓库并推送
 
 # 仓库可见性切换（私→公 or 公→私）
 gh repo edit --visibility public      # 改为公开
