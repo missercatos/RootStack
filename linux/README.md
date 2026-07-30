@@ -40,7 +40,7 @@ Linux 是一个类 Unix 的开源操作系统内核，由芬兰赫尔辛基大�
 
 ## 教程结构总览
 
-本教程按知识领域划分为六个部分，共 **62 章**（主教程）+ 发行版专项内容，总计超过 80 篇文档。
+本教程按知识领域划分为六个部分，共 **63 章**（主教程）+ 发行版专项内容，总计超过 80 篇文档。
 
 ### 第一部分：入门篇（01-06）
 
@@ -112,7 +112,7 @@ Linux 是一个类 Unix 的开源操作系统内核，由芬兰赫尔辛基大�
 | [[34-文件系统设计]] | 文件系统设计 | 文件结构、目录实现、空闲空间管理、一致性检查 |
 | [[35-I-O设备管理]] | I/O 设备管理 | I/O 控制方式、缓冲/缓存、SPOOLing、磁盘调度 |
 
-### 第六部分：系统架构与高级主题（36-53）
+### 第六部分：系统架构与高级主题（36-63）
 
 从内核到用户态，从存储到追踪——深入 Linux 现代特性。
 
@@ -152,6 +152,7 @@ Linux 是一个类 Unix 的开源操作系统内核，由芬兰赫尔辛基大�
 | [[60-Ansible与配置管理]] | Ansible 与配置管理 | 清单、Playbook、角色、变量编排 |
 | [[61-高可用与集群]] | 高可用与集群 | Keepalived + HAProxy、故障转移、PG 高可用集群 |
 | [[62-自定义系统打包与分发]] | 自定义系统打包与分发 | 制作自定义 ISO、PXE 批量部署 |
+| [[63-包管理器崩溃恢复与驱动管理通用指南]] | 包管理器崩溃恢复与驱动管理 | 跨发行版的包管理器恢复、ICU 库修复、DKMS 故障处理、滚动更新预防 |
 
 ### 发行版专项内容
 
@@ -160,7 +161,7 @@ Linux 是一个类 Unix 的开源操作系统内核，由芬兰赫尔辛基大�
 | 发行版 | 目录 | 内容 |
 |--------|------|------|
 | **Arch Linux** | [[distro/arch/01-安装指南\|Arch 安装]] | 安装指南、pacman 高级、AUR 打包、systemd-homed、深度玩法、自定义系统打包、DIY 平板指南 |
-|  | [[distro/arch/desktop/|Arch 桌面]] | [[distro/arch/desktop/01-Niri配置\|Niri 配置]]、[[distro/arch/desktop/02-Hyprland配置\|Hyprland 配置]]、[[distro/arch/desktop/03-Wayland合成器开发\|Wayland 合成器开发]]、[[distro/arch/desktop/04-终端模拟器配置\|终端模拟器配置]]、[[distro/arch/desktop/05-QuickShell开发\|QuickShell 开发]]、[[distro/arch/desktop/06-显卡驱动配置\|显卡驱动配置]]、[[distro/arch/desktop/07-音频驱动配置\|音频驱动配置]]、[[distro/arch/desktop/08-蓝牙驱动配置\|蓝牙驱动配置]]、[[distro/arch/desktop/09-硬件与多媒体配置\|硬件与多媒体配置]]、[[distro/arch/desktop/10-Btrfs高级玩法\|Btrfs 高级玩法]] |
+|  | [[distro/arch/desktop/|Arch 桌面]] | [[distro/arch/desktop/01-Niri配置\|Niri 配置]]、[[distro/arch/desktop/02-Hyprland配置\|Hyprland 配置]]、[[distro/arch/desktop/03-Wayland合成器开发\|Wayland 合成器开发]]、[[distro/arch/desktop/04-终端模拟器配置\|终端模拟器配置]]、[[distro/arch/desktop/05-QuickShell开发\|QuickShell 开发]]、[[distro/arch/desktop/06-显卡驱动配置\|显卡驱动配置]]（含 Legacy 迁移、故障恢复、滚动更新维护）、[[distro/arch/desktop/07-音频驱动配置\|音频驱动配置]]、[[distro/arch/desktop/08-蓝牙驱动配置\|蓝牙驱动配置]]、[[distro/arch/desktop/09-硬件与多媒体配置\|硬件与多媒体配置]]、[[distro/arch/desktop/10-Btrfs高级玩法\|Btrfs 高级玩法]] |
 | **Debian / Ubuntu** | `distro/debian/` | [[distro/debian/01-apt包管理\|apt 包管理]]、[[distro/debian/02-Debian安装与服务器配置\|安装与服务器配置]]、[[distro/debian/03-dpkg与deb打包\|dpkg 与 deb 打包]]、[[distro/debian/04-netplan与NetworkManager\|netplan 与 NetworkManager]] |
 | **RHEL / Fedora** | `distro/redhat/` | [[distro/redhat/01-dnf-yum包管理\|dnf/yum 包管理]]、[[distro/redhat/02-RHEL-CentOS安装与配置\|安装与配置]]、[[distro/redhat/03-RPM打包与仓库\|RPM 打包与仓库]]、[[distro/redhat/04-SELinux深入\|SELinux 深入]]、[[distro/redhat/05-firewalld与nmcli\|firewalld 与 nmcli]] |
 | **NixOS** | `distro/nix/` | [[distro/nix/01-NixOS安装与声明式配置\|安装与声明式配置]]、[[distro/nix/02-Nix语言与flake\|Nix 语言与 flake]]、[[distro/nix/03-nixpkgs与包管理\|nixpkgs 与包管理]] |
@@ -475,7 +476,7 @@ Linux **不是绝对安全**的。虽然其安全架构（权限分离、包管�
 ```
 linux/
 ├── README.md                          ← 你正在看的主入口
-├── 01-*.md ~ 62-*.md                  ← 62 章主教程（按编号排列）
+    ├── 01-*.md ~ 63-*.md                  ← 63 章主教程（按编号排列）
 ├── resources/                         ← 辅助资源
 │   ├── 发行版命令速查表.md             ← 跨发行版命令对照
 │   └── 术语对照表.md                   ← 英汉术语速查

@@ -129,11 +129,11 @@ RootStack/                          ├ v0.7.0
 ├── 路径E-红队职业路径.md        网络安全职业路径 (含CTF→SRC/比赛分化)
 ├── 路径F-Rust学习路径.md        Rust 学习路径 (含力扣练习与竞赛OJ)
 │
-├── linux/                         Linux 百科全书式教程 (62章 + 4发行版完整指南)
+├── linux/                         Linux 百科全书式教程 (63章 + 4发行版完整指南)
 │   ├── README.md                  Linux 教程总览与学习路线
-│   ├── 01-Linux概述与历史.md          → 62-自定义系统打包与分发.md (62章主线)
+│   ├── 01-Linux概述与历史.md          → 63-包管理器崩溃恢复与驱动管理通用指南.md (63章主线)
 │   ├── distro/
-│   │   ├── arch/                  Arch Linux 完整指南
+│   │   ├── arch/                  Arch Linux 完整指南（含 NVIDIA Legacy 驱动迁移与故障恢复）
 │   │   ├── debian/                Debian/Ubuntu 完整指南
 │   │   ├── redhat/                RHEL/CentOS/Fedora/Rocky 完整指南
 │   │   └── nix/                   NixOS 声明式配置指南
