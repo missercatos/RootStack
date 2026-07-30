@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <a href="./git.md">Git 指南</a> · <a href="./github-settings.md">GitHub 设置</a> · <a href="./科学上网.md">科学上网</a> · <a href="./国际付费操作.md">国际付费</a> · <a href="./red_team/总目录与快速查询.md">红队知识库</a> · <a href="./ISSUES.md">参与贡献</a>
+  <a href="./git.md">Git 指南</a> · <a href="./github-settings.md">GitHub 设置</a> · <a href="./科学上网.md">科学上网</a> · <a href="./国际付费操作.md">国际付费</a> · <a href="./AI_Agent工具使用教程.md">AI Agent 工具</a> · <a href="./red_team/总目录与快速查询.md">红队知识库</a> · <a href="./ISSUES.md">参与贡献</a>
 </p>
 
 <p align="center">
@@ -295,6 +295,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | 内核 | [[ISSUES|内核总索引]] | 四种内核 + C与Rust新时代 |
 | 汇编 | [[ISSUES|寄存器与指令基础]] | x86/ARM 汇编入门 |
 | 红队 | [[ISSUES|红队知识库总目录]] | ArchStrike渗透体系, ~125篇, 职业路径 |
+| AI Agent | [[AI_Agent工具使用教程]] | 编码 Agent 工具推荐、安装、使用哲学 |
 
 ---
 
@@ -362,6 +363,8 @@ git push origin my-feature
 
 - [opencode](https://opencode.ai) — 项目重构与内容批量处理
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — 方案设计、内容编写与代码审查
+
+关于这些工具的详细介绍、安装使用、安全风险及作者的 Agent 使用哲学，见 [[AI_Agent工具使用教程]]。
 
 感谢所有通过 [[ISSUES|问题讨论区]] 和 Pull Request 参与贡献的读者。
 

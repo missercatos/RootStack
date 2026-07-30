@@ -565,12 +565,13 @@ int mat_set(Matrix2D* m, size_t i, size_t j, int value) {
 
 ## 练习
 
-| 题号 | 题目 | 难度 | 知识点 |
-|------|------|:----:|--------|
-| [26](https://leetcode.cn/problems/remove-duplicates-from-sorted-array/) | 删除有序数组中的重复项 | 入门 | 原地修改、双指针 |
-| [27](https://leetcode.cn/problems/remove-element/) | 移除元素 | 入门 | 原地修改 |
-| [283](https://leetcode.cn/problems/move-zeroes/) | 移动零 | 入门 | 双指针 + 原地修改 |
-| [88](https://leetcode.cn/problems/merge-sorted-array/) | 合并两个有序数组 | 入门 | 逆向双指针 |
+| 题号                                                                      | 题目          | 难度  | 知识点        |
+| ----------------------------------------------------------------------- | ----------- | :-: | ---------- |
+| [26](https://leetcode.cn/problems/remove-duplicates-from-sorted-array/) | 删除有序数组中的重复项 | 入门  | 原地修改、双指针   |
+| [27](https://leetcode.cn/problems/remove-element/)                      | 移除元素        | 入门  | 原地修改       |
+| [283](https://leetcode.cn/problems/move-zeroes/)                        | 移动零         | 入门  | 双指针 + 原地修改 |
+| [88](https://leetcode.cn/problems/merge-sorted-array/)                  | 合并两个有序数组    | 入门  | 逆向双指针      |
+
 
 ---
 
