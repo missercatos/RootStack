@@ -9,12 +9,13 @@
   <img src="https://img.shields.io/badge/C-00599C?style=flat-square&logo=c&logoColor=white" alt="C"/>
   <img src="https://img.shields.io/badge/C++-00599C?style=flat-square&logo=cplusplus&logoColor=white" alt="C++"/>
   <img src="https://img.shields.io/badge/Rust-000000?style=flat-square&logo=rust&logoColor=white" alt="Rust"/>
+  <img src="https://img.shields.io/badge/Lua-2C2D72?style=flat-square&logo=lua&logoColor=white" alt="Lua"/>
   <img src="https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black" alt="Linux"/>
   <img src="https://img.shields.io/badge/Assembly-525252?style=flat-square&logo=assemblermips&logoColor=white" alt="Assembly"/>
   <img src="https://img.shields.io/badge/数据结构-339933?style=flat-square" alt="数据结构"/>
   <img src="https://img.shields.io/badge/算法-FF6F00?style=flat-square" alt="算法"/>
   <img src="https://img.shields.io/badge/网络安全-E34F26?style=flat-square" alt="网络安全"/>
-  <img src="https://img.shields.io/badge/版本-0.5.0-blue?style=flat-square" alt="version"/>
+  <img src="https://img.shields.io/badge/版本-0.8.0-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
@@ -116,7 +117,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/                          ├ v0.5.0
+RootStack/                          ├ v0.8.0
 ├── README.md                    ← 你在这里
 │
 ├── 路径A-C主线.md               C 主线: 从零到内核
@@ -152,6 +153,11 @@ RootStack/                          ├ v0.5.0
 │   ├── 1入门/ (14篇)             2深入/ (11篇)           3实践/ (6篇)
 │   ├── 4工程/ (12篇)              5重构/ (6篇)
 │
+├── lua-tutorial/ (7篇)          Lua 教程: 简介 → 安装 → 基础 → 进阶 → 集成
+│   ├── 00-lua简介.md             01-安装与环境配置.md    02-基础入门.md
+│   ├── 03-进阶教程.md            04-C与C++集成.md
+│   └── 05-Neovim示例.md          06-Love2D示例.md
+│
 ├── 数据结构/ (21篇)             语言无关的数据结构教程 + DSA学习路线
 │
 ├── 内核/ (~35篇)               四种内核 + C与Rust新时代 + Rust内核开发
@@ -171,7 +177,7 @@ RootStack/                          ├ v0.5.0
 │
 ├── git.md                       Git 与 GitHub 终端操作指南 (14节)
 ├── github-settings.md           GitHub 网页端设置指南（新增）
-├── VERSION                      项目版本号: 0.5.0
+├── VERSION                      项目版本号: 0.8.0
 └── ISSUES.md                   问题讨论与贡献指南
 ```
 
@@ -397,6 +403,7 @@ git push origin my-feature
 | 7.20 | 新增密码学     | 密码学是计算领域的一门重要学科，所以创建密码学部分。专门列一个类目。                                                               |
 | 7.22 | 网站上线       | 部署至 Cloudflare Pages，域名 rootstack.misser.top，GitHub Actions 自动发布                            |
 | 7.22 | 内容更新       | Linux 推荐改为 Mint，新增网安发行版说明，增加求 Star 链接，版本升至 0.5.0
+| 7.31 | 新增Lua教程     | 新增 lua-tutorial/ (7篇: 简介+安装+基础+进阶+C/C++集成+Neovim+Love2D)，双链接接入 README/index，版本升至 0.8.0
 
 
 ## 加入交流群
