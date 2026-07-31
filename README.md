@@ -9,12 +9,13 @@
   <img src="https://img.shields.io/badge/C-00599C?style=flat-square&logo=c&logoColor=white" alt="C"/>
   <img src="https://img.shields.io/badge/C++-00599C?style=flat-square&logo=cplusplus&logoColor=white" alt="C++"/>
   <img src="https://img.shields.io/badge/Rust-000000?style=flat-square&logo=rust&logoColor=white" alt="Rust"/>
+  <img src="https://img.shields.io/badge/Lua-2C2D72?style=flat-square&logo=lua&logoColor=white" alt="Lua"/>
   <img src="https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black" alt="Linux"/>
   <img src="https://img.shields.io/badge/Assembly-525252?style=flat-square&logo=assemblermips&logoColor=white" alt="Assembly"/>
   <img src="https://img.shields.io/badge/数据结构-339933?style=flat-square" alt="数据结构"/>
   <img src="https://img.shields.io/badge/算法-FF6F00?style=flat-square" alt="算法"/>
   <img src="https://img.shields.io/badge/网络安全-E34F26?style=flat-square" alt="网络安全"/>
-  <img src="https://img.shields.io/badge/版本-0.7.0-blue?style=flat-square" alt="version"/>
+  <img src="https://img.shields.io/badge/版本-0.8.0-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
@@ -119,7 +120,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/                          ├ v0.7.0
+RootStack/                          ├ v0.8.0
 ├── README.md                    ← 你在这里
 │
 ├── 路径A-C主线.md               C 主线: 从零到内核
@@ -166,6 +167,11 @@ RootStack/                          ├ v0.7.0
 │   ├── 1入门/ (14篇)             2深入/ (11篇)           3实践/ (6篇)
 │   ├── 4工程/ (12篇)              5重构/ (6篇)
 │
+├── lua-tutorial/ (7篇)          Lua 教程: 简介 → 安装 → 基础 → 进阶 → 集成
+│   ├── 00-lua简介.md             01-安装与环境配置.md    02-基础入门.md
+│   ├── 03-进阶教程.md            04-C与C++集成.md
+│   └── 05-Neovim示例.md          06-Love2D示例.md
+│
 ├── 数据结构/ (21篇)             语言无关的数据结构教程 + DSA学习路线
 │   ├── A_数组_Array → T_图的高级算法 (共20篇，A-T连续编号)
 │
@@ -195,7 +201,7 @@ RootStack/                          ├ v0.7.0
 │
 ├── git.md                       Git 与 GitHub 终端操作指南 (14节)
 ├── github-settings.md           GitHub 网页端设置指南（新增）
-├── VERSION                      项目版本号: 0.6.0
+├── VERSION                      项目版本号: 0.8.0
 └── ISSUES.md                   问题讨论与贡献指南
 ```
 
@@ -329,6 +335,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | 内核 | [[ISSUES|内核总索引]] | 四种内核 + C与Rust新时代 |
 | 汇编 | [[ISSUES|寄存器与指令基础]] | x86/ARM 汇编入门 |
 | Linux 教程 | [[linux/README|Linux 百科全书式教程]] | 62章 + 4发行版指南 + Shell编程 + 服务器运维 |
+| Lua | [[lua-tutorial/00-lua简介\|Lua 教程]] | 基础 → 进阶 → C/C++集成 → Neovim/Love2D (7篇) |
 | 红队 | [[ISSUES|红队知识库总目录]] | ArchStrike渗透体系, ~125篇, 职业路径 |
 
 ---
@@ -425,6 +432,7 @@ git push origin my-feature
 | 7.23 | 新增操作系统 + 计算机原理 | 新建操作系统/ (10篇) 和 计算机原理/ (6篇) 两个目录。涵盖大学本科课标，并进一步深入硬件底层和分配器架构。双链接接入数据结构、路径A、README。版本升至 0.6.0。 |
 | 7.24 | 重排数据结构 | 数据结构 A-T 全部重新编号排序，按教学逻辑从数组→字符串→稀疏矩阵→容器→链表→栈→队列→排序→堆→树→红黑树→Trie→B树→哈希→并查集→跳表→线段树→树状数组→图→图高级。修复全部双链接。重写 DSA学习路线，删除"大学课标"用语。14个章节新增动手实验题、洛谷练习题全面替换为力扣。版本升至 0.7.0。 |
 | 7.24 | Linux 教程全面重构 | linux-tutorial/ → linux/，全面重构为百科全书式 Linux 教程 (~94篇)。从 Arch 拆分扩展到 4 大发行版 (Arch/Debian/RedHat/Nix)，新增 Shell 编程深入 (16~20)、操作系统原理 (27~35)、服务器运维 (54~62) 等板块。主教程 62章 + 4个 distro/ 发行版完整指南。 |
+| 7.31 | 新增Lua教程     | 新增 lua-tutorial/ (7篇: 简介+安装+基础+进阶+C/C++集成+Neovim+Love2D)，双链接接入 README/index，版本升至 0.8.0 |
 
 
 ## 加入交流群
