@@ -6,7 +6,7 @@
       {
         "id": "48c765fac0ddaa9b",
         "type": "tabs",
-        "dimension": 50.25873221216042,
+        "dimension": 50.258732212160425,
         "children": [
           {
             "id": "56ebee7b4d241e9c",
@@ -56,7 +56,7 @@
       {
         "id": "4bf60a622c05f3f6",
         "type": "tabs",
-        "dimension": 49.74126778783958,
+        "dimension": 49.741267787839575,
         "children": [
           {
             "id": "d12029d04fd311e6",
@@ -64,12 +64,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "AI_Agent工具使用教程.md",
+                "file": "red_team/ctf_trea/Web/Web前置技能/HTTP协议/请求方式.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "AI_Agent工具使用教程"
+              "title": "请求方式"
             }
           }
         ]
@@ -251,8 +251,11 @@
   },
   "active": "d12029d04fd311e6",
   "lastOpenFiles": [
-    "git.md",
+    "linux/distro/arch/desktop/11-Steam客户端排障.md",
+    "red_team/ctf_trea/Web/Web前置技能/HTTP协议/HTTP协议.md",
+    "red_team/ctf_trea/Web/Web前置技能/HTTP协议/请求方式.md",
     "AI_Agent工具使用教程.md",
+    "git.md",
     "数据结构/A_数组_Array.md",
     "操作系统/F_内存管理.md",
     "red_team/服务器部署与运维/qqbot-01-部署与运维.md",
@@ -274,9 +277,6 @@
     "linux/distro/redhat/01-dnf-yum包管理.md",
     "linux/59-CI-CD基础.md",
     "linux/distro/debian/04-netplan与NetworkManager.md",
-    "linux/58-监控系统(Prometheus+Grafana).md",
-    "linux/distro/debian/03-dpkg与deb打包.md",
-    "linux/57-DNS服务器搭建.md",
     "linux/resources",
     "linux/distro/arch/desktop",
     "linux/distro/redhat",
