@@ -81,9 +81,24 @@ Web 方向考察选手对网络应用全链路的理解与攻击能力，包括�
 ### 前置技能
 
 - [[Web前置技能/HTTP协议/HTTP协议|HTTP 协议基础]] -- CTF 中 HTTP 相关题目与突破点
+- [[Web前置技能/操作系统/操作系统|操作系统基础]] -- Linux 环境与终端命令
+- [[Web前置技能/数据库/数据库|数据库基础]] -- SQL 语法与数据库操作
+- [[Web前置技能/HTML-CSS/HTML-CSS|HTML/CSS 基础]] -- 前端页面结构与样式
+- [[Web前置技能/程序语言/程序语言|程序语言基础]] -- PHP 与 Python 核心语法
 - [[../../网安基础知识/02-Web技术基础|Web 技术基础]] -- 本知识库中 HTTP 协议的完整讲解
 - [[../../archstrike-web教学/01-Web基础与HTTP协议|Web 基础与 HTTP 协议]] -- ArchStrike 环境下的 Web 安全实战
 - [[../../网安基础知识/01-计算机网络基础|计算机网络基础]] -- OSI 模型与 TCP/IP 协议栈
+
+### Web 工具配置
+
+- [[Web工具配置/虚拟机/虚拟机|虚拟机环境]] -- VirtualBox / Docker 靶场搭建
+- [[Web工具配置/BurpSuite/BurpSuite|BurpSuite 配置]] -- 代理拦截 / Repeater / Intruder
+- [[Web工具配置/Chrome/Chrome|Chrome 配置]] -- DevTools / 扩展 / 终端替代
+- [[Web工具配置/WebShell/WebShell|WebShell 配置]] -- 一句话木马 / 管理工具
+- [[Web工具配置/菜刀类工具/菜刀类工具|菜刀类工具]] -- 蚁剑 / 冰蝎 / 哥斯拉
+- [[Web工具配置/端口扫描/端口扫描|端口扫描]] -- nmap / masscan / curl 探测
+- [[Web工具配置/远程连接/远程连接|远程连接]] -- SSH / nc 反弹 shell / 端口转发
+- [[Web工具配置/目录爆破/目录爆破|目录爆破]] -- dirsearch / gobuster / curl 探测
 
 ### 相关文章
 

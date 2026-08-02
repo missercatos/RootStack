@@ -4,62 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "48c765fac0ddaa9b",
+        "id": "c024ec36bf989ca8",
         "type": "tabs",
-        "dimension": 50.258732212160425,
         "children": [
           {
-            "id": "56ebee7b4d241e9c",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "数据结构/DSA学习路线.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "DSA学习路线"
-            }
-          },
-          {
-            "id": "c03853e5c8af0b75",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "数据结构/A_数组_Array.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "A_数组_Array"
-            }
-          },
-          {
-            "id": "7b9688f33c6c6504",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "操作系统/F_内存管理.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "F_内存管理"
-            }
-          }
-        ],
-        "currentTab": 1
-      },
-      {
-        "id": "4bf60a622c05f3f6",
-        "type": "tabs",
-        "dimension": 49.741267787839575,
-        "children": [
-          {
-            "id": "d12029d04fd311e6",
+            "id": "09c7fe73fb19ab90",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -70,6 +19,48 @@
               },
               "icon": "lucide-file",
               "title": "HTTP协议"
+            }
+          },
+          {
+            "id": "c4e17e15f228b00a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "red_team/archstrike-web教学/01-Web基础与HTTP协议.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "01-Web基础与HTTP协议"
+            }
+          },
+          {
+            "id": "a13e151ba307627e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "red_team/网安基础知识/01-计算机网络基础.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "01-计算机网络基础"
+            }
+          },
+          {
+            "id": "890c14894636598d",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "red_team/网安基础知识/02-Web技术基础.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "02-Web技术基础"
             }
           }
         ]
@@ -251,44 +242,44 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "d12029d04fd311e6",
+  "active": "09c7fe73fb19ab90",
   "lastOpenFiles": [
-    "red_team/ctf_trea/Web/Web前置技能/HTTP协议/请求方式.md",
+    "red_team/ctf_trea/Web/Web工具配置/目录爆破/目录爆破.md",
+    "red_team/ctf_trea/Web/Web工具配置/远程连接/远程连接.md",
+    "red_team/ctf_trea/Web/Web工具配置/端口扫描/端口扫描.md",
+    "red_team/ctf_trea/Web/Web工具配置/菜刀类工具/菜刀类工具.md",
+    "red_team/ctf_trea/Web/Web工具配置/WebShell/WebShell.md",
+    "red_team/ctf_trea/Web/Web工具配置/Chrome/Chrome.md",
+    "red_team/ctf_trea/Web/Web工具配置/BurpSuite/BurpSuite.md",
+    "red_team/ctf_trea/Web/Web工具配置/虚拟机/虚拟机.md",
+    "red_team/ctf_trea/Web/Web前置技能/程序语言/程序语言.md",
+    "red_team/ctf_trea/Web/Web前置技能/HTML-CSS/HTML-CSS.md",
+    "red_team/ctf_trea/Web/Web前置技能/数据库/数据库.md",
+    "red_team/ctf_trea/Web/Web前置技能/操作系统/操作系统.md",
+    "red_team/ctf_trea/Web/Web工具配置/远程连接",
+    "red_team/ctf_trea/Web/Web工具配置/虚拟机",
+    "red_team/ctf_trea/Web/Web工具配置/菜刀类工具",
+    "red_team/ctf_trea/Web/Web工具配置/端口扫描",
+    "red_team/ctf_trea/Web/Web工具配置/目录爆破",
+    "red_team/ctf_trea/Web/Web工具配置/WebShell",
+    "red_team/ctf_trea/Web/Web工具配置/Chrome",
+    "red_team/ctf_trea/Web/Web工具配置/BurpSuite",
+    "red_team/ctf_trea/Web/Web工具配置",
+    "red_team/ctf_trea/Web/Web前置技能/程序语言",
+    "red_team/网安基础知识/02-Web技术基础.md",
     "red_team/ctf_trea/Web/Web前置技能/HTTP协议/HTTP协议.md",
+    "red_team/archstrike-web教学/01-Web基础与HTTP协议.md",
+    "red_team/网安基础知识/01-计算机网络基础.md",
+    "red_team/ctf_trea/Web/Web前置技能/HTTP协议/302跳转.md",
+    "red_team/ctf_trea/Web/Web前置技能/HTTP协议/基本认证.md",
+    "数据结构/DSA学习路线.md",
+    "数据结构/A_数组_Array.md",
+    "red_team/ctf_trea/Web/Web前置技能/HTTP协议/请求方式.md",
     "red_team/ctf-git.md",
     "linux/distro/arch/desktop/11-Steam客户端排障.md",
     "AI_Agent工具使用教程.md",
     "git.md",
-    "数据结构/A_数组_Array.md",
     "操作系统/F_内存管理.md",
-    "red_team/服务器部署与运维/qqbot-01-部署与运维.md",
-    "linux/README.md",
-    "README.md",
-    "linux/05-文本编辑器(Vim+Nano).md",
-    "linux.md",
-    "linux/resources/术语对照表.md",
-    "linux/resources/发行版命令速查表.md",
-    "linux/distro/nix/03-nixpkgs与包管理.md",
-    "linux/distro/nix/02-Nix语言与flake.md",
-    "linux/distro/nix/01-NixOS安装与声明式配置.md",
-    "linux/distro/redhat/05-firewalld与nmcli.md",
-    "linux/distro/redhat/04-SELinux深入.md",
-    "linux/distro/redhat/03-RPM打包与仓库.md",
-    "linux/61-高可用与集群.md",
-    "linux/distro/redhat/02-RHEL-CentOS安装与配置.md",
-    "linux/60-Ansible与配置管理.md",
-    "linux/distro/redhat/01-dnf-yum包管理.md",
-    "linux/59-CI-CD基础.md",
-    "linux/resources",
-    "linux/distro/arch/desktop",
-    "linux/distro/redhat",
-    "linux/distro/nix",
-    "linux/distro/debian",
-    "linux/distro/arch",
-    "linux/distro",
-    "linux",
-    "linux-tutorial",
-    "sedJVPa34",
     "public/assets/images/string/strstr_kmp_indices.svg",
     "public/assets/images/string/prefix_str_3.svg",
     "public/assets/images/string/prefix_str_2.svg",
