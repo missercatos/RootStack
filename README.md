@@ -192,17 +192,17 @@ RootStack/                          ├ v0.8.0
 │
 ├── 汇编基础/ (3篇)              x86/ARM 汇编教程
 │
-├── red_team/ (~150篇)          网络安全红队职业路径 (ArchStrike体系)
+├── red_team/ (~151篇)          网络安全红队职业路径 (ArchStrike体系)
 │   ├── 网安基础知识/ (10篇)      渗透测试方法论
 │   ├── 前端基础/ (25篇)          实战教程/ (13篇，含14天实训)
 │   ├── archstrike-*教学/ (48篇) 10组ArchStrike工具教程
 │   ├── 服务器部署与运维/ (4篇)   QQ Bot攻防实战
-│   └── ctf_trea/ (~34篇)         CTF竞赛知识库
+│   └── ctf_trea/ (~35篇)         CTF竞赛知识库
 │       ├── Web/Web前置技能/          (HTTP协议/操作系统/数据库/HTML-CSS/程序语言)
 │       ├── Web/Web工具配置/          (虚拟机/BurpSuite/Chrome/WebShell/菜刀/端口扫描/远程连接/目录爆破)
 │       └── Web/信息泄露/             (目录遍历)
 │
-├── git.md                       Git 与 GitHub 终端操作指南 (14节)
+├── git.md                       Git 与 GitHub 终端操作指南 (17节)
 ├── github-settings.md           GitHub 网页端设置指南（新增）
 ├── VERSION                      项目版本号: 0.8.0
 └── ISSUES.md                   问题讨论与贡献指南
@@ -437,6 +437,7 @@ git push origin my-feature
 | 7.24 | Linux 教程全面重构 | linux-tutorial/ → linux/，全面重构为百科全书式 Linux 教程 (~94篇)。从 Arch 拆分扩展到 4 大发行版 (Arch/Debian/RedHat/Nix)，新增 Shell 编程深入 (16~20)、操作系统原理 (27~35)、服务器运维 (54~62) 等板块。主教程 62章 + 4个 distro/ 发行版完整指南。 |
 | 7.31 | 新增Lua教程     | 新增 lua-tutorial/ (7篇: 简介+安装+基础+进阶+C/C++集成+Neovim+Love2D)，双链接接入 README/index，版本升至 0.8.0 |
 | 8.2  | CTF Web扩展 | ctf_trea 新增 18 篇：Web前置技能 (302跳转/Cookie/基本认证/源代码/操作系统/数据库/HTML-CSS/程序语言) + Web工具配置 (虚拟机/BurpSuite/Chrome/WebShell/菜刀/端口扫描/远程连接/目录爆破) + 使用习惯。双链接闭环，官网自动部署。 |
+| 8.2  | CTF Web扩展 | Web信息泄露 3 题全解：DS_Store 工具 + Git泄露 (gitdump 工具) + Stash 变式 (gitdump 自动探测 stash)，git.md 扩展至 17 节（stash + 内部原理与文件存储） |
 
 
 ## 加入交流群

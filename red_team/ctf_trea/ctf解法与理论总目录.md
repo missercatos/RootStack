@@ -47,6 +47,7 @@
 - [[Web/信息泄露/备份文件下载/vim缓存|vim缓存]] -- vim 交换文件残留，strings 提取源码
 - [[Web/信息泄露/备份文件下载/DS_Store|DS_Store]] -- macOS 目录元数据泄露文件清单，dsstore 工具解析
 - [[Web/信息泄露/Git泄露/Git泄露|Git泄露]] -- .git 目录泄露还原历史源码，gitdump 工具恢复
+- [[Web/信息泄露/Git泄露/Stash|Git stash 变式]] -- flag 被 git stash 藏进 refs/stash，gitdump 自动探测
 - [[使用习惯]] -- 做题方式与终端习惯定位
 
 ## 做题练习平台

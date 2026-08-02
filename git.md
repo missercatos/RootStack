@@ -13,10 +13,12 @@
 - [[#^nav-9|9 GitHub CLI]]
 - [[#^nav-10|10 情景现场]]
 - [[#^nav-11|11 常见问题]]
-- [[#^nav-12|12 版本标签与发布]]
-- [[#^nav-13|13 网页端操作]]
-- [[#^nav-14|14 签名提交]]
-- [[#^nav-15|15 子模块 (Submodule)]]
+- [[#^nav-12|12 git stash（临时保存）]]
+- [[#^nav-13|13 版本标签与发布]]
+- [[#^nav-14|14 网页端操作]]
+- [[#^nav-15|15 签名提交]]
+- [[#^nav-16|16 子模块 (Submodule)]]
+- [[#^nav-17|17 内部原理与文件存储]]
 - [[#^nav-recommended|推荐阅读]]
 
 ---
@@ -570,10 +572,63 @@ git clean -fd                  # 删除未跟踪的文件和目录
 
 ---
 
+<a id="nav-12"></a>
+## 12 git stash（临时保存） ^nav-12
+
+`git stash` 把**工作区和暂存区的改动临时收起来**（相当于存进一个"草稿箱"），让工作区回到干净状态；需要时再取回来。常用于：正在改一半、突然要切分支或修紧急 bug。
+
+### 常用命令
+
+```bash
+git stash                 # 保存工作区 + 暂存区改动
+git stash list            # 查看 stash 列表（含 stash 的记录）
+git stash apply stash@{0} # 恢复最近一次（apply 后仍保留记录）
+git stash pop             # 恢复并删除该条记录
+git stash drop stash@{0}  # 只删除某条记录，不恢复
+git stash clear           # 清空所有 stash
+git stash show stash@{0}  # 查看某条 stash 改了哪些文件
+```
+
+### 查看记录
+
+stash 是 git 中的**特殊提交**，可以被直接查看：
+
+```bash
+# 1. 命令行视图
+git stash list                  # WIP on master: 提交信息
+git log --all --oneline         # 显示包含 stash 在内的所有提交
+
+# 2. 底层视图（stash 提交本身）
+git cat-file -t refs/stash      # commit（stash 本质是一个提交）
+git cat-file -p refs/stash      # 查看 stash 提交的完整内容
+git reflog                      # 查看所有引用（分支、HEAD、stash）的操作记录
+
+# 3. 恢复指定内容
+git stash show -p stash@{0}     # 查看 diff
+git stash apply stash@{0}       # 恢复
+```
+
+### stash 的底层原理
+
+stash 不是普通分支上的提交，它有两个特殊之处：
+
+1. **引用位置特殊**：普通提交挂在分支上（`refs/heads/master`），stash 挂在 `refs/stash` 上——所以 `git log` 默认看不到，只有 `git log --all`、`git stash list`、`git reflog` 能看到
+2. **双亲提交**：普通提交有 1 个 parent，stash 有 **2 个 parent**（原分支 HEAD + 当时的暂存区快照）
+
+```bash
+# 查看 stash 的双亲结构
+git cat-file -p refs/stash
+# tree 8c5e8f...       ← 保存的工作区内容
+# parent a1b2c3d...    ← 原分支 HEAD
+# parent 5f9e1d2...    ← 当时的暂存区状态
+```
+
+> 安全提示：`git stash drop` / `git stash clear` 会删除记录，误删后可用 `git fsck --unreachable` + `git stash apply` 找回。
+
 ---
 
-<a id="nav-12"></a>
-## 12 版本标签与发布 ^nav-12
+<a id="nav-13"></a>
+## 13 版本标签与发布 ^nav-13
 
 ### 语义化版本 (Semantic Versioning)
 
@@ -629,8 +684,8 @@ git push origin --delete v0.1.0 # 删除远程
 
 ---
 
-<a id="nav-13"></a>
-## 13 GitHub 网页端操作 ^nav-13
+<a id="nav-14"></a>
+## 14 GitHub 网页端操作 ^nav-14
 
 ### 创建仓库
 
@@ -701,8 +756,8 @@ PR 页面 → Files changed tab → 逐行浏览改动 → 点击行号前的 `+
 
 ---
 
-<a id="nav-14"></a>
-## 14 签名提交 ^nav-14
+<a id="nav-15"></a>
+## 15 签名提交 ^nav-15
 
 ### SSH key（免密推送）
 
@@ -792,8 +847,8 @@ git log --show-signature -1
 
 ---
 
-<a id="nav-15"></a>
-## 15 子模块 (Submodule) ^nav-15
+<a id="nav-16"></a>
+## 16 子模块 (Submodule) ^nav-16
 
 子模块允许你在一个 Git 仓库中嵌入另一个 Git 仓库的特定版本。
 
@@ -892,8 +947,89 @@ git commit -m "移除子模块"
 | 子模块在 GitHub 上显示 `->` 箭头 | 子模块是 git link，不是普通文件 | 执行解耦操作（见上） |
 | 修改了子模块内容但父仓库不认 | 需要在子模块目录内先 commit | 进入子模块目录 `git add && git commit`，再回父仓库 `git add && git commit` |
 | 子模块 detached HEAD | 子模块默认处于分离头指针状态 | 进入子模块目录 `git checkout main` |
+
+---
+
+<a id="nav-17"></a>
+## 17 内部原理与文件存储 ^nav-17
+
+理解 `.git` 目录和对象模型，是排查问题、手动恢复数据（如被删除的文件/提交）的基础，也是安全测试中"git 信息泄露"类漏洞的核心原理。
+
+### .git 目录结构
+
+| 路径 | 作用 |
+|------|------|
+| `.git/HEAD` | 当前所在分支的指针，内容形如 `ref: refs/heads/master` |
+| `.git/refs/heads/` | 本地分支引用（每个文件内容是对应提交的 40 位 sha1） |
+| `.git/refs/tags/` | 标签引用 |
+| `.git/refs/stash` | stash 引用（`git stash` 时创建，普通分支提交不会出现） |
+| `.git/objects/` | 对象数据库（commit/tree/blob/tag 四种对象） |
+| `.git/objects/xx/yyy...` | 松散对象：sha1 前 2 位作目录名，后 38 位作文件名，内容经 zlib 压缩 |
+| `.git/logs/HEAD` | HEAD 操作日志（reflog），记录每次提交/回退/切换 |
+| `.git/logs/refs/` | 各引用的操作日志 |
+| `.git/index` | 暂存区索引（记录已 `git add` 的文件） |
+| `.git/config` | 仓库级配置 |
+
+### 对象模型：commit → tree → blob
+
+git 的所有数据都是对象，通过 sha1 引用：
+
+```
+commit（一个版本快照）
+  └─ tree（目录快照）
+       ├─ tree（子目录）
+       └─ blob（文件内容）
+```
+
+| 对象 | 对应内容 | 示例 |
+|------|---------|------|
+| `blob` | 文件内容 | `git cat-file -p 1d7bc08` → 显示文件内容 |
+| `tree` | 目录条目（文件名 + 对象 sha1） | `git ls-tree HEAD` |
+| `commit` | 一个提交（tree + parent + 作者/提交者信息） | `git cat-file -p HEAD` |
+| `tag` | 带注释的标签 | `git cat-file -p v1.0` |
+
+### 查看对象的命令
+
+```bash
+git cat-file -t <sha1>          # 查看对象类型（blob/tree/commit/tag）
+git cat-file -p <sha1>          # 查看对象内容（p = pretty）
+git cat-file -s <sha1>          # 查看对象大小
+git ls-tree HEAD                # 查看 HEAD 的目录树
+git ls-tree -r HEAD             # 递归列出所有文件
+git rev-parse HEAD              # 把名字解析成 sha1
+git rev-list --all --objects    # 列出所有提交涉及的所有对象（含历史被删的）
+git fsck --unreachable          # 找不可达对象（被删除的提交/文件）
+```
+
+### 手动读取松散对象（不借助 git 命令）
+
+松散对象 = `zlib 压缩 + "类型 大小\x00内容"` 的明文前缀。可用脚本直接还原：
+
+```bash
+python3 - <<'PY'
+import zlib
+with open("objects/1d/7bc08b84173edb1a7be8e03ca7ad92a5861cff", "rb") as f:
+    data = zlib.decompress(f.read())
+print(data[:4])      # 类型：blob / tree / commit
+print(data[data.find(b"\x00")+1:])  # 去掉 "blob 20\0" 头，得到内容
+PY
+```
+
+### 查看记录（reflog 与日志）
+
+```bash
+git log --all --oneline          # 所有分支 + stash 的提交
+git log --oneline HEAD~3..HEAD   # 最近 3 条
+git reflog                       # 所有"引用移动"记录（含已 reset/已删分支的旧提交）
+git reflog show refs/stash       # 查看 stash 引用的操作记录
+```
+
+> `git reflog` 是找回"手滑 reset 丢掉的提交"的关键：`git reflog` 找到旧 sha1 后 `git checkout <sha1>` 或 `git branch 新分支 <sha1>` 即可恢复。
+
 ## 推荐阅读 ^nav-recommended
 
 - [Pro Git 中文版 (官方书籍)](https://git-scm.com/book/zh/v2)
 - [GitHub CLI 文档](https://cli.github.com/manual/)
+- [[red_team/ctf_trea/Web/信息泄露/Git泄露/Git泄露|Git泄露考点精讲]] -- git 信息泄露考点（.git 目录泄露源码）
+- [[red_team/ctf_trea/Web/信息泄露/Git泄露/Stash|Stash 变式考点]] -- flag 被 git stash 藏进 refs/stash 的考题
 - [git.md 文件本身](./git.md) 就是本仓库的 Git 指南，欢迎通过 [[ISSUES|问题讨论区]] 提出改进建议
