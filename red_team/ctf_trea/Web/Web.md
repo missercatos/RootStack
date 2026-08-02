@@ -7,6 +7,9 @@ mindmap
   root((Web CTF))
     HTTP 协议攻击
       自定义请求方法
+      302 跳转
+      Cookie 篡改
+      基本认证
       Host 头注入
       HTTP 请求走私
       缓存投毒
