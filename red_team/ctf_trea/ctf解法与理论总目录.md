@@ -26,6 +26,7 @@
 - [[Web/Web前置技能/HTTP协议/302跳转|302 跳转]] -- 重定向响应中隐藏 flag 解题
 - [[Web/Web前置技能/HTTP协议/Cookie|Cookie]] -- 篡改 Cookie 获取 flag 解题
 - [[Web/Web前置技能/HTTP协议/基本认证|基本认证]] -- Basic 认证爆破解题
+- [[Web/Web前置技能/HTTP协议/源代码|源代码]] -- 响应包源码查找 flag 解题
 - [[使用习惯]] -- 做题方式与终端习惯定位
 
 ## 做题练习平台
