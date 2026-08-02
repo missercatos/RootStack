@@ -64,12 +64,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "red_team/ctf_trea/Web/Web前置技能/HTTP协议/请求方式.md",
+                "file": "red_team/ctf_trea/Web/Web前置技能/HTTP协议/HTTP协议.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "请求方式"
+              "title": "HTTP协议"
             }
           }
         ]
@@ -92,7 +92,9 @@
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical",
-                "autoReveal": false
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
               },
               "icon": "lucide-folder-closed",
               "title": "文件列表"
@@ -251,9 +253,10 @@
   },
   "active": "d12029d04fd311e6",
   "lastOpenFiles": [
-    "linux/distro/arch/desktop/11-Steam客户端排障.md",
-    "red_team/ctf_trea/Web/Web前置技能/HTTP协议/HTTP协议.md",
     "red_team/ctf_trea/Web/Web前置技能/HTTP协议/请求方式.md",
+    "red_team/ctf_trea/Web/Web前置技能/HTTP协议/HTTP协议.md",
+    "red_team/ctf-git.md",
+    "linux/distro/arch/desktop/11-Steam客户端排障.md",
     "AI_Agent工具使用教程.md",
     "git.md",
     "数据结构/A_数组_Array.md",
@@ -276,7 +279,6 @@
     "linux/60-Ansible与配置管理.md",
     "linux/distro/redhat/01-dnf-yum包管理.md",
     "linux/59-CI-CD基础.md",
-    "linux/distro/debian/04-netplan与NetworkManager.md",
     "linux/resources",
     "linux/distro/arch/desktop",
     "linux/distro/redhat",
