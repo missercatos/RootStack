@@ -244,6 +244,7 @@
   },
   "active": "09c7fe73fb19ab90",
   "lastOpenFiles": [
+    "red_team/ctf_trea/Web/信息泄露/phpinfo.md",
     "red_team/ctf_trea/Web/信息泄露/目录遍历.md",
     "red_team/ctf_trea/Web/信息泄露",
     "red_team/ctf_trea/Web/Web前置技能/HTTP协议/源代码.md",
@@ -279,7 +280,6 @@
     "red_team/网安基础知识/01-计算机网络基础.md",
     "数据结构/DSA学习路线.md",
     "数据结构/A_数组_Array.md",
-    "red_team/ctf-git.md",
     "public/assets/images/string/strstr_kmp_indices.svg",
     "public/assets/images/string/prefix_str_3.svg",
     "public/assets/images/string/prefix_str_2.svg",
