@@ -27,6 +27,18 @@
 - [[Web/Web前置技能/HTTP协议/Cookie|Cookie]] -- 篡改 Cookie 获取 flag 解题
 - [[Web/Web前置技能/HTTP协议/基本认证|基本认证]] -- Basic 认证爆破解题
 - [[Web/Web前置技能/HTTP协议/源代码|源代码]] -- 响应包源码查找 flag 解题
+- [[Web/Web前置技能/操作系统/操作系统|操作系统]] -- Linux 环境与命令基础
+- [[Web/Web前置技能/数据库/数据库|数据库]] -- SQL 语法与数据库操作
+- [[Web/Web前置技能/HTML-CSS/HTML-CSS|HTML/CSS]] -- 前端页面结构基础
+- [[Web/Web前置技能/程序语言/程序语言|程序语言]] -- PHP/Python 核心语法
+- [[Web/Web工具配置/虚拟机/虚拟机|虚拟机]] -- 靶场环境搭建
+- [[Web/Web工具配置/BurpSuite/BurpSuite|BurpSuite]] -- 代理拦截与请求修改
+- [[Web/Web工具配置/Chrome/Chrome|Chrome]] -- DevTools 与浏览器扩展
+- [[Web/Web工具配置/WebShell/WebShell|WebShell]] -- 一句话木马与后门
+- [[Web/Web工具配置/菜刀类工具/菜刀类工具|菜刀类工具]] -- 蚁剑/冰蝎连接工具
+- [[Web/Web工具配置/端口扫描/端口扫描|端口扫描]] -- nmap/curl 端口探测
+- [[Web/Web工具配置/远程连接/远程连接|远程连接]] -- SSH/nc 反弹 shell
+- [[Web/Web工具配置/目录爆破/目录爆破|目录爆破]] -- dirsearch/gobuster 路径探测
 - [[使用习惯]] -- 做题方式与终端习惯定位
 
 ## 做题练习平台
@@ -51,7 +63,8 @@
 
 ## 规划中的技能树（持续更新）
 
-Web 前置技能 -> HTTP 协议、信息泄露、RCE 等
+Web 前置技能 -> HTTP 协议、操作系统、数据库、HTML/CSS、程序语言
+Web 工具配置 -> 虚拟机、BurpSuite、Chrome、WebShell、菜刀、端口扫描、远程连接、目录爆破
 Web 方向     -> SQL 注入、XSS、文件上传等
 Misc         -> 图片隐写、流量分析、编码解码等
 Crypto       -> 古典密码、现代密码等
