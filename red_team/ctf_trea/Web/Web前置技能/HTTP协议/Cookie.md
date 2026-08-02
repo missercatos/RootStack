@@ -1,50 +1,12 @@
-## Cookie -- 题目解法
+## Cookie -- 考点精讲
 
-> 前置知识：[[HTTP协议|HTTP 协议基础]] -- 先了解 HTTP 协议基础再来看本题
+> 前置知识：[[HTTP协议|HTTP 协议基础]] -- 先了解 HTTP 协议基础再来看本考点
 
-### 题目描述
-
-访问首页返回 `hello guest. only admin can get flag.`，响应头里下发 `Set-Cookie: admin=0`。flag 要求 admin 身份，但 Cookie 里的 admin 值就是服务器自己下发的明文——改掉它即可。
-
-### 解法 1：curl 终端
-
-**步骤：**
-
-1. 先请求一次，观察响应头和响应体：
-
-```bash
-curl -s -D - http://目标/
-```
-
-输出中看到 `Set-Cookie: admin=0`，页面提示只有 admin 能拿 flag。
-
-2. 把 Cookie 改成 admin，重新请求：
-
-```bash
-curl -s -b "admin=1" http://目标/
-```
-
-输出直接就是 flag。
-
-> 关键点：`-b` 是**手动携带 Cookie** 请求（等价于浏览器在请求头里带上 `Cookie: admin=1`）；`-c` 是把服务器下发的 Cookie 存成 jar 文件，后续请求用 `-b jar.txt` 带上。
->
-> 陷阱：如果服务器会在请求中重新下发 Cookie（Set-Cookie），注意新值可能覆盖你的手动值，必要时把要带的值写在 `Cookie:` 请求头里用 `-H "Cookie: admin=1"` 指定。
-
-### 解法 2：Burp Suite 图形化
-
-**步骤：**
-
-1. 浏览器配置代理到 Burp（127.0.0.1:8080）
-2. 访问首页，Burp 拦截到请求和响应，响应中看到 `Set-Cookie: admin=0`
-3. 在 Repeater 中把请求头的 `Cookie: admin=0` 改为 `Cookie: admin=1`，Send 即可拿到 flag
-
-> 不用 Burp 也可以：浏览器 F12 → Application → Cookies，把 `admin` 的值改成 `1`，刷新页面。
-
-### 原理精讲 -- 为什么改个 Cookie 就能拿 flag？
+### 原理精讲 -- Cookie 是什么？为什么能篡改？
 
 #### Cookie 的传输机制
 
-Cookie 是 HTTP 无状态协议维持会话的手段，完整流程：
+HTTP 是无状态协议，服务器无法在两次请求之间记住"你是谁"。Cookie 就是补这个缺口的：服务器通过 `Set-Cookie` 下发一段小数据，客户端存下来，后续每个请求自动带上。
 
 ```mermaid
 sequenceDiagram
@@ -57,13 +19,9 @@ sequenceDiagram
     S->>S: 读取 $_COOKIE['admin'] 判断身份
 ```
 
-- **下发**：服务器通过响应头 `Set-Cookie: 键=值` 下发 Cookie
-- **携带**：客户端后续请求自动带上 `Cookie: 键=值` 请求头
-- **信任**：服务器只读 `$_COOKIE` 里的值来判断身份，**不验证值是不是自己当初下发的**
+#### 漏洞本质：服务器无条件信任客户端提交的值
 
-#### 服务器端逻辑
-
-题目服务器的伪代码大概是这样的：
+服务器端逻辑：
 
 ```php
 <?php
@@ -77,11 +35,43 @@ if ($admin == 1) {
 ?>
 ```
 
-关键在最后一步：服务器**无条件信任客户端提交的 Cookie 值**。`admin` 是 0 还是 1，完全由客户端说了算——把 `0` 改成 `1` 就拿到了 admin 身份。
+Cookie 存储在**客户端**，服务器却拿它当身份凭据，而且**不校验值是不是自己当初下发的**——把 `0` 改成 `1`，服务器就认为你是 admin。这就是"Cookie 欺骗"。
 
-#### 为什么这是漏洞？
+#### 正确的做法是什么
 
-Cookie 存储在客户端，服务器却拿它当身份凭据，且不校验真实性和完整性。真实场景下正确的做法是：Cookie 里只放**会话标识（Session ID）**，身份信息存在服务器端；或者对 Cookie 值做签名/加密，防止客户端篡改。
+真实系统不会把身份放明文 Cookie：要么只放一个随机 Session ID（身份存服务器），要么对 Cookie 值做签名/加密防止篡改。CTF 题里出现明文身份 Cookie，就是故意留的漏洞。
+
+### 注意事项
+
+| 易错点 | 说明 |
+|-------|------|
+| curl -b | 手动携带 Cookie：`curl -b "admin=1"`（等价于请求头 `Cookie: admin=1`） |
+| curl -c | 把服务器下发的 Cookie 存成 jar 文件：`curl -c jar.txt`，之后 `-b jar.txt` 带上 |
+| 覆盖问题 | 请求过程中服务器再次 Set-Cookie 可能覆盖手动值；要精确控制用 `-H "Cookie: admin=1"` |
+| 值类型 | 试试 `1` / `true` / `guest`→`admin`，有些服务器用弱比较 `==`（`1` 和 `"1"` 都行） |
+| 编码 | 有些 Cookie 值做了 base64/MD5，先解码看明文再改 |
+| 删除 Cookie | 试试整个去掉 Cookie 头（`-H "Cookie:"`），看服务器默认身份是什么 |
+
+### 题目解法
+
+> CTFHub 技能树位置：CTFHub → Web → Web 前置技能 → HTTP 协议 → Cookie
+
+解法（curl 终端）：
+
+```bash
+# 1. 先请求一次，看响应头和页面提示
+curl -s -D - http://目标/
+# 看到 Set-Cookie: admin=0，页面提示只有 admin 能拿 flag
+
+# 2. 把 admin 改成 1 重新请求
+curl -s -b "admin=1" http://目标/
+# 输出直接就是 flag
+```
+
+解法（浏览器 F12 / Burp）：
+
+1. F12 → Application → Cookies，把 `admin` 的值改成 `1`，刷新页面
+2. 或 Burp 抓包 → Repeater 里改 `Cookie: admin=0` → `Cookie: admin=1`，Send
 
 ### 同类变式（做题时按序试）
 
@@ -108,11 +98,11 @@ Cookie 存储在客户端，服务器却拿它当身份凭据，且不校验真�
 
 ### 关联教程
 
-本知识库中更深入的 HTTP 协议与 Web 基础：
-
-- [[HTTP协议|HTTP 协议基础]] -- CTF 中 HTTP 相关题目总览
-- [[请求方式|请求方式]] -- 自定义 HTTP 方法解题（同系列的姊妹篇）
-- [[302跳转|302 跳转]] -- 重定向响应中隐藏 flag 的题目解法
+- [[HTTP协议|HTTP 协议基础]] -- CTF 中 HTTP 相关考点总览
+- [[请求方式|请求方式]] -- 自定义 HTTP 方法解题
+- [[302跳转|302 跳转]] -- 重定向响应中隐藏 flag
+- [[基本认证|基本认证]] -- HTTP Basic 认证绕过与爆破
+- [[源代码|源代码]] -- 响应包源码中查找 flag
 - [[../../../../网安基础知识/01-计算机网络基础|01-计算机网络基础]] -- OSI 模型与 TCP/IP 协议栈
 - [[../../../../网安基础知识/02-Web技术基础|02-Web技术基础]] -- HTTP 协议完整解析（请求/响应/缓存/认证/Cookie/Session）
 - [[../../../../网安基础知识/09-认证与授权基础|09-认证与授权基础]] -- 会话管理、OAuth 等认证体系

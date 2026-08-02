@@ -62,4 +62,4 @@ Proxy → Intercept 标签 → "Intercept is on/off" 按钮控制拦截
 - [[../Chrome/Chrome|Chrome 配置]] -- 浏览器配合 Burp 的完整配置
 - [[../../Web前置技能/HTTP协议/HTTP协议|HTTP 协议总览]] -- HTTP 协议基础
 - [[../../../../archstrike-web教学/01-Web基础与HTTP协议|01-Web基础与HTTP协议]] -- ArchStrike Web 安全实战
-- [[../../使用习惯|使用习惯]] -- 终端习惯与图形化习惯说明
+- [[../../../使用习惯|使用习惯]] -- 终端习惯与图形化习惯说明
