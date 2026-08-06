@@ -13,12 +13,68 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "red_team/网安基础知识/02-Web技术基础.md",
+                "file": "red_team/前端基础/html/01-HTML结构与语义化.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "02-Web技术基础"
+              "title": "01-HTML结构与语义化"
+            }
+          },
+          {
+            "id": "ec631b4ee1b14d15",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "red_team/ctf_trea/Web/Web前置技能/HTTP协议/请求方式.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "请求方式"
+            }
+          },
+          {
+            "id": "4bb9f1978ca4fb02",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "red_team/ctf_trea/Web/Web前置技能/HTTP协议/HTTP协议.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "HTTP协议"
+            }
+          },
+          {
+            "id": "38cc3c16dab64ae8",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "red_team/网安基础知识/01-计算机网络基础.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "01-计算机网络基础"
+            }
+          },
+          {
+            "id": "7a661297eb1e71b0",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "red_team/ctf_trea/Web/Web前置技能/HTTP协议/Cookie.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Cookie"
             }
           },
           {
@@ -63,7 +119,8 @@
               "title": "02-Web技术基础"
             }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -242,14 +299,21 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "09c7fe73fb19ab90",
+  "active": "4bb9f1978ca4fb02",
   "lastOpenFiles": [
+    "red_team/前端基础/html/01-HTML结构与语义化.md",
     "red_team/ctf_trea/Web/Web前置技能/HTTP协议/HTTP协议.md",
+    "red_team/网安基础知识/01-计算机网络基础.md",
+    "red_team/ctf_trea/Web/Web前置技能/HTTP协议/请求方式.md",
+    "red_team/前端基础/html/HTML基础总目录.md",
+    "red_team/前端基础/前端基础总目录.md",
+    "red_team/网安基础知识/02-Web技术基础.md",
+    "red_team/archstrike-web教学/01-Web基础与HTTP协议.md",
+    "red_team/ctf_trea/Web/Web前置技能/HTTP协议/Cookie.md",
+    "数据结构/A_数组_Array.md",
+    "red_team/ctf_trea/Web/Web前置技能/HTTP协议/基本认证.md",
     "red_team/ctf_trea/Web/Web前置技能/HTTP协议/源代码.md",
     "red_team/ctf_trea/Web/Web前置技能/HTTP协议/302跳转.md",
-    "red_team/ctf_trea/Web/Web前置技能/HTTP协议/请求方式.md",
-    "red_team/ctf_trea/Web/Web前置技能/HTTP协议/Cookie.md",
-    "red_team/ctf_trea/Web/Web前置技能/HTTP协议/基本认证.md",
     "red_team/ctf_trea/Web/信息泄露/Git泄露/Index.md",
     "red_team/ctf_trea/Web/信息泄露/Git泄露/Stash.md",
     "red_team/ctf_trea/Web/信息泄露/Git泄露/Git泄露.md",
@@ -264,15 +328,8 @@
     "数据结构/H_排序_八大排序_Sorting.md",
     "数据结构/B_字符串_String.md",
     "red_team/ctf_trea/Web/Web工具配置/菜刀类工具/菜刀类工具.md",
-    "red_team/ctf_trea/Web/Web工具配置/目录爆破/遍历脚本.md",
     "red_team/ctf_trea/Web/信息泄露/备份文件下载",
     "red_team/ctf_trea/Web/信息泄露",
-    "red_team/ctf_trea/Web/Web.md",
-    "red_team/ctf_trea/Web/Web工具配置/WebShell/WebShell.md",
-    "red_team/ctf_trea/Web/Web工具配置/Chrome/Chrome.md",
-    "red_team/ctf_trea/Web/Web工具配置/BurpSuite/BurpSuite.md",
-    "red_team/ctf_trea/Web/Web工具配置/远程连接/远程连接.md",
-    "red_team/ctf_trea/Web/Web工具配置/虚拟机/虚拟机.md",
     "red_team/ctf_trea/Web/Web工具配置/远程连接",
     "red_team/ctf_trea/Web/Web工具配置/虚拟机",
     "red_team/ctf_trea/Web/Web工具配置/菜刀类工具",
