@@ -55,12 +55,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "red_team/网安基础知识/01-计算机网络基础.md",
+                "file": "linux/README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "01-计算机网络基础"
+              "title": "README"
             }
           },
           {
@@ -299,8 +299,9 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "c8e2d7c1de62bbc2",
+  "active": "38cc3c16dab64ae8",
   "lastOpenFiles": [
+    "red_team/网安基础知识/01-计算机网络基础.md",
     "sedHkWNCP",
     "操作系统/sedkHmXAB",
     "操作系统/J_IO管理.md",
@@ -324,7 +325,6 @@
     "计算机原理/F_总线系统.md",
     "red_team/ctf_trea/Web/Web前置技能/HTTP协议/HTTP协议.md",
     "red_team/前端基础/html/01-HTML结构与语义化.md",
-    "red_team/网安基础知识/01-计算机网络基础.md",
     "red_team/ctf_trea/Web/Web前置技能/HTTP协议/请求方式.md",
     "red_team/前端基础/html/HTML基础总目录.md",
     "red_team/前端基础/前端基础总目录.md",
@@ -336,7 +336,6 @@
     "red_team/ctf_trea/Web/Web工具配置/虚拟机",
     "red_team/ctf_trea/Web/Web工具配置/菜刀类工具",
     "red_team/ctf_trea/Web/Web工具配置/端口扫描",
-    "red_team/ctf_trea/Web/Web工具配置/目录爆破",
     "public/assets/images/string/strstr_kmp_indices.svg",
     "public/assets/images/string/prefix_str_3.svg",
     "public/assets/images/string/prefix_str_2.svg",
