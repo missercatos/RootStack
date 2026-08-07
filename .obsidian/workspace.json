@@ -97,12 +97,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "red_team/网安基础知识/01-计算机网络基础.md",
+                "file": "数据结构/A_数组_Array.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "01-计算机网络基础"
+              "title": "A_数组_Array"
             }
           },
           {
@@ -120,7 +120,7 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 6
       }
     ],
     "direction": "vertical"
@@ -299,10 +299,16 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "38cc3c16dab64ae8",
+  "active": "a13e151ba307627e",
   "lastOpenFiles": [
-    "red_team/ctf_trea/Web/信息泄露/SVN泄露.md",
+    "red_team/ctf_trea/Web/信息泄露/HG泄露.md",
     "red_team/网安基础知识/01-计算机网络基础.md",
+    "red_team/archstrike-web教学/01-Web基础与HTTP协议.md",
+    "red_team/ctf_trea/Web/Web前置技能/HTTP协议/Cookie.md",
+    "linux/README.md",
+    "red_team/前端基础/html/01-HTML结构与语义化.md",
+    "red_team/ctf_trea/Web/Web前置技能/HTTP协议/请求方式.md",
+    "red_team/ctf_trea/Web/信息泄露/SVN泄露.md",
     "sedHkWNCP",
     "操作系统/sedkHmXAB",
     "操作系统/J_IO管理.md",
@@ -324,12 +330,6 @@
     "计算机原理/G_输入输出系统.md",
     "操作系统/J_I_O管理.md",
     "计算机原理/F_总线系统.md",
-    "red_team/ctf_trea/Web/Web前置技能/HTTP协议/HTTP协议.md",
-    "red_team/前端基础/html/01-HTML结构与语义化.md",
-    "red_team/ctf_trea/Web/Web前置技能/HTTP协议/请求方式.md",
-    "red_team/前端基础/html/HTML基础总目录.md",
-    "red_team/前端基础/前端基础总目录.md",
-    "red_team/网安基础知识/02-Web技术基础.md",
     "red_team/ctf_trea/Web/信息泄露/Git泄露",
     "red_team/ctf_trea/Web/信息泄露/备份文件下载",
     "red_team/ctf_trea/Web/信息泄露",
