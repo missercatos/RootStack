@@ -166,6 +166,7 @@ curl -s "http://目标/.git/objects/b2/94e836..." | python3 -c "import zlib,sys;
 | **Git 泄露**（主考点） | .git 目录可访问，历史源码全还原 | `gitdump URL` |
 | **Git stash 变式**（本题） | flag 被 git stash 收进 `refs/stash` | `gitdump URL`（自动探测 stash） |
 | **SVN 泄露** | `.svn/` 目录可访问，同原理还原历史 | 专用工具或手工下载 `.svn` 文件 |
+| **HG 泄露** | `.hg/` 目录可访问，fncache + revlog 全泄露 | `hgdump URL` |
 | **备份文件下载** | 各种备份文件泄露源码/文件清单 | 见 [[../备份文件下载/bak文件\|bak文件]]、[[../备份文件下载/网站源码\|网站源码]] |
 | **vim 缓存** | `.index.php.swp` 残留源码 | 见 [[../备份文件下载/vim缓存\|vim缓存]] |
 | **DS_Store** | macOS 目录元数据泄露文件清单 | `dsstore --notes URL/.DS_Store`，见 [[../备份文件下载/DS_Store\|DS_Store]] |
