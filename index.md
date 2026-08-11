@@ -14,8 +14,9 @@
   <img src="https://img.shields.io/badge/Assembly-525252?style=flat-square&logo=assemblermips&logoColor=white" alt="Assembly"/>
   <img src="https://img.shields.io/badge/数据结构-339933?style=flat-square" alt="数据结构"/>
   <img src="https://img.shields.io/badge/算法-FF6F00?style=flat-square" alt="算法"/>
+  <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"/>
   <img src="https://img.shields.io/badge/网络安全-E34F26?style=flat-square" alt="网络安全"/>
-  <img src="https://img.shields.io/badge/版本-0.8.0-blue?style=flat-square" alt="version"/>
+  <img src="https://img.shields.io/badge/版本-0.9.0-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
@@ -117,7 +118,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/                          ├ v0.8.0
+RootStack/                          ├ v0.9.0
 ├── README.md                    ← 你在这里
 │
 ├── 路径A-C主线.md               C 主线: 从零到内核
@@ -158,6 +159,13 @@ RootStack/                          ├ v0.8.0
 │   ├── 03-进阶教程.md            04-C与C++集成.md
 │   └── 05-Neovim示例.md          06-Love2D示例.md
 │
+├── python/ (~60篇)              Python 教程: 入门 → 精通 → 实战 → 专项工具
+│   ├── python目录.md
+│   ├── 1入门/ (7篇)               2精通/ (8篇)             3实战/ (5篇)
+│   ├── 4库/                       5工程化/ (6篇)           6量化分析/ (6篇)
+│   ├── 7科学计算/ (5篇)           8数据可视化/ (5篇)       9图形处理/ (4篇)
+│   └── 10web应用/ (5篇)           11人工智能/ (6篇)
+│
 ├── 数据结构/ (21篇)             语言无关的数据结构教程 + DSA学习路线
 │
 ├── 内核/ (~35篇)               四种内核 + C与Rust新时代 + Rust内核开发
@@ -177,7 +185,7 @@ RootStack/                          ├ v0.8.0
 │
 ├── git.md                       Git 与 GitHub 终端操作指南 (14节)
 ├── github-settings.md           GitHub 网页端设置指南（新增）
-├── VERSION                      项目版本号: 0.8.0
+├── VERSION                      项目版本号: 0.9.0
 └── ISSUES.md                   问题讨论与贡献指南
 ```
 
@@ -304,6 +312,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 |------|------|------|
 | C 语言 | [[ISSUES|C 教程目录]] | 入门 → 深化 → 3数据结构 → 库大全 |
 | C++ | [[ISSUES|C++ 教程目录]] | 基础 → 深化 → 容器库 → 功能库 → 第三方库 |
+| Python | [[python/python目录|Python 教程目录]] | 入门 → 精通 → 实战 → 库 → 工程化 → 专项工具 |
 | 数据结构 | [[ISSUES|DSA 学习路线]] | 18个主题, Phase 1→6, 力扣题目 |
 | 算法技巧 | [[ISSUES|动态规划]] | 24个算法专题, 语言无关 |
 | 内核 | [[ISSUES|内核总索引]] | 四种内核 + C与Rust新时代 |
@@ -404,6 +413,7 @@ git push origin my-feature
 | 7.22 | 网站上线       | 部署至 Cloudflare Pages，域名 rootstack.misser.top，GitHub Actions 自动发布                            |
 | 7.22 | 内容更新       | Linux 推荐改为 Mint，新增网安发行版说明，增加求 Star 链接，版本升至 0.5.0
 | 7.31 | 新增Lua教程     | 新增 lua-tutorial/ (7篇: 简介+安装+基础+进阶+C/C++集成+Neovim+Love2D)，双链接接入 README/index，版本升至 0.8.0
+| 8.11 | 新增Python教程    | 新增 python/ (~60篇: 入门7+精通8+实战5+库索引+工程化6+量化分析6+科学计算5+可视化5+图形4+Web5+AI6)，定位为C程序员的Python工具手册，双链接接入 README/index，版本升至 0.9.0
 
 
 ## 加入交流群
