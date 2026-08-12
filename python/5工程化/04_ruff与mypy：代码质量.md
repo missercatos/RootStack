@@ -1,7 +1,7 @@
 # ruff 与 mypy：代码质量 (Code Quality)
 ---
 
-## 📖 章节概述
+## 章节概述
 
 C 语言项目中，代码质量由 clang-format（格式化）、clang-tidy（静态分析）、cppcheck（深度检查）、`-Wall -Wextra`（编译警告）共同保证。Python 的"编译器"（解释器）没有 `-Wall` 这类编译时检查——类型错误在运行时才会暴露。因此 Python 需要专门的工具来填补这个空白：**ruff**（闪电般的 linter + formatter，替代 flake8/isort/black）和 **mypy**（静态类型检查器，让 Python 也拥有类似 C 的类型安全）。本章从 C 程序员视角讲解 Python 代码质量工具的配置与使用。
 
@@ -9,7 +9,7 @@ C 语言项目中，代码质量由 clang-format（格式化）、clang-tidy（�
 
 ---
 
-### 📚 第一节：ruff —— Python 的瑞士军刀
+### 第一节：ruff —— Python 的瑞士军刀
 
 #### 1.1 安装与首次使用
 
@@ -77,19 +77,19 @@ target-version = "py39"
 [tool.ruff.lint]
 # 选择要启用的规则集
 select = [
-    "E",      # pycodestyle 错误
-    "F",      # Pyflakes
-    "I",      # isort
-    "N",      # pep8-naming
-    "W",      # pycodestyle 警告
-    "B",      # flake8-bugbear
-    "SIM",    # 简化建议
-    "UP",     # 语法升级
+ "E", # pycodestyle 错误
+ "F", # Pyflakes
+ "I", # isort
+ "N", # pep8-naming
+ "W", # pycodestyle 警告
+ "B", # flake8-bugbear
+ "SIM", # 简化建议
+ "UP", # 语法升级
 ]
 
 # 忽略特定规则
 ignore = [
-    "E501",   # 行太长（由 formatter 处理）
+ "E501", # 行太长（由 formatter 处理）
 ]
 
 [tool.ruff.lint.isort]
@@ -111,13 +111,13 @@ line-ending = "auto"
 import os, sys, json
 import datetime
 
-def   my_function( x,y ):
-    unused_var = 42
-    result=x+y
-    return result
+def my_function( x,y ):
+ unused_var = 42
+ result=x+y
+ return result
 
 class myclass:
-    pass
+ pass
 
 MyVariable = "should be lowercase"
 ```
@@ -153,59 +153,38 @@ import sys
 
 
 def my_function(x, y):
-    result = x + y
-    return result
+ result = x + y
+ return result
 
 
 class Myclass:
-    pass
+ pass
 
 
 my_variable = "should be lowercase"
 ```
 
 ```bash
-ruff format before.py  # 进一步格式化缩进和换行
+ruff format before.py # 进一步格式化缩进和换行
 ```
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> ruff 的 `ruff format` 命令替代了以下哪个历史工具的功能？
-> - [ ] A. flake8
-> - [ ] B. isort
-> - [ ] C. black
-> - [ ] D. mypy
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: `ruff format` 提供与 black 兼容的代码格式化功能，`ruff check` 替代了 flake8/isort/pyflakes 等 lint 工具。
-
-> [!question] 选择题 2
-> ruff 中 `F` 规则前缀对应的检查来源是？
-> - [ ] A. flake8-bugbear
-> - [ ] B. Pyflakes
-> - [ ] C. pycodestyle
-> - [ ] D. isort
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `F` 规则继承自 Pyflakes，检测逻辑错误（如未定义变量、未使用的导入）。`E`/`W` 继承自 pycodestyle（PEP 8 风格），`I` 继承自 isort。
 
 ---
 
-### 📚 第二节：mypy —— 静态类型检查
+### 第二节：mypy —— 静态类型检查
 
 #### 2.1 为什么 Python 需要类型检查？
 
 ```python
 # C 语言 —— 编译时就能发现类型错误
 # int add(int a, int b) { return a + b; }
-# add("hello", 42);  // 编译错误！
+# add("hello", 42); // 编译错误！
 
 # Python —— 运行时才报错
 def add(a, b):
-    return a + b
+ return a + b
 
 result = add("hello", 42)
 # TypeError: can only concatenate str (not "int") to str
@@ -216,9 +195,9 @@ mypy 让你在**不运行代码**的情况下发现类型错误：
 
 ```python
 def add(a: int, b: int) -> int:
-    return a + b
+ return a + b
 
-add("hello", 42)  # mypy 会在 "编译" 时报告错误：
+add("hello", 42) # mypy 会在 "编译" 时报告错误：
 # error: Argument 1 to "add" has incompatible type "str"; expected "int"
 ```
 
@@ -240,23 +219,23 @@ unique_ids: set[int] = {1, 2, 3}
 # 可选类型
 from typing import Optional
 def find_user(id: int) -> Optional[str]:
-    users = {1: "Alice"}
-    return users.get(id)  # 可能返回 None
+ users = {1: "Alice"}
+ return users.get(id) # 可能返回 None
 
 # Union 类型
 from typing import Union
 def process(value: Union[int, str]) -> str:
-    return str(value)
+ return str(value)
 
 # Callable（函数签名）
 from typing import Callable
 def apply(func: Callable[[int, int], int], a: int, b: int) -> int:
-    return func(a, b)
+ return func(a, b)
 
 # Any —— 跳过类型检查（谨慎使用）
 from typing import Any
 def flexible(data: Any) -> Any:
-    return data
+ return data
 ```
 
 > 与 C 对比：Python 的类型注解类似于 C 的函数原型声明（`int add(int a, int b)`），但有以下关键区别：
@@ -298,8 +277,8 @@ check_untyped_defs = true
 # 忽略缺少 stub 包的第三方库
 [[tool.mypy.overrides]]
 module = [
-    "click.*",
-    "yaml.*",
+ "click.*",
+ "yaml.*",
 ]
 ignore_missing_imports = true
 ```
@@ -319,23 +298,13 @@ mypy -m myproject.core
 mypy --html-report ./mypy-report src/
 ```
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> 以下 Python 类型注解中，哪项语法是正确的（Python 3.9+）？
-> - [ ] A. `names: List[str] = []`
-> - [ ] B. `names: list[str] = []`
-> - [ ] C. `names: [str] = []`
-> - [ ] D. `names: Array[str] = []`
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: Python 3.9+ 支持内置 `list[str]` 语法，无需从 `typing` 导入 `List`。`List[str]`（大写）是 Python 3.8 及更早版本的写法。
 
 > [!question] 判断题 1
 > Python 的类型注解在运行时会被解释器强制执行类型检查。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -343,7 +312,7 @@ mypy --html-report ./mypy-report src/
 
 ---
 
-### 📚 第三节：ruff + mypy 在 CI 中的配置
+### 第三节：ruff + mypy 在 CI 中的配置
 
 #### 3.1 Makefile 集成
 
@@ -368,19 +337,19 @@ check: lint fmt typecheck
 ```yaml
 # .pre-commit-config.yaml
 repos:
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.0
-    hooks:
-      - id: ruff
-        args: [--fix]
-      - id: ruff-format
+ - repo: https://github.com/astral-sh/ruff-pre-commit
+ rev: v0.4.0
+ hooks:
+ - id: ruff
+ args: [--fix]
+ - id: ruff-format
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.9.0
-    hooks:
-      - id: mypy
-        args: [--strict, --ignore-missing-imports]
-        additional_dependencies: [types-PyYAML]
+ - repo: https://github.com/pre-commit/mirrors-mypy
+ rev: v1.9.0
+ hooks:
+ - id: mypy
+ args: [--strict, --ignore-missing-imports]
+ additional_dependencies: [types-PyYAML]
 ```
 
 ```bash
@@ -395,34 +364,24 @@ pre-commit install
 
 ```json
 {
-    "python.analysis.typeCheckingMode": "strict",
-    "[python]": {
-        "editor.defaultFormatter": "charliermarsh.ruff",
-        "editor.formatOnSave": true,
-        "editor.codeActionsOnSave": {
-            "source.fixAll.ruff": "explicit",
-            "source.organizeImports.ruff": "explicit"
-        }
-    }
+ "python.analysis.typeCheckingMode": "strict",
+ "[python]": {
+ "editor.defaultFormatter": "charliermarsh.ruff",
+ "editor.formatOnSave": true,
+ "editor.codeActionsOnSave": {
+ "source.fixAll.ruff": "explicit",
+ "source.organizeImports.ruff": "explicit"
+ }
+ }
 }
 ```
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> pre-commit 钩子在什么时候触发？
-> - [ ] A. 每次保存文件时
-> - [ ] B. 执行 `git push` 时
-> - [ ] C. 执行 `git commit` 时
-> - [ ] D. 执行 `git add` 时
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: pre-commit 钩子在 `git commit` 之前运行，如果检查失败则阻止提交。这确保只有通过质量检查的代码才能进入版本库。
 
 ---
 
-### 📚 第四节：Python 代码质量工具 vs C 代码质量工具
+### 第四节：Python 代码质量工具 vs C 代码质量工具
 
 | 功能 | C 语言工具 | Python 工具 |
 |------|-----------|-------------|
@@ -437,11 +396,21 @@ pre-commit install
 
 #### 4.1 配置文件的对应关系
 
-```
-C 项目                        Python 项目
-.clang-format    ←──────────→  pyproject.toml [tool.ruff.format]
-.clang-tidy      ←──────────→  pyproject.toml [tool.ruff.lint]
-Makefile CFLAGS  ←──────────→  pyproject.toml [tool.ruff] + [tool.mypy]
+```mermaid
+graph LR
+ subgraph C["C 项目"]
+ CLF[".clang-format"]
+ CLT[".clang-tidy"]
+ CFL["Makefile CFLAGS"]
+ end
+ subgraph PY["Python 项目"]
+ RUF_FMT["pyproject.toml<br/>[tool.ruff.format]"]
+ RUF_LINT["pyproject.toml<br/>[tool.ruff.lint]"]
+ RUF_ALL["pyproject.toml<br/>[tool.ruff] + [tool.mypy]"]
+ end
+ CLF --> RUF_FMT
+ CLT --> RUF_LINT
+ CFL --> RUF_ALL
 ```
 
 > **核心差异**：C 语言的类型检查是编译器内置的、强制性的——`int x = "hello"` 无法编译。Python 的类型检查是可选的、工具辅助的——只有运行 mypy 才会发现 `x: int = "hello"`。这意味着 Python 项目的代码质量更多依赖于工程纪律和 CI 集成。
@@ -455,53 +424,43 @@ Makefile CFLAGS  ←──────────→  pyproject.toml [tool.ruff
 int add(int a, int b) { return a + b; }
 
 int main() {
-    int unused = 42;
-    int result = add("hello", 5);  // 编译错误！
-    // warning: passing argument 1 of 'add' makes integer from pointer
+ int unused = 42;
+ int result = add("hello", 5); // 编译错误！
+ // warning: passing argument 1 of 'add' makes integer from pointer
 }
 ```
 
 ```python
 # Python：如果不运行 ruff + mypy，这些错误会静默通过
 def add(a: int, b: int) -> int:
-    return a + b
+ return a + b
 
-unused = 42  # ruff: F841 -- 没问题，不报错
+unused = 42 # ruff: F841 -- 没问题，不报错
 
-result = add("hello", 5)  # mypy: error: Argument 1 has incompatible type "str"
-                           # ruff: 不检查类型
+result = add("hello", 5) # mypy: error: Argument 1 has incompatible type "str"
+ # ruff: 不检查类型
 ```
 
 ```bash
 # C 语言的完整质量检查流程
-clang-format --dry-run src/main.c       # 格式检查
-clang-tidy src/main.c -- -Iinclude      # 静态分析
+clang-format --dry-run src/main.c # 格式检查
+clang-tidy src/main.c -- -Iinclude # 静态分析
 gcc -Wall -Wextra -Werror -c src/main.c # 编译 + 警告即错误
-cppcheck --enable=all src/              # 深度检查
+cppcheck --enable=all src/ # 深度检查
 
 # Python 的完整质量检查流程
-ruff format --check src/                # 格式检查
-ruff check src/                         # lint 检查
-mypy --strict src/                      # 类型检查
+ruff format --check src/ # 格式检查
+ruff check src/ # lint 检查
+mypy --strict src/ # 类型检查
 ```
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> 在 C 语言中，类型检查由谁负责？
-> - [ ] A. clang-tidy
-> - [ ] B. cppcheck
-> - [ ] C. 编译器（gcc/clang）
-> - [ ] D. Makefile
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: C 语言的类型检查是编译器的核心功能，在编译阶段执行。clang-tidy 和 cppcheck 提供额外的静态分析，但不能替代编译器的类型系统。
 
 > [!question] 判断题 1
 > ruff check 可以检测出 Python 代码中的类型错误（如 `int` 传递给需要 `str` 的函数）。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -509,14 +468,14 @@ mypy --strict src/                      # 类型检查
 
 ---
 
-## 📋 章节测试
+## 章节测试
 
 ### 一、判断题
 
 > [!question] 判断题 1
 > ruff 是 Python 标准库的一部分，安装 Python 后自动可用。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -524,8 +483,8 @@ mypy --strict src/                      # 类型检查
 
 > [!question] 判断题 2
 > mypy 可以在不运行 Python 代码的情况下发现类型错误。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -533,8 +492,8 @@ mypy --strict src/                      # 类型检查
 
 > [!question] 判断题 3
 > Python 的类型注解（如 `x: int = 5`）在运行时会被解释器强制执行。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -542,8 +501,8 @@ mypy --strict src/                      # 类型检查
 
 > [!question] 判断题 4
 > `ruff check --fix` 可以自动修复所有检测到的问题。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -551,8 +510,8 @@ mypy --strict src/                      # 类型检查
 
 > [!question] 判断题 5
 > `ruff format` 的格式化风格与 black 完全兼容。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -560,87 +519,30 @@ mypy --strict src/                      # 类型检查
 
 > [!question] 判断题 6
 > clang-format 和 ruff format 都是纯格式化工具，不做任何逻辑检查。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
 > > **解析**: clang-format 和 ruff format 都只关注代码格式（缩进、换行、空格），不涉及逻辑正确性。逻辑检查由 clang-tidy（C）和 ruff check（Python）负责。
 
-### 二、选择题
-
-> [!question] 选择题 1
-> ruff 中哪个规则前缀负责检测未使用的导入？
-> - [ ] A. E
-> - [ ] B. W
-> - [ ] C. F401
-> - [ ] D. I
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: `F401`（属于 Pyflakes F 规则组）检测已导入但未使用的模块。`I` 规则负责导入的排序，而非是否使用。
-
-> [!question] 选择题 2
-> mypy 的 `--strict` 模式等价于什么？
-> - [ ] A. 仅检查有注解的函数
-> - [ ] B. 开启所有可选的严格检查选项
-> - [ ] C. 将警告视为错误
-> - [ ] D. 跳过所有第三方库
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `--strict` 启用所有严格标志（如 `--warn-unused-configs`、`--disallow-any-generics` 等），提供最严格的类型检查。
-
-> [!question] 选择题 3
-> 以下哪种类型注解表示函数可能返回 `None`？
-> - [ ] A. `-> None`
-> - [ ] B. `-> Optional[str]`
-> - [ ] C. `-> str | None`
-> - [ ] D. B 和 C 都是
->
-> > [!success]- 点击查看答案
-> > 正确答案: D
-> > **解析**: `Optional[str]` 等价于 `Union[str, None]`，Python 3.10+ 可写为 `str | None`。`-> None` 表示函数一定返回 `None`（或没有 return 语句）。
-
-> [!question] 选择题 4
-> 在 pyproject.toml 中，ruff 的配置应在哪个节下？
-> - [ ] A. `[tool.ruff]`
-> - [ ] B. `[project.tools.ruff]`
-> - [ ] C. `[ruff]`
-> - [ ] D. `[tools.ruff]`
->
-> > [!success]- 点击查看答案
-> > 正确答案: A
-> > **解析**: 所有工具配置都在 `[tool.<name>]` 节下，ruff 对应 `[tool.ruff]`，mypy 对应 `[tool.mypy]`。这是 PEP 621 的标准约定。
-
-> [!question] 选择题 5
-> 以下关于 pre-commit 的说法错误的是？
-> - [ ] A. 它可以在 git commit 前自动运行检查
-> - [ ] B. 配置文件名为 `.pre-commit-config.yaml`
-> - [ ] C. 它只能运行 Python 工具
-> - [ ] D. 第一次使用时需要 `pre-commit install`
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: pre-commit 是语言无关的，可以运行任何命令行工具。它可以运行 clang-format、shellcheck、markdownlint 等任何语言的检查工具。
-
-> [!question] 选择题 6
-> `list[str]` 这种类型注解语法从哪个 Python 版本开始可用？
-> - [ ] A. Python 3.6
-> - [ ] B. Python 3.7
-> - [ ] C. Python 3.9
-> - [ ] D. Python 3.11
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: Python 3.9（PEP 585）允许内置容器类型直接用作泛型注解，如 `list[int]`、`dict[str, float]`。之前版本需从 `typing` 导入 `List`、`Dict` 等。
 
 ---
 
-### 🛠️ 动手练习题
+## 力扣练习
+
+以下题目用于验证本章所学内容：
+
+| 题号 | 题目 | 链接 | 涉及知识点 |
+|------|------|------|-----------|
+| — | 本章无对应力扣题 | — | 请用动手练习题自检 |
+
+
+
+### 动手练习题
 
 > [!example] 练习题 1：修复一个"问题百出"的 Python 文件
-> **难度**: ⭐
+> **难度**: 简单
 >
 > 创建 `messy.py`，故意引入以下问题：
 > - 未使用的导入（`import os, json, math`）
@@ -653,7 +555,7 @@ mypy --strict src/                      # 类型检查
 > 用 `ruff check messy.py` 列出所有问题，然后用 `ruff check --fix` + `ruff format` 自动修复。对比修复前后的文件。
 
 > [!example] 练习题 2：为现有项目添加类型注解
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 取一个已存在的 Python 脚本（200 行以上），渐进式添加类型注解：
 > 1. 先用 `mypy --check-untyped-defs` 查看当前状态
@@ -663,19 +565,19 @@ mypy --strict src/                      # 类型检查
 > 5. 在 pyproject.toml 中配置 mypy 和 ruff
 
 > [!example] 练习题 3：为 C/Python 混合项目配置质量检查
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 为一个混合项目（C 代码在 `src/`，Python 脚本在 `scripts/`）配置质量检查：
 > 1. 编写 `Makefile` 的 `lint` 目标：
->    - C 代码：`clang-format --dry-run` + `clang-tidy`
->    - Python 代码：`ruff check` + `ruff format --check` + `mypy`
+> - C 代码：`clang-format --dry-run` + `clang-tidy`
+> - Python 代码：`ruff check` + `ruff format --check` + `mypy`
 > 2. 配置 `.pre-commit-config.yaml`：
->    - C 代码：clang-format 钩子
->    - Python 代码：ruff + mypy 钩子
+> - C 代码：clang-format 钩子
+> - Python 代码：ruff + mypy 钩子
 > 3. 运行 `make lint` 确保通过
 
 > [!example] 练习题 4：对比 ruff 与 flake8 的输出
-> **难度**: ⭐
+> **难度**: 简单
 >
 > 安装 flake8 和 ruff，在同一个项目中运行两者：
 > 1. `flake8 src/ --max-line-length=100`

@@ -1,7 +1,7 @@
 # Matplotlib 基础：画出 C 程序的输出 (Matplotlib Basics)
 ---
 
-## 📖 章节概述
+## 章节概述
 
 从 C 程序的 `printf` 输出到 Python 的可视化图表——这是数据可视化的第一步。Matplotlib 是 Python 最基础的绑图库，也是 Seaborn、Pandas 绑图的底层引擎。对于 C 程序员而言，`matplotlib.pyplot` 的 API 设计相当于 C 标准库中的 `printf`——简单直接，所见即所得。本章将从最简单的折线图开始，教会你如何将 C 程序的输出（从文件或标准输入）转化为有意义的图表。
 
@@ -9,7 +9,7 @@
 
 ---
 
-### 📚 第一节：pyplot 基础 API —— 十分钟入门四种图表
+### 第一节：pyplot 基础 API —— 十分钟入门四种图表
 ---
 
 1.1 折线图：`plot()`
@@ -64,7 +64,7 @@ plt.savefig('scatter.png')
 import matplotlib.pyplot as plt
 
 levels = ['-O0', '-O1', '-O2', '-O3', '-Os']
-times  = [12.3, 8.7, 5.2, 4.9, 6.1]
+times = [12.3, 8.7, 5.2, 4.9, 6.1]
 
 plt.bar(levels, times, color=['red', 'orange', 'green', 'blue', 'purple'])
 plt.ylabel('Execution Time (ms)')
@@ -90,23 +90,13 @@ plt.savefig('hist.png')
 
 > `hist()` 自动完成分桶和计数——相当于 C 中你手动写的一个 `int bins[N]` 数组和遍历统计代码。
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> `plt.plot(x, y, 'go-')` 中的 `'go-'` 表示什么？
-> - [ ] A. 灰色线条，圆形标记，虚线
-> - [ ] B. 绿色线条，圆形标记，实线
-> - [ ] C. 绿色线条，无标记，虚线
-> - [ ] D. 灰色线条，无标记，实线
->
-> > [!success]- 点击查看答案
-> > > 正确答案: B
-> > > **解析**: `g` = green（绿色），`o` = circle marker（圆形标记），`-` = solid line（实线）。完整的格式字符串语法为 `[color][marker][linestyle]`。
 
 > [!question] 判断题 1
 > Matplotlib 的 `plt.hist()` 需要用户手动指定每个 bin 的数据分布。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 错误
@@ -114,7 +104,7 @@ plt.savefig('hist.png')
 
 ---
 
-### 📚 第二节：读取 C 程序输出 —— 文件与标准输入
+### 第二节：读取 C 程序输出 —— 文件与标准输入
 ---
 
 2.1 从文件读取数据
@@ -127,11 +117,11 @@ C 程序（`benchmark.c`）：
 #include <stdio.h>
 
 int main() {
-    for (int n = 1000; n <= 1000000; n *= 2) {
-        // 模拟排序耗时
-        printf("%d %f\n", n, n * log(n) / 1e6);
-    }
-    return 0;
+ for (int n = 1000; n <= 1000000; n *= 2) {
+ // 模拟排序耗时
+ printf("%d %f\n", n, n * log(n) / 1e6);
+ }
+ return 0;
 }
 ```
 编译运行：`gcc -o benchmark benchmark.c -lm && ./benchmark > results.txt`
@@ -141,15 +131,15 @@ Python 读取并绑图：
 import matplotlib.pyplot as plt
 
 with open('results.txt') as f:
-    lines = f.readlines()
+ lines = f.readlines()
 
 n = []
 t = []
 for line in lines:
-    if line.strip():
-        parts = line.split()
-        n.append(int(parts[0]))
-        t.append(float(parts[1]))
+ if line.strip():
+ parts = line.split()
+ n.append(int(parts[0]))
+ t.append(float(parts[1]))
 
 plt.plot(n, t, 'o-')
 plt.xlabel('Input Size (n)')
@@ -173,10 +163,10 @@ import matplotlib.pyplot as plt
 
 x, y = [], []
 for line in sys.stdin:
-    if line.strip():
-        a, b = line.split()
-        x.append(float(a))
-        y.append(float(b))
+ if line.strip():
+ a, b = line.split()
+ x.append(float(a))
+ y.append(float(b))
 
 plt.plot(x, y, 'o-')
 plt.savefig('piped_result.png')
@@ -210,23 +200,13 @@ plt.savefig('out.png')
 
 > `np.loadtxt` 内部用 C 语言实现数据解析，性能接近纯 C，远快于 Python 的逐行循环。
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> `python3 plot.py < data.txt` 和 `cat data.txt | python3 plot.py` 的区别是？
-> - [ ] A. 前者从 stdin 读取，后者从文件读取
-> - [ ] B. 两者都从 stdin 读取，只是重定向方式不同
-> - [ ] C. 前者更快
-> - [ ] D. B 和 C 都正确
->
-> > [!success]- 点击查看答案
-> > > 正确答案: D
-> > > **解析**: 两种方式都是让 Python 从标准输入读取数据。区别在于 shell 的输入重定向方式：`<` 是文件重定向（更高效），`|` 是管道（有额外 IPC 开销）。但 Python 代码中都是通过 `sys.stdin` 读取。
 
 > [!question] 判断题 1
 > Python 的 `sys.stdin` 在读取完所有数据后需要手动调用 `close()` 来释放资源。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 错误
@@ -234,7 +214,7 @@ plt.savefig('out.png')
 
 ---
 
-### 📚 第三节：非交互式绑图 —— savefig vs show
+### 第三节：非交互式绑图 —— savefig vs show
 ---
 
 3.1 两种绑图输出模式
@@ -252,11 +232,11 @@ C 程序员通常工作在终端或远程服务器上，**非交互式 `savefig`
 
 ```python
 plt.savefig(
-    'output.png',
-    dpi=150,              # 分辨率（默认 100）
-    bbox_inches='tight',  # 自动裁剪空白边距
-    transparent=False,    # 是否透明背景
-    format='png'          # png/jpg/svg/pdf
+ 'output.png',
+ dpi=150, # 分辨率（默认 100）
+ bbox_inches='tight', # 自动裁剪空白边距
+ transparent=False, # 是否透明背景
+ format='png' # png/jpg/svg/pdf
 )
 ```
 
@@ -267,7 +247,7 @@ plt.savefig(
 
 ```python
 import matplotlib
-matplotlib.use('Agg')  # 使用非交互式后端（Anti-Grain Geometry）
+matplotlib.use('Agg') # 使用非交互式后端（Anti-Grain Geometry）
 
 import matplotlib.pyplot as plt
 # ... 正常绑图 ...
@@ -306,23 +286,13 @@ plt.savefig('pipe_plot.png')
 "
 ```
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> 在无 GUI 的 Linux 服务器上使用 Matplotlib，必须设置的后端是？
-> - [ ] A. `TkAgg`
-> - [ ] B. `Qt5Agg`
-> - [ ] C. `Agg`
-> - [ ] D. `GTK3Agg`
->
-> > [!success]- 点击查看答案
-> > > 正确答案: C
-> > > **解析**: `Agg`（Anti-Grain Geometry）是纯内存渲染后端，不依赖任何 GUI 库（如 Tk、Qt、GTK）。在 SSH 终端或无显示器环境中，这是唯一可用的后端。
 
 > [!question] 判断题 1
 > `plt.savefig('out.pdf')` 生成的 PDF 图表放大后会出现锯齿。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 错误
@@ -330,7 +300,7 @@ plt.savefig('pipe_plot.png')
 
 ---
 
-### 📚 第四节：面向对象式绑图 —— fig, ax = plt.subplots()
+### 第四节：面向对象式绑图 —— fig, ax = plt.subplots()
 ---
 
 4.1 pyplot 命令式 vs subplots 对象式
@@ -358,15 +328,16 @@ fig.savefig('plot.png')
 4.2 Figure 和 Axes 的概念
 -------------------------
 
-```
-Figure (绑布)
-├── Axes (坐标系 1)  ← 绑图区域，包含 x/y 轴、刻度、标题
-├── Axes (坐标系 2)  ← 一个 Figure 可以包含多个 Axes（子图）
-└── ...
+```mermaid
+graph TB
+ FIG["Figure (画布)"]
+ FIG --> AX1["Axes (坐标系 1)<br/>绘图区域，包含 x/y 轴、刻度、标题"]
+ FIG --> AX2["Axes (坐标系 2)<br/>一个 Figure 可包含多个 Axes（子图）"]
+ FIG --> AXN["..."]
 ```
 
 ```python
-fig, ax = plt.subplots(figsize=(8, 5))  # 指定尺寸（英寸）
+fig, ax = plt.subplots(figsize=(8, 5)) # 指定尺寸（英寸）
 
 ax.plot([1, 2, 3], [1, 4, 9], 'go-', label='data')
 ax.set_title('Figure with a single Axes', fontsize=14)
@@ -390,13 +361,13 @@ C 程序输出矩阵：
 #include <math.h>
 
 int main() {
-    for (int i = 0; i < 10; i++) {
-        for (int j = 0; j < 10; j++) {
-            printf("%.3f ", sin(i * 0.5) * cos(j * 0.5));
-        }
-        printf("\n");
-    }
-    return 0;
+ for (int i = 0; i < 10; i++) {
+ for (int j = 0; j < 10; j++) {
+ printf("%.3f ", sin(i * 0.5) * cos(j * 0.5));
+ }
+ printf("\n");
+ }
+ return 0;
 }
 ```
 
@@ -418,23 +389,13 @@ fig.savefig('matrix_heatmap.png')
 gcc -o matrix_gen matrix_gen.c -lm && ./matrix_gen | python3 matrix_plot.py
 ```
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> `fig, ax = plt.subplots()` 返回的两个对象分别对应什么？
-> - [ ] A. `fig` 是数据，`ax` 是图表
-> - [ ] B. `fig` 是整个绑布，`ax` 是一个绑图坐标系
-> - [ ] C. `fig` 是 x 轴，`ax` 是 y 轴
-> - [ ] D. `fig` 是颜色映射，`ax` 是数据
->
-> > [!success]- 点击查看答案
-> > > 正确答案: B
-> > > **解析**: `Figure`（绑布）是整个窗口或图片的容器，`Axes`（坐标系）是具体的绑图区域，包含坐标轴、刻度、标签、标题和绑图内容。一个 `Figure` 可以包含多个 `Axes`。
 
 > [!question] 判断题 1
 > `plt.plot(x, y)` 和 `ax.plot(x, y)` 在只有一个子图时效果完全相同。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 正确
@@ -442,14 +403,14 @@ gcc -o matrix_gen matrix_gen.c -lm && ./matrix_gen | python3 matrix_plot.py
 
 ---
 
-## 📋 章节测试
+## 章节测试
 
-### 一、判断题（正确选✅，错误选❌）
+### 一、判断题（正确选，错误选）
 
 > [!question] 判断题 1
 > `plt.plot([1, 2], [3, 4])` 绑制的是散点图。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 错误
@@ -457,8 +418,8 @@ gcc -o matrix_gen matrix_gen.c -lm && ./matrix_gen | python3 matrix_plot.py
 
 > [!question] 判断题 2
 > Matplotlib 的 `savefig('output.jpg')` 和 `savefig('output.pdf')` 生成的图片质量完全相同。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 错误
@@ -466,8 +427,8 @@ gcc -o matrix_gen matrix_gen.c -lm && ./matrix_gen | python3 matrix_plot.py
 
 > [!question] 判断题 3
 > 使用 `python -c` 一行流绑图时，必须显式调用 `matplotlib.use('Agg')`。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 错误
@@ -475,8 +436,8 @@ gcc -o matrix_gen matrix_gen.c -lm && ./matrix_gen | python3 matrix_plot.py
 
 > [!question] 判断题 4
 > `np.loadtxt('data.txt')` 可以自动处理文件中包含注释行的情况。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 正确
@@ -484,8 +445,8 @@ gcc -o matrix_gen matrix_gen.c -lm && ./matrix_gen | python3 matrix_plot.py
 
 > [!question] 判断题 5
 > Matplotlib 只能在 Python 脚本中使用，不能在 `python -c` 一行流中使用。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 错误
@@ -493,8 +454,8 @@ gcc -o matrix_gen matrix_gen.c -lm && ./matrix_gen | python3 matrix_plot.py
 
 > [!question] 判断题 6
 > `ax.grid(True)` 设置的网格线默认是实线且完全不透明。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 错误
@@ -502,80 +463,23 @@ gcc -o matrix_gen matrix_gen.c -lm && ./matrix_gen | python3 matrix_plot.py
 
 ---
 
-### 二、选择题（单项选择题）
-
-> [!question] 选择题 1
-> 以下哪个格式字符串表示"蓝色虚线，三角形标记"？
-> - [ ] A. `'b--^'`
-> - [ ] B. `'b:^'`
-> - [ ] C. `'b-^'`
-> - [ ] D. `'r--^'`
->
-> > [!success]- 点击查看答案
-> > > 正确答案: A
-> > > **解析**: `b` = blue（蓝色），`--` = dashed line（虚线），`^` = triangle marker（三角形标记）。
-
-> [!question] 选择题 2
-> `sys.stdin` 在 Python 中的类型等价于 C 语言中的什么？
-> - [ ] A. `int fd = 0`
-> - [ ] B. `FILE* stdin`
-> - [ ] C. `char* argv[]`
-> - [ ] D. `int STDIN_FILENO`
->
-> > [!success]- 点击查看答案
-> > > 正确答案: B
-> > > **解析**: `sys.stdin` 是 Python 中的文件对象，提供缓冲的文本/二进制读写接口，语义上最接近 C 的 `FILE* stdin`。底层的文件描述符（对应 A 和 D）可以通过 `sys.stdin.fileno()` 获取。
-
-> [!question] 选择题 3
-> `plt.scatter()` 的 `alpha` 参数控制什么？
-> - [ ] A. 数据点的颜色亮度
-> - [ ] B. 数据点的透明度
-> - [ ] C. 数据点的旋转角度
-> - [ ] D. 数据点的形状
->
-> > [!success]- 点击查看答案
-> > > 正确答案: B
-> > > **解析**: `alpha` 取值范围为 `[0, 1]`，控制图形的透明度。`alpha=0` 表示完全透明（不可见），`alpha=1` 表示完全不透明。在散点图重叠严重的场景下，`alpha=0.5` 可以清晰显示密度分布。
-
-> [!question] 选择题 4
-> 从管道读取 C 程序输出的 Python 代码，最核心的迭代模式是？
-> - [ ] A. `while sys.stdin.read(): ...`
-> - [ ] B. `data = sys.stdin.read()`
-> - [ ] C. `for line in sys.stdin: ...`
-> - [ ] D. `sys.stdin.readlines(all=True)`
->
-> > [!success]- 点击查看答案
-> > > 正确答案: C
-> > > **解析**: `for line in sys.stdin` 是 Python 中最地道的管道读取模式。`sys.stdin` 实现了迭代器协议，按行逐条读取，自动处理缓冲和 EOF。
-
-> [!question] 选择题 5
-> `fig.tight_layout()` 的作用是？
-> - [ ] A. 压缩图片文件大小
-> - [ ] B. 自动调整子图间距以避免标签重叠
-> - [ ] C. 将所有子图合并为一个
-> - [ ] D. 将图片裁剪为正方形
->
-> > [!success]- 点击查看答案
-> > > 正确答案: B
-> > > **解析**: `tight_layout()` 自动计算并调整子图之间的 padding 和 spacing，使轴标签、标题等不会相互重叠。在绑制多子图时非常必要。
-
-> [!question] 选择题 6
-> 在 C 程序的输出与 Python 绑图之间的数据交换中,哪种格式解析速度最快？
-> - [ ] A. 文本格式，逐行 `split()`
-> - [ ] B. 文本格式，`np.loadtxt()`
-> - [ ] C. CSV 格式，`csv.reader`
-> - [ ] D. JSON 格式，`json.loads`
->
-> > [!success]- 点击查看答案
-> > > 正确答案: B
-> > > **解析**: `np.loadtxt()` 使用 C 语言实现的核心解析器，比纯 Python 的 `split()` 循环快数倍到数十倍。CSV 读取（C）和 JSON（D）都需要额外的解析开销，对于纯数值矩阵不如 `loadtxt` 高效。
 
 ---
 
-### 🛠️ 动手练习题
+## 力扣练习
+
+以下题目用于验证本章所学内容：
+
+| 题号 | 题目 | 链接 | 涉及知识点 |
+|------|------|------|-----------|
+| — | 本章无对应力扣题 | — | 请用动手练习题自检 |
+
+
+
+### 动手练习题
 
 > [!example] 练习题 1：从 C 程序管道绑图
-> **难度**: ⭐
+> **难度**: 简单
 >
 > 编写一个 C 程序 `sine_gen.c`，输出 `x` 从 0 到 2π 共 100 个点的 `sin(x)` 和 `cos(x)` 值（两列，空格分隔）。然后：
 > 1. 编译并运行 C 程序，用管道将输出传给 Python 脚本
@@ -586,7 +490,7 @@ gcc -o matrix_gen matrix_gen.c -lm && ./matrix_gen | python3 matrix_plot.py
 > 要求使用 `fig, ax = plt.subplots()` 对象式 API。
 
 > [!example] 练习题 2：基准测试数据可视化
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 编写 C 程序测量不同数量级下的冒泡排序耗时（n=100, 500, 1000, 5000），输出格式 `n time_ms`。然后：
 > 1. 用 Python 读取数据，绑制散点图 + 拟合曲线
@@ -595,7 +499,7 @@ gcc -o matrix_gen matrix_gen.c -lm && ./matrix_gen | python3 matrix_plot.py
 > 4. 保存为 `bubble_bench.png`
 
 > [!example] 练习题 3：矩阵热力图
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 编写 C 程序生成一个 20×20 的矩阵，每个元素为 `exp(-((i-10)²+(j-10)²)/50)`。用管道连接 Python：
 > 1. Python 用 `np.loadtxt(sys.stdin)` 读取矩阵
@@ -604,7 +508,7 @@ gcc -o matrix_gen matrix_gen.c -lm && ./matrix_gen | python3 matrix_plot.py
 > 4. 比较两个文件的大小，记录你的观察
 
 > [!example] 练习题 4：python -c 一行流绑图挑战
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 用 `python -c` 一行流完成以下任务（不允许创建 .py 文件）：
 > 1. 生成 x = [1, 2, ..., 100]，y = [x² mod 97 for x in xs]

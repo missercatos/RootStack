@@ -1,7 +1,7 @@
 # python -c 一行流：系统管理速查 (One-Liner Cookbook)
 ---
 
-## 📖 章节概述
+## 章节概述
 
 本章是一份实战速查手册：在 C 语言开发者的日常工作中，许多需要临时写 bash 命令或 C 小工具才能完成的任务，其实用 `python -c "..."` 一行就能搞定。本章按类别整理了文件操作、文本处理、JSON/CSV、网络请求、数学计算、系统信息等场景的常用一行流，每条都配有"替代了什么 bash/C 工作流"的说明。
 
@@ -9,7 +9,7 @@
 
 ---
 
-### 📚 第一节：文件与目录操作
+### 第一节：文件与目录操作
 
 ---
 
@@ -34,7 +34,7 @@ python -c "import os; [os.rename(f, f.replace(' ', '_')) for f in os.listdir('.'
 du -sh * | sort -rh | head -5
 
 # python -c
-python -c "import os; files=[(os.path.getsize(f),f) for f in os.listdir('.') if os.path.isfile(f)]; [print(f'{s:>10}  {n}') for s,n in sorted(files,reverse=True)[:5]]"
+python -c "import os; files=[(os.path.getsize(f),f) for f in os.listdir('.') if os.path.isfile(f)]; [print(f'{s:>10} {n}') for s,n in sorted(files,reverse=True)[:5]]"
 ```
 
 **递归统计每种文件扩展名的数量**
@@ -44,7 +44,7 @@ python -c "import os; files=[(os.path.getsize(f),f) for f in os.listdir('.') if 
 find . -type f | sed 's/.*\.//' | sort | uniq -c | sort -rn
 
 # python -c：更清晰的输出，且 `collections.Counter` 不需 sort | uniq
-python -c "import os,collections; c=collections.Counter(); [c.update([os.path.splitext(f)[1] or '(无后缀)']) for r,_,fs in os.walk('.') for f in fs]; [print(f'{v:>5}  {k}') for k,v in c.most_common()]"
+python -c "import os,collections; c=collections.Counter(); [c.update([os.path.splitext(f)[1] or '(无后缀)']) for r,_,fs in os.walk('.') for f in fs]; [print(f'{v:>5} {k}') for k,v in c.most_common()]"
 ```
 
 > `os.walk` 递归遍历目录树，`collections.Counter` 一行完成统计+排序，比 `sort | uniq -c | sort -rn` 的管道更简洁。
@@ -68,33 +68,12 @@ rsync -av --exclude='*.o' --exclude='build/' src/ dst/
 python -c "import shutil; shutil.copytree('src','dst',ignore=shutil.ignore_patterns('*.o','build'))"
 ```
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> `os.listdir('.')` 与 `os.walk('.')` 的核心区别是什么？
-> - [ ] A. 完全一样，只是语法不同
-> - [ ] B. `listdir` 只列当前目录，`walk` 递归遍历所有子目录
-> - [ ] C. `walk` 只列文件，`listdir` 列出所有条目
-> - [ ] D. `listdir` 更快所以应该总是用它
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `os.listdir(path)` 仅返回 path 目录下的条目名列表（不含子目录内容），`os.walk` 递归遍历整个目录树，每个迭代返回 (根路径, 子目录列表, 文件列表)。
-
-> [!question] 选择题 2
-> `os.chmod(f, 0o755)` 中的 `0o` 前缀表示什么？
-> - [ ] A. 十进制数字
-> - [ ] B. 十六进制数字
-> - [ ] C. 八进制数字
-> - [ ] D. 二进制数字
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: Python 中 `0o` 前缀表示八进制字面量，`0o755` 等于十进制 493，与 shell 中 `chmod 755` 的含义完全相同。
 
 ---
 
-### 📚 第二节：文本处理——grep/sed/awk 的 Python 平替
+### 第二节：文本处理——grep/sed/awk 的 Python 平替
 
 ---
 
@@ -117,7 +96,7 @@ python -c "import os,re; [print(f'{r}/{f}:{i+1}:{l}',end='') for r,_,fs in os.wa
 python -c "
 import fileinput, sys
 for line in fileinput.input(sys.argv[1:], inplace=True):
-    print(line.replace('foo', 'bar'), end='')
+ print(line.replace('foo', 'bar'), end='')
 " *.txt
 ```
 
@@ -141,13 +120,13 @@ python -c "
 import os, collections
 c = collections.Counter()
 for r,_,fs in os.walk('.'):
-    for f in fs:
-        ext = os.path.splitext(f)[1] or '(none)'
-        try:
-            c[ext] += sum(1 for _ in open(r+'/'+f))
-        except: pass
+ for f in fs:
+ ext = os.path.splitext(f)[1] or '(none)'
+ try:
+ c[ext] += sum(1 for _ in open(r+'/'+f))
+ except: pass
 for k,v in c.most_common():
-    print(f'{v:>8} lines  {k}')
+ print(f'{v:>8} lines {k}')
 "
 ```
 
@@ -167,31 +146,21 @@ print('\n'.join(sorted(ips)))
 " < access.log
 ```
 
-### 📝 小节练习
+### 小节练习
 
 > [!question] 判断题 1
 > `fileinput.input(inplace=True)` 会修改原文件内容。 ( )
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
 > > **解析**: `inplace=True` 参数使 `fileinput` 将标准输出重定向到原文件，实现原地修改，等效于 `sed -i`。
 
-> [!question] 选择题 1
-> macOS 自带 `grep` 不支持 `-P` 选项，因为：
-> - [ ] A. macOS 没有正则引擎
-> - [ ] B. `-P` 是 GNU grep 专有的 PCRE 扩展，macOS 使用 BSD grep
-> - [ ] C. 苹果禁止了正则表达式
-> - [ ] D. 需要用 `brew install grep` 才支持
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: macOS 自带 BSD 版本的 grep，不支持 GNU 的 `-P`（Perl Compatible Regular Expressions）选项。Python 的 `re` 模块自带 PCRE 风格正则是更好的跨平台选择。
 
 ---
 
-### 📚 第三节：JSON 与 CSV 数据处理
+### 第三节：JSON 与 CSV 数据处理
 
 ---
 
@@ -205,7 +174,7 @@ python -c "
 import json, urllib.request
 data = json.load(urllib.request.urlopen('https://api.github.com/repos/torvalds/linux/commits?per_page=10'))
 for c in data:
-    print(c['commit']['author']['name'], c['commit']['message'].split('\n')[0][:60])
+ print(c['commit']['author']['name'], c['commit']['message'].split('\n')[0][:60])
 "
 ```
 
@@ -260,40 +229,19 @@ python -c "
 import csv, glob
 writer = csv.writer(open('merged.csv','w'))
 for i,f in enumerate(sorted(glob.glob('split_*.csv'))):
-    reader = csv.reader(open(f))
-    for j,row in enumerate(reader):
-        if j==0 and i>0: continue  # 跳过后续文件的表头
-        writer.writerow(row)
+ reader = csv.reader(open(f))
+ for j,row in enumerate(reader):
+ if j==0 and i>0: continue # 跳过后续文件的表头
+ writer.writerow(row)
 "
 ```
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> `csv.DictReader` 的作用是？
-> - [ ] A. 将 CSV 写入字典格式
-> - [ ] B. 以字典形式读取 CSV 每一行，键为列名
-> - [ ] C. 读取字典文件
-> - [ ] D. 将 CSV 转为 Python 字典对象
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `csv.DictReader` 将 CSV 文件的第一行作为字段名，后续每行以 `{字段名: 值}` 的字典形式返回，方便按列名访问数据。
-
-> [!question] 选择题 2
-> `json.dump(obj, f, ensure_ascii=False)` 中 `ensure_ascii=False` 的效果是？
-> - [ ] A. 允许输出非 ASCII 字符（如中文）的原形
-> - [ ] B. 禁止输出任何 ASCII 字符
-> - [ ] C. 加快 JSON 序列化速度
-> - [ ] D. 使 JSON 失去跨平台兼容性
->
-> > [!success]- 点击查看答案
-> > 正确答案: A
-> > **解析**: 默认 `ensure_ascii=True` 会将非 ASCII 字符转义为 `\uXXXX` 形式。设为 `False` 后中文等字符直接原形输出，可读性更好。
 
 ---
 
-### 📚 第四节：网络与系统信息
+### 第四节：网络与系统信息
 
 ---
 
@@ -315,11 +263,11 @@ python -c "import socket; s=socket.socket(); s.settimeout(2); r=s.connect_ex(('1
 python -c "
 import urllib.request
 try:
-    r = urllib.request.urlopen('http://httpbin.org/get', timeout=5)
-    print(f'Status: {r.status}')
-    print(r.read().decode()[:200])
+ r = urllib.request.urlopen('http://httpbin.org/get', timeout=5)
+ print(f'Status: {r.status}')
+ print(r.read().decode()[:200])
 except Exception as e:
-    print(f'Error: {e}')
+ print(f'Error: {e}')
 "
 ```
 
@@ -334,8 +282,8 @@ python -c "
 import subprocess, re
 out = subprocess.check_output(['ss','-tlnp']).decode()
 for line in out.split('\n'):
-    if 'LISTEN' in line:
-        print(line)
+ if 'LISTEN' in line:
+ print(line)
 "
 ```
 
@@ -350,9 +298,9 @@ python -c "print([l.split(':')[1].strip() for l in open('/proc/cpuinfo') if 'mod
 # 读取 /proc/meminfo 获取内存总量（Linux）
 python -c "
 for l in open('/proc/meminfo'):
-    if l.startswith('MemTotal:'):
-        print(l.split()[1], l.split()[2])
-        break
+ if l.startswith('MemTotal:'):
+ print(l.split()[1], l.split()[2])
+ break
 "
 ```
 
@@ -368,12 +316,12 @@ echo -n "Hello World" | python -c "import sys,base64; print(base64.b64encode(sys
 echo "SGVsbG8gV29ybGQ=" | python -c "import sys,base64; print(base64.b64decode(sys.stdin.read().strip()).decode())"
 ```
 
-### 📝 小节练习
+### 小节练习
 
 > [!question] 判断题 1
 > `socket.connect_ex()` 在连接成功时返回 0。 ( )
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -381,8 +329,8 @@ echo "SGVsbG8gV29ybGQ=" | python -c "import sys,base64; print(base64.b64decode(s
 
 > [!question] 判断题 2
 > `/proc/cpuinfo` 是一个真实的磁盘文件，由操作系统写入。 ( )
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -390,7 +338,7 @@ echo "SGVsbG8gV29ybGQ=" | python -c "import sys,base64; print(base64.b64decode(s
 
 ---
 
-### 📚 第五节：数学计算与随机数
+### 第五节：数学计算与随机数
 
 ---
 
@@ -400,10 +348,10 @@ C 程序员需要 `<math.h>` + `-lm` 链接才能做数学计算，需要 `srand
 
 ```bash
 # 当作计算器用——Python 原生支持大整数和浮点
-python -c "print(2 ** 100)"                   # 大整数
-python -c "print(sum(range(1, 101)))"         # 1+2+...+100
-python -c "import math; print(math.factorial(20))"   # 阶乘
-python -c "print(hex(255), oct(255), bin(255))"     # 进制转换
+python -c "print(2 ** 100)" # 大整数
+python -c "print(sum(range(1, 101)))" # 1+2+...+100
+python -c "import math; print(math.factorial(20))" # 阶乘
+python -c "print(hex(255), oct(255), bin(255))" # 进制转换
 ```
 
 > C 语言计算 `2**100` 需要 `unsigned long long` 溢出或引入 GMP 大数库。Python 整数自动扩展，无上限。
@@ -443,33 +391,12 @@ python -c "import math; print(f'π={math.pi:.15f} e={math.e:.15f}')"
 python -c "import math; print(math.sin(math.radians(30)), math.cos(math.radians(60)))"
 ```
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> Python 中生成密码应优先使用 `secrets` 模块而非 `random` 模块，因为：
-> - [ ] A. `secrets` 更快
-> - [ ] B. `secrets` 使用操作系统加密安全随机源，不可预测
-> - [ ] C. `random` 已被废弃
-> - [ ] D. `secrets` 输出的字符串更短
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `random` 模块使用 Mersenne Twister 伪随机算法，在已知足够多样本后可以被预测。`secrets` 直接使用操作系统 `/dev/urandom` 等加密安全熵源，适用于安全场景。
-
-> [!question] 选择题 2
-> C 语言计算 `pow(2, 100)` 时可能遇到的问题是什么？
-> - [ ] A. 编译失败
-> - [ ] B. `double` 类型无法精确表示整数
-> - [ ] C. 溢出（超出 `unsigned long long` 范围）
-> - [ ] D. 以上全部
->
-> > [!success]- 点击查看答案
-> > 正确答案: D
-> > **解析**: C 的 `pow()` 返回 `double`，对大整数会丢失精度；若用整数类型移位 `1ULL << 100` 会溢出（`unsigned long long` 通常 64 位，最大 `2^64-1`）。Python 整数精度无上限，`2**100` 精确计算。
 
 ---
 
-### 📚 第六节：一行流的组合技巧
+### 第六节：一行流的组合技巧
 
 ---
 
@@ -503,8 +430,8 @@ python -c "
 import sys, os
 pattern = sys.argv[1]
 for f in os.listdir('.'):
-    if pattern in f:
-        print(f)
+ if pattern in f:
+ print(f)
 " "TODO"
 ```
 
@@ -517,46 +444,36 @@ for f in os.listdir('.'):
 find . -name '*.c' | python -c "
 import sys, os
 for line in sys.stdin:
-    f = line.strip()
-    size = os.path.getsize(f)
-    print(f'{size:>10}  {f}')
+ f = line.strip()
+ size = os.path.getsize(f)
+ print(f'{size:>10} {f}')
 " | sort -rn | head -10
 ```
 
 > Python 作为管道中一环：bash 负责文件发现，Python 负责数据转换，bash 继续排序。各取所长。
 
-### 📝 小节练习
+### 小节练习
 
 > [!question] 判断题 1
 > 在 `python -c "..."` 中不能使用换行，否则会报语法错误。 ( )
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
 > > **解析**: Python 语法允许在引号内使用换行，只要缩进正确即可。在 `python -c "..."` 中写多行代码是完全合法的常见做法。
 
-> [!question] 选择题 1
-> `python -c` 中获取命令行参数的正确方式是？
-> - [ ] A. `$1`, `$2`
-> - [ ] B. `sys.argv[1]`
-> - [ ] C. `argc`, `argv`
-> - [ ] D. `os.getenv('ARG1')`
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `python -c` 后面的 `"..."` 是 Python 代码，bash 变量 `$1` 不会被展开（单引号内）。正确方式是 `python -c "... sys.argv[1] ..." "参数值"`，参数传入 `sys.argv`。
 
 ---
 
-## 📋 章节测试
+## 章节测试
 
-### 一、判断题（正确选✅，错误选❌）
+### 一、判断题（正确选，错误选）
 
 > [!question] 判断题 1
 > `python -c` 只能执行单行代码，不能写循环或条件语句。 ( )
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -564,8 +481,8 @@ for line in sys.stdin:
 
 > [!question] 判断题 2
 > `python -m json.tool` 可以用来格式化 JSON 文件。 ( )
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -573,8 +490,8 @@ for line in sys.stdin:
 
 > [!question] 判断题 3
 > `os.walk()` 比 `os.listdir()` 返回的结果更多，因为它递归遍历所有子目录。 ( )
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -582,8 +499,8 @@ for line in sys.stdin:
 
 > [!question] 判断题 4
 > Python 的 `random` 模块适合用于生成密码。 ( )
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -591,8 +508,8 @@ for line in sys.stdin:
 
 > [!question] 判断题 5
 > `/proc/meminfo` 文件在 macOS 上也可以直接读取。 ( )
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -600,8 +517,8 @@ for line in sys.stdin:
 
 > [!question] 判断题 6
 > 相比 bash 的 `sed -i`，`python -c` + `fileinput` 方案在 Windows 上同样可用。 ( )
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -609,80 +526,23 @@ for line in sys.stdin:
 
 ---
 
-### 二、选择题（单项选择题）
-
-> [!question] 选择题 1
-> 以下哪个模块用于递归遍历目录树？
-> - [ ] A. `os.listdir`
-> - [ ] B. `os.walk`
-> - [ ] C. `os.scandir`
-> - [ ] D. `shutil.copytree`
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `os.walk` 递归遍历目录树，`os.listdir` 仅列出单层，`os.scandir` 是 `listdir` 的高效替代，`shutil.copytree` 用于复制。
-
-> [!question] 选择题 2
-> `python -c "print(2 ** 100)"` 的输出结果与 C 语言 `printf("%llu", 1ULL << 100)` 相比：
-> - [ ] A. 结果相同
-> - [ ] B. Python 溢出，C 得到精确结果
-> - [ ] C. Python 得到精确结果，C 溢出
-> - [ ] D. 两者都溢出
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: Python 整数精度无上限，`2**100` 精确计算。C 的 `1ULL << 100` 在 64 位 `unsigned long long` 上行为是未定义的（移位位数 >= 类型宽度），可能得到 0 或其它结果。
-
-> [!question] 选择题 3
-> 在 `python -c` 中批量重命名文件的正确做法是：
-> - [ ] A. 用 `subprocess.run('mv '+old+' '+new)` 逐文件调用外部命令
-> - [ ] B. 用 `os.rename(old, new)` 直接调用系统调用
-> - [ ] C. 用 `shutil.move` 加上 `--force` 参数
-> - [ ] D. 没有内置方式，必须写 `.py` 脚本
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `os.rename` 直接调用 POSIX `rename(2)` 系统调用（Windows 上也模拟），高效且原子。用 `subprocess` 调用外部 `mv` 不仅慢，还会在文件名含空格时出错。
-
-> [!question] 选择题 4
-> `collections.Counter` 的 `most_common()` 方法返回：
-> - [ ] A. 出现频率最高的元素的值
-> - [ ] B. 按频率从高到低排序的 (元素, 计数) 列表
-> - [ ] C. 计数最高的键
-> - [ ] D. 出现频率的总和
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `most_common(n)` 返回前 n 个频率最高的 (元素, 计数) 元组，不指定 n 则返回所有元素，按频率降序排列。
-
-> [!question] 选择题 5
-> 以下哪种方式不能格式化 JSON 输出？
-> - [ ] A. `python -m json.tool file.json`
-> - [ ] B. `json.dumps(data, indent=2)`
-> - [ ] C. `json.dump(data, f, indent=2)`
-> - [ ] D. `json.format(file.json, indent=2)`
->
-> > [!success]- 点击查看答案
-> > 正确答案: D
-> > **解析**: `json` 模块没有 `format` 函数。格式化 JSON 可用命令行 `python -m json.tool` 或代码中 `json.dumps(data, indent=2)` / `json.dump(data, f, indent=2)`。
-
-> [!question] 选择题 6
-> `python -c` 中访问外部命令行参数，应使用：
-> - [ ] A. `sys.stdin`
-> - [ ] B. `sys.argv`
-> - [ ] C. `os.environ`
-> - [ ] D. `sys.stdout`
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `sys.argv` 是命令行参数列表，`sys.argv[0]` 是脚本名（`-c` 的情况），`sys.argv[1:]` 是后续参数。`sys.stdin` 用于读取管道输入。
 
 ---
 
-### 🛠️ 动手练习题
+## 力扣练习
+
+以下题目用于验证本章所学内容：
+
+| 题号 | 题目 | 链接 | 涉及知识点 |
+|------|------|------|-----------|
+| — | 本章无对应力扣题 | — | 请用动手练习题自检 |
+
+
+
+### 动手练习题
 
 > [!example] 练习题 1：一行流替换 bash 管道
-> **难度**: ⭐
+> **难度**: 简单
 >
 > 你有一个 `access.log` 文件。原来的 bash 管道是：
 > ```bash
@@ -691,7 +551,7 @@ for line in sys.stdin:
 > 请改写成单个 `python -c` 调用，实现相同的功能（找出产生 404 错误最多的前 10 个 IP）。
 
 > [!example] 练习题 2：用 Python 做 C 项目的构建前检查
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 写一个 `python -c` 一行流，在你的 C 项目中完成以下检查：
 > 1. 确保所有 `.c` 文件都有对应的 `.h` 文件（main.c 除外）
@@ -701,7 +561,7 @@ for line in sys.stdin:
 > 提示：使用 `os.listdir` + 文件内容 `in` 判断。
 
 > [!example] 练习题 3：生成 C 数组字面量
-> **难度**: ⭐
+> **难度**: 简单
 >
 > 有时候在 C 代码中需要一个预计算的查找表（如三角函数表）。用 `python -c` 一行生成一个包含 0° 到 90° 每步 5° 的 sin 值的 C 数组声明：
 > ```c
@@ -710,7 +570,7 @@ for line in sys.stdin:
 > 输出可直接复制到 C 源文件中。提示：`math.sin(math.radians(x))`。
 
 > [!example] 练习题 4：JSON 配置 → C 宏定义
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > C 项目经常用 `#define MAX_BUFFER 1024` 等宏配置。用 `python -c` 读取 JSON 配置文件 `config.json`：
 > ```json

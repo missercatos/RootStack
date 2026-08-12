@@ -1,7 +1,7 @@
 # 认识 Python 与 python -c 一行流 (Python Quickstart)
 ---
 
-## 📖 章节概述
+## 章节概述
 
 本章面向 C 程序员介绍 Python 作为"胶水工具"的核心理念。你将看到 Python 如何消除 C 语言的"编译-链接-运行"循环，用 `python -c "..."` 一行流实现快速验证。我们将对比 `gcc hello.c && ./a.out` 与 `python -c "print('hello')"` 的本质区别——解释型语言的即时反馈让 Python 成为 C 程序员手中最锋利的瑞士军刀。
 
@@ -9,7 +9,7 @@
 
 ---
 
-### 📚 第一节：Python 的"编译-运行"模型 vs C 的编译模型
+### 第一节：Python 的"编译-运行"模型 vs C 的编译模型
 ---
 
 1.1 C 程序员的日常 vs Python 的日常
@@ -20,6 +20,10 @@
 ```bash
 # 编辑源码
 vim hello.c
+
+> **跨平台提示**：
+> - **Windows**：推荐 VSCode 或 PyCharm 编辑源码；vim 用户可用 WSL 或 gVim
+> - **macOS**：系统自带 vim，也可用 VSCode/PyCharm
 
 # 编译
 gcc -Wall -Wextra -g -O0 -std=c11 -o hello hello.c
@@ -63,7 +67,7 @@ Python 执行模型：
 # Python 字节码藏在 __pycache__ 目录中
 python -c "import hashlib; print('hello')"
 ls __pycache__
-# hashlib.cpython-312.pyc  ← 编译后的字节码
+# hashlib.cpython-312.pyc ← 编译后的字节码
 ```
 
 > 这与 Java 的 `javac → java` 模式相似，但 Python 隐藏了编译步骤，让你感觉像在"直接运行源代码"。
@@ -86,12 +90,12 @@ python -c "print(sum(i*i for i in range(100) if i % 3 == 0))"
 python -c "
 import os, glob
 for f in glob.glob('*.c'):
-    with open(f) as fp:
-        content = fp.read()
-    content = content.replace('GPL', 'MIT')
-    with open(f, 'w') as fp:
-        fp.write(content)
-    print(f'Processed {f}')
+ with open(f) as fp:
+ content = fp.read()
+ content = content.replace('GPL', 'MIT')
+ with open(f, 'w') as fp:
+ fp.write(content)
+ print(f'Processed {f}')
 "
 ```
 
@@ -108,23 +112,13 @@ json.dump(data, open('output.json', 'w'), indent=2)
 
 > 在做这些任务时，C 不是做不到——是**太慢了**。Python 的一行流让你把注意力放在逻辑上，而不是内存管理和头文件上。
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> Python 的 `.pyc` 文件是什么？
-> - [ ] A. 源代码备份文件
-> - [ ] B. 编译后的平台相关机器码
-> - [ ] C. 编译后的平台无关字节码
-> - [ ] D. 调试符号文件
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: `.pyc` 是 Python 源码编译后的**平台无关**字节码（bytecode），由 PVM（Python 虚拟机）解释执行。它类似于 Java 的 `.class` 文件，但 Python 自动管理，不需要手动编译。
 
 > [!question] 判断题 1
 > `python -c "print(42)"` 与 `gcc hello.c && ./a.out` 的执行效率完全等价。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -132,7 +126,7 @@ json.dump(data, open('output.json', 'w'), indent=2)
 
 ---
 
-### 📚 第二节：python -c 一行流艺术
+### 第二节：python -c 一行流艺术
 ---
 
 2.1 基本语法
@@ -148,12 +142,12 @@ python -c "print('hello')"
 python -c "x = 42; print(x * 2)"
 
 # 用 \n 换行（bash 中 $'...' 语法）
-python -c $'for i in range(5):\n    print(i)'
+python -c $'for i in range(5):\n print(i)'
 
 # 更实用的方式：引号内嵌入换行（bash 按回车后继续输入）
 python -c "
 for i in range(3):
-    print(f'Line {i}: {i**2}')
+ print(f'Line {i}: {i**2}')
 "
 ```
 
@@ -200,9 +194,9 @@ python -c "import urllib.request; print(urllib.request.urlopen('https://httpbin.
 `python -c` 的参数是一个**完整的 Python 语句块**。以下写法错误：
 
 ```bash
-python -c "x = 5"        # ✅ 合法：赋值语句
-python -c "print(x)"     # ❌ 错误：x 未定义（上一行已结束）
-python -c "x = 5; print(x)"  # ✅ 合法：分号连接多个语句
+python -c "x = 5" # 合法：赋值语句
+python -c "print(x)" # 错误：x 未定义（上一行已结束）
+python -c "x = 5; print(x)" # 合法：分号连接多个语句
 ```
 
 如果你需要在多个 `-c` 之间保持状态，请用 shell 变量中转：
@@ -212,33 +206,12 @@ RESULT=$(python -c "print(2**100)")
 python -c "print($RESULT % 7)"
 ```
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> 以下哪个 `python -c` 命令会报错？
-> - [ ] A. `python -c "x = 5"`
-> - [ ] B. `python -c "x = 5; print(x)"`
-> - [ ] C. `python -c "print(2 + 2)"`
-> - [ ] D. `python -c "5"`
->
-> > [!success]- 点击查看答案
-> > 正确答案: D
-> > **解析**: `-c` 的参数必须是**语句**（statement），而不是**表达式**（expression）。`5` 是表达式而非语句，解释器会报 `SyntaxError`。`print(5)` 则是语句。
-
-> [!question] 选择题 2
-> 在 `python -c "import os; os.listdir('.')"` 中，`import os` 的作用相当于 C 语言中的什么？
-> - [ ] A. 等价于 `#define OS`
-> - [ ] B. 等价于 `#include <os.h>` 并链接 `libos.so`
-> - [ ] C. 等价于 `gcc -E`
-> - [ ] D. 等价于 `malloc`
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: Python 的 `import os` 综合了 C 的**编译时头文件包含**（将 `os` 模块的符号暴露出来）和**链接时库加载**（Python 解释器自动加载底层 `libpython` 和可能的 `.so` 共享库）。它既不是预处理（A、C），也不是内存分配（D）。
 
 ---
 
-### 📚 第三节：python -m 模块模式
+### 第三节：python -m 模块模式
 ---
 
 3.1 什么是 `-m` 模式
@@ -251,12 +224,12 @@ python -c "print($RESULT % 7)"
 python -c "help('modules')"
 
 # 将某个模块作为脚本执行
-python -m http.server 8080       # 启动一个简易 HTTP 服务器
-python -m json.tool data.json    # 格式化 JSON 文件
-python -m pdb my_script.py       # 以调试模式运行脚本
-python -m pip install requests   # 安装第三方包
-python -m venv myenv             # 创建虚拟环境
-python -m timeit "'-'.join(str(n) for n in range(100))"  # 性能测试
+python -m http.server 8080 # 启动一个简易 HTTP 服务器
+python -m json.tool data.json # 格式化 JSON 文件
+python -m pdb my_script.py # 以调试模式运行脚本
+python -m pip install requests # 安装第三方包
+python -m venv myenv # 创建虚拟环境
+python -m timeit "'-'.join(str(n) for n in range(100))" # 性能测试
 ```
 
 3.2 `-m` 与直接调用的区别
@@ -265,6 +238,10 @@ python -m timeit "'-'.join(str(n) for n in range(100))"  # 性能测试
 ```bash
 # 方式一：直接运行脚本文件
 python /usr/lib/python3.12/pdb.py myscript.py
+
+> **跨平台提示**：
+> - **Windows**：Python 标准库路径通常在 `%LOCALAPPDATA%\Programs\Python\Python312\Lib\`
+> - **macOS**：路径类似 `/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/`
 
 # 方式二：用 -m 运行模块
 python -m pdb myscript.py
@@ -278,7 +255,7 @@ python -m pdb myscript.py
 ```bash
 # 验证 __name__
 python -c "print(__name__)"
-# 输出: __main__    ← -c 模式中 __name__ 始终是 __main__
+# 输出: __main__ ← -c 模式中 __name__ 始终是 __main__
 
 # 直接执行文件
 echo 'print(__name__)' > test.py
@@ -287,7 +264,7 @@ python test.py
 
 # 作为模块导入
 python -c "import test; print('done')"
-# 输出: test         ← import 时 __name__ 是模块名
+# 输出: test ← import 时 __name__ 是模块名
 ```
 
 3.3 Shebang 行：让 Python 脚本直接运行
@@ -300,16 +277,21 @@ python -c "import test; print('done')"
 import sys
 
 def main():
-    print(f"脚本名: {sys.argv[0]}")
-    print(f"参数: {sys.argv[1:]}")
+ print(f"脚本名: {sys.argv[0]}")
+ print(f"参数: {sys.argv[1:]}")
 
 if __name__ == "__main__":
-    main()
+ main()
 ```
 
 ```bash
 chmod +x script.py
 ./script.py arg1 arg2
+```
+
+> **跨平台提示**：
+> - **Windows**：不需要 `chmod +x`，直接 `python script.py arg1 arg2` 运行。PowerShell 中也可在脚本首行加 `#!/usr/bin/env python3`（PowerShell 识别 shebang）后直接 `./script.py`。
+> - **macOS**：与 Linux 一致，使用 `chmod +x script.py && ./script.py
 ```
 
 对比 C 程序的 "shebang" 等价物：
@@ -326,41 +308,20 @@ chmod +x script.py
 
 > C 的 `#include` 是**预处理指令**，Python 的 `#!/usr/bin/env python3` 是**内核级解释器指令**。两者都以 `#` 开头，但完全是不同的机制。
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> `python -m http.server` 与 `python /path/to/http/server.py` 的主要区别是？
-> - [ ] A. `-m` 模式更快
-> - [ ] B. `-m` 自动处理 `__name__` 和包内相对导入
-> - [ ] C. `-m` 会编译为机器码
-> - [ ] D. 没有任何区别
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `-m` 模式的核心价值在于自动将 `__name__` 设为 `"__main__"`，并正确处理包内相对导入（`from . import ...`）。直接运行 `.py` 文件时，解释器不知道它属于哪个包。
-
-> [!question] 选择题 2
-> 当直接执行 `python test.py` 时，`test.py` 中的 `__name__` 值是什么？
-> - [ ] A. `"__main__"`
-> - [ ] B. `"test"`
-> - [ ] C. `None`
-> - [ ] D. `"test.py"`
->
-> > [!success]- 点击查看答案
-> > 正确答案: A
-> > **解析**: 当 Python 源文件被直接执行（作为脚本）时，Python 解释器将其 `__name__` 自动设为 `"__main__"`。如果同一个文件被 `import test` 导入，则 `__name__` 为 `"test"`。
 
 ---
 
-### 📚 第四节：REPL 交互模式
+### 第四节：REPL 交互模式
 ---
 
 4.1 启动 REPL
 -------------
 
 ```bash
-python3          # 启动交互式解释器
-python3 -i script.py  # 执行脚本后进入交互模式（保留所有变量）
+python3 # 启动交互式解释器
+python3 -i script.py # 执行脚本后进入交互模式（保留所有变量）
 ```
 
 对 C 程序员来说，REPL 是一个陌生的概念——C 语言没有交互式编程模式。Python REPL 相当于一个"随时可以执行代码的计算器"：
@@ -375,7 +336,7 @@ python3 -i script.py  # 执行脚本后进入交互模式（保留所有变量�
 [0, 1, 8, 27, 64]
 >>> type("hello")
 <class 'str'>
->>> dir(str)  # 查看 str 类型的所有方法
+>>> dir(str) # 查看 str 类型的所有方法
 ['__add__', '__class__', '__contains__', ...]
 ```
 
@@ -394,7 +355,7 @@ python3 -i script.py  # 执行脚本后进入交互模式（保留所有变量�
 ```python
 >>> sum(range(1000000))
 499999500000
->>> _       # _ 保存上一个结果
+>>> _ # _ 保存上一个结果
 499999500000
 >>> _ / 1000000
 499999.5
@@ -407,8 +368,8 @@ C 语言的即时反馈需要：
 ```bash
 echo '#include <stdio.h>
 int main() {
-    printf("%d\n", 2 + 2);
-    return 0;
+ printf("%d\n", 2 + 2);
+ return 0;
 }' | gcc -x c -o /tmp/test - && /tmp/test
 # 输出: 4
 ```
@@ -421,12 +382,12 @@ python -c "print(2 + 2)"
 
 > C 编译器的 `-x c` 选项允许从 stdin 读取源代码，但这仍然需要完整的文件格式（包括 `main` 函数）。Python REPL 的一行流与之相比是本质性的简化。
 
-### 📝 小节练习
+### 小节练习
 
 > [!question] 判断题 1
 > Python REPL 中的 `_` 变量保存的是整个 REPL 会话中所有结果的列表。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -434,8 +395,8 @@ python -c "print(2 + 2)"
 
 > [!question] 判断题 2
 > C 语言提供了与 Python REPL 等价的交互式编程环境。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -443,14 +404,14 @@ python -c "print(2 + 2)"
 
 ---
 
-## 📋 章节测试
+## 章节测试
 
-### 一、判断题（正确选✅，错误选❌）
+### 一、判断题（正确选，错误选）
 
 > [!question] 判断题 1
 > Python 是完全的解释型语言，不包含任何编译过程。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -458,8 +419,8 @@ python -c "print(2 + 2)"
 
 > [!question] 判断题 2
 > `python -c "x = 10"` 执行后，在同一个 shell 中可以用 `echo $x` 访问这个变量。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -467,8 +428,8 @@ python -c "print(2 + 2)"
 
 > [!question] 判断题 3
 > Python 脚本的 `#!/usr/bin/env python3` 是 C 预处理器指令的一种。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -476,8 +437,8 @@ python -c "print(2 + 2)"
 
 > [!question] 判断题 4
 > `python -m pdb script.py` 和 `python /usr/lib/python3.12/pdb.py script.py` 的行为完全一致。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -485,8 +446,8 @@ python -c "print(2 + 2)"
 
 > [!question] 判断题 5
 > Python 的 `.pyc` 字节码是跨平台的，可以在不同的操作系统上直接使用。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -494,8 +455,8 @@ python -c "print(2 + 2)"
 
 > [!question] 判断题 6
 > 如果脚本的第一行是 `#!/usr/bin/env python3`，执行 `./script.py` 不需要先 `chmod +x script.py`。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -503,102 +464,23 @@ python -c "print(2 + 2)"
 
 ---
 
-### 二、选择题（单项选择题）
-
-> [!question] 选择题 1
-> 以下哪个是 `python -c` 的合法用法？
-> - [ ] A. `python -c "import math"`
-> - [ ] B. `python -c "import math; print(math.pi)"`
-> - [ ] C. `python -c "1 + 1"`
-> - [ ] D. A 和 B
->
-> > [!success]- 点击查看答案
-> > 正确答案: D
-> > **解析**: A 和 B 都是合法语句。C 不合法的原因是 `1 + 1` 是表达式而非语句，Python 解析器期望的是一个完整语句。`print(1+1)` 才是语句。
-
-> [!question] 选择题 2
-> Python 字节码（`.pyc`）由什么执行？
-> - [ ] A. CPU 直接执行
-> - [ ] B. 操作系统的动态链接器
-> - [ ] C. Python 虚拟机（PVM）
-> - [ ] D. GCC 后端
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: `.pyc` 字节码由 PVM（Python Virtual Machine）解释执行。PVM 是一个基于栈的虚拟机，类似于 JVM（Java 虚拟机）但专为 Python 的动态特性设计。
-
-> [!question] 选择题 3
-> 在 REPL 中，使用 `dir("hello")` 可以查看什么？
-> - [ ] A. 当前目录的文件列表
-> - [ ] B. 字符串对象的所有方法和属性
-> - [ ] C. 所有内置函数
-> - [ ] D. 模块搜索路径
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `dir(obj)` 返回对象的所有属性和方法名称列表。`dir("hello")` 会列出字符串类型的所有可用方法（如 `upper`、`split`、`strip` 等）。
-
-> [!question] 选择题 4
-> `python -m json.tool data.json` 命令的作用是？
-> - [ ] A. 编译 JSON 文件为字节码
-> - [ ] B. 格式化 JSON 文件内容（美化输出）
-> - [ ] C. 验证 JSON 文件语法
-> - [ ] D. 将 JSON 转换为 Python 对象
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `json.tool` 模块会将输入的 JSON 重新格式化（pretty-print），添加缩进使其可读。它也会顺便验证 JSON 语法，但主要作用是美化输出。
-
-> [!question] 选择题 5
-> 以下关于 Python 与 C 的对比，哪个是**错误**的？
-> - [ ] A. C 需要显式编译，Python 自动编译为字节码
-> - [ ] B. C 的编译产物是机器码，Python 的编译产物是字节码
-> - [ ] C. Python 的字节码执行速度比 C 的机器码快
-> - [ ] D. Python 不需要 `main` 函数，C 程序必须有 `main` 函数
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: Python 的字节码由虚拟机解释执行，速度通常远慢于 C 编译后的原生机器码（慢 10-100 倍）。C 在性能上具有压倒性优势，Python 的优势在于开发效率。
-
-> [!question] 选择题 6
-> `python -m timeit` 命令用于什么目的？
-> - [ ] A. 检查当前时间
-> - [ ] B. 测量代码片段的执行时间
-> - [ ] C. 设置系统时钟
-> - [ ] D. 格式化时间戳
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `timeit` 模块用于精确测量小段 Python 代码的执行时间。它会自动运行代码多次并报告平均耗时，避免偶然误差。
-
-> [!question] 选择题 7
-> 当 Python 源文件被 `import` 导入时，其 `__name__` 值是什么？
-> - [ ] A. `"__main__"`
-> - [ ] B. 模块名（不含 `.py` 后缀）
-> - [ ] C. 文件完整路径
-> - [ ] D. `None`
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `import mymodule` 导入时，`mymodule.py` 文件中的 `__name__` 被设为 `"mymodule"`。这使得 `if __name__ == "__main__":` 守卫代码只在直接运行时执行，在导入时不执行。
-
-> [!question] 选择题 8
-> 以下哪个命令可以查看 Python 的模块搜索路径？
-> - [ ] A. `python -c "import os; os.path"`
-> - [ ] B. `python -c "import sys; print(sys.path)"`
-> - [ ] C. `python -c "print(__path__)"`
-> - [ ] D. `python -c "import path; path.show()"`
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `sys.path` 是一个列表，包含 Python 搜索模块时依次查找的目录路径。它相当于 C 语言中 `gcc -I` 指定的头文件搜索路径，但 `sys.path` 是动态可修改的。
 
 ---
 
-### 🛠️ 动手练习题
+## 力扣练习
+
+以下题目用于验证本章所学内容：
+
+| 题号 | 题目 | 链接 | 涉及知识点 |
+|------|------|------|-----------|
+| — | 本章无对应力扣题 | — | 请用动手练习题自检 |
+
+
+
+### 动手练习题
 
 > [!example] 练习题 1：用一行流完成日常任务
-> **难度**: ⭐
+> **难度**: 简单
 >
 > 用 `python -c` 一行流完成以下任务，不允许使用任何其他工具（如 `ls`、`grep`、`cat` 等）：
 > 1. 列出当前目录下所有 `.md` 文件
@@ -609,7 +491,7 @@ python -c "print(2 + 2)"
 > 提示：使用 `import os`、`import glob`、`import json`、`import sys`。
 
 > [!example] 练习题 2：编写带 Shebang 的命令行工具
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 编写一个名为 `wc.py` 的脚本，放在当前目录，实现以下功能：
 > - Shebang 使用 `#!/usr/bin/env python3`
@@ -621,21 +503,21 @@ python -c "print(2 + 2)"
 > 完成后用 `chmod +x wc.py && ./wc.py wc.py` 验证。
 
 > [!example] 练习题 3：比较编译-运行工作流
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 分别用 C 和 Python 完成同一个任务：读取一个文本文件，统计每个单词出现的频率，按频率降序输出 Top 10。
 >
 > 1. 用 C 实现：
->    - 记录从编写代码到成功运行的总耗时
->    - 统计编译和运行的分别耗时
+> - 记录从编写代码到成功运行的总耗时
+> - 统计编译和运行的分别耗时
 > 2. 用 Python 一行流实现：
->    - 用 `python -c "..."` 完成同样功能
->    - 对比两种方式的代码行数和总耗时
+> - 用 `python -c "..."` 完成同样功能
+> - 对比两种方式的代码行数和总耗时
 >
 > 写一份简短的对比总结，记录你的发现。
 
 > [!example] 练习题 4：探索 `python -m` 内置模块
-> **难度**: ⭐
+> **难度**: 简单
 >
 > 在不查阅任何文档的情况下，使用 `python -m` 模式探索以下 Python 内置模块的功能：
 > - `calendar`：打印当前月份的日历

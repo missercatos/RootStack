@@ -1,7 +1,7 @@
 # OpenCV 进阶：特征与检测 (OpenCV: Features & Detection)
 ---
 
-## 📖 章节概述
+## 章节概述
 
 上一章聚焦于像素级的图像变换——滤波、边缘检测、阈值化。本章进入中层计算机视觉：从像素中提取有意义的几何结构和视觉特征。你将看到 OpenCV 如何将 C++ 中最复杂的算法（轮廓查找、霍夫变换、特征匹配、人脸检测）打包成 Python 的几行调用。对于 C 程序员，理解这些算法的底层原理仍然至关重要——你需要在 Python 中快速验证算法选型，再决定是否用 C++ 重写核心部分。
 
@@ -9,7 +9,7 @@
 
 ---
 
-### 📚 第一节：轮廓检测与分析
+### 第一节：轮廓检测与分析
 ---
 
 1.1 寻找轮廓
@@ -24,7 +24,7 @@ gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 _, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
 
 contours, hierarchy = cv2.findContours(
-    binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE
+ binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE
 )
 
 print(f"找到 {len(contours)} 个轮廓")
@@ -37,24 +37,24 @@ print(f"找到 {len(contours)} 个轮廓")
 
 ```python
 for cnt in contours:
-    area = cv2.contourArea(cnt)
-    perimeter = cv2.arcLength(cnt, closed=True)
-    if area < 100:
-        continue  # 过滤小噪点
+ area = cv2.contourArea(cnt)
+ perimeter = cv2.arcLength(cnt, closed=True)
+ if area < 100:
+ continue # 过滤小噪点
 
-    M = cv2.moments(cnt)
-    cx = int(M['m10'] / M['m00']) if M['m00'] != 0 else 0
-    cy = int(M['m01'] / M['m00']) if M['m00'] != 0 else 0
+ M = cv2.moments(cnt)
+ cx = int(M['m10'] / M['m00']) if M['m00'] != 0 else 0
+ cy = int(M['m01'] / M['m00']) if M['m00'] != 0 else 0
 
-    x, y, w, h = cv2.boundingRect(cnt)   # 正外接矩形
-    rect = cv2.minAreaRect(cnt)           # 最小外接旋转矩形
-    (cx_r, cy_r), (rw, rh), angle = rect
+ x, y, w, h = cv2.boundingRect(cnt) # 正外接矩形
+ rect = cv2.minAreaRect(cnt) # 最小外接旋转矩形
+ (cx_r, cy_r), (rw, rh), angle = rect
 
-    hull = cv2.convexHull(cnt)            # 凸包
-    epsilon = 0.01 * perimeter
-    approx = cv2.approxPolyDP(cnt, epsilon, True)  # 多边形逼近
+ hull = cv2.convexHull(cnt) # 凸包
+ epsilon = 0.01 * perimeter
+ approx = cv2.approxPolyDP(cnt, epsilon, True) # 多边形逼近
 
-    cv2.drawContours(img, [approx], -1, (0, 255, 0), 2)
+ cv2.drawContours(img, [approx], -1, (0, 255, 0), 2)
 ```
 
 1.3 C 对比：轮廓跟踪算法
@@ -75,23 +75,13 @@ for cnt in contours:
 
 OpenCV 的 `findContours` 基于 1985 年 Suzuki 和 Abe 的论文，在 C++ 中实现了边界追踪、层次构建、轮廓压缩。Python 层面只是薄薄的一层 wrapper。
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> `cv2.CHAIN_APPROX_SIMPLE` 与 `cv2.CHAIN_APPROX_NONE` 的区别是？
-> - [ ] A. 没有区别
-> - [ ] B. SIMPLE 只保留斜线段端点，NONE 保留所有边界点
-> - [ ] C. SIMPLE 更快但丢失所有轮廓信息
-> - [ ] D. NONE 使用深度学习压缩
->
-> > [!success]- 点击查看答案
-> > > 正确答案: B
-> > > **解析**: `CHAIN_APPROX_SIMPLE` 压缩水平、垂直和对角线段，仅保留端点。`CHAIN_APPROX_NONE` 保留所有边界像素点。前者大幅减少数据量，矩形轮廓从数千点压缩到 4 点。
 
 > [!question] 判断题 1
 > `cv2.contourArea` 在轮廓自交的情况下仍然返回正确的面积。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 错误
@@ -99,7 +89,7 @@ OpenCV 的 `findContours` 基于 1985 年 Suzuki 和 Abe 的论文，在 C++ 中
 
 ---
 
-### 📚 第二节：霍夫变换——线圆检测
+### 第二节：霍夫变换——线圆检测
 ---
 
 2.1 霍夫线检测
@@ -111,19 +101,19 @@ edges = cv2.Canny(gray, 50, 150)
 # 标准霍夫变换（返回 rho, theta）
 lines = cv2.HoughLines(edges, 1, np.pi/180, threshold=150)
 for line in lines:
-    rho, theta = line[0]
-    a, b = np.cos(theta), np.sin(theta)
-    x0, y0 = a * rho, b * rho
-    x1, y1 = int(x0 + 1000*(-b)), int(y0 + 1000*(a))
-    x2, y2 = int(x0 - 1000*(-b)), int(y0 - 1000*(a))
-    cv2.line(img, (x1, y1), (x2, y2), (0, 0, 255), 2)
+ rho, theta = line[0]
+ a, b = np.cos(theta), np.sin(theta)
+ x0, y0 = a * rho, b * rho
+ x1, y1 = int(x0 + 1000*(-b)), int(y0 + 1000*(a))
+ x2, y2 = int(x0 - 1000*(-b)), int(y0 - 1000*(a))
+ cv2.line(img, (x1, y1), (x2, y2), (0, 0, 255), 2)
 
 # 概率霍夫变换（返回线段端点，通常更实用）
 lines_p = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=100,
-                           minLineLength=50, maxLineGap=10)
+ minLineLength=50, maxLineGap=10)
 for line in lines_p:
-    x1, y1, x2, y2 = line[0]
-    cv2.line(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
+ x1, y1, x2, y2 = line[0]
+ cv2.line(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
 ```
 
 > 霍夫变换把图像空间 `(x, y)` 中的直线检测转化为参数空间 `(ρ, θ)` 中的峰值查找。C 程序员可以想象这是一个"投票累加器"——每个边缘像素投票给所有可能穿过它的直线，得票最高的 `(ρ, θ)` 就是检测到的直线。
@@ -133,18 +123,18 @@ for line in lines_p:
 
 ```python
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-gray = cv2.medianBlur(gray, 5)  # 降噪对圆检测至关重要
+gray = cv2.medianBlur(gray, 5) # 降噪对圆检测至关重要
 
 circles = cv2.HoughCircles(
-    gray, cv2.HOUGH_GRADIENT, dp=1, minDist=30,
-    param1=100, param2=30, minRadius=10, maxRadius=100
+ gray, cv2.HOUGH_GRADIENT, dp=1, minDist=30,
+ param1=100, param2=30, minRadius=10, maxRadius=100
 )
 
 if circles is not None:
-    circles = np.uint16(np.around(circles))
-    for (x, y, r) in circles[0]:
-        cv2.circle(img, (x, y), r, (0, 255, 0), 2)
-        cv2.circle(img, (x, y), 2, (0, 0, 255), 3)
+ circles = np.uint16(np.around(circles))
+ for (x, y, r) in circles[0]:
+ cv2.circle(img, (x, y), r, (0, 255, 0), 2)
+ cv2.circle(img, (x, y), 2, (0, 0, 255), 3)
 ```
 
 参数含义对 C 程序员来说：
@@ -153,23 +143,13 @@ if circles is not None:
 - `param1`：Canny 高阈值
 - `param2`：圆心累加器阈值（越小检测到越多圆）
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> 霍夫变换的核心思想是？
-> - [ ] A. 对图像做傅里叶变换
-> - [ ] B. 将图像空间映射到参数空间进行投票
-> - [ ] C. 用神经网络分类
-> - [ ] D. 对像素值排序
->
-> > [!success]- 点击查看答案
-> > > 正确答案: B
-> > > **解析**: 霍夫变换（Hough Transform）将图像空间中的形状检测转化为参数空间中的峰值检测。每个边缘点在参数空间中"投票"给所有可能产生该边缘的形状参数，得票最高的参数即为检测结果。
 
 > [!question] 判断题 1
 > `HoughCircles` 的 `minDist` 参数设得太小会导致同一圆被多次检测。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 正确
@@ -177,7 +157,7 @@ if circles is not None:
 
 ---
 
-### 📚 第三节：模板匹配
+### 第三节：模板匹配
 ---
 
 3.1 滑动窗口匹配
@@ -189,22 +169,22 @@ template = cv2.imread('template.jpg', 0)
 h, w = template.shape
 
 methods = [
-    cv2.TM_CCOEFF, cv2.TM_CCOEFF_NORMED,
-    cv2.TM_CCORR, cv2.TM_CCORR_NORMED,
-    cv2.TM_SQDIFF, cv2.TM_SQDIFF_NORMED
+ cv2.TM_CCOEFF, cv2.TM_CCOEFF_NORMED,
+ cv2.TM_CCORR, cv2.TM_CCORR_NORMED,
+ cv2.TM_SQDIFF, cv2.TM_SQDIFF_NORMED
 ]
 
 for method in methods:
-    result = cv2.matchTemplate(img, template, method)
-    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+ result = cv2.matchTemplate(img, template, method)
+ min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
 
-    if method in [cv2.TM_SQDIFF, cv2.TM_SQDIFF_NORMED]:
-        top_left = min_loc  # SQDIFF 取最小值
-    else:
-        top_left = max_loc  # 其他取最大值
+ if method in [cv2.TM_SQDIFF, cv2.TM_SQDIFF_NORMED]:
+ top_left = min_loc # SQDIFF 取最小值
+ else:
+ top_left = max_loc # 其他取最大值
 
-    bottom_right = (top_left[0] + w, top_left[1] + h)
-    cv2.rectangle(img, top_left, bottom_right, 255, 2)
+ bottom_right = (top_left[0] + w, top_left[1] + h)
+ cv2.rectangle(img, top_left, bottom_right, 255, 2)
 ```
 
 3.2 多目标模板匹配
@@ -217,28 +197,18 @@ threshold = 0.8
 locations = np.where(result >= threshold)
 
 for pt in zip(*locations[::-1]):
-    cv2.rectangle(img_color, pt, (pt[0] + w, pt[1] + h), (0, 255, 0), 1)
+ cv2.rectangle(img_color, pt, (pt[0] + w, pt[1] + h), (0, 255, 0), 1)
 ```
 
 > C 程序员请注意：`matchTemplate` 返回的结果矩阵尺寸为 `(H_img - H_tmpl + 1, W_img - W_tmpl + 1)`。结果中位置 `(i,j)` 的值代表模板左上角对齐到图像 `(j,i)` 时的匹配分数。
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> 以下哪个匹配方法的返回值中，**最小值**代表最佳匹配？
-> - [ ] A. `TM_CCOEFF_NORMED`
-> - [ ] B. `TM_CCORR_NORMED`
-> - [ ] C. `TM_SQDIFF_NORMED`
-> - [ ] D. 所有方法都是最大值代表最佳
->
-> > [!success]- 点击查看答案
-> > > 正确答案: C
-> > > **解析**: `TM_SQDIFF` 和 `TM_SQDIFF_NORMED` 使用平方差作为相似度度量——差值越小越匹配，因此取最小值。其他方法（相关性、相关系数）取最大值。
 
 > [!question] 判断题 1
 > 模板匹配可以处理缩放和旋转后的目标。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 错误
@@ -246,7 +216,7 @@ for pt in zip(*locations[::-1]):
 
 ---
 
-### 📚 第四节：特征检测与匹配
+### 第四节：特征检测与匹配
 ---
 
 4.1 ORB 特征检测（免费+快速）
@@ -258,7 +228,7 @@ keypoints, descriptors = orb.detectAndCompute(img, None)
 
 # 可视化关键点
 img_kp = cv2.drawKeypoints(img, keypoints, None,
-                           flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+ flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 ```
 
 每个关键点是一个 `KeyPoint` 对象：`(x, y, size, angle, response, octave)`。`descriptors` 是 `(N, 32)` 的 uint8 矩阵——每个关键点一个 256-bit 二进制描述符。对 C 程序员来说就是 `uint8_t descriptors[N][32]`。
@@ -284,7 +254,7 @@ SIFT 描述子是 `(N, 128)` 的 float32 矩阵。相比 ORB 的 32 字节二进
 
 暴力匹配（穷举搜索）：
 ```python
-bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)  # ORB 用汉明距离
+bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True) # ORB 用汉明距离
 matches = bf.match(des1, des2)
 matches = sorted(matches, key=lambda x: x.distance)[:50]
 result = cv2.drawMatches(img1, kp1, img2, kp2, matches[:30], None)
@@ -304,27 +274,17 @@ matches = flann.knnMatch(des1, des2, k=2)
 # Lowe's ratio test 过滤误匹配
 good = []
 for m, n in matches:
-    if m.distance < 0.7 * n.distance:
-        good.append(m)
+ if m.distance < 0.7 * n.distance:
+ good.append(m)
 ```
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> ORB 特征相对于 SIFT 的主要优势是？
-> - [ ] A. 更高的匹配准确率
-> - [ ] B. 更快的计算速度和免费的专利授权
-> - [ ] C. 支持彩色特征
-> - [ ] D. 更小的安装包
->
-> > [!success]- 点击查看答案
-> > > 正确答案: B
-> > > **解析**: ORB（Oriented FAST and Rotated BRIEF）是开源的、SIFT 的免费替代品。ORB 使用 FAST 角点检测 + BRIEF 二进制描述符，计算速度快于 SIFT 且无专利限制。SIFT 稳健性更好但曾是专利算法。
 
 > [!question] 判断题 1
 > ORB 描述子使用浮点数向量，SIFT 使用二进制比特串。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 错误
@@ -332,7 +292,7 @@ for m, n in matches:
 
 ---
 
-### 📚 第五节：人脸检测（Haar Cascade）
+### 第五节：人脸检测（Haar Cascade）
 ---
 
 5.1 使用预训练级联分类器
@@ -344,14 +304,14 @@ face_cascade = cv2.CascadeClassifier(cascade_path)
 
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 faces = face_cascade.detectMultiScale(
-    gray,
-    scaleFactor=1.1,   # 每次搜索窗口缩放比例
-    minNeighbors=5,    # 最小邻接检测数（过滤误检）
-    minSize=(30, 30)   # 最小人脸尺寸
+ gray,
+ scaleFactor=1.1, # 每次搜索窗口缩放比例
+ minNeighbors=5, # 最小邻接检测数（过滤误检）
+ minSize=(30, 30) # 最小人脸尺寸
 )
 
 for (x, y, w, h) in faces:
-    cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
+ cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
 ```
 
 5.2 级联分类器的 C 本质
@@ -362,17 +322,17 @@ Haar 级联分类器是一个多级增强分类器链。C 程序员可以这样�
 ```c
 // 伪代码：Haar 级联的决策逻辑
 int detect_face(uint8_t *gray, int w, int h, int x, int y, int win_w, int win_h) {
-    for (int stage = 0; stage < num_stages; stage++) {
-        float stage_sum = 0.0;
-        for (int feature = 0; feature < features_per_stage[stage]; feature++) {
-            // 计算 Haar 特征：白矩形和 - 黑矩形和（用积分图加速）
-            float feat_val = compute_haar_feature(integral_img, features[stage][feature]);
-            stage_sum += feat_val * weights[stage][feature];
-        }
-        if (stage_sum < stage_thresholds[stage])
-            return 0;  // 该级未通过 → 非人脸
-    }
-    return 1;  // 所有级通过 → 是人脸
+ for (int stage = 0; stage < num_stages; stage++) {
+ float stage_sum = 0.0;
+ for (int feature = 0; feature < features_per_stage[stage]; feature++) {
+ // 计算 Haar 特征：白矩形和 - 黑矩形和（用积分图加速）
+ float feat_val = compute_haar_feature(integral_img, features[stage][feature]);
+ stage_sum += feat_val * weights[stage][feature];
+ }
+ if (stage_sum < stage_thresholds[stage])
+ return 0; // 该级未通过 → 非人脸
+ }
+ return 1; // 所有级通过 → 是人脸
 }
 ```
 
@@ -392,23 +352,13 @@ detections = net.forward()
 
 > 深度学习目标检测（YOLO、SSD、Faster R-CNN）超越了传统视觉方法。详细内容见 [[../11人工智能/]]。
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> `detectMultiScale` 中 `scaleFactor=1.1` 的作用是？
-> - [ ] A. 图像先放大 1.1 倍再检测
-> - [ ] B. 检测窗口每次缩小 10%，形成多尺度检测
-> - [ ] C. 最小人脸尺寸缩放因子
-> - [ ] D. 置信度缩放因子
->
-> > [!success]- 点击查看答案
-> > > 正确答案: B
-> > > **解析**: `scaleFactor` 控制图像金字塔的缩放比率。`1.1` 表示每个尺度图像缩小到上一尺度的 90%——较小的值检测更精细（但更慢），较大的值更快但可能漏检。
 
 > [!question] 判断题 1
 > OpenCV 的 Haar 级联分类器使用积分图加速 Haar 特征计算。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 正确
@@ -416,14 +366,14 @@ detections = net.forward()
 
 ---
 
-## 📋 章节测试
+## 章节测试
 
-### 一、判断题（正确选✅，错误选❌）
+### 一、判断题（正确选，错误选）
 
 > [!question] 判断题 1
 > `cv2.findContours` 会修改输入的图像（标记已访问的边界）。( )
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 正确
@@ -431,8 +381,8 @@ detections = net.forward()
 
 > [!question] 判断题 2
 > 霍夫线检测对图像中的曲线也能正确检测。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 错误
@@ -440,8 +390,8 @@ detections = net.forward()
 
 > [!question] 判断题 3
 > 模板匹配 `TM_CCOEFF_NORMED` 的匹配分数范围是 [0, 1]。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 错误
@@ -449,8 +399,8 @@ detections = net.forward()
 
 > [!question] 判断题 4
 > FLANN 匹配器返回的是近似最近邻，而非精确最近邻。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 正确
@@ -458,8 +408,8 @@ detections = net.forward()
 
 > [!question] 判断题 5
 > `cv2.CascadeClassifier` 只能用于人脸检测。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > > 答案: 错误
@@ -467,91 +417,25 @@ detections = net.forward()
 
 ---
 
-### 二、选择题（单项选择题）
-
-> [!question] 选择题 1
-> `cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)` 返回什么？
-> - [ ] A. 所有轮廓（含孔洞）
-> - [ ] B. 仅最外层轮廓
-> - [ ] C. 两层轮廓列表
-> - [ ] D. 仅图像中心轮廓
->
-> > [!success]- 点击查看答案
-> > > 正确答案: B
-> > > **解析**: `RETR_EXTERNAL` 仅检索最外层轮廓，忽略内部孔洞。`RETR_TREE` 检索所有轮廓并建立层次关系，`RETR_LIST` 检索所有轮廓但不建立层次。
-
-> [!question] 选择题 2
-> `cv2.HoughLines` 返回的每条直线以什么形式表示？
-> - [ ] A. 两个端点 (x1,y1), (x2,y2)
-> - [ ] B. 斜率 k 和截距 b
-> - [ ] C. 极坐标 (ρ, θ)
-> - [ ] D. 直线和 x 轴交点的坐标
->
-> > [!success]- 点击查看答案
-> > > 正确答案: C
-> > > **解析**: `HoughLines` 返回 `(ρ, θ)` ——极径和极角。这是因为斜率-截距表示无法处理垂直线（k = ∞），而 `(ρ, θ)` 对所有角度统一。
-
-> [!question] 选择题 3
-> 以下哪个不是轮廓的特征？
-> - [ ] A. 面积 (area)
-> - [ ] B. 周长 (perimeter)
-> - [ ] C. 质心 (centroid)
-> - [ ] D. 直方图 (histogram)
->
-> > [!success]- 点击查看答案
-> > > 正确答案: D
-> > > **解析**: 直方图是整幅图像的统计特征，不属于轮廓（contour）的几何特征。`contourArea`、`arcLength`、`moments`（质心、面积、方向）才是轮廓特征。
-
-> [!question] 选择题 4
-> ORB 特征匹配应使用哪种距离度量？
-> - [ ] A. 欧氏距离 (NORM_L2)
-> - [ ] B. 曼哈顿距离 (NORM_L1)
-> - [ ] C. 汉明距离 (NORM_HAMMING)
-> - [ ] D. 余弦距离
->
-> > [!success]- 点击查看答案
-> > > 正确答案: C
-> > > **解析**: ORB 使用 256-bit 二进制描述符，应使用汉明距离（统计不同 bit 的个数）。SIFT 和 SURF 使用浮点描述符，才用欧氏距离。
-
-> [!question] 选择题 5
-> 级联分类器中"级联"的含义是？
-> - [ ] A. 多个分类器并行运行取投票结果
-> - [ ] B. 分类器级联排列，早期简单分类器快速排除负样本
-> - [ ] C. 将多个 Haar 特征串联
-> - [ ] D. 对所有检测框按分数排序
->
-> > [!success]- 点击查看答案
-> > > 正确答案: B
-> > > **解析**: 级联（cascade）的核心思想是"快速拒绝"——前面的级（stage）使用少量计算量大的特征排除明显非目标的区域，后面的级使用更多特征对候选区域精细判断。正因如此，Haar 级联在 CPU 上也能实时运行。
-
-> [!question] 选择题 6
-> 霍夫圆检测 `HoughCircles` 内部使用什么方法计算梯度？
-> - [ ] A. Sobel 算子
-> - [ ] B. Canny 边缘检测
-> - [ ] C. 拉普拉斯算子
-> - [ ] D. Prewitt 算子
->
-> > [!success]- 点击查看答案
-> > > 正确答案: A
-> > > **解析**: `cv2.HOUGH_GRADIENT` 方法内部使用 Sobel 导数计算梯度幅值和方向。`param1` 参数传给 Canny 作为高阈值（Canny 内部使用 Sobel），`param2` 是圆心累加器阈值。
-
-> [!question] 选择题 7
-> 在一个 1000×1000 的图像上用 `cv2.matchTemplate` 匹配 50×50 的模板，结果矩阵的尺寸是？
-> - [ ] A. 1000 × 1000
-> - [ ] B. 50 × 50
-> - [ ] C. 951 × 951
-> - [ ] D. 1050 × 1050
->
-> > [!success]- 点击查看答案
-> > > 正确答案: C
-> > > **解析**: `result` 尺寸 = `(H_img - H_tmpl + 1, W_img - W_tmpl + 1)` = `(1000-50+1, 1000-50+1)` = `(951, 951)`。每个结果像素对应模板左上角放于该位置时的匹配分数。
 
 ---
 
-### 🛠️ 动手练习题
+## 力扣练习
+
+以下题目用于验证本章所学内容：
+
+| 题号 | 题目 | 链接 | 涉及知识点 |
+|------|------|------|-----------|
+| 200 | 岛屿数量 | https://leetcode.cn/problems/number-of-islands/ | 连通区域检测、DFS/BFS |
+| 463 | 岛屿的周长 | https://leetcode.cn/problems/island-perimeter/ | 边界检测、区域特征 |
+| 695 | 岛屿的最大面积 | https://leetcode.cn/problems/max-area-of-island/ | 区域面积计算 |
+
+
+
+### 动手练习题
 
 > [!example] 练习题 1：工业零件计数
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 给定一张含多个圆形零件的俯拍图像：
 > 1. 灰度化 + 高斯模糊降噪
@@ -563,7 +447,7 @@ detections = net.forward()
 > 用 C 伪代码写出霍夫圆检测的核心累加器投票逻辑，与 Python 版本对比。
 
 > [!example] 练习题 2：图像拼接（Panorama）
-> **难度**: ⭐⭐⭐
+> **难度**: 简单
 >
 > 用特征匹配实现两张有重叠区域的图像拼接：
 > 1. 使用 ORB 或 SIFT 在两图上检测特征
@@ -575,7 +459,7 @@ detections = net.forward()
 > 提示：`cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)`。
 
 > [!example] 练习题 3：实时人脸模糊
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 使用 Haar 级联分类器检测人脸，然后对检测区域应用高斯模糊：
 > 1. 加载 `haarcascade_frontalface_default.xml`
@@ -585,7 +469,7 @@ detections = net.forward()
 > 5. 封装为 `blur_faces(img, cascade, blur_ratio=0.1)` 函数
 
 > [!example] 练习题 4：模板匹配工业缺陷检测
-> **难度**: ⭐⭐⭐
+> **难度**: 简单
 >
 > 使用模板匹配检测 PCB 板上的缺陷：
 > 1. 用标准 PCB 照片做模板

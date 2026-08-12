@@ -1,7 +1,7 @@
 # 异常处理与 pdb 调试 (Exceptions & Debugging)
 ---
 
-## 📖 章节概述
+## 章节概述
 
 C 语言程序员习惯用 `errno`、返回值检查 `NULL` 或 `-1` 来排错。Python 走的是完全不同的路：错误通过**异常**（exception）向上冒泡，直到某个 `try/except` 块被捕获。本章对比这两种错误处理哲学，教你用 `try/except/finally/else` 写健壮的代码，用 `pdb`（Python Debugger）做交互式调试——并把它与 GDB 的操作方式做对比。对于 C 程序员来说，pdb 就是"只差没有 core dump"的 GDB 替代品。
 
@@ -9,7 +9,7 @@ C 语言程序员习惯用 `errno`、返回值检查 `NULL` 或 `-1` 来排错�
 
 ---
 
-### 📚 第一节：从 errno 到 try/except
+### 第一节：从 errno 到 try/except
 ---
 
 1.1 C 风格的错误处理 vs Python 的异常
@@ -22,20 +22,20 @@ C 语言程序员习惯用 `errno`、返回值检查 `NULL` 或 `-1` 来排错�
 #include <string.h>
 
 int read_config(const char *path, char *buf, size_t size) {
-    FILE *f = fopen(path, "r");
-    if (!f) {
-        fprintf(stderr, "Cannot open %s: %s\n", path, strerror(errno));
-        return -1;
-    }
-    if (fread(buf, 1, size, f) < size) {
-        if (ferror(f)) {
-            fprintf(stderr, "Read error: %s\n", strerror(errno));
-            fclose(f);
-            return -2;
-        }
-    }
-    fclose(f);
-    return 0;
+ FILE *f = fopen(path, "r");
+ if (!f) {
+ fprintf(stderr, "Cannot open %s: %s\n", path, strerror(errno));
+ return -1;
+ }
+ if (fread(buf, 1, size, f) < size) {
+ if (ferror(f)) {
+ fprintf(stderr, "Read error: %s\n", strerror(errno));
+ fclose(f);
+ return -2;
+ }
+ }
+ fclose(f);
+ return 0;
 }
 // 主调方需要：int ret = read_config(...); if (ret < 0) { /* 处理 */ }
 ```
@@ -43,18 +43,18 @@ int read_config(const char *path, char *buf, size_t size) {
 ```python
 # Python: 异常自动向上冒泡，只需在合适的层级捕获
 def read_config(path):
-    with open(path) as f:       # 文件不存在？FileNotFoundError 自动上抛
-        return f.read()          # 读取失败？IOError 自动上抛
+ with open(path) as f: # 文件不存在？FileNotFoundError 自动上抛
+ return f.read() # 读取失败？IOError 自动上抛
 
 # 调用方决定何时处理
 try:
-    content = read_config('/etc/myapp.conf')
+ content = read_config('/etc/myapp.conf')
 except FileNotFoundError:
-    print('Config file not found, using defaults')
-    content = 'defaults'
+ print('Config file not found, using defaults')
+ content = 'defaults'
 except IOError as e:
-    print(f'Read error: {e}')
-    raise SystemExit(1)
+ print(f'Read error: {e}')
+ raise SystemExit(1)
 ```
 
 1.2 完整的异常处理结构
@@ -63,22 +63,22 @@ except IOError as e:
 ```bash
 python -c "
 def divide(a, b):
-    return a / b
+ return a / b
 
 # 四种异常处理结构
 numbers = [(10, 2), (10, 0), (10, 'x')]
 
 for a, b in numbers:
-    try:
-        result = divide(a, b)
-    except ZeroDivisionError:
-        print(f'{a}/{b}: division by zero')
-    except (TypeError, ValueError) as e:
-        print(f'{a}/{b}: type error - {e}')
-    else:
-        print(f'{a}/{b} = {result}')  # 无异常时执行
-    finally:
-        print('  (attempt done)')
+ try:
+ result = divide(a, b)
+ except ZeroDivisionError:
+ print(f'{a}/{b}: division by zero')
+ except (TypeError, ValueError) as e:
+ print(f'{a}/{b}: type error - {e}')
+ else:
+ print(f'{a}/{b} = {result}') # 无异常时执行
+ finally:
+ print(' (attempt done)')
 "
 ```
 
@@ -93,64 +93,47 @@ for a, b in numbers:
 1.3 常见内置异常类
 -------------------
 
-```bash
-python -c "
-# 异常层次结构（简化）
-# BaseException
-#  ├─ SystemExit / KeyboardInterrupt
-#  └─ Exception
-#       ├─ ArithmeticError → ZeroDivisionError
-#       ├─ LookupError → IndexError, KeyError
-#       ├─ TypeError
-#       ├─ ValueError
-#       ├─ OSError → FileNotFoundError, PermissionError
-#       ├─ NameError
-#       └─ AttributeError
+```mermaid
+graph TB
+ BE["BaseException"]
+ BE --> SK["SystemExit / KeyboardInterrupt"]
+ BE --> EX["Exception"]
+ EX --> AE["ArithmeticError → ZeroDivisionError"]
+ EX --> LE["LookupError → IndexError, KeyError"]
+ EX --> TE["TypeError"]
+ EX --> VE["ValueError"]
+ EX --> OE["OSError → FileNotFoundError, PermissionError"]
+ EX --> NE["NameError"]
+ EX --> ATE["AttributeError"]
+```
 
+```bash
+python -c '
 # 对照 C 语言的常见错误
 exceptions = {
-    'ZeroDivisionError': '除以 0 ← C 中通过检查除数是否为 0 避免',
-    'IndexError': '列表索引越界 ← C 中是未定义行为或段错误',
-    'KeyError': '字典键不存在 ← C 哈希表中返回 NULL',
-    'TypeError': '类型不匹配 ← C 中编译时捕捉（或隐式转换）',
-    'ValueError': '值不合理（如 int(\"abc\")）← C 中 atoi 返回 0',
-    'FileNotFoundError': '文件不存在 ← C 中 fopen 返回 NULL',
-    'AttributeError': '属性不存在 ← C 中编译时捕捉（struct 字段）',
-    'NameError': '变量名未定义 ← C 中编译时捕捉',
+ "ZeroDivisionError": "除以 0 ← C 中通过检查除数是否为 0 避免",
+ "IndexError": "列表索引越界 ← C 中是未定义行为或段错误",
+ "KeyError": "字典键不存在 ← C 哈希表中返回 NULL",
+ "TypeError": "类型不匹配 ← C 中编译时捕捉（或隐式转换）",
+ "ValueError": "值不合理（如 int(\\\"abc\\\")）← C 中 atoi 返回 0",
+ "FileNotFoundError": "文件不存在 ← C 中 fopen 返回 NULL",
+ "AttributeError": "属性不存在 ← C 中编译时捕捉（struct 字段）",
+ "NameError": "变量名未定义 ← C 中编译时捕捉",
 }
 for ex, desc in exceptions.items():
-    print(f'{ex}: {desc}')
-"
+ print(f"{ex}: {desc}")
+'
 ```
 
 > 注意 `IndexError` 和 `KeyError` 都是 `LookupError` 的子类。如果你要同时捕获索引错误和键错误，可以写 `except LookupError`。
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> 以下代码的输出是什么？
-> ```python
-> try:
->     print("A")
->     raise ValueError()
-> except ValueError:
->     print("B")
-> finally:
->     print("C")
-> ```
-> - [ ] A. A B
-> - [ ] B. A B C
-> - [ ] C. B C
-> - [ ] D. A C
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `try` 块中的 `print("A")` 执行，`raise ValueError()` 触发异常，跳到 `except` 块执行 `print("B")`，最后 `finally` 块总是执行 `print("C")`。输出 A B C。
 
 > [!question] 判断题 1
 > Python 的 `except` 块可以捕获操作系统信号（如 SIGINT）导致的 `KeyboardInterrupt`。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -158,7 +141,7 @@ for ex, desc in exceptions.items():
 
 ---
 
-### 📚 第二节：raise 与自定义异常
+### 第二节：raise 与自定义异常
 ---
 
 2.1 `raise` 抛出异常
@@ -167,20 +150,20 @@ for ex, desc in exceptions.items():
 ```bash
 python -c "
 def validate_age(age):
-    if not isinstance(age, int):
-        raise TypeError(f'Age must be int, got {type(age).__name__}')
-    if age < 0:
-        raise ValueError(f'Age cannot be negative: {age}')
-    if age > 150:
-        raise ValueError(f'Age too large: {age}')
-    return age
+ if not isinstance(age, int):
+ raise TypeError(f'Age must be int, got {type(age).__name__}')
+ if age < 0:
+ raise ValueError(f'Age cannot be negative: {age}')
+ if age > 150:
+ raise ValueError(f'Age too large: {age}')
+ return age
 
 # 测试验证
 for v in [25, -5, 200, 'thirty']:
-    try:
-        print(f'Valid: {validate_age(v)}')
-    except (TypeError, ValueError) as e:
-        print(f'Invalid: {e}')
+ try:
+ print(f'Valid: {validate_age(v)}')
+ except (TypeError, ValueError) as e:
+ print(f'Invalid: {e}')
 "
 ```
 
@@ -192,23 +175,28 @@ python -c "
 import json
 
 def load_config(path):
-    try:
-        with open(path) as f:
-            return json.load(f)
-    except FileNotFoundError as e:
-        raise RuntimeError(f'Config not found: {path}') from e
-    except json.JSONDecodeError as e:
-        raise ValueError(f'Invalid JSON in {path}: {e}') from e
+ try:
+ with open(path) as f:
+ return json.load(f)
+ except FileNotFoundError as e:
+ raise RuntimeError(f'Config not found: {path}') from e
+ except json.JSONDecodeError as e:
+ raise ValueError(f'Invalid JSON in {path}: {e}') from e
 
 # 测试
 for path in ['/nonexistent.json', '/tmp/malformed.json']:
-    try:
-        load_config(path)
-    except (RuntimeError, ValueError) as e:
-        print(f'{type(e).__name__}: {e}')
-        print(f'  Caused by: {e.__cause__}')
-        print()
+ try:
+ load_config(path)
+ except (RuntimeError, ValueError) as e:
+ print(f'{type(e).__name__}: {e}')
+ print(f' Caused by: {e.__cause__}')
+ print()
 " 2>/dev/null
+```
+
+> **跨平台提示**：
+> - **Windows**：CMD 使用 `2>NUL`，PowerShell 使用 `2>$null`
+> - **macOS**：与 Linux 一致，`2>/dev/null`
 ```
 
 > `raise ... from e` 建立异常链，保留了原始异常作为 `__cause__`。这类似于 C 语言中逐层打印 `errno` 和 `strerror` 的调试日志，但 Python 的异常链是**结构化的**——可以被程序逻辑使用，而不只是日志文本。
@@ -219,42 +207,32 @@ for path in ['/nonexistent.json', '/tmp/malformed.json']:
 ```bash
 python -c "
 class NetworkError(ConnectionError):
-    '''网络相关错误'''
-    def __init__(self, host, port, message):
-        self.host = host
-        self.port = port
-        super().__init__(f'{host}:{port} - {message}')
+ '''网络相关错误'''
+ def __init__(self, host, port, message):
+ self.host = host
+ self.port = port
+ super().__init__(f'{host}:{port} - {message}')
 
 class TimeoutError(NetworkError):
-    '''网络超时'''
-    pass
+ '''网络超时'''
+ pass
 
 # 使用自定义异常
 try:
-    raise TimeoutError('db.example.com', 5432, 'connection timed out')
+ raise TimeoutError('db.example.com', 5432, 'connection timed out')
 except NetworkError as e:
-    print(f'Network {type(e).__name__}: {e}')
-    print(f'  host={e.host}, port={e.port}')
+ print(f'Network {type(e).__name__}: {e}')
+ print(f' host={e.host}, port={e.port}')
 "
 ```
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> `raise ValueError("bad") from original_error` 的作用是？
-> - [ ] A. 把 `original_error` 转换为 `ValueError`
-> - [ ] B. 建立异常链，`original_error` 保存在新异常的 `__cause__` 属性中
-> - [ ] C. 忽略 `original_error`，只抛出 `ValueError`
-> - [ ] D. 同时抛出两个异常
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `raise ... from ...` 建立显式异常链。Python 的默认 traceback 会显示 `The above exception was the direct cause of the following exception:` 并展示原始异常的 traceback。
 
 > [!question] 判断题 1
 > 自定义异常类可以继承自内置异常类，形成异常层次结构。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -262,7 +240,7 @@ except NetworkError as e:
 
 ---
 
-### 📚 第三节：traceback —— 读懂错误信息
+### 第三节：traceback —— 读懂错误信息
 ---
 
 3.1 阅读 traceback
@@ -271,13 +249,13 @@ except NetworkError as e:
 ```bash
 python -c "
 def func_c():
-    1 / 0                           # ZeroDivisionError
+ 1 / 0 # ZeroDivisionError
 
 def func_b():
-    func_c()
+ func_c()
 
 def func_a():
-    func_b()
+ func_b()
 
 func_a()
 " 2>&1 || true
@@ -286,12 +264,12 @@ func_a()
 输出解读：
 
 ```
-Traceback (most recent call last):       ← 从顶层调用方开始
-  File "<string>", line 10, in <module>  ← 第 10 行调用了 func_a()
-  File "<string>", line 8, in func_a     ←   func_a() 中调用了 func_b()
-  File "<string>", line 5, in func_b     ←     func_b() 中调用了 func_c()
-  File "<string>", line 2, in func_c     ←       func_c() 中 1/0 触发
-ZeroDivisionError: division by zero      ← 最终异常类型和消息
+Traceback (most recent call last): ← 从顶层调用方开始
+ File "<string>", line 10, in <module> ← 第 10 行调用了 func_a()
+ File "<string>", line 8, in func_a ← func_a() 中调用了 func_b()
+ File "<string>", line 5, in func_b ← func_b() 中调用了 func_c()
+ File "<string>", line 2, in func_c ← func_c() 中 1/0 触发
+ZeroDivisionError: division by zero ← 最终异常类型和消息
 ```
 
 **从下往上读**——最底部是"事故现场"，顶部是"始作俑者"的调用链。
@@ -305,45 +283,35 @@ import traceback
 import sys
 
 def risky_function():
-    return [1, 2, 3][100]
+ return [1, 2, 3][100]
 
 try:
-    risky_function()
+ risky_function()
 except IndexError:
-    # 获取完整的 traceback 字符串
-    tb_str = traceback.format_exc()
-    print('=== Formatted traceback ===')
-    print(tb_str)
-    print('============================')
+ # 获取完整的 traceback 字符串
+ tb_str = traceback.format_exc()
+ print('=== Formatted traceback ===')
+ print(tb_str)
+ print('============================')
 
-    # 获取 traceback 对象（用于程序分析）
-    exc_type, exc_value, exc_tb = sys.exc_info()
-    print(f'Exception type: {exc_type.__name__}')
-    frames = traceback.extract_tb(exc_tb)
-    for frame in frames:
-        print(f'  File \"{frame.filename}\", line {frame.lineno}, in {frame.name}')
-        if frame.line:
-            print(f'    {frame.line.strip()}')
+ # 获取 traceback 对象（用于程序分析）
+ exc_type, exc_value, exc_tb = sys.exc_info()
+ print(f'Exception type: {exc_type.__name__}')
+ frames = traceback.extract_tb(exc_tb)
+ for frame in frames:
+ print(f' File \"{frame.filename}\", line {frame.lineno}, in {frame.name}')
+ if frame.line:
+ print(f' {frame.line.strip()}')
 "
 ```
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> 在 Python traceback 中，函数的调用顺序是**从上往下**还是**从下往上**？
-> - [ ] A. 从上往下（顶部是最早的调用）
-> - [ ] B. 从下往上（底部是最早的调用）
-> - [ ] C. 随机排列
-> - [ ] D. 按字母顺序
->
-> > [!success]- 点击查看答案
-> > 正确答案: A
-> > **解析**: Python traceback 用 "most recent call last"（最近调用在最后），顶部是**最早的调用**（通常是模块级代码），底部是**出错的那一行**。这与 GDB 的 `backtrace` 输出习惯相反——GDB 帧 0（顶部）是当前函数，帧 N（底部）是 `main`。
 
 > [!question] 判断题 1
 > `traceback.format_exc()` 只能在 `except` 块内部使用。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -351,7 +319,7 @@ except IndexError:
 
 ---
 
-### 📚 第四节：pdb —— Python 的 GDB
+### 第四节：pdb —— Python 的 GDB
 ---
 
 4.1 启动 pdb 的三种方式
@@ -364,7 +332,7 @@ python -m pdb my_script.py
 # 方式二：在代码中插入断点
 # 在 Python 3.7+ 中使用 breakpoint()
 echo 'x = 42
-breakpoint()          # ← 执行到此处自动进入 pdb
+breakpoint() # ← 执行到此处自动进入 pdb
 print(x)' > /tmp/debug_me.py
 
 python /tmp/debug_me.py
@@ -401,12 +369,12 @@ python -m pdb -c continue /tmp/debug_me.py 2>&1 | head
 python -c "
 # pdb 调试示例
 def fibonacci(n):
-    a, b = 0, 1
-    for _ in range(n):
-        a, b = b, a + b
-    return a
+ a, b = 0, 1
+ for _ in range(n):
+ a, b = b, a + b
+ return a
 
-# breakpoint()  # 取消注释即可调试
+# breakpoint() # 取消注释即可调试
 print(f'fib(10) = {fibonacci(10)}')
 "
 ```
@@ -417,19 +385,19 @@ print(f'fib(10) = {fibonacci(10)}')
 ```bash
 cat > /tmp/buggy.py << 'PYEOF'
 def process(lst):
-    result = []
-    for item in lst:
-        result.append(item / len(lst))   # BUG: 如果 lst 为空？
-    return result
+ result = []
+ for item in lst:
+ result.append(item / len(lst)) # BUG: 如果 lst 为空？
+ return result
 
 def main():
-    data = [100, 200, 300]
-    processed = process(data)
-    print('OK:', processed)
+ data = [100, 200, 300]
+ processed = process(data)
+ print('OK:', processed)
 
-    # 故意触发空列表
-    bad = process([])
-    print('Bad:', bad)
+ # 故意触发空列表
+ bad = process([])
+ print('Bad:', bad)
 
 main()
 PYEOF
@@ -438,14 +406,14 @@ python /tmp/buggy.py 2>&1 | head -20
 
 # pdb 调试流程：
 # python -m pdb /tmp/buggy.py
-# (pdb) b process       ← 在 process 函数设断点
-# (pdb) c               ← 继续执行
-# > process(...)        ← 第一次进入 process
-# (pdb) n               ← 逐步执行
-# (pdb) p lst           ← 打印参数
-# (pdb) c               ← 继续到第二次调用（空列表）
-# (pdb) p len(lst)      ← 查看列表长度
-# (pdb) q               ← 退出
+# (pdb) b process ← 在 process 函数设断点
+# (pdb) c ← 继续执行
+# > process(...) ← 第一次进入 process
+# (pdb) n ← 逐步执行
+# (pdb) p lst ← 打印参数
+# (pdb) c ← 继续到第二次调用（空列表）
+# (pdb) p len(lst) ← 查看列表长度
+# (pdb) q ← 退出
 ```
 
 4.4 `pdb.post_mortem` —— 异常后事分析
@@ -457,52 +425,31 @@ import pdb
 import sys
 
 def crash():
-    return [][0]            # IndexError
+ return [][0] # IndexError
 
 try:
-    crash()
+ crash()
 except Exception:
-    # 异常发生后进入 pdb
-    pdb.post_mortem(sys.exc_info()[2])
+ # 异常发生后进入 pdb
+ pdb.post_mortem(sys.exc_info()[2])
 " 2>&1 <<< 'q'
 ```
 
 > `pdb.post_mortem()` 就像是给 Python 程序做的"尸检"——程序已经崩溃了，但你仍然可以检查崩溃瞬间的所有变量状态。这类似于用 GDB 加载 core dump 文件。
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> pdb 中查看当前函数所有参数的命令是？
-> - [ ] A. `p`
-> - [ ] B. `args` 或 `a`
-> - [ ] C. `info locals`
-> - [ ] D. `params`
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `a` 或 `args` 显示当前函数的参数名和值。GDB 中对应的是 `info args`。`info locals` 在 GDB 中显示局部变量，pdb 中没有直接等价命令。
-
-> [!question] 选择题 2
-> Python 3.7+ 引入的 `breakpoint()` 函数的作用是？
-> - [ ] A. 抛出断点异常
-> - [ ] B. 进入 pdb 调试器（可通过 PYTHONBREAKPOINT 环境变量配置）
-> - [ ] C. 打印调用栈
-> - [ ] D. 终止程序执行
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `breakpoint()` 是 Python 3.7 引入的内置函数，默认行为是进入 `pdb.set_trace()`。可通过设置环境变量 `PYTHONBREAKPOINT=0` 禁用所有断点，或设为其他调试器的入口函数。
 
 ---
 
-## 📋 章节测试
+## 章节测试
 
-### 一、判断题（正确选✅，错误选❌）
+### 一、判断题（正确选，错误选）
 
 > [!question] 判断题 1
 > Python 的 `try` 语句必须至少包含一个 `except` 或 `finally` 块。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -510,8 +457,8 @@ except Exception:
 
 > [!question] 判断题 2
 > `KeyError` 和 `IndexError` 都是 `LookupError` 的子类。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -519,8 +466,8 @@ except Exception:
 
 > [!question] 判断题 3
 > 空白 `except:` 子句会捕获所有异常，包括 `KeyboardInterrupt` 和 `SystemExit`。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -528,8 +475,8 @@ except Exception:
 
 > [!question] 判断题 4
 > Python 的异常处理机制在内存使用上有显著性能开销。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -537,8 +484,8 @@ except Exception:
 
 > [!question] 判断题 5
 > `finally` 块中的 `return` 语句会覆盖 `try` 块中的 `return`。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -546,8 +493,8 @@ except Exception:
 
 > [!question] 判断题 6
 > pdb 可以调试正在运行的 Python 进程（附加模式），类似 GDB 的 `gdb -p PID`。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -555,8 +502,8 @@ except Exception:
 
 > [!question] 判断题 7
 > 在 `except` 块中重新 `raise` 而不带参数，会重新抛出当前被捕获的异常。（ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -564,110 +511,24 @@ except Exception:
 
 ---
 
-### 二、选择题（单项选择题）
-
-> [!question] 选择题 1
-> 以下代码的输出是什么？
-> ```python
-> try:
->     x = 1 / 0
-> except ZeroDivisionError:
->     print("A")
-> except Exception:
->     print("B")
-> ```
-> - [ ] A. A
-> - [ ] B. B
-> - [ ] C. A B
-> - [ ] D. 无输出
->
-> > [!success]- 点击查看答案
-> > 正确答案: A
-> > **解析**: Python 按 `except` 子句的书写顺序匹配。`ZeroDivisionError` 是 `Exception` 的子类，匹配到第一个 `except ZeroDivisionError` 后就不再尝试后续的 `except`。如果顺序反过来（`Exception` 在前），则 B 会输出但 A 永远不会。
-
-> [!question] 选择题 2
-> C 语言的 `fopen` 返回 `NULL` 对应 Python 中的哪个异常？
-> - [ ] A. `ValueError`
-> - [ ] B. `TypeError`
-> - [ ] C. `FileNotFoundError`
-> - [ ] D. `NameError`
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: Python 的 `open()` 在文件不存在时抛出 `FileNotFoundError`（`OSError` 的子类）。`fopen` 返回 `NULL` 加设置 `errno = ENOENT` 是其 C 等价行为。
-
-> [!question] 选择题 3
-> pdb 中 `n` 和 `s` 的区别与 GDB 的 `next` 和 `step` 的关系是？
-> - [ ] A. 完全相同
-> - [ ] B. pdb 的 `n` 不进函数，`s` 进函数（与 GDB 刚好相同）
-> - [ ] C. pdb 的 `n` 进函数，`s` 不进函数
-> - [ ] D. pdb 没有 `n` 和 `s` 命令
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: pdb 的命令命名直接参考了 GDB——`n`（next）不进入被调用函数，`s`（step）进入。有 GDB 使用经验的程序员基本上可以无缝过渡到 pdb。
-
-> [!question] 选择题 4
-> 如何在 Python 中捕获多种类型的异常？
-> - [ ] A. `except (TypeError, ValueError):`
-> - [ ] B. `except TypeError, ValueError:`
-> - [ ] C. `except TypeError or ValueError:`
-> - [ ] D. `except [TypeError, ValueError]:`
->
-> > [!success]- 点击查看答案
-> > 正确答案: A
-> > **解析**: `except (TypeError, ValueError) as e:` 使用元组捕获多种类型。逗号语法 `except TypeError, ValueError:` 是 Python 2 中的旧写法，在 Python 3 中已被移除。
-
-> [!question] 选择题 5
-> `pdb.post_mortem()` 主要用于什么场景？
-> - [ ] A. 程序启动时设置初始断点
-> - [ ] B. 程序崩溃后检查崩溃时的状态
-> - [ ] C. 连接远程调试会话
-> - [ ] D. 对程序做性能分析
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: "post mortem"（尸检）在异常发生后进入 pdb 交互模式，允许检查崩溃点所有局部变量的值。它常用于 `except` 块中调用 `pdb.post_mortem()`。
-
-> [!question] 选择题 6
-> 以下关于 `try/except/else` 中 `else` 块的说法正确的是？
-> - [ ] A. `else` 块在异常发生时执行
-> - [ ] B. `else` 块在 `except` 块之后、`finally` 之前执行
-> - [ ] C. `else` 块只在 `try` 无异常时执行
-> - [ ] D. `else` 块等价于 `finally`
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: `else` 块只在 `try` 块正常完成（没有异常）时执行。它与 `finally` 完全不同——`finally` 无论是否有异常都执行。`else` 的典型用途是放置"只有成功时才执行"的逻辑。
-
-> [!question] 选择题 7
-> C 语言的 `assert()` 宏和 Python 的 `assert` 语句有什么区别？
-> - [ ] A. C 的 `assert` 可以关掉（`-DNDEBUG`），Python 的不能
-> - [ ] B. Python 的 `assert` 可以用 `-O` 优化标志关掉，C 的不能
-> - [ ] C. 两者都可以用编译/解释器标志关掉
-> - [ ] D. 两者都不能关掉
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: C 的 `assert()` 用 `-DNDEBUG` 禁用；Python 的 `assert` 用 `-O` 标志禁用。两者都是调试工具，不应在生产代码中用于程序逻辑。
-
-> [!question] 选择题 8
-> `except Exception as e:` 中的 `as e` 相当于 C 语言中的什么？
-> - [ ] A. `malloc(sizeof(Exception))`
-> - [ ] B. `#define e Exception`
-> - [ ] C. 将捕获的异常对象绑定到变量 `e`
-> - [ ] D. 类型转换 `(Exception)e`
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: `as e` 语法将捕获到的异常对象绑定到变量 `e`，之后可以在 `except` 块中访问异常的具体信息（如 `e.args`、`str(e)` 等）。Python 3 引入的 `as` 语法取代了 Python 2 的逗号语法。
 
 ---
 
-### 🛠️ 动手练习题
+## 力扣练习
+
+以下题目用于验证本章所学内容：
+
+| 题号 | 题目 | 链接 | 涉及知识点 |
+|------|------|------|-----------|
+| 278 | 第一个错误的版本 | https://leetcode.cn/problems/first-bad-version/ | 二分查找、错误检测模式 |
+| 374 | 猜数字大小 | https://leetcode.cn/problems/guess-number-higher-or-lower/ | 二分查找、边界处理 |
+
+
+
+### 动手练习题
 
 > [!example] 练习题 1：异常转换器
-> **难度**: ⭐
+> **难度**: 简单
 >
 > 编写一个函数 `safe_int_parser(x)`，它接受任意类型的输入：
 > - 如果是 `int`，直接返回
@@ -678,14 +539,14 @@ except Exception:
 > 使用 `try/except` 处理所有可能的异常，确保函数永远不会崩溃。编写测试代码验证各种输入。
 
 > [!example] 练习题 2：用 pdb 调试栈溢出
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 编写一个名为 `deeprecursion.py` 的文件：
 > ```python
 > def recurse(n):
->     if n == 0:
->         return 0
->     return 1 + recurse(n)        # BUG: 应该是 n-1，这是无限递归！
+> if n == 0:
+> return 0
+> return 1 + recurse(n) # BUG: 应该是 n-1，这是无限递归！
 >
 > recurse(10)
 > ```
@@ -699,7 +560,7 @@ except Exception:
 > 对比：在 GDB 中调试 C 语言的无限递归（`int recurse(int n) { return 1 + recurse(n); }`）步骤有何不同？
 
 > [!example] 练习题 3：配置文件加载器
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 编写一个 `load_config(path)` 函数，尝试依次加载以下格式的配置文件：
 > 1. JSON（`json.load`）
@@ -710,7 +571,7 @@ except Exception:
 > 用多重 `try/except` 实现优雅的降级策略。为每种失败情况提供有意义的错误信息和警告。
 
 > [!example] 练习题 4：编写可调试的脚本
-> **难度**: ⭐⭐⭐
+> **难度**: 简单
 >
 > 编写一个带 `--debug` 命令行开关的脚本 `process.py`：
 > - 正常模式下处理输入文件

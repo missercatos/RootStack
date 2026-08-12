@@ -1,7 +1,7 @@
 # AI 生态概览：从 sklearn 到 PyTorch (AI Ecosystem Overview)
 ---
 
-## 📖 章节概述
+## 章节概述
 
 Python 是当前人工智能/机器学习领域的主导语言，几乎所有主流框架都提供 Python API。本章为 C 程序员绘制 Python AI 生态全景图，帮助你理解各工具的定位和选择：哪些适合传统机器学习，哪些适合深度学习，以及最终如何将 Python 训练的模型部署到 C++ 生产环境中。
 
@@ -9,24 +9,23 @@ Python 是当前人工智能/机器学习领域的主导语言，几乎所有主
 
 ---
 
-### 📚 第一节：Python AI 生态全景图
+### 第一节：Python AI 生态全景图
 
 1.1 为什么 Python 统治 AI
 --------------------------
 
 C 程序员可能会疑惑：Python 这么慢，为什么 AI 领域全是 Python？
 
-```
-Python 代码 (调度层)
-    │
-    ▼ 调用 C/C++/CUDA 底层实现
-┌───────────────────────────────────────┐
-│ NumPy (C + BLAS/LAPACK)               │
-│ PyTorch (C++ libtorch + CUDA kernel)  │
-│ TensorFlow (C++ runtime + XLA 编译器)  │
-│ XGBoost (C++ 核心)                     │
-│ scikit-learn (Cython + C 底层)         │
-└───────────────────────────────────────┘
+```mermaid
+graph TB
+ PY["Python 代码 (调度层)"] --> CP["调用 C/C++/CUDA 底层实现"]
+ subgraph Backend["底层实现"]
+ NP["NumPy<br/>(C + BLAS/LAPACK)"]
+ PT["PyTorch<br/>(C++ libtorch + CUDA kernel)"]
+ TF["TensorFlow<br/>(C++ runtime + XLA 编译器)"]
+ XG["XGBoost<br/>(C++ 核心)"]
+ SK["scikit-learn<br/>(Cython + C 底层)"]
+ end
 ```
 
 Python 只是"胶水语言"——所有性能敏感的计算都在 C/C++/CUDA 中完成。你用简洁的 Python 语法调度高效的底层实现。这和 C 程序员用 shell 脚本调度编译流程是同样的哲学。
@@ -44,30 +43,49 @@ Python 只是"胶水语言"——所有性能敏感的计算都在 C/C++/CUDA �
 1.3 Python ↔ C++ 部署管道全景
 ------------------------------
 
-```
-Python 训练侧                           C++ 部署侧
-┌──────────────────┐                   ┌──────────────────┐
-│ sklearn/NumPy     │─── joblib ──────▶│ libsklearn (C++)  │ (极少见)
-│ PyTorch           │─── torch.onnx ──▶│ ONNX Runtime (C++)│
-│                   │─── TorchScript ─▶│ libtorch (C++)    │
-│ TensorFlow/Keras  │─── tf2onnx ─────▶│ ONNX Runtime (C++)│
-│                   │─── SavedModel ──▶│ TensorFlow C++    │
-│ XGBoost/LightGBM  │─── dump_model ──▶│ XGBoost C API     │
-│ ONNX Runtime      │─── 验证 ────────▶│ ONNX Runtime (C++)│
-└──────────────────┘                   └──────────────────┘
-                        │
-              ┌─────────┴─────────┐
-              │  TensorRT (NVIDIA) │  GPU 极致优化
-              │  OpenVINO (Intel)  │  Intel 平台加速
-              │  TVM (Apache)      │  通用编译器方案
-              └───────────────────┘
+```mermaid
+graph LR
+ subgraph Train["Python 训练侧"]
+ SK["sklearn/NumPy"]
+ PT["PyTorch"]
+ TF["TensorFlow/Keras"]
+ XG["XGBoost/LightGBM"]
+ ORT_T["ONNX Runtime"]
+ end
+
+ subgraph Deploy["C++ 部署侧"]
+ LIBSKL["libsklearn (C++)"]
+ ONNXRT["ONNX Runtime (C++)"]
+ LIBTORCH["libtorch (C++)"]
+ TF_CPP["TensorFlow C++"]
+ XGB_C["XGBoost C API"]
+ ORT_D["ONNX Runtime (C++)"]
+ end
+
+ subgraph GPU["GPU 方案"]
+ TRT["TensorRT (NVIDIA)<br/>GPU 极致优化"]
+ OV["OpenVINO (Intel)<br/>Intel 平台加速"]
+ TVM["TVM (Apache)<br/>通用编译器方案"]
+ end
+
+ SK -- "joblib" --> LIBSKL
+ PT -- "torch.onnx" --> ONNXRT
+ PT -- "TorchScript" --> LIBTORCH
+ TF -- "tf2onnx" --> ONNXRT
+ TF -- "SavedModel" --> TF_CPP
+ XG -- "dump_model" --> XGB_C
+ ORT_T -- "验证" --> ORT_D
+
+ ONNXRT --> GPU
+ LIBTORCH --> GPU
+ TF_CPP --> GPU
 ```
 
 > **关键路径**：`Python 训练 → 导出 ONNX → C++ 加载 ONNX → ONNX Runtime 推理` 是最通用的跨框架部署方案。TensorRT 是 NVIDIA GPU 上的性能天花板。
 
 ---
 
-### 📚 第二节：传统机器学习工具
+### 第二节：传统机器学习工具
 
 2.1 scikit-learn（sklearn）— 经典 ML 的瑞士军刀
 ------------------------------------------------
@@ -81,14 +99,14 @@ from sklearn.svm import SVC
 
 # 三个完全不同的模型，完全相同的 API
 models = {
-    "逻辑回归": LogisticRegression(),
-    "随机森林": RandomForestClassifier(),
-    "支持向量机": SVC(),
+ "逻辑回归": LogisticRegression(),
+ "随机森林": RandomForestClassifier(),
+ "支持向量机": SVC(),
 }
 for name, model in models.items():
-    model.fit(X_train, y_train)
-    score = model.score(X_test, y_test)
-    print(f"{name}: {score:.3f}")
+ model.fit(X_train, y_train)
+ score = model.score(X_test, y_test)
+ print(f"{name}: {score:.3f}")
 ```
 
 **适用场景**：表格数据（CSV/数据库）、特征工程、小数据量（< 1GB）、需要可解释性的场景。
@@ -125,7 +143,7 @@ print('score:', model.score(X, y))
 
 ---
 
-### 📚 第三节：深度学习框架
+### 第三节：深度学习框架
 
 3.1 PyTorch — 研究到生产的首选
 -------------------------------
@@ -136,12 +154,12 @@ PyTorch 是目前深度学习领域的主导框架，其核心优势：
 import torch
 
 # PyTorch 张量 — 像 NumPy 数组但可以在 GPU 上运行
-x = torch.randn(3, 4)            # 3×4 随机张量
-w = torch.randn(4, 2, requires_grad=True)  # 带梯度的参数
-y = x @ w                         # 矩阵乘法，自动构建计算图
+x = torch.randn(3, 4) # 3×4 随机张量
+w = torch.randn(4, 2, requires_grad=True) # 带梯度的参数
+y = x @ w # 矩阵乘法，自动构建计算图
 loss = y.sum()
-loss.backward()                   # 自动求导
-print(w.grad.shape)               # (4, 2)
+loss.backward() # 自动求导
+print(w.grad.shape) # (4, 2)
 ```
 
 **PyTorch 的 C++ 侧**：
@@ -165,8 +183,8 @@ TensorFlow 由 Google 维护，Keras 是其高级 API。优势在于：TF Servin
 import tensorflow as tf
 
 model = tf.keras.Sequential([
-    tf.keras.layers.Dense(64, activation='relu'),
-    tf.keras.layers.Dense(10, activation='softmax'),
+ tf.keras.layers.Dense(64, activation='relu'),
+ tf.keras.layers.Dense(10, activation='softmax'),
 ])
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy')
 ```
@@ -185,7 +203,7 @@ model.compile(optimizer='adam', loss='sparse_categorical_crossentropy')
 
 ---
 
-### 📚 第四节：预训练模型与 LLM 应用
+### 第四节：预训练模型与 LLM 应用
 
 4.1 HuggingFace — 模型"包管理器"
 --------------------------------
@@ -230,34 +248,13 @@ print(classifier('Segmentation fault. Core dumped.'))
 
 ---
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> Python 在 AI 生态中的核心角色是什么？
-> - [ ] A. 所有计算都在纯 Python 中执行
-> - [ ] B. 作为调度层，调用 C/C++/CUDA 底层实现
-> - [ ] C. 替代 C++ 进行高性能计算
-> - [ ] D. 仅用于数据可视化
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: Python 在 AI 中是"胶水语言"，实际计算在 C/C++/CUDA 底层完成。NumPy 调 BLAS，PyTorch 调 libtorch + CUDA kernel，sklearn 调 Cython 生成的 C 代码。
-
-> [!question] 选择题 2
-> PyTorch 模型导出到 C++ 部署的推荐格式是？
-> - [ ] A. Python pickle 文件
-> - [ ] B. ONNX (.onnx)
-> - [ ] C. JSON 配置文件
-> - [ ] D. Python 源码文件
->
-> > > [!success]- 点击查看答案
-> > > 正确答案: B
-> > > **解析**: ONNX（Open Neural Network Exchange）是跨框架的模型交换格式。PyTorch 通过 `torch.onnx.export()` 导出 .onnx 文件，C++ 端用 ONNX Runtime 加载推理。
 
 > [!question] 判断题 1
 > XGBoost 的核心计算在 Python 中完成。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -265,14 +262,14 @@ print(classifier('Segmentation fault. Core dumped.'))
 
 ---
 
-## 📋 章节测试
+## 章节测试
 
-### 一、判断题（正确选 ✅，错误选 ❌）
+### 一、判断题（正确选 ，错误选 ）
 
 > [!question] 判断题 1
 > PyTorch 只能运行在 NVIDIA GPU 上。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -280,8 +277,8 @@ print(classifier('Segmentation fault. Core dumped.'))
 
 > [!question] 判断题 2
 > sklearn 的 RandomForestClassifier 和 XGBoost 的 XGBClassifier 使用相同的 API 模式（fit/predict）。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -289,8 +286,8 @@ print(classifier('Segmentation fault. Core dumped.'))
 
 > [!question] 判断题 3
 > ONNX Runtime 的 C++ API 需要依赖完整的 Python 运行时。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -298,8 +295,8 @@ print(classifier('Segmentation fault. Core dumped.'))
 
 > [!question] 判断题 4
 > HuggingFace 只能用于 NLP（自然语言处理）任务。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -307,8 +304,8 @@ print(classifier('Segmentation fault. Core dumped.'))
 
 > [!question] 判断题 5
 > TensorRT 是 NVIDIA 的推理优化引擎，可以将 ONNX 模型进一步优化为 GPU 加速的推理引擎。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -316,87 +313,30 @@ print(classifier('Segmentation fault. Core dumped.'))
 
 > [!question] 判断题 6
 > LangChain 是一个深度学习训练框架。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
 > > **解析**: LangChain 是一个 LLM 应用层框架，用于在预训练的大语言模型之上构建业务逻辑（Agent、Chain、RAG），不是训练框架。
 
-### 二、选择题（单项选择题）
-
-> [!question] 选择题 1
-> 以下哪个不是传统机器学习工具？
-> - [ ] A. sklearn
-> - [ ] B. XGBoost
-> - [ ] C. LightGBM
-> - [ ] D. PyTorch
->
-> > [!success]- 点击查看答案
-> > 正确答案: D
-> > **解析**: PyTorch 是深度学习框架，其它三个（sklearn、XGBoost、LightGBM）属于传统机器学习工具，主要用于表格数据。
-
-> [!question] 选择题 2
-> PyTorch 的 C++ 前端叫做什么？
-> - [ ] A. PyTorch C
-> - [ ] B. libtorch
-> - [ ] C. TorchCpp
-> - [ ] D. PT-C
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: PyTorch 的 C++ API 称为 libtorch，与 Python API 结构基本对应。CMake 中通过 `find_package(Torch)` 引入。
-
-> [!question] 选择题 3
-> 以下哪个格式专门用于跨框架模型交换？
-> - [ ] A. PNG
-> - [ ] B. JSON
-> - [ ] C. ONNX
-> - [ ] D. CSV
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: ONNX（Open Neural Network Exchange）是 Facebook 和 Microsoft 联合推出的开放标准，用于不同深度学习框架之间的模型互操作。
-
-> [!question] 选择题 4
-> 以下哪种场景最适合使用 sklearn 而非 PyTorch？
-> - [ ] A. 训练 GPT 模型
-> - [ ] B. 图像分类
-> - [ ] C. 表格数据的客户流失预测
-> - [ ] D. 语音识别
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: sklearn 擅长表格数据的传统 ML 任务（分类、回归、聚类）。深度学习任务（图像、语音、大语言模型）需要 PyTorch/TensorFlow。
-
-> [!question] 选择题 5
-> Intel 平台上的模型推理加速方案是？
-> - [ ] A. CUDA
-> - [ ] B. TensorRT
-> - [ ] C. OpenVINO
-> - [ ] D. Metal
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: OpenVINO 是 Intel 推出的推理加速工具，优化 Intel CPU/GPU/VPU。TensorRT 是 NVIDIA 的，CUDA 是 NVIDIA 的并行计算平台，Metal 是 Apple 的。
-
-> [!question] 选择题 6
-> `torch.onnx.export()` 的作用是？
-> - [ ] A. 将 ONNX 模型转为 PyTorch 模型
-> - [ ] B. 将 PyTorch 模型导出为 ONNX 格式
-> - [ ] C. 训练 PyTorch 模型
-> - [ ] D. 在 GPU 上运行 ONNX 模型
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `torch.onnx.export(model, dummy_input, "model.onnx")` 将 PyTorch 模型及其权重导出为标准的 ONNX 格式文件。
 
 ---
 
-### 🛠️ 动手练习题
+## 力扣练习
+
+以下题目用于验证本章所学内容：
+
+| 题号 | 题目 | 链接 | 涉及知识点 |
+|------|------|------|-----------|
+| — | 本章无对应力扣题 | — | 请用动手练习题自检 |
+
+
+
+### 动手练习题
 
 > [!example] 练习题 1：安装并验证 AI 工具链
-> **难度**: ⭐
+> **难度**: 简单
 >
 > ```bash
 > pip install numpy scikit-learn xgboost torch
@@ -410,14 +350,14 @@ print(classifier('Segmentation fault. Core dumped.'))
 > ```
 
 > [!example] 练习题 2：使用预训练模型
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 用 `python -c` 一行流加载 HuggingFace 的 `distilbert-base-uncased-finetuned-sst-2-english` 情感分析模型，预测三段文本的情感（正面/负面）。
 >
 > 提示：`from transformers import pipeline`
 
 > [!example] 练习题 3：绘制 AI 部署流程图
-> **难度**: ⭐
+> **难度**: 简单
 >
 > 在一张纸上画出以下路径：
 > 1. Python 训练模型（画一个 Python 标志）

@@ -9,22 +9,73 @@ Python 在 RootStack 体系中的定位是**工具，而非核心**。本教程�
 
 ---
 
+## 写在教程之前
+
+### 本教程的定位
+
+Python 不是替代 C，而是 C 程序员的工具。你不需要用 Python 重写整个项目，而是把它当作：
+
+- **快速验证**：`python -c ""` 替代临时写 C 编译运行，验证想法、测试小逻辑、做数据计算
+- **C-Python 互操作**：用 ctypes 调已有的 C 库，用 CPython API 在 C 程序中嵌入 Python，用 pybind11/Cython 给 C/C++ 库披上 Python 外衣
+- **脚本化辅助**：代码生成（生成 C 头文件骨架）、日志分析、自动化测试、数据可视化 —— 用 Python 的快速开发能力服务 C 项目
+
+### 不同系统下载 Python
+
+**Windows**：
+- 去 [python.org](https://www.python.org/downloads/) 下载安装包，安装时**务必勾选 "Add Python to PATH"**
+- 或使用 winget：`winget install python`
+- Winget 安装后可能需要重启终端才能识别 `python` 命令
+
+**macOS**：
+- `brew install python3`
+- 或去 [python.org](https://www.python.org/downloads/) 下载 .pkg 安装包
+
+**Linux**：
+- Debian/Ubuntu：`sudo apt install python3 python3-pip`
+- Arch：`sudo pacman -S python python-pip`
+- Fedora：`sudo dnf install python3 python3-pip`
+
+**验证安装**：
+```bash
+python3 --version
+pip3 --version
+```
+
+> 各系统可能同时存在 `python` / `python3`。建议统一使用 `python3` 和 `pip3`，或者用 `uv` 管理 Python 版本。
+
+### 编辑器选择
+
+| 编辑器 | 平台 | 说明 |
+|--------|------|------|
+| **VSCode + Python 插件** | 全平台 | 推荐。智能补全、调试、Jupyter 支持，C/C++ 插件可共存 |
+| **PyCharm Community** | 全平台 | 完整 IDE，适合纯 Python 项目，对新手友好 |
+| **Vim/Neovim + coc-pyright** | 全平台 | 终端轻量方案，C 程序员习惯的编辑方式 |
+
+### Python 版本说明
+
+**推荐 Python 3.10+**。Python 3.10 引入了 `match/case`（模式匹配），3.11/3.12 有显著性能提升。
+
+**不要用 Python 2**。Python 2 已于 2020 年停止维护。如遇旧系统上的 `python` 命令指向 Python 2，请检查 `python3` 或升级系统。
+
+当前最新稳定版为 Python 3.12/3.13，但生产环境建议使用 3.10 或 3.11（库兼容性最广）。
+
+---
+
 ## 教程结构
 
-```
-python/
-├── python目录.md                    <-- 你在这里
-├── 1入门/ (7篇)                     环境、基础语法（与 C 逐项对比）
-├── 2精通/ (8篇)                     解释器底层 + C 互操作（本教程灵魂）
-├── 3实战/ (5篇)                     小项目：一行流、构建辅助、与 C 配合
-├── 4库/                             标准库 + 第三方库 分类索引
-├── 5工程化/ (6篇)                    venv/打包/测试/CI/CD
-├── 6量化分析/ (6篇)                  NumPy/Pandas/回测/性能加速
-├── 7科学计算/ (5篇)                  NumPy/SciPy/SymPy + C 加速对比
-├── 8数据可视化/ (5篇)                Matplotlib/Seaborn/Plotly
-├── 9图形处理/ (4篇)                  Pillow/OpenCV/与 C 库互操作
-├── 10web应用/ (5篇)                  Flask/FastAPI/数据库/部署
-└── 11人工智能/ (6篇)                 sklearn/PyTorch/ONNX部署(衔接C++)
+```mermaid
+graph TB
+ ROOT["python/"] --> INTRO["1入门/ (7篇)<br/>环境、基础语法（与C逐项对比）"]
+ ROOT --> ADV["2精通/ (8篇)<br/>解释器底层 + C互操作（本教程灵魂）"]
+ ROOT --> PRACTICE["3实战/ (5篇)<br/>小项目：一行流、构建辅助、与C配合"]
+ ROOT --> LIB["4库/<br/>标准库 + 第三方库 分类索引"]
+ ROOT --> ENG["5工程化/ (6篇)<br/>venv/打包/测试/CI/CD"]
+ ROOT --> QUANT["6量化分析/ (6篇)<br/>NumPy/Pandas/回测/性能加速"]
+ ROOT --> SCI["7科学计算/ (5篇)<br/>NumPy/SciPy/SymPy + C加速对比"]
+ ROOT --> VIZ["8数据可视化/ (5篇)<br/>Matplotlib/Seaborn/Plotly"]
+ ROOT --> GFX["9图形处理/ (4篇)<br/>Pillow/OpenCV/与C库互操作"]
+ ROOT --> WEB["10web应用/ (5篇)<br/>Flask/FastAPI/数据库/部署"]
+ ROOT --> AI["11人工智能/ (6篇)<br/>sklearn/PyTorch/ONNX部署(衔接C++)"]
 ```
 
 ---

@@ -1,7 +1,7 @@
 # 推理部署：ONNX Runtime 接 C++ 程序 (Inference Deployment)
 ---
 
-## 📖 章节概述
+## 章节概述
 
 这是从 Python 到 C++ 的最后一公里。你用 Python 训练并导出了 .onnx 模型，本章教你用 C++ 加载并执行推理。CMake 配置、加载模型、创建 session、传入输入张量、读取输出、完整端到端流程。最后简要介绍 TensorRT、OpenVINO、TVM 等进阶方案。
 
@@ -9,7 +9,7 @@
 
 ---
 
-### 📚 第一节：ONNX Runtime 安装与 CMake 配置
+### 第一节：ONNX Runtime 安装与 CMake 配置
 
 1.1 什么是 ONNX Runtime
 ------------------------
@@ -25,19 +25,23 @@ wget https://github.com/microsoft/onnxruntime/releases/download/v1.18.0/onnxrunt
 tar xzf onnxruntime-linux-x64-1.18.0.tgz
 
 # 方法二：通过系统包管理器
-sudo apt install libonnxruntime-dev            # Ubuntu 22.04+
-brew install onnxruntime                        # macOS
+sudo apt install libonnxruntime-dev # Ubuntu 22.04+
+brew install onnxruntime # macOS
+
+> **跨平台提示**：
+> - **Windows**：从 [NuGet](https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime) 或 GitHub Releases 下载预编译包 `onnxruntime-win-x64-*.zip`，解压后将 `lib/` 和 `include/` 加入项目配置
 ```
 
 安装后的目录结构：
-```
-onnxruntime-linux-x64-1.18.0/
-├── include/
-│   ├── onnxruntime_c_api.h        # C API 头文件（推荐）
-│   └── onnxruntime_cxx_api.h      # C++ RAII 封装
-├── lib/
-│   └── libonnxruntime.so          # 动态库
-└── LICENSE
+```mermaid
+graph TB
+ ROOT["onnxruntime-linux-x64-1.18.0/"]
+ ROOT --> INC["include/"]
+ INC --> C_API["onnxruntime_c_api.h (C API 头文件，推荐)"]
+ INC --> CPP_API["onnxruntime_cxx_api.h (C++ RAII 封装)"]
+ ROOT --> LIB["lib/"]
+ LIB --> SO["libonnxruntime.so (动态库)"]
+ ROOT --> LIC["LICENSE"]
 ```
 
 1.3 CMakeLists.txt 配置
@@ -54,18 +58,18 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(ONNXRUNTIME_ROOT "/path/to/onnxruntime-linux-x64-1.18.0")
 
 find_path(ONNXRUNTIME_INCLUDE onnxruntime_c_api.h
-    HINTS ${ONNXRUNTIME_ROOT}/include)
+ HINTS ${ONNXRUNTIME_ROOT}/include)
 find_library(ONNXRUNTIME_LIB onnxruntime
-    HINTS ${ONNXRUNTIME_ROOT}/lib)
+ HINTS ${ONNXRUNTIME_ROOT}/lib)
 
 if(NOT ONNXRUNTIME_LIB)
-    message(FATAL_ERROR "ONNX Runtime not found!")
+ message(FATAL_ERROR "ONNX Runtime not found!")
 endif()
 
 add_library(onnxruntime SHARED IMPORTED)
 set_target_properties(onnxruntime PROPERTIES
-    IMPORTED_LOCATION "${ONNXRUNTIME_LIB}"
-    INTERFACE_INCLUDE_DIRECTORIES "${ONNXRUNTIME_INCLUDE}"
+ IMPORTED_LOCATION "${ONNXRUNTIME_LIB}"
+ INTERFACE_INCLUDE_DIRECTORIES "${ONNXRUNTIME_INCLUDE}"
 )
 
 add_executable(inference_demo main.cpp)
@@ -74,18 +78,18 @@ target_link_libraries(inference_demo PRIVATE onnxruntime)
 
 ---
 
-### 📚 第二节：C API 推理核心流程
+### 第二节：C API 推理核心流程
 
 2.1 推理五步骤
 ---------------
 
 ```
-1. OrtCreateEnv           → 创建环境（全局配置）
-2. OrtCreateSession       → 加载 .onnx 模型
-3. OrtCreateTensor        → 构造输入张量（数据+形状）
-4. OrtRun                 → 执行推理
+1. OrtCreateEnv → 创建环境（全局配置）
+2. OrtCreateSession → 加载 .onnx 模型
+3. OrtCreateTensor → 构造输入张量（数据+形状）
+4. OrtRun → 执行推理
 5. OrtGetTensorMutableData → 读取输出张量结果
-6. OrtRelease*            → 释放所有资源
+6. OrtRelease* → 释放所有资源
 ```
 
 关键函数签名：
@@ -94,9 +98,9 @@ target_link_libraries(inference_demo PRIVATE onnxruntime)
 OrtCreateEnv(ORT_LOGGING_LEVEL_WARNING, "app", &env);
 OrtCreateSession(env, "model.onnx", session_opts, &session);
 OrtCreateTensorWithDataAsOrtValue(mem_info, data, data_sz, shape, ndim,
-                                   ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT, &tensor);
+ ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT, &tensor);
 OrtRun(session, run_opts, in_names, in_values, n_in,
-                           out_names, n_out, out_values);
+ out_names, n_out, out_values);
 OrtGetTensorMutableData(out_values[0], (void**)&output_ptr);
 ```
 
@@ -108,99 +112,99 @@ OrtGetTensorMutableData(out_values[0], (void**)&output_ptr);
 #include <stdio.h>
 #include <stdlib.h>
 
-#define ORT_ABORT_IF_ERROR(expr) do {                       \
-    OrtStatus* _s = (expr);                                  \
-    if (_s != NULL) {                                        \
-        fprintf(stderr, "ONNX Error: %s\n",                   \
-                OrtGetErrorMessage(_s));                      \
-        OrtReleaseStatus(_s);                                 \
-        exit(1);                                              \
-    }                                                         \
+#define ORT_ABORT_IF_ERROR(expr) do { \
+ OrtStatus* _s = (expr); \
+ if (_s != NULL) { \
+ fprintf(stderr, "ONNX Error: %s\n", \
+ OrtGetErrorMessage(_s)); \
+ OrtReleaseStatus(_s); \
+ exit(1); \
+ } \
 } while(0)
 
 int main() {
-    // 1. 创建环境
-    OrtEnv* env;
-    OrtCreateEnv(ORT_LOGGING_LEVEL_WARNING, "demo", &env);
+ // 1. 创建环境
+ OrtEnv* env;
+ OrtCreateEnv(ORT_LOGGING_LEVEL_WARNING, "demo", &env);
 
-    // 2. 配置 Session 并加载模型
-    OrtSessionOptions* opts;
-    OrtCreateSessionOptions(&opts);
-    OrtSetIntraOpNumThreads(opts, 4);
-    OrtSetSessionGraphOptimizationLevel(opts, 99);
+ // 2. 配置 Session 并加载模型
+ OrtSessionOptions* opts;
+ OrtCreateSessionOptions(&opts);
+ OrtSetIntraOpNumThreads(opts, 4);
+ OrtSetSessionGraphOptimizationLevel(opts, 99);
 
-    OrtSession* session;
-    ORT_ABORT_IF_ERROR(
-        OrtCreateSession(env, "model.onnx", opts, &session));
+ OrtSession* session;
+ ORT_ABORT_IF_ERROR(
+ OrtCreateSession(env, "model.onnx", opts, &session));
 
-    printf("[OK] Model loaded\n");
+ printf("[OK] Model loaded\n");
 
-    // 3. 获取模型元信息
-    OrtAllocator* alloc;
-    OrtCreateDefaultAllocator(&alloc);
+ // 3. 获取模型元信息
+ OrtAllocator* alloc;
+ OrtCreateDefaultAllocator(&alloc);
 
-    char* in_name;
-    OrtGetSessionInputName(session, 0, alloc, &in_name);
-    char* out_name;
-    OrtGetSessionOutputName(session, 0, alloc, &out_name);
-    printf("Input: %s  Output: %s\n", in_name, out_name);
+ char* in_name;
+ OrtGetSessionInputName(session, 0, alloc, &in_name);
+ char* out_name;
+ OrtGetSessionOutputName(session, 0, alloc, &out_name);
+ printf("Input: %s Output: %s\n", in_name, out_name);
 
-    // 4. 准备输入数据 (batch=1, features=4)
-    float input_data[] = {1.0f, 2.0f, 3.0f, 4.0f};
-    int64_t shape[] = {1, 4};
+ // 4. 准备输入数据 (batch=1, features=4)
+ float input_data[] = {1.0f, 2.0f, 3.0f, 4.0f};
+ int64_t shape[] = {1, 4};
 
-    OrtMemoryInfo* mem_info;
-    OrtCreateCpuMemoryInfo(OrtDeviceAllocator, OrtMemTypeDefault,
-                           &mem_info);
+ OrtMemoryInfo* mem_info;
+ OrtCreateCpuMemoryInfo(OrtDeviceAllocator, OrtMemTypeDefault,
+ &mem_info);
 
-    OrtValue* in_tensor;
-    ORT_ABORT_IF_ERROR(
-        OrtCreateTensorWithDataAsOrtValue(
-            mem_info, input_data, sizeof(input_data),
-            shape, 2, ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
-            &in_tensor));
+ OrtValue* in_tensor;
+ ORT_ABORT_IF_ERROR(
+ OrtCreateTensorWithDataAsOrtValue(
+ mem_info, input_data, sizeof(input_data),
+ shape, 2, ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
+ &in_tensor));
 
-    // 5. 执行推理
-    const char* in_names[]  = {in_name};
-    const char* out_names[] = {out_name};
-    const OrtValue* inputs[] = {in_tensor};
-    OrtValue* outputs[1] = {NULL};
+ // 5. 执行推理
+ const char* in_names[] = {in_name};
+ const char* out_names[] = {out_name};
+ const OrtValue* inputs[] = {in_tensor};
+ OrtValue* outputs[1] = {NULL};
 
-    OrtRunOptions* run_opts;
-    OrtCreateRunOptions(&run_opts);
+ OrtRunOptions* run_opts;
+ OrtCreateRunOptions(&run_opts);
 
-    ORT_ABORT_IF_ERROR(
-        OrtRun(session, run_opts,
-               in_names, inputs, 1,
-               out_names, outputs, 1));
-    printf("[OK] Inference done\n");
+ ORT_ABORT_IF_ERROR(
+ OrtRun(session, run_opts,
+ in_names, inputs, 1,
+ out_names, outputs, 1));
+ printf("[OK] Inference done\n");
 
-    // 6. 读取输出
-    float* out_data;
-    OrtGetTensorMutableData(outputs[0], (void**)&out_data);
+ // 6. 读取输出
+ float* out_data;
+ OrtGetTensorMutableData(outputs[0], (void**)&out_data);
 
-    OrtTensorTypeAndShapeInfo* out_info;
-    OrtGetTensorTypeAndShape(outputs[0], &out_info);
-    size_t out_elems;
-    OrtGetTensorShapeElementCount(out_info, &out_elems);
+ OrtTensorTypeAndShapeInfo* out_info;
+ OrtGetTensorTypeAndShape(outputs[0], &out_info);
+ size_t out_elems;
+ OrtGetTensorShapeElementCount(out_info, &out_elems);
 
-    printf("Output (%zu values):\n", out_elems);
-    for (size_t i = 0; i < out_elems; i++)
-        printf("  [%zu] = %.4f\n", i, out_data[i]);
+ printf("Output (%zu values):\n", out_elems);
+ for (size_t i = 0; i < out_elems; i++)
+ printf(" [%zu] = %.4f\n", i, out_data[i]);
 
-    // 7. 释放资源
-    OrtReleaseTensorTypeAndShapeInfo(out_info);
-    OrtReleaseRunOptions(run_opts);
-    OrtReleaseValue(outputs[0]);
-    OrtReleaseValue(in_tensor);
-    OrtReleaseMemoryInfo(mem_info);
-    OrtReleaseAllocator(alloc);
-    OrtReleaseSessionOptions(opts);
-    OrtReleaseSession(session);
-    OrtReleaseEnv(env);
+ // 7. 释放资源
+ OrtReleaseTensorTypeAndShapeInfo(out_info);
+ OrtReleaseRunOptions(run_opts);
+ OrtReleaseValue(outputs[0]);
+ OrtReleaseValue(in_tensor);
+ OrtReleaseMemoryInfo(mem_info);
+ OrtReleaseAllocator(alloc);
+ OrtReleaseSessionOptions(opts);
+ OrtReleaseSession(session);
+ OrtReleaseEnv(env);
 
-    printf("[OK] Cleanup done\n");
-    return 0;
+ printf("[OK] Cleanup done\n");
+ return 0;
 }
 ```
 
@@ -222,37 +226,37 @@ cmake .. && make
 #include <vector>
 
 int main() {
-    Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "demo");
-    Ort::SessionOptions opts;
-    opts.SetIntraOpNumThreads(4);
+ Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "demo");
+ Ort::SessionOptions opts;
+ opts.SetIntraOpNumThreads(4);
 
-    Ort::Session session(env, "model.onnx", opts);
+ Ort::Session session(env, "model.onnx", opts);
 
-    // 输入
-    std::vector<float> input = {1, 2, 3, 4};
-    std::vector<int64_t> shape = {1, 4};
+ // 输入
+ std::vector<float> input = {1, 2, 3, 4};
+ std::vector<int64_t> shape = {1, 4};
 
-    Ort::MemoryInfo mem_info =
-        Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+ Ort::MemoryInfo mem_info =
+ Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 
-    Ort::Value in_tensor = Ort::Value::CreateTensor<float>(
-        mem_info, input.data(), input.size(), shape.data(), shape.size());
+ Ort::Value in_tensor = Ort::Value::CreateTensor<float>(
+ mem_info, input.data(), input.size(), shape.data(), shape.size());
 
-    // 推理（自动获取输入/输出名）
-    auto out = session.Run(Ort::RunOptions{nullptr},
-                           session.GetInputName(0, Ort::AllocatorWithDefaultOptions()),
-                           &in_tensor, 1,
-                           session.GetOutputName(0, Ort::AllocatorWithDefaultOptions()),
-                           1);
+ // 推理（自动获取输入/输出名）
+ auto out = session.Run(Ort::RunOptions{nullptr},
+ session.GetInputName(0, Ort::AllocatorWithDefaultOptions()),
+ &in_tensor, 1,
+ session.GetOutputName(0, Ort::AllocatorWithDefaultOptions()),
+ 1);
 
-    float* data = out[0].GetTensorMutableData<float>();
-    auto out_shape = out[0].GetTensorTypeAndShapeInfo().GetShape();
+ float* data = out[0].GetTensorMutableData<float>();
+ auto out_shape = out[0].GetTensorTypeAndShapeInfo().GetShape();
 
-    for (size_t i = 0; i < out_shape[1]; i++)
-        std::cout << data[i] << " ";
-    std::cout << std::endl;
+ for (size_t i = 0; i < out_shape[1]; i++)
+ std::cout << data[i] << " ";
+ std::cout << std::endl;
 
-    return 0;
+ return 0;
 }
 ```
 
@@ -260,7 +264,7 @@ int main() {
 
 ---
 
-### 📚 第三节：端到端流程 — Python 训练 → C++ 推理
+### 第三节：端到端流程 — Python 训练 → C++ 推理
 
 3.1 Python 侧：训练并导出
 --------------------------
@@ -270,14 +274,14 @@ python -c "
 import torch, torch.nn as nn
 
 class Model(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.net = nn.Sequential(
-            nn.Linear(4, 16), nn.ReLU(),
-            nn.Linear(16, 3),
-        )
-    def forward(self, x):
-        return self.net(x)
+ def __init__(self):
+ super().__init__()
+ self.net = nn.Sequential(
+ nn.Linear(4, 16), nn.ReLU(),
+ nn.Linear(16, 3),
+ )
+ def forward(self, x):
+ return self.net(x)
 
 model = Model()
 # 模拟训练（实际会用真实数据）
@@ -286,9 +290,9 @@ model.eval()
 # 导出
 x = torch.randn(1, 4)
 torch.onnx.export(model, x, 'model.onnx',
-    input_names=['x'], output_names=['logits'],
-    dynamic_axes={'x': {0: 'batch'}, 'logits': {0: 'batch'}},
-    opset_version=17)
+ input_names=['x'], output_names=['logits'],
+ dynamic_axes={'x': {0: 'batch'}, 'logits': {0: 'batch'}},
+ opset_version=17)
 print('Exported model.onnx')
 "
 ```
@@ -299,23 +303,20 @@ print('Exported model.onnx')
 使用上面的 `main.cpp`，修改输入数据为真实的特征值：
 ```cpp
 // 真实输入数据: 鸢尾花 4 个特征
-float input_data[] = {5.1f, 3.5f, 1.4f, 0.2f};  // → 类别 0 (setosa)
+float input_data[] = {5.1f, 3.5f, 1.4f, 0.2f}; // → 类别 0 (setosa)
 ```
 
 完整流程：
 
-```
-train.py                main.cpp + model.onnx
-┌─────────────┐         ┌──────────────────────┐
-│ 加载数据     │         │                      │
-│ 训练模型     │         │ OrtCreateEnv()       │
-│ model.eval() │         │ OrtCreateSession()   │
-│ export ONNX  │──.onnx─▶│ 准备输入张量          │
-│              │         │ OrtRun()  → 推理      │
-│              │         │ 读取输出 → argmax     │
-│              │         │ OrtRelease*()         │
-└─────────────┘         └──────────────────────┘
-   Python                     C++
+```mermaid
+graph LR
+ subgraph Python["Python 训练侧"]
+ A["加载数据<br/>训练模型<br/>model.eval()<br/>export ONNX"]
+ end
+ subgraph CPP["C++ 推理侧"]
+ B["OrtCreateEnv()<br/>OrtCreateSession()<br/>准备输入张量<br/>OrtRun() → 推理<br/>读取输出 → argmax<br/>OrtRelease*()"]
+ end
+ A -- ".onnx" --> B
 ```
 
 3.3 验证一致性
@@ -337,7 +338,7 @@ import torch, numpy as np
 
 ---
 
-### 📚 第四节：进阶部署方案
+### 第四节：进阶部署方案
 
 4.1 方案对比速查表
 -------------------
@@ -393,9 +394,9 @@ import onnx
 
 model = onnx.load('model.onnx')
 # 编译为 LLVM / CUDA / ARM NEON 等后端
-# target = 'llvm'           # CPU
-# target = 'cuda'           # GPU
-# target = 'llvm -mtriple=aarch64-linux-gnu'  # ARM
+# target = 'llvm' # CPU
+# target = 'cuda' # GPU
+# target = 'llvm -mtriple=aarch64-linux-gnu' # ARM
 "
 ```
 
@@ -403,7 +404,7 @@ model = onnx.load('model.onnx')
 
 ---
 
-### 📚 第五节：性能对比与最佳实践
+### 第五节：性能对比与最佳实践
 
 5.1 Python vs C++ 推理性能
 ----------------------------
@@ -415,13 +416,13 @@ import torch, time, numpy as np, onnxruntime as ort
 
 # 加载模型...
 # 热身 (warmup)
-for _ in range(100):  # warmup
-    session.run(None, {'x': data})
+for _ in range(100): # warmup
+ session.run(None, {'x': data})
 
 # 计时
 t0 = time.perf_counter()
 for _ in range(1000):
-    session.run(None, {'x': data})
+ session.run(None, {'x': data})
 t1 = time.perf_counter()
 print(f'Python ONNX RT: {(t1-t0)/1000*1000:.3f}ms / inference')
 "
@@ -444,44 +445,47 @@ C++ 端也做类似基准测试，通常 C++ 延迟更低（无 Python GIL、无
 5.3 推理服务的架构模式
 -----------------------
 
-```
-┌─────────────────────────────────────────────────────┐
-│ 生产级推理服务                                       │
-├─────────────────────────────────────────────────────┤
-│ 负载均衡层 (Nginx / HAProxy)                         │
-│   │                   │
-│   ▼                   ▼
-│ Worker 1             Worker 2           ...
-│   ├─ OrtSession 1      ├─ OrtSession 1
-│   ├─ 输入预处理         ├─ 输入预处理
-│   ├─ OrtRun()          ├─ OrtRun()
-│   └─ 后处理 + 返回      └─ 后处理 + 返回
-│         │                   │
-│    共 享 模 型 文 件  (.onnx)
-└─────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+ subgraph LB["负载均衡层"]
+ Nginx["Nginx / HAProxy"]
+ end
+
+ Nginx --> W1["Worker 1"]
+ Nginx --> W2["Worker 2"]
+ Nginx --> WN["Worker N ..."]
+
+ subgraph W1
+ direction TB
+ S1["OrtSession 1"] --> P1["输入预处理"] --> R1["OrtRun()"] --> O1["后处理 + 返回"]
+ end
+
+ subgraph W2
+ direction TB
+ S2["OrtSession 1"] --> P2["输入预处理"] --> R2["OrtRun()"] --> O2["后处理 + 返回"]
+ end
+
+ subgraph WN
+ direction TB
+ SN["OrtSession 1"] --> PN["输入预处理"] --> RN["OrtRun()"] --> ON["后处理 + 返回"]
+ end
+
+ MODEL["共 享 模 型 文 件 (.onnx)"] -.-> W1
+ MODEL -.-> W2
+ MODEL -.-> WN
 ```
 
 > 本教程的 C++ 进阶内容（多线程服务、CUDA stream、TensorRT plugin、KV Cache 管理）请参考 [[../../cpp教程/cpp目录|CPP教程]] 的高性能计算章节。
 
 ---
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> ONNX Runtime 的 C API 中，加载模型并创建推理上下文的函数是？
-> - [ ] A. `OrtCreateEnv`
-> - [ ] B. `OrtCreateSession`
-> - [ ] C. `OrtRun`
-> - [ ] D. `OrtCreateTensor`
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `OrtCreateSession` 加载 .onnx 文件并创建 Session（推理上下文）。`OrtCreateEnv` 创建全局运行环境，`OrtRun` 执行推理，`OrtCreateTensor` 创建输入/输出张量。
 
 > [!question] 判断题 1
 > C API 使用后必须手动调用 `OrtRelease*` 释放资源，否则内存泄漏。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -489,14 +493,14 @@ C++ 端也做类似基准测试，通常 C++ 延迟更低（无 Python GIL、无
 
 ---
 
-## 📋 章节测试
+## 章节测试
 
-### 一、判断题（正确选 ✅，错误选 ❌）
+### 一、判断题（正确选 ，错误选 ）
 
 > [!question] 判断题 1
 > ONNX Runtime 的 C++ API 头文件是 `onnxruntime_cxx_api.h`。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -504,8 +508,8 @@ C++ 端也做类似基准测试，通常 C++ 延迟更低（无 Python GIL、无
 
 > [!question] 判断题 2
 > `OrtSetIntraOpNumThreads(session_opts, 4)` 设置 GPU 的 CUDA stream 数量。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -513,8 +517,8 @@ C++ 端也做类似基准测试，通常 C++ 延迟更低（无 Python GIL、无
 
 > [!question] 判断题 3
 > C++ API 的 `Ort::Session` 析构函数会自动释放底层资源。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -522,8 +526,8 @@ C++ 端也做类似基准测试，通常 C++ 延迟更低（无 Python GIL、无
 
 > [!question] 判断题 4
 > 使用相同 ONNX 模型时，C++ 和 Python 的推理结果必须在浮点误差范围内一致。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -531,8 +535,8 @@ C++ 端也做类似基准测试，通常 C++ 延迟更低（无 Python GIL、无
 
 > [!question] 判断题 5
 > ONNX Runtime 只支持 CPU 推理。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -540,8 +544,8 @@ C++ 端也做类似基准测试，通常 C++ 延迟更低（无 Python GIL、无
 
 > [!question] 判断题 6
 > TensorRT engine 文件（.engine）是跨 GPU 型号通用的。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -549,87 +553,30 @@ C++ 端也做类似基准测试，通常 C++ 延迟更低（无 Python GIL、无
 
 > [!question] 判断题 7
 > 推理服务中每个请求都需要重新创建 `OrtSession`。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
 > > **解析**: `OrtSession` 应创建一次后复用。`OrtRun()` 是线程安全的（不同 session 实例），可以在多路推理中并发调用。重复创建 Session 带来不必要的模型加载开销。
 
-### 二、选择题（单项选择题）
-
-> [!question] 选择题 1
-> 以下哪个函数用于从 ONNX Runtime 推理结果中获取原始数据指针？
-> - [ ] A. `OrtGetTensorShape`
-> - [ ] B. `OrtGetTensorMutableData`
-> - [ ] C. `OrtGetValue`
-> - [ ] D. `OrtGetOutput`
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `OrtGetTensorMutableData` 返回指向输出张量的原始数据指针（`void**`）。获取形状用 `OrtGetTensorTypeAndShape`。
-
-> [!question] 选择题 2
-> 跨框架模型部署的最通用格式是？
-> - [ ] A. PyTorch .pth
-> - [ ] B. TensorFlow .pb
-> - [ ] C. ONNX .onnx
-> - [ ] D. TensorRT .engine
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: ONNX 是开放的跨框架标准，所有主流框架都可以导出。.pth 仅限 PyTorch，.pb 仅限 TF，.engine 仅限 TensorRT（且不可跨 GPU）。
-
-> [!question] 选择题 3
-> 在 CMake 中创建 ONNX Runtime 导入库目标的方式是？
-> - [ ] A. `add_library(onnxruntime STATIC IMPORTED)`
-> - [ ] B. `add_library(onnxruntime SHARED IMPORTED)`
-> - [ ] C. `add_executable(onnxruntime)`
-> - [ ] D. `find_package(ONNXRuntime REQUIRED)`
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: ONNX Runtime 预编译包分发 .so 动态库，因此使用 `SHARED IMPORTED`。静态导入 `STATIC IMPORTED` 用于 .a 库。
-
-> [!question] 选择题 4
-> 生产环境中 `OrtSetSessionGraphOptimizationLevel` 应设置为？
-> - [ ] A. 0 (禁用优化)
-> - [ ] B. 1 (基础优化)
-> - [ ] C. 99 (全部优化)
-> - [ ] D. 随每个推理请求变化
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: 生产环境应开启全部优化 (99 = ORT_ENABLE_ALL)，以最小化推理延迟。仅在调试或某些兼容性问题时才降低优化级别。
-
-> [!question] 选择题 5
-> 以下哪个是专用 GPU 推理加速方案（仅 NVIDIA GPU 可用）？
-> - [ ] A. OpenVINO
-> - [ ] B. ONNX Runtime
-> - [ ] C. TensorRT
-> - [ ] D. TVM
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: TensorRT 是 NVIDIA 专有的 GPU 推理优化方案，仅支持 NVIDIA GPU。OpenVINO 是 Intel 方案，TVM 是通用编译器，ONNX Runtime 支持多种后端。
-
-> [!question] 选择题 6
-> C++ ONNX Runtime 推理中，input tensor 的数据类型如何指定？
-> - [ ] A. 字符串（如 "float"）
-> - [ ] B. 枚举 `ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT`
-> - [ ] C. 自动推断
-> - [ ] D. JSON 配置
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: 使用 ONNX Runtime 定义的枚举值，如 `ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT`、`ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64` 等来指定输入张量的数据类型。
 
 ---
 
-### 🛠️ 动手练习题
+## 力扣练习
+
+以下题目用于验证本章所学内容：
+
+| 题号 | 题目 | 链接 | 涉及知识点 |
+|------|------|------|-----------|
+| — | 本章无对应力扣题 | — | 请用动手练习题自检 |
+
+
+
+### 动手练习题
 
 > [!example] 练习题 1：C++ ONNX Runtime "Hello World"
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 1. 下载并解压 ONNX Runtime 预编译包
 > 2. 用第五章的 `python -c` 导出 `simple_model.onnx`（Linear(4,3)）
@@ -640,7 +587,7 @@ C++ 端也做类似基准测试，通常 C++ 延迟更低（无 Python GIL、无
 > 这是部署 AI 模型到 C/C++ 工程的入门练习。
 
 > [!example] 练习题 2：端到端 MNIST 部署
-> **难度**: ⭐⭐⭐
+> **难度**: 简单
 >
 > 1. 在 Python 中训练 MNIST CNN 分类器（第四章的练习题）
 > 2. 导出 `mnist.onnx`（注意输入形状 NCHW=1,1,28,28）
@@ -649,7 +596,7 @@ C++ 端也做类似基准测试，通常 C++ 延迟更低（无 Python GIL、无
 > 5. Python 和 C++ 推理结果必须完全一致
 
 > [!example] 练习题 3：性能基准测试
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 对同一个 ONNX 模型，分别测试 Python（onnxruntime）和 C++（onnxruntime C API）的推理延迟：
 > 1. 各进行 1000 次推理，取中位数延迟

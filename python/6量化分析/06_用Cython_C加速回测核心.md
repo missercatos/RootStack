@@ -1,7 +1,7 @@
 # 用 Cython/C 加速回测核心 (Accelerating with Cython/C)
 ---
 
-## 📖 章节概述
+## 章节概述
 
 Python 量化回测的致命弱点在于核心循环的纯 Python 速度。本章教你用 C 程序员最熟悉的方式——类型声明和编译优化——将回测性能提升 50-100 倍。先用 cProfile 定位瓶颈，再用 Cython 加类型声明重写热循环编译为 `.so`，最后直接用纯 C 编写并调用。三种方案的性能对比将让你深刻理解"Python 胶水 + C 引擎"这一量化系统的最佳架构。
 
@@ -9,7 +9,7 @@ Python 量化回测的致命弱点在于核心循环的纯 Python 速度。本�
 
 ---
 
-### 📚 第一节：性能剖析 —— 找到瓶颈
+### 第一节：性能剖析 —— 找到瓶颈
 
 #### 1.1 cProfile 快速定位
 
@@ -21,29 +21,29 @@ import numpy as np
 
 # 将回测核心提取为一个函数
 def backtest_core(close, fast_p, slow_p):
-    n = len(close)
-    fast_sma = np.zeros(n)
-    slow_sma = np.zeros(n)
-    
-    # 计算均线
-    for i in range(fast_p - 1, n):
-        fast_sma[i] = np.mean(close[i - fast_p + 1:i + 1])
-    for i in range(slow_p - 1, n):
-        slow_sma[i] = np.mean(close[i - slow_p + 1:i + 1])
-    
-    equity = np.zeros(n)
-    cash = 100000.0
-    position = 0.0
-    
-    for i in range(slow_p, n):
-        if fast_sma[i] > slow_sma[i] and position == 0:
-            position = cash / close[i]
-            cash = 0.0
-        elif fast_sma[i] < slow_sma[i] and position > 0:
-            cash = position * close[i]
-            position = 0.0
-        equity[i] = cash + position * close[i]
-    return equity
+ n = len(close)
+ fast_sma = np.zeros(n)
+ slow_sma = np.zeros(n)
+ 
+ # 计算均线
+ for i in range(fast_p - 1, n):
+ fast_sma[i] = np.mean(close[i - fast_p + 1:i + 1])
+ for i in range(slow_p - 1, n):
+ slow_sma[i] = np.mean(close[i - slow_p + 1:i + 1])
+ 
+ equity = np.zeros(n)
+ cash = 100000.0
+ position = 0.0
+ 
+ for i in range(slow_p, n):
+ if fast_sma[i] > slow_sma[i] and position == 0:
+ position = cash / close[i]
+ cash = 0.0
+ elif fast_sma[i] < slow_sma[i] and position > 0:
+ cash = position * close[i]
+ position = 0.0
+ equity[i] = cash + position * close[i]
+ return equity
 
 # 生成测试数据
 np.random.seed(1)
@@ -77,7 +77,7 @@ close = 100 + np.cumsum(np.random.randn(n) * 2)
 t0 = time.time()
 result = 0
 for i in range(n):
-    result += close[i]
+ result += close[i]
 t1 = time.time()
 print(f'Python loop sum: {t1 - t0:.4f}s')
 
@@ -89,7 +89,7 @@ print(f'NumPy sum: {t1 - t0:.6f}s')
 print(f'Speedup: ~{0.01 / (t1 - t0 + 1e-10):.0f}x')
 print()
 print('In a complete backtest loop with conditionals and state:')
-print('Python:   ~0.01-0.1 ms per bar')
+print('Python: ~0.01-0.1 ms per bar')
 print('C/Cython: ~0.0001-0.001 ms per bar')
 print('→ 50-100x speedup achievable')
 "
@@ -97,7 +97,7 @@ print('→ 50-100x speedup achievable')
 
 ---
 
-### 📚 第二节：Cython —— Python 的 C 方言
+### 第二节：Cython —— Python 的 C 方言
 
 #### 2.1 Cython 的核心思想
 
@@ -114,49 +114,49 @@ cimport cython
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def backtest_cython(double[:] close, int fast_p, int slow_p):
-    cdef int n = close.shape[0]
-    cdef int i
-    cdef double window_sum_fast = 0.0
-    cdef double window_sum_slow = 0.0
-    cdef double cash = 100000.0
-    cdef double position = 0.0
-    cdef double price
-    
-    cdef double[:] fast_sma = np.zeros(n)
-    cdef double[:] slow_sma = np.zeros(n)
-    cdef double[:] equity = np.zeros(n)
-    
-    # 滑动窗口计算均线（O(n) 而非 O(n*window)）
-    for i in range(n):
-        window_sum_fast += close[i]
-        if i >= fast_p:
-            window_sum_fast -= close[i - fast_p]
-        if i >= fast_p - 1:
-            fast_sma[i] = window_sum_fast / fast_p
-        
-        window_sum_slow += close[i]
-        if i >= slow_p:
-            window_sum_slow -= close[i - slow_p]
-        if i >= slow_p - 1:
-            slow_sma[i] = window_sum_slow / slow_p
-    
-    # 回测主循环
-    for i in range(slow_p, n):
-        price = close[i]
-        # 金叉
-        if fast_sma[i] > slow_sma[i] and fast_sma[i-1] <= slow_sma[i-1]:
-            if position == 0.0:
-                position = cash / price
-                cash = 0.0
-        # 死叉
-        elif fast_sma[i] < slow_sma[i] and fast_sma[i-1] >= slow_sma[i-1]:
-            if position > 0.0:
-                cash = position * price
-                position = 0.0
-        
-        equity[i] = cash + position * price
-    
-    return np.asarray(equity)
+ cdef int n = close.shape[0]
+ cdef int i
+ cdef double window_sum_fast = 0.0
+ cdef double window_sum_slow = 0.0
+ cdef double cash = 100000.0
+ cdef double position = 0.0
+ cdef double price
+ 
+ cdef double[:] fast_sma = np.zeros(n)
+ cdef double[:] slow_sma = np.zeros(n)
+ cdef double[:] equity = np.zeros(n)
+ 
+ # 滑动窗口计算均线（O(n) 而非 O(n*window)）
+ for i in range(n):
+ window_sum_fast += close[i]
+ if i >= fast_p:
+ window_sum_fast -= close[i - fast_p]
+ if i >= fast_p - 1:
+ fast_sma[i] = window_sum_fast / fast_p
+ 
+ window_sum_slow += close[i]
+ if i >= slow_p:
+ window_sum_slow -= close[i - slow_p]
+ if i >= slow_p - 1:
+ slow_sma[i] = window_sum_slow / slow_p
+ 
+ # 回测主循环
+ for i in range(slow_p, n):
+ price = close[i]
+ # 金叉
+ if fast_sma[i] > slow_sma[i] and fast_sma[i-1] <= slow_sma[i-1]:
+ if position == 0.0:
+ position = cash / price
+ cash = 0.0
+ # 死叉
+ elif fast_sma[i] < slow_sma[i] and fast_sma[i-1] >= slow_sma[i-1]:
+ if position > 0.0:
+ cash = position * price
+ position = 0.0
+ 
+ equity[i] = cash + position * price
+ 
+ return np.asarray(equity)
 ```
 
 C 类型映射表：
@@ -180,15 +180,15 @@ from Cython.Build import cythonize
 import numpy as np
 
 setup(
-    ext_modules=cythonize(
-        "backtest_core.pyx",
-        compiler_directives={
-            'boundscheck': False,
-            'wraparound': False,
-            'cdivision': True,
-        }
-    ),
-    include_dirs=[np.get_include()],
+ ext_modules=cythonize(
+ "backtest_core.pyx",
+ compiler_directives={
+ 'boundscheck': False,
+ 'wraparound': False,
+ 'cdivision': True,
+ }
+ ),
+ include_dirs=[np.get_include()],
 )
 ```
 
@@ -239,11 +239,11 @@ close = np.maximum(close, 10)
 
 # 这里展示概念
 print('Expected performance (200,000 bars):')
-print(f'  Pure Python:  ~2000 ms')
-print(f'  Cython (no types): ~500 ms')
-print(f'  Cython + types:    ~40 ms')
-print(f'  Pure C (.so):      ~15 ms')
-print(f'  Speedup:           50-130x')
+print(f' Pure Python: ~2000 ms')
+print(f' Cython (no types): ~500 ms')
+print(f' Cython + types: ~40 ms')
+print(f' Pure C (.so): ~15 ms')
+print(f' Speedup: 50-130x')
 "
 ```
 
@@ -258,7 +258,7 @@ print(f'  Speedup:           50-130x')
 
 ---
 
-### 📚 第三节：纯 C 引擎 + ctypes 调用
+### 第三节：纯 C 引擎 + ctypes 调用
 
 #### 3.1 C 源码
 
@@ -267,50 +267,50 @@ print(f'  Speedup:           50-130x')
 #include <stddef.h>
 
 void backtest_sma_cross(
-    const double *close, size_t n,
-    int fast_window, int slow_window,
-    double initial_capital,
-    double *equity_out)
+ const double *close, size_t n,
+ int fast_window, int slow_window,
+ double initial_capital,
+ double *equity_out)
 {
-    // 滑动窗口计算均线
-    double *fast_sma = (double *)calloc(n, sizeof(double));
-    double *slow_sma = (double *)calloc(n, sizeof(double));
-    
-    double fast_sum = 0.0, slow_sum = 0.0;
-    for (size_t i = 0; i < n; i++) {
-        fast_sum += close[i];
-        if (i >= (size_t)fast_window) fast_sum -= close[i - fast_window];
-        if (i >= (size_t)(fast_window - 1)) fast_sma[i] = fast_sum / fast_window;
-        
-        slow_sum += close[i];
-        if (i >= (size_t)slow_window) slow_sum -= close[i - slow_window];
-        if (i >= (size_t)(slow_window - 1)) slow_sma[i] = slow_sum / slow_window;
-    }
-    
-    // 回测主循环
-    double cash = initial_capital;
-    double position = 0.0;
-    
-    for (size_t i = slow_window; i < n; i++) {
-        double price = close[i];
-        int golden_cross = (fast_sma[i] > slow_sma[i] && 
-                           fast_sma[i-1] <= slow_sma[i-1]);
-        int dead_cross   = (fast_sma[i] < slow_sma[i] && 
-                           fast_sma[i-1] >= slow_sma[i-1]);
-        
-        if (golden_cross && position == 0.0) {
-            position = cash / price;
-            cash = 0.0;
-        } else if (dead_cross && position > 0.0) {
-            cash = position * price;
-            position = 0.0;
-        }
-        
-        equity_out[i] = cash + position * price;
-    }
-    
-    free(fast_sma);
-    free(slow_sma);
+ // 滑动窗口计算均线
+ double *fast_sma = (double *)calloc(n, sizeof(double));
+ double *slow_sma = (double *)calloc(n, sizeof(double));
+ 
+ double fast_sum = 0.0, slow_sum = 0.0;
+ for (size_t i = 0; i < n; i++) {
+ fast_sum += close[i];
+ if (i >= (size_t)fast_window) fast_sum -= close[i - fast_window];
+ if (i >= (size_t)(fast_window - 1)) fast_sma[i] = fast_sum / fast_window;
+ 
+ slow_sum += close[i];
+ if (i >= (size_t)slow_window) slow_sum -= close[i - slow_window];
+ if (i >= (size_t)(slow_window - 1)) slow_sma[i] = slow_sum / slow_window;
+ }
+ 
+ // 回测主循环
+ double cash = initial_capital;
+ double position = 0.0;
+ 
+ for (size_t i = slow_window; i < n; i++) {
+ double price = close[i];
+ int golden_cross = (fast_sma[i] > slow_sma[i] && 
+ fast_sma[i-1] <= slow_sma[i-1]);
+ int dead_cross = (fast_sma[i] < slow_sma[i] && 
+ fast_sma[i-1] >= slow_sma[i-1]);
+ 
+ if (golden_cross && position == 0.0) {
+ position = cash / price;
+ cash = 0.0;
+ } else if (dead_cross && position > 0.0) {
+ cash = position * price;
+ position = 0.0;
+ }
+ 
+ equity_out[i] = cash + position * price;
+ }
+ 
+ free(fast_sma);
+ free(slow_sma);
 }
 ```
 
@@ -318,8 +318,12 @@ void backtest_sma_cross(
 
 ```bash
 gcc -shared -fPIC -O3 -march=native -ffast-math \
-    -o backtest_engine.so backtest_engine.c
+ -o backtest_engine.so backtest_engine.c
 ```
+
+> **跨平台提示**：
+> - **Windows**：`-march=native` 在 MinGW 上可用，MSVC 换用 `/arch:AVX2 /O2 /LD`；输出 `.dll` 并在 ctypes 中 `CDLL('./backtest_engine.dll')`
+> - **macOS**：`gcc -shared -O3 -o backtest_engine.dylib backtest_engine.c`（clang 不支持 `-march=native`，自动使用当前架构）
 
 关键编译选项：
 
@@ -343,12 +347,12 @@ lib = ctypes.CDLL('./backtest_engine.so')
 
 # 声明函数签名
 lib.backtest_sma_cross.argtypes = [
-    ctypes.POINTER(ctypes.c_double),  # close
-    ctypes.c_size_t,                   # n
-    ctypes.c_int,                      # fast_window
-    ctypes.c_int,                      # slow_window
-    ctypes.c_double,                   # initial_capital
-    ctypes.POINTER(ctypes.c_double),  # equity_out
+ ctypes.POINTER(ctypes.c_double), # close
+ ctypes.c_size_t, # n
+ ctypes.c_int, # fast_window
+ ctypes.c_int, # slow_window
+ ctypes.c_double, # initial_capital
+ ctypes.POINTER(ctypes.c_double), # equity_out
 ]
 lib.backtest_sma_cross.restype = None
 
@@ -366,9 +370,9 @@ equity = np.zeros(n, dtype=np.float64)
 import time
 t0 = time.time()
 lib.backtest_sma_cross(
-    close_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
-    n, 10, 30, 100000.0,
-    equity.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+ close_arr.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
+ n, 10, 30, 100000.0,
+ equity.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
 )
 t1 = time.time()
 print(f'C backtest on {n} bars: {t1 - t0:.4f}s')
@@ -380,21 +384,22 @@ print(f'Final equity: {equity[-1]:.2f}')
 
 ---
 
-### 📚 第四节：选择你的方案
+### 第四节：选择你的方案
 
 #### 4.1 决策树
 
-```
-你的回测有多少行数据？
-├── < 100K: 纯 Python 足够，别过度优化
-├── 100K - 1M: Cython + 类型声明
-├── 1M - 10M: Cython 或纯 C
-└── > 10M: 纯 C + 多线程 + SIMD
+```mermaid
+graph TB
+ Q1["你的回测有多少行数据？"]
+ Q1 --> A1["< 100K: 纯 Python 足够<br/>别过度优化"]
+ Q1 --> A2["100K - 1M: Cython + 类型声明"]
+ Q1 --> A3["1M - 10M: Cython 或纯 C"]
+ Q1 --> A4["> 10M: 纯 C + 多线程 + SIMD"]
 
-你需要多频繁修改策略逻辑？
-├── 每天调参: Cython（编译快，修改方便）
-├── 稳定运行: 纯 C（极致性能）
-└── 探索阶段: 先用 Python 验证，再移植到 Cython/C
+ Q2["你需要多频繁修改策略逻辑？"]
+ Q2 --> B1["每天调参: Cython<br/>(编译快，修改方便)"]
+ Q2 --> B2["稳定运行: 纯 C<br/>(极致性能)"]
+ Q2 --> B3["探索阶段: 先用 Python 验证<br/>再移植到 Cython/C"]
 ```
 
 #### 4.2 混合方案：Python 调度 + C 执行
@@ -404,21 +409,21 @@ print(f'Final equity: {equity[-1]:.2f}')
 ```python
 # Python 端（灵活）
 class Strategy:
-    def __init__(self, data):
-        self.data = data
-        self.engine = ctypes.CDLL('./backtest_engine.so')
-    
-    def generate_signals(self):
-        # 复杂的信号逻辑可以用 Python 写
-        # ...
-        pass
-    
-    def run_backtest(self):
-        # 纯数值运算调用 C 引擎
-        self.engine.compute_equity(
-            self.data.close, len(self.data),
-            self.equity_curve
-        )
+ def __init__(self, data):
+ self.data = data
+ self.engine = ctypes.CDLL('./backtest_engine.so')
+ 
+ def generate_signals(self):
+ # 复杂的信号逻辑可以用 Python 写
+ # ...
+ pass
+ 
+ def run_backtest(self):
+ # 纯数值运算调用 C 引擎
+ self.engine.compute_equity(
+ self.data.close, len(self.data),
+ self.equity_curve
+ )
 ```
 
 #### 4.3 进一步优化方向
@@ -434,23 +439,13 @@ class Strategy:
 
 ---
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> Cython 中的 `cdef double[:] arr` 声明了什么？
-> - [ ] A. 一个 Python list
-> - [ ] B. 一个类型化的 memoryview（直接映射到 C 数组）
-> - [ ] C. 一个 Python 字典
-> - [ ] D. 一个 NumPy 的 Python 对象
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `cdef double[:] arr` 是 Cython 的 typed memoryview，底层直接映射为 C 的 `double*` 指针访问，完全绕过 Python 对象系统。这是 Cython 高性能的关键。
 
 > [!question] 判断题 1
 > 关闭 `boundscheck` 后数组越界会产生 Python 异常。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -458,14 +453,14 @@ class Strategy:
 
 ---
 
-## 📋 章节测试
+## 章节测试
 
 ### 一、判断题
 
 > [!question] 判断题 1
 > cProfile 可以精确测量 Python 代码中每个函数的调用次数和执行时间。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -473,8 +468,8 @@ class Strategy:
 
 > [!question] 判断题 2
 > Cython 文件（.pyx）可以直接被 Python `import`，不需要编译。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -482,8 +477,8 @@ class Strategy:
 
 > [!question] 判断题 3
 > Cython 的类型声明 `cdef int i` 和 Python 的 `i: int` 类型注解有完全相同的性能效果。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -491,8 +486,8 @@ class Strategy:
 
 > [!question] 判断题 4
 > 用 `ctypes` 调用 C 函数时，NumPy 数组的数据会被自动拷贝一份传给 C 代码。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -500,8 +495,8 @@ class Strategy:
 
 > [!question] 判断题 5
 > 纯 C 编写的回测引擎总是比 Cython 版本的快。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -509,8 +504,8 @@ class Strategy:
 
 > [!question] 判断题 6
 > `gcc -O3 -march=native` 中的 `-march=native` 会让编译产物只在当前 CPU 上运行。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -518,85 +513,28 @@ class Strategy:
 
 ---
 
-### 二、选择题
-
-> [!question] 选择题 1
-> cProfile 的输出中，`cumtime` 列表示什么？
-> - [ ] A. 该函数本身的执行时间（不包括子函数）
-> - [ ] B. 该函数及其所有子函数的总执行时间
-> - [ ] C. 该函数的编译时间
-> - [ ] D. 该函数被调用的次数
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `cumtime` = 累积时间 = 该函数自身时间 + 它调用的所有子函数的时间。`tottime` = 该函数自身的时间（排除子函数）。在分析时要看 cumtime 才能找到真正的"高成本调用链"。
-
-> [!question] 选择题 2
-> 以下哪个 Cython 声明用于 NumPy 数组的编译时类型检查？
-> - [ ] A. `import numpy`
-> - [ ] B. `cimport numpy`
-> - [ ] C. `np.ndarray`
-> - [ ] D. `ctypedef numpy`
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `cimport numpy` 在编译时导入 NumPy 的 C API 定义，这是使用 typed memoryview（如 `double[:]`）的前提。普通的 `import numpy` 是运行时导入，无法用于类型声明。
-
-> [!question] 选择题 3
-> 将 Python 回测热循环提取为 Cython 文件后，编译为 `.so` 的正确命令流程是？
-> - [ ] A. `gcc` 直接编译 .pyx
-> - [ ] B. 用 Cython 先转 .c，再 `gcc` 编译 + 链接
-> - [ ] C. `python setup.py build_ext --inplace`
-> - [ ] D. 直接 `import` .pyx 文件
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: `python setup.py build_ext --inplace` 自动完成 Cython → C 转换、GCC 编译、链接 Python 库的全流程。`.pyx` 文件不能直接被 import 或 gcc 编译。
-
-> [!question] 选择题 4
-> 量化回测中，以下哪个操作最不可能成为性能瓶颈？
-> - [ ] A. 滚动窗口计算指标（如 SMA）
-> - [ ] B. 逐 bar 的订单逻辑判断
-> - [ ] C. 读写配置文件
-> - [ ] D. 盈亏和净值的累积计算
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: 回测的性能瓶颈总是在"每 bar 都要执行"的计算上——SMA、信号判断、盈亏累积。这些会执行数十万次直至数百万次。配置文件只在回测初始化时读一次，不是瓶颈。
-
-> [!question] 选择题 5
-> `double[:]` 和 `np.ndarray[np.float64_t, ndim=1]` 在 Cython 中的关键区别是？
-> - [ ] A. 没有区别
-> - [ ] B. memoryview 更快，因为直接通过指针访问
-> - [ ] C. ndarray 声明更快
-> - [ ] D. memoryview 更安全
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: Typed memoryview（`double[:]`）通过直接的 C 指针访问数据，生成的 C 代码几乎和手写循环一样高效。`np.ndarray` 声明虽然也做类型检查，但通过 NumPy API 访问，有额外的函数调用开销。
-
-> [!question] 选择题 6
-> Numba JIT（即时编译）相比 Cython 的优势是什么？
-> - [ ] A. Numba 更快
-> - [ ] B. Numba 不需要单独的编译步骤，加装饰器即可
-> - [ ] C. Numba 支持更多 NumPy 函数
-> - [ ] D. Numba 生成的代码质量更高
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: Numba 的最大优势是开发体验——`@jit(nopython=True)` 装饰器即可自动编译，无需 `.pyx` 文件、`setup.py` 和编译步骤。但在极致性能上，精心优化的 Cython 通常更快。
 
 ---
 
-### 🛠️ 动手练习题
+## 力扣练习
+
+以下题目用于验证本章所学内容：
+
+| 题号 | 题目 | 链接 | 涉及知识点 |
+|------|------|------|-----------|
+| — | 本章无对应力扣题 | — | 请用动手练习题自检 |
+
+
+
+### 动手练习题
 
 > [!example] 练习题 1：cProfile 分析实战
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 将第 4 章中的自建回测代码独立出来，用 cProfile 进行分析。输出前 10 个耗时最多的函数调用。阅读报告并统计：(1) 纯循环的时间占比；(2) NumPy 函数调用的时间占比；(3) 其他开销。用 `pstats.Stats` 生成调用图。
 
 > [!example] 练习题 2：Cython 加速均线计算
-> **难度**: ⭐⭐⭐
+> **难度**: 简单
 >
 > 创建一个 `sma_engine.pyx` 文件，用 Cython 实现三个函数：
 > 1. `fast_sma(double[:] close, int window)` — 滑动窗口 SMA
@@ -606,7 +544,7 @@ class Strategy:
 > 编译为 .so 并在 Python 中测试。用 `%timeit` 比较纯 Python 版本和 Cython 版本在 50 万行数据上的表现。
 
 > [!example] 练习题 3：纯 C 回测引擎 + ctypes
-> **难度**: ⭐⭐⭐⭐
+> **难度**: 简单
 >
 > 用纯 C 实现一个完整的回测引擎，支持：
 > - 自定义信号函数（通过函数指针或 switch 语句）
@@ -616,7 +554,7 @@ class Strategy:
 > 编译为 .so，用 ctypes 在 Python 中调用。输出每日的持仓、权益、现金序列。与纯 NumPy 版本对比结果和性能。
 
 > [!example] 练习题 4：完整方案对比
-> **难度**: ⭐⭐⭐
+> **难度**: 简单
 >
 > 对同一个 SMA 交叉策略，用四种方式实现回测：
 > 1. 纯 NumPy 向量化（无 Python 循环）
