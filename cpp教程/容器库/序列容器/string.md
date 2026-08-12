@@ -49,19 +49,19 @@ title: "class string"
 string s = "hello"
 
 // 追加
-s += " world"            // "hello world"
+s += " world" // "hello world"
 
 // 查找
-pos = s.find("world")    // 返回 6
+pos = s.find("world") // 返回 6
 if pos != npos:
-    print "found at " + to_string(pos)
+ print "found at " + to_string(pos)
 
 // 截取
-sub = s.substr(0, 5)     // "hello"
+sub = s.substr(0, 5) // "hello"
 
 // 遍历并修改
 for each c in s:
-    c = toupper(c)
+ c = toupper(c)
 
 // 读入整行
 getline(in, s)

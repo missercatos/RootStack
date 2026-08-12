@@ -12,7 +12,7 @@ Rust 在 Linux 内核中的旅程始于 2022 年 12 月的 Linux 6.1。到 2025 
 - **架构支持**：x86_64、aarch64（ARM64）、初步的 riscv64 和 loongarch
 - **工具链改善**：GCC Rust (gccrs) 开发中，rustc_codegen_gcc 进展中
 
-> 📌 **观点**：Rust在内存安全方面确实有效，是重构Linux内核的重要工具。但要真正理解Linux内核和内存管理，C语言的学习仍然是基础。请参阅 C语言深化教程 了解完整的C语言底层编程知识体系，以及 [[../../内核/系统内核/02_进程与内存管理|C语言教程: 进程与内存管理]] 理解C语言中的内存管理挑战。
+> **观点**：Rust在内存安全方面确实有效，是重构Linux内核的重要工具。但要真正理解Linux内核和内存管理，C语言的学习仍然是基础。请参阅 C语言深化教程 了解完整的C语言底层编程知识体系，以及 [[../../内核/系统内核/02_进程与内存管理|C语言教程: 进程与内存管理]] 理解C语言中的内存管理挑战。
 
 ## 2. 即将到来的：更多子系统采用 Rust
 
@@ -124,17 +124,17 @@ Linux 内核内存模型（LKMM）定义了多核系统上的内存排序保证�
 
 ```rust
 // 内核实际使用的 nightly 特性（位于 rust/kernel/lib.rs）
-#![feature(new_uninit)]           // Box::new_uninit
-#![feature(allocator_api)]        // 自定义分配器的完整支持
-#![feature(pin_macro)]            // pin! 宏
+#![feature(new_uninit)] // Box::new_uninit
+#![feature(allocator_api)] // 自定义分配器的完整支持
+#![feature(pin_macro)] // pin! 宏
 #![feature(arbitrary_self_types)] // 自定义 self 类型
-#![feature(coerce_unsized)]      // Unsized 强制转换
-#![feature(dispatch_from_dyn)]   // 动态分发
-#![feature(receiver_trait)]      // 接收者 trait
-#![feature(unsize)]              // Unsize trait
-#![feature(offset_of)]           // offset_of! 宏
-#![feature(ptr_metadata)]        // 指针元数据
-#![feature(inline_const)]       // 内联常量
+#![feature(coerce_unsized)] // Unsized 强制转换
+#![feature(dispatch_from_dyn)] // 动态分发
+#![feature(receiver_trait)] // 接收者 trait
+#![feature(unsize)] // Unsize trait
+#![feature(offset_of)] // offset_of! 宏
+#![feature(ptr_metadata)] // 指针元数据
+#![feature(inline_const)] // 内联常量
 // ... 约 20 个特性
 ```
 
@@ -155,10 +155,10 @@ Linux 内核内存模型（LKMM）定义了多核系统上的内存排序保证�
 
 ```
 稳定化优先级（高到低）：
-1. allocator_api       -- 最关键的阻塞项
+1. allocator_api -- 最关键的阻塞项
 2. arbitrary_self_types -- 对内核 API 设计影响大
-3. pin_macro           -- 内核初始化依赖
-4. dispatch_from_dyn   -- 动态分发支持
+3. pin_macro -- 内核初始化依赖
+4. dispatch_from_dyn -- 动态分发支持
 ```
 
 ## 4. 社区挑战
@@ -246,27 +246,27 @@ Rust for Linux 采用不同策略：
 
 ```
 2025-2026：
-  - Rust Binder 驱动稳定和优化
-  - 首个 Rust 网络驱动（虚拟设备）
-  - DRM Rust 抽象成熟
-  - allocator_api 稳定化
+ - Rust Binder 驱动稳定和优化
+ - 首个 Rust 网络驱动（虚拟设备）
+ - DRM Rust 抽象成熟
+ - allocator_api 稳定化
 
 2026-2027：
-  - 更多生产环境 Rust 驱动（NVMe、input、I2C）
-  - 首个 Rust 文件系统（只读）
-  - GCC Rust 达到可用状态
-  - 架构支持扩展到 riscv64 和 ppc64le
+ - 更多生产环境 Rust 驱动（NVMe、input、I2C）
+ - 首个 Rust 文件系统（只读）
+ - GCC Rust 达到可用状态
+ - 架构支持扩展到 riscv64 和 ppc64le
 
 2027-2028：
-  - Rust 成为新驱动的事实标准（在内核社区共识下）
-  - 首个 Rust 写的可写文件系统
-  - nightly 特性依赖减少到 < 5 个
-  - 主流发行版默认启用 Rust 内核模块
+ - Rust 成为新驱动的事实标准（在内核社区共识下）
+ - 首个 Rust 写的可写文件系统
+ - nightly 特性依赖减少到 < 5 个
+ - 主流发行版默认启用 Rust 内核模块
 
 2028-2030：
-  - Linux 成为首个在主线中广泛使用内存安全语言的通用 OS 内核
-  - 统计学上可测量：内核 CVE 数量显著下降
-  - Rust 在至少 5 个主要子系统中使用
+ - Linux 成为首个在主线中广泛使用内存安全语言的通用 OS 内核
+ - 统计学上可测量：内核 CVE 数量显著下降
+ - Rust 在至少 5 个主要子系统中使用
 ```
 
 **注意**：这只是推测。内核开发受许多不可预测因素影响。但历史趋势（内存安全语言在系统编程中的兴起）是明确的。
@@ -398,25 +398,25 @@ Linux 内核正站在十字路口。C 已经服务了 30 多年，但它对内�
 
 ```
 今天：
-  git clone https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-  cd linux
-  cat samples/rust/rust_minimal.rs
-  make LLVM=1 rustavailable
+ git clone https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+ cd linux
+ cat samples/rust/rust_minimal.rs
+ make LLVM=1 rustavailable
 
 本周：
-  订阅 rust-for-linux@vger.kernel.org
-  阅读 Documentation/rust/quick-start.rst
-  编译一个启用了 Rust 的内核
+ 订阅 rust-for-linux@vger.kernel.org
+ 阅读 Documentation/rust/quick-start.rst
+ 编译一个启用了 Rust 的内核
 
 本月：
-  编写你的第一个 Rust 内核模块
-  在 QEMU 中测试
-  找到第一个文档修复并提交补丁
+ 编写你的第一个 Rust 内核模块
+ 在 QEMU 中测试
+ 找到第一个文档修复并提交补丁
 
 今年：
-  成为 Rust for Linux 的常规贡献者
-  在邮件列表上建立存在
-  参加一次内核会议
+ 成为 Rust for Linux 的常规贡献者
+ 在邮件列表上建立存在
+ 参加一次内核会议
 ```
 
 ---

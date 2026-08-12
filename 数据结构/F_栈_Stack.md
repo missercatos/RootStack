@@ -37,15 +37,15 @@
 ```
 高地址
 ┌─────────────────┐
-│   main 的栈帧   │  ← rbp (main 的基址指针)
-│  (局部变量等)   │
+│ main 的栈帧 │ ← rbp (main 的基址指针)
+│ (局部变量等) │
 ├─────────────────┤
-│  返回地址       │  ← call 指令推入的 rip, 8 字节
+│ 返回地址 │ ← call 指令推入的 rip, 8 字节
 ├─────────────────┤
-│  foo 的栈帧     │  ← rbp (foo 的基址指针) ← rsp
-│  int a = 3      │  [rbp-4]
-│  int b = 5      │  [rbp-8]
-│  char buf[32]   │  [rbp-40]
+│ foo 的栈帧 │ ← rbp (foo 的基址指针) ← rsp
+│ int a = 3 │ [rbp-4]
+│ int b = 5 │ [rbp-8]
+│ char buf[32] │ [rbp-40]
 └─────────────────┘
 低地址
 ```
@@ -54,14 +54,14 @@
 ; C 代码: int add(int a, int b) { return a + b; }
 
 add:
-    push    rbp              ; 保存调用者的 rbp
-    mov     rbp, rsp         ; 建立自己的栈帧基址
-    mov     DWORD PTR [rbp-4], edi   ; 参数 a (通过 edi 传入)
-    mov     DWORD PTR [rbp-8], esi   ; 参数 b (通过 esi 传入)
-    mov     eax, DWORD PTR [rbp-4]
-    add     eax, DWORD PTR [rbp-8]   ; eax = a + b
-    pop     rbp              ; 恢复调用者的 rbp
-    ret                      ; 弹出返回地址并跳转
+ push rbp ; 保存调用者的 rbp
+ mov rbp, rsp ; 建立自己的栈帧基址
+ mov DWORD PTR [rbp-4], edi ; 参数 a (通过 edi 传入)
+ mov DWORD PTR [rbp-8], esi ; 参数 b (通过 esi 传入)
+ mov eax, DWORD PTR [rbp-4]
+ add eax, DWORD PTR [rbp-8] ; eax = a + b
+ pop rbp ; 恢复调用者的 rbp
+ ret ; 弹出返回地址并跳转
 ```
 
 `call` 指令等价于 `push rip; jmp target`。`ret` 指令等价于 `pop rip`。这两个指令在硬件层面由 CPU 的返回栈缓冲器（Return Stack Buffer, RSB）加速——RSB 是 CPU 内部的一个微型硬件栈，专门缓存返回地址，使得 `ret` 指令可以达到接近 0 周期的延迟。
@@ -82,19 +82,19 @@ add:
 ```c
 // 典型的栈溢出漏洞
 void vulnerable(char* input) {
-    char buf[64];
-    strcpy(buf, input);  // 如果 input 长度 > 64，覆盖返回地址
+ char buf[64];
+ strcpy(buf, input); // 如果 input 长度 > 64，覆盖返回地址
 }
 ```
 
 ```mermaid
 graph TD
-    subgraph "正常栈帧"
-        BUF["buf[0..63] (64字节)"] --- SFP["保存的 rbp (8B)"] --- RET["返回地址 (8B)"]
-    end
-    subgraph "溢出后的栈帧"
-        BUF2["buf[0..63] + 溢出数据"] -->|"覆盖"| SFP2["伪造的 rbp"] -->|"覆盖"| RET2["指向 shellcode 的地址"]
-    end
+ subgraph "正常栈帧"
+ BUF["buf[0..63] (64字节)"] --- SFP["保存的 rbp (8B)"] --- RET["返回地址 (8B)"]
+ end
+ subgraph "溢出后的栈帧"
+ BUF2["buf[0..63] + 溢出数据"] -->|"覆盖"| SFP2["伪造的 rbp"] -->|"覆盖"| RET2["指向 shellcode 的地址"]
+ end
 ```
 
 现代防御：栈 canary（返回地址前放随机值，`ret` 前检查）、W^X（栈页不可执行）、ASLR（随机化地址）、影子栈（shadow stack，硬件/软件维护一份返回地址副本用于验证）。
@@ -109,32 +109,32 @@ graph TD
 
 ```mermaid
 graph LR
-    subgraph "双端栈 — 共享数组"
-        direction LR
-        PUSH1["Stack 1 →<br/>push → top1++"] -->|"← 空闲空间 →"| PUSH2["← Stack 2<br/>top2-- ← push"]
-    end
+ subgraph "双端栈 — 共享数组"
+ direction LR
+ PUSH1["Stack 1 →<br/>push → top1++"] -->|"← 空闲空间 →"| PUSH2["← Stack 2<br/>top2-- ← push"]
+ end
 ```
 
 ```c
 typedef struct {
-    int* data;
-    size_t capacity;
-    size_t top1;    // Stack 1: 从左向右增长
-    size_t top2;    // Stack 2: 从右向左增长
+ int* data;
+ size_t capacity;
+ size_t top1; // Stack 1: 从左向右增长
+ size_t top2; // Stack 2: 从右向左增长
 } TwoStacks;
 
 // push 到栈 1
 int ts_push1(TwoStacks* ts, int value) {
-    if (ts->top1 > ts->top2) return -1;  // 两栈碰撞
-    ts->data[ts->top1++] = value;
-    return 0;
+ if (ts->top1 > ts->top2) return -1; // 两栈碰撞
+ ts->data[ts->top1++] = value;
+ return 0;
 }
 
 // push 到栈 2
 int ts_push2(TwoStacks* ts, int value) {
-    if (ts->top1 > ts->top2) return -1;
-    ts->data[ts->top2--] = value;  // 索引递减
-    return 0;
+ if (ts->top1 > ts->top2) return -1;
+ ts->data[ts->top2--] = value; // 索引递减
+ return 0;
 }
 ```
 
@@ -155,7 +155,7 @@ i=2 (75): A[2]=75 > A[栈顶=1]=74 → 答案[1]=2, pop 1, push 2
 i=3 (71): A[3]=71 < A[栈顶=2]=75 → 栈单调递减，直接 push 3
 i=4 (69): push 4
 i=5 (72): A[5]=72 > A[栈顶=4]=69 → 答案[4]=5, pop 4
-           A[5]=72 > A[栈顶=3]=71 → 答案[3]=5, pop 3, push 5
+ A[5]=72 > A[栈顶=3]=71 → 答案[3]=5, pop 3, push 5
 i=6 (76): A[6]=76 逐个弹出 5,2 → 答案[5]=6, 答案[2]=6, push 6
 i=7 (73): A[7]=73 < A[栈顶=6]=76 → push 7
 ```
@@ -163,17 +163,17 @@ i=7 (73): A[7]=73 < A[栈顶=6]=76 → push 7
 ```c
 // 单调递减栈：找右侧第一个更大元素
 void next_greater(const int* A, int n, int* result) {
-    int* stk = malloc(n * sizeof(int));
-    int top = 0;
-    for (int i = 0; i < n; i++) {
-        while (top > 0 && A[i] > A[stk[top - 1]]) {
-            result[stk[--top]] = i;   // 当前元素是栈顶的"第一个更大"
-        }
-        stk[top++] = i;
-    }
-    while (top > 0)
-        result[stk[--top]] = -1;      // 无更大元素
-    free(stk);
+ int* stk = malloc(n * sizeof(int));
+ int top = 0;
+ for (int i = 0; i < n; i++) {
+ while (top > 0 && A[i] > A[stk[top - 1]]) {
+ result[stk[--top]] = i; // 当前元素是栈顶的"第一个更大"
+ }
+ stk[top++] = i;
+ }
+ while (top > 0)
+ result[stk[--top]] = -1; // 无更大元素
+ free(stk);
 }
 ```
 
@@ -191,49 +191,49 @@ void next_greater(const int* A, int n, int* result) {
 #include <stdlib.h>
 
 typedef struct {
-    int* data;
-    size_t capacity;
-    size_t top;    // 指向下一个空位，也是元素个数
+ int* data;
+ size_t capacity;
+ size_t top; // 指向下一个空位，也是元素个数
 } ArrayStack;
 
 void as_init(ArrayStack* s) {
-    s->data = NULL;
-    s->capacity = 0;
-    s->top = 0;
+ s->data = NULL;
+ s->capacity = 0;
+ s->top = 0;
 }
 
 void as_destroy(ArrayStack* s) {
-    free(s->data);
-    s->data = NULL;
-    s->capacity = s->top = 0;
+ free(s->data);
+ s->data = NULL;
+ s->capacity = s->top = 0;
 }
 
 static int as_expand(ArrayStack* s) {
-    size_t new_cap = s->capacity == 0 ? 8 : s->capacity * 2;
-    int* new_data = realloc(s->data, new_cap * sizeof(int));
-    if (!new_data) return -1;
-    s->data = new_data;
-    s->capacity = new_cap;
-    return 0;
+ size_t new_cap = s->capacity == 0 ? 8 : s->capacity * 2;
+ int* new_data = realloc(s->data, new_cap * sizeof(int));
+ if (!new_data) return -1;
+ s->data = new_data;
+ s->capacity = new_cap;
+ return 0;
 }
 
 int as_push(ArrayStack* s, int value) {
-    if (s->top >= s->capacity)
-        if (as_expand(s) != 0) return -1;
-    s->data[s->top++] = value;
-    return 0;
+ if (s->top >= s->capacity)
+ if (as_expand(s) != 0) return -1;
+ s->data[s->top++] = value;
+ return 0;
 }
 
 int as_pop(ArrayStack* s) {
-    if (s->top == 0) return -1;
-    s->top--;
-    return 0;
+ if (s->top == 0) return -1;
+ s->top--;
+ return 0;
 }
 
 int as_top(const ArrayStack* s, int* out) {
-    if (s->top == 0) return -1;
-    *out = s->data[s->top - 1];
-    return 0;
+ if (s->top == 0) return -1;
+ *out = s->data[s->top - 1];
+ return 0;
 }
 ```
 
@@ -245,43 +245,43 @@ int as_top(const ArrayStack* s, int* out) {
 #include <stdlib.h>
 
 typedef struct SNode {
-    int data;
-    struct SNode* next;
+ int data;
+ struct SNode* next;
 } SNode;
 
 typedef struct {
-    SNode* head;
-    size_t count;
+ SNode* head;
+ size_t count;
 } LinkedStack;
 
 void ls_init(LinkedStack* s) { s->head = NULL; s->count = 0; }
 
 void ls_destroy(LinkedStack* s) {
-    while (s->head) {
-        SNode* tmp = s->head;
-        s->head = s->head->next;
-        free(tmp);
-    }
-    s->count = 0;
+ while (s->head) {
+ SNode* tmp = s->head;
+ s->head = s->head->next;
+ free(tmp);
+ }
+ s->count = 0;
 }
 
 int ls_push(LinkedStack* s, int value) {
-    SNode* node = malloc(sizeof(SNode));
-    if (!node) return -1;
-    node->data = value;
-    node->next = s->head;
-    s->head = node;
-    s->count++;
-    return 0;
+ SNode* node = malloc(sizeof(SNode));
+ if (!node) return -1;
+ node->data = value;
+ node->next = s->head;
+ s->head = node;
+ s->count++;
+ return 0;
 }
 
 int ls_pop(LinkedStack* s) {
-    if (!s->head) return -1;
-    SNode* tmp = s->head;
-    s->head = s->head->next;
-    free(tmp);
-    s->count--;
-    return 0;
+ if (!s->head) return -1;
+ SNode* tmp = s->head;
+ s->head = s->head->next;
+ free(tmp);
+ s->count--;
+ return 0;
 }
 ```
 
@@ -292,10 +292,10 @@ int ls_pop(LinkedStack* s) {
 ```c
 // 差值法：栈存储 value - min_sofar。通过差值的正负恢复 value 和 min
 typedef struct {
-    long* diff;      // value - min_sofar (可能需要 long 防溢出)
-    int* min_val;    // 栈顶元素对应的当前最小值
-    size_t capacity;
-    size_t top;
+ long* diff; // value - min_sofar (可能需要 long 防溢出)
+ int* min_val; // 栈顶元素对应的当前最小值
+ size_t capacity;
+ size_t top;
 } MinStackDiff;
 ```
 
@@ -307,36 +307,36 @@ typedef struct {
 
 ```c
 int precedence(char op) {
-    if (op == '+' || op == '-') return 1;
-    if (op == '*' || op == '/') return 2;
-    return 0;
+ if (op == '+' || op == '-') return 1;
+ if (op == '*' || op == '/') return 2;
+ return 0;
 }
 
 // 将中缀表达式转为后缀（RPN）表示
 void infix_to_postfix(const char* expr, char* output) {
-    int len = strlen(expr);
-    char* stk = malloc(len);
-    int top = 0, out_idx = 0;
-    for (int i = 0; i < len; i++) {
-        char ch = expr[i];
-        if (ch >= '0' && ch <= '9') {
-            output[out_idx++] = ch;
-        } else if (ch == '(') {
-            stk[top++] = ch;
-        } else if (ch == ')') {
-            while (top > 0 && stk[top - 1] != '(')
-                output[out_idx++] = stk[--top];
-            top--;  // 丢弃 '('
-        } else {  // 运算符
-            while (top > 0 && precedence(stk[top - 1]) >= precedence(ch))
-                output[out_idx++] = stk[--top];
-            stk[top++] = ch;
-        }
-    }
-    while (top > 0)
-        output[out_idx++] = stk[--top];
-    output[out_idx] = '\0';
-    free(stk);
+ int len = strlen(expr);
+ char* stk = malloc(len);
+ int top = 0, out_idx = 0;
+ for (int i = 0; i < len; i++) {
+ char ch = expr[i];
+ if (ch >= '0' && ch <= '9') {
+ output[out_idx++] = ch;
+ } else if (ch == '(') {
+ stk[top++] = ch;
+ } else if (ch == ')') {
+ while (top > 0 && stk[top - 1] != '(')
+ output[out_idx++] = stk[--top];
+ top--; // 丢弃 '('
+ } else { // 运算符
+ while (top > 0 && precedence(stk[top - 1]) >= precedence(ch))
+ output[out_idx++] = stk[--top];
+ stk[top++] = ch;
+ }
+ }
+ while (top > 0)
+ output[out_idx++] = stk[--top];
+ output[out_idx] = '\0';
+ free(stk);
 }
 ```
 
@@ -345,49 +345,49 @@ void infix_to_postfix(const char* expr, char* output) {
 ```c
 // 计算后缀表达式（操作数为单个数字 0-9）
 int eval_postfix(const char* postfix) {
-    int len = strlen(postfix);
-    int* stk = malloc(len * sizeof(int));
-    int top = 0;
-    for (int i = 0; i < len; i++) {
-        char ch = postfix[i];
-        if (ch >= '0' && ch <= '9') {
-            stk[top++] = ch - '0';
-        } else {
-            int b = stk[--top];  // 弹出右操作数
-            int a = stk[--top];  // 弹出左操作数
-            switch (ch) {
-                case '+': stk[top++] = a + b; break;
-                case '-': stk[top++] = a - b; break;
-                case '*': stk[top++] = a * b; break;
-                case '/': stk[top++] = a / b; break;
-            }
-        }
-    }
-    int result = stk[0];
-    free(stk);
-    return result;
+ int len = strlen(postfix);
+ int* stk = malloc(len * sizeof(int));
+ int top = 0;
+ for (int i = 0; i < len; i++) {
+ char ch = postfix[i];
+ if (ch >= '0' && ch <= '9') {
+ stk[top++] = ch - '0';
+ } else {
+ int b = stk[--top]; // 弹出右操作数
+ int a = stk[--top]; // 弹出左操作数
+ switch (ch) {
+ case '+': stk[top++] = a + b; break;
+ case '-': stk[top++] = a - b; break;
+ case '*': stk[top++] = a * b; break;
+ case '/': stk[top++] = a / b; break;
+ }
+ }
+ }
+ int result = stk[0];
+ free(stk);
+ return result;
 }
 ```
 
 ```mermaid
 sequenceDiagram
-    participant Input as 输入: "3 4 2 * +"
-    participant Stack as 求值栈
+ participant Input as 输入: "3 4 2 * +"
+ participant Stack as 求值栈
 
-    Input->>Stack: push 3
-    Note over Stack: [3]
-    Input->>Stack: push 4
-    Note over Stack: [3, 4]
-    Input->>Stack: push 2
-    Note over Stack: [3, 4, 2]
-    Input->>Stack: op '*': pop 2, pop 4
-    Note over Stack: [3]
-    Input->>Stack: push 8 (4*2)
-    Note over Stack: [3, 8]
-    Input->>Stack: op '+': pop 8, pop 3
-    Note over Stack: []
-    Input->>Stack: push 11 (3+8)
-    Note over Stack: [11 ← 结果]
+ Input->>Stack: push 3
+ Note over Stack: [3]
+ Input->>Stack: push 4
+ Note over Stack: [3, 4]
+ Input->>Stack: push 2
+ Note over Stack: [3, 4, 2]
+ Input->>Stack: op '*': pop 2, pop 4
+ Note over Stack: [3]
+ Input->>Stack: push 8 (4*2)
+ Note over Stack: [3, 8]
+ Input->>Stack: op '+': pop 8, pop 3
+ Note over Stack: []
+ Input->>Stack: push 11 (3+8)
+ Note over Stack: [11 ← 结果]
 ```
 
 ---

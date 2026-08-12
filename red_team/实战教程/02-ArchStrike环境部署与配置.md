@@ -59,8 +59,8 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 Current installation options:
 
-   default host triple: x86_64-unknown-linux-gnu
-   default toolchain: stable
+ default host triple: x86_64-unknown-linux-gnu
+ default toolchain: stable
 
 1) Proceed with standard installation (default)
 2) Customize installation
@@ -95,10 +95,10 @@ cargo install rustscan
 **预期输出**：
 
 ```
-   Compiling rustscan v2.x.x
-   …
-    Finished release [optimized] target(s) in Xm XXs
-   Installing ~/.cargo/bin/rustscan
+ Compiling rustscan v2.x.x
+ …
+ Finished release [optimized] target(s) in Xm XXs
+ Installing ~/.cargo/bin/rustscan
 ```
 
 会编译几分钟。`cargo install` 是从源码编译的，不是下载二进制——所以耐心等。
@@ -162,9 +162,9 @@ yay -S fd
 
 | 型号 | 芯片 | 频段 | 接口 | 推荐度 |
 |---|---|---|---|---|
-| Alfa AWUS036ACH | RTL8812AU | 2.4G + 5G | USB 3.0 |  |
+| Alfa AWUS036ACH | RTL8812AU | 2.4G + 5G | USB 3.0 | |
 | Alfa AWUS036H | RTL8187L | 2.4G | USB 2.0 | （老） |
-| Alfa AWUS1900 | RTL8814AU | 2.4G + 5G | USB 3.0 |  |
+| Alfa AWUS1900 | RTL8814AU | 2.4G + 5G | USB 3.0 | |
 | Panda PAU09 | RTL8812AU | 2.4G + 5G | USB 2.0 | （便宜） |
 
 安装对应驱动：
@@ -203,8 +203,8 @@ sudo airmon-ng start wlan1
 **预期输出**：
 
 ```
-PHY    Interface    Driver        Chipset
-phy1   wlan1mon     rtl8812au     Realtek RTL8812AU
+PHY Interface Driver Chipset
+phy1 wlan1mon rtl8812au Realtek RTL8812AU
 ```
 
 如果看到 `wlan1mon` 说明监听模式启用成功。

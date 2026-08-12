@@ -21,14 +21,14 @@
 ### 2.1 firewalld vs iptables/nftables
 
 ```
-                          firewalld
-                         /    |    \
-                        /     |     \
-                  (D-Bus 接口、zone 概念、rich rules)
-                      /         |         \
-                     /          |          \
-              nftables     iptables    ip6tables
-           (RHEL 8+/Fed) (RHEL 7/CentOS 7)
+ firewalld
+ / | \
+ / | \
+ (D-Bus 接口、zone 概念、rich rules)
+ / | \
+ / | \
+ nftables iptables ip6tables
+ (RHEL 8+/Fed) (RHEL 7/CentOS 7)
 ```
 
 firewalld 的优势：
@@ -64,15 +64,15 @@ sudo firewall-cmd --query-panic
 
 ```
 Zone 按信任级别从高到低：
-trusted  → 信任所有网络连接
-home     → 家庭网络（信任局域网其他计算机）
+trusted → 信任所有网络连接
+home → 家庭网络（信任局域网其他计算机）
 internal → 内部网络（中等信任）
-work     → 工作网络（信任但不过度）
-public   → 公共网络（默认，不信任其他计算机）★ 默认
+work → 工作网络（信任但不过度）
+public → 公共网络（默认，不信任其他计算机）★ 默认
 external → 外部网络（NAT 伪装，仅允许选定入站）
-dmz      → 隔离区（仅允许特定入站服务）
-block    → 拒绝所有入站（只回复 ICMP 拒绝）
-drop     → 丢弃所有入站（不回复）
+dmz → 隔离区（仅允许特定入站服务）
+block → 拒绝所有入站（只回复 ICMP 拒绝）
+drop → 丢弃所有入站（不回复）
 ```
 
 ---
@@ -96,7 +96,7 @@ sudo firewall-cmd --get-active-zones
 
 # 查看特定 zone 的配置
 sudo firewall-cmd --zone=public --list-all
-sudo firewall-cmd --list-all            # 默认 zone
+sudo firewall-cmd --list-all # 默认 zone
 
 # 查看接口属于哪个 zone
 sudo firewall-cmd --get-zone-of-interface=eth0
@@ -140,7 +140,7 @@ sudo firewall-cmd --zone=public --add-service={http,https,ftp} --permanent
 ```bash
 # 添加端口
 sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent
-sudo firewall-cmd --zone=public --add-port=5000-5100/tcp --permanent    # 端口范围
+sudo firewall-cmd --zone=public --add-port=5000-5100/tcp --permanent # 端口范围
 sudo firewall-cmd --zone=public --add-port=53/udp --permanent
 
 # 删除端口
@@ -160,7 +160,7 @@ sudo firewall-cmd --zone=public --add-port=443/tcp --permanent
 
 # 语法：
 # firewall-cmd --add-rich-rule='rule [family="ipv4|ipv6"] [source address="..."] [destination address="..."]
-#     [service|port|protocol|icmp-block|masquerade|forward-port] [log] [audit] [accept|reject|drop]'
+# [service|port|protocol|icmp-block|masquerade|forward-port] [log] [audit] [accept|reject|drop]'
 
 # 示例 1：允许特定 IP 访问 SSH
 sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="192.168.1.100" service name="ssh" accept'
@@ -194,14 +194,14 @@ sudo firewall-cmd --permanent --remove-rich-rule='rule family="ipv4" source addr
 
 # 添加 direct rule
 sudo firewall-cmd --permanent --direct --add-rule ipv4 filter INPUT 0 \
-    -p tcp --dport 8443 -j ACCEPT
+ -p tcp --dport 8443 -j ACCEPT
 
 # 查看 direct rules
 sudo firewall-cmd --direct --get-all-rules
 
 # 删除 direct rule
 sudo firewall-cmd --permanent --direct --remove-rule ipv4 filter INPUT 0 \
-    -p tcp --dport 8443 -j ACCEPT
+ -p tcp --dport 8443 -j ACCEPT
 ```
 
 ### 3.6 NAT 伪装 (Masquerade)
@@ -246,10 +246,10 @@ sudo vim /etc/firewalld/services/myservice.xml
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <service>
-    <short>My Custom Service</short>
-    <description>A custom application that uses ports 9000-9005 TCP</description>
-    <port protocol="tcp" port="9000-9005"/>
-    <port protocol="udp" port="9000"/>
+ <short>My Custom Service</short>
+ <description>A custom application that uses ports 9000-9005 TCP</description>
+ <port protocol="tcp" port="9000-9005"/>
+ <port protocol="udp" port="9000"/>
 </service>
 ```
 
@@ -273,7 +273,7 @@ sudo firewall-cmd --reload
 sudo firewall-cmd --permanent --list-all
 
 # 对比 runtime 和 permanent
-sudo firewall-cmd --list-all            # runtime
+sudo firewall-cmd --list-all # runtime
 sudo firewall-cmd --permanent --list-all # permanent
 
 # 将 runtime 配置保存为 permanent（慎用）
@@ -281,13 +281,13 @@ sudo firewall-cmd --runtime-to-permanent
 
 # 配置文件位置
 # /etc/firewalld/
-#     firewalld.conf          主配置
-#     zones/                  自定义 zone
-#     services/               自定义服务
-#     ipsets/                 IP 集合
-#     policies/               策略
-#     helpers/                连接助手
-# /usr/lib/firewalld/         系统默认配置
+# firewalld.conf 主配置
+# zones/ 自定义 zone
+# services/ 自定义服务
+# ipsets/ IP 集合
+# policies/ 策略
+# helpers/ 连接助手
+# /usr/lib/firewalld/ 系统默认配置
 ```
 
 ---
@@ -310,7 +310,7 @@ nmcli device status
 nmcli device show eth0
 
 # 查看网络接口信息
-nmcli -p device show              # 格式化输出
+nmcli -p device show # 格式化输出
 
 # 无线电管理
 nmcli radio all
@@ -352,29 +352,29 @@ sudo nmcli connection up "eth0"
 ```bash
 # 创建 DHCP 以太网连接
 sudo nmcli connection add \
-    type ethernet \
-    con-name "office" \
-    ifname eth0 \
-    autoconnect yes
+ type ethernet \
+ con-name "office" \
+ ifname eth0 \
+ autoconnect yes
 
 # 创建静态 IP 连接
 sudo nmcli connection add \
-    type ethernet \
-    con-name "static-lan" \
-    ifname eth0 \
-    ipv4.method manual \
-    ipv4.addresses "192.168.1.100/24" \
-    ipv4.gateway "192.168.1.1" \
-    ipv4.dns "8.8.8.8 1.1.1.1" \
-    ipv4.dns-search "example.com" \
-    autoconnect yes
+ type ethernet \
+ con-name "static-lan" \
+ ifname eth0 \
+ ipv4.method manual \
+ ipv4.addresses "192.168.1.100/24" \
+ ipv4.gateway "192.168.1.1" \
+ ipv4.dns "8.8.8.8 1.1.1.1" \
+ ipv4.dns-search "example.com" \
+ autoconnect yes
 
 # 修改已有连接的 IP
 sudo nmcli connection modify "eth0" \
-    ipv4.method manual \
-    ipv4.addresses "192.168.2.100/24" \
-    ipv4.gateway "192.168.2.1" \
-    ipv4.dns "8.8.8.8"
+ ipv4.method manual \
+ ipv4.addresses "192.168.2.100/24" \
+ ipv4.gateway "192.168.2.1" \
+ ipv4.dns "8.8.8.8"
 
 # 修改回 DHCP
 sudo nmcli connection modify "eth0" ipv4.method auto
@@ -403,13 +403,13 @@ sudo nmcli device wifi connect "SSID" password "password" hidden yes
 
 # 创建持久 WiFi 连接
 sudo nmcli connection add \
-    type wifi \
-    con-name "home-wifi" \
-    ifname wlan0 \
-    ssid "MyWiFi" \
-    wifi-sec.key-mgmt wpa-psk \
-    wifi-sec.psk "password" \
-    autoconnect yes
+ type wifi \
+ con-name "home-wifi" \
+ ifname wlan0 \
+ ssid "MyWiFi" \
+ wifi-sec.key-mgmt wpa-psk \
+ wifi-sec.psk "password" \
+ autoconnect yes
 
 # 查看保存的 WiFi 密码
 sudo nmcli connection show "home-wifi" -s | grep psk
@@ -420,37 +420,37 @@ sudo nmcli connection show "home-wifi" -s | grep psk
 ```bash
 # 创建 Bond（链路聚合）
 sudo nmcli connection add \
-    type bond \
-    con-name "bond0" \
-    ifname bond0 \
-    bond.options "mode=802.3ad,miimon=100,lacp_rate=fast" \
-    ipv4.method manual \
-    ipv4.addresses "192.168.1.100/24" \
-    ipv4.gateway "192.168.1.1"
+ type bond \
+ con-name "bond0" \
+ ifname bond0 \
+ bond.options "mode=802.3ad,miimon=100,lacp_rate=fast" \
+ ipv4.method manual \
+ ipv4.addresses "192.168.1.100/24" \
+ ipv4.gateway "192.168.1.1"
 
 # 添加 slave 接口
 sudo nmcli connection add \
-    type ethernet \
-    con-name "bond0-port1" \
-    ifname eth0 \
-    master bond0
+ type ethernet \
+ con-name "bond0-port1" \
+ ifname eth0 \
+ master bond0
 
 sudo nmcli connection add \
-    type ethernet \
-    con-name "bond0-port2" \
-    ifname eth1 \
-    master bond0
+ type ethernet \
+ con-name "bond0-port2" \
+ ifname eth1 \
+ master bond0
 
 # 启动 Bond
 sudo nmcli connection up bond0
 
 # Bond 模式参数：
-# mode=active-backup   — 主备
-# mode=balance-rr      — 轮询（需交换机支持）
-# mode=balance-xor     — XOR 负载均衡
-# mode=802.3ad         — LACP（需交换机配置）
-# mode=balance-tlb     — 适配器发送负载均衡
-# mode=balance-alb     — 自适应负载均衡
+# mode=active-backup — 主备
+# mode=balance-rr — 轮询（需交换机支持）
+# mode=balance-xor — XOR 负载均衡
+# mode=802.3ad — LACP（需交换机配置）
+# mode=balance-tlb — 适配器发送负载均衡
+# mode=balance-alb — 自适应负载均衡
 ```
 
 ### 5.6 Bridge
@@ -458,20 +458,20 @@ sudo nmcli connection up bond0
 ```bash
 # 创建 Bridge（KVM/容器用）
 sudo nmcli connection add \
-    type bridge \
-    con-name "br0" \
-    ifname br0 \
-    stp yes \
-    ipv4.method manual \
-    ipv4.addresses "192.168.1.100/24" \
-    ipv4.gateway "192.168.1.1"
+ type bridge \
+ con-name "br0" \
+ ifname br0 \
+ stp yes \
+ ipv4.method manual \
+ ipv4.addresses "192.168.1.100/24" \
+ ipv4.gateway "192.168.1.1"
 
 # 添加 slave
 sudo nmcli connection add \
-    type ethernet \
-    con-name "br0-eth0" \
-    ifname eth0 \
-    master br0
+ type ethernet \
+ con-name "br0-eth0" \
+ ifname eth0 \
+ master br0
 
 # 启动
 sudo nmcli connection up br0
@@ -483,12 +483,12 @@ sudo nmcli connection up br0-eth0
 ```bash
 # 创建 VLAN 接口
 sudo nmcli connection add \
-    type vlan \
-    con-name "vlan10" \
-    dev eth0 \
-    id 10 \
-    ipv4.method manual \
-    ipv4.addresses "192.168.10.10/24"
+ type vlan \
+ con-name "vlan10" \
+ dev eth0 \
+ id 10 \
+ ipv4.method manual \
+ ipv4.addresses "192.168.10.10/24"
 
 # 查看 VLAN
 nmcli connection show | grep vlan
@@ -503,19 +503,19 @@ sudo nmcli connection delete "vlan10"
 # teamd 在 RHEL 7 中替代 bonding，RHEL 8+ 推荐 bonding
 # 创建 Team
 sudo nmcli connection add \
-    type team \
-    con-name "team0" \
-    ifname team0 \
-    config '{"runner": {"name": "activebackup"}}' \
-    ipv4.method manual \
-    ipv4.addresses "192.168.1.100/24"
+ type team \
+ con-name "team0" \
+ ifname team0 \
+ config '{"runner": {"name": "activebackup"}}' \
+ ipv4.method manual \
+ ipv4.addresses "192.168.1.100/24"
 
 # 添加 slave
 sudo nmcli connection add \
-    type ethernet \
-    con-name "team0-port1" \
-    ifname eth0 \
-    master team0
+ type ethernet \
+ con-name "team0-port1" \
+ ifname eth0 \
+ master team0
 ```
 
 ### 5.9 nmtui
@@ -525,9 +525,9 @@ sudo nmcli connection add \
 nmtui
 
 # 直接进入特定菜单
-nmtui edit            # 编辑连接
-nmtui connect         # 激活连接
-nmtui hostname        # 设置主机名
+nmtui edit # 编辑连接
+nmtui connect # 激活连接
+nmtui hostname # 设置主机名
 ```
 
 ---
@@ -548,8 +548,8 @@ sudo ip route add default via 192.168.1.1
 
 # nmcli 方式添加静态路由
 sudo nmcli connection modify "eth0" \
-    +ipv4.routes "10.0.0.0/24 192.168.1.254" \
-    +ipv4.routes "172.16.0.0/16 192.168.1.253"
+ +ipv4.routes "10.0.0.0/24 192.168.1.254" \
+ +ipv4.routes "172.16.0.0/16 192.168.1.253"
 ```
 
 ### 6.2 DNS 配置
@@ -557,9 +557,9 @@ sudo nmcli connection modify "eth0" \
 ```bash
 # nmcli 设置 DNS
 sudo nmcli connection modify "eth0" \
-    ipv4.dns "8.8.8.8 1.1.1.1" \
-    ipv4.dns-search "example.com"
-    ipv4.ignore-auto-dns yes     # 忽略 DHCP 提供的 DNS
+ ipv4.dns "8.8.8.8 1.1.1.1" \
+ ipv4.dns-search "example.com"
+ ipv4.ignore-auto-dns yes # 忽略 DHCP 提供的 DNS
 
 # 重新应用
 sudo nmcli connection up "eth0"
@@ -578,8 +578,8 @@ sudo nmcli connection modify "eth1" ipv4.route-metric 200
 
 # 或使用路由表
 sudo nmcli connection modify "eth0" \
-    +ipv4.routes "0.0.0.0/0 192.168.1.1 table=100" \
-    ipv4.routing-rules "priority 100 from 192.168.1.0/24 table 100"
+ +ipv4.routes "0.0.0.0/0 192.168.1.1 table=100" \
+ ipv4.routing-rules "priority 100 from 192.168.1.0/24 table 100"
 ```
 
 ---
@@ -589,19 +589,19 @@ sudo nmcli connection modify "eth0" \
 ```bash
 # 查看当前防火墙规则
 sudo firewall-cmd --list-all-zones
-sudo nft list ruleset                  # 查看底层 nftables 规则
+sudo nft list ruleset # 查看底层 nftables 规则
 
 # 测试网络连通性
 ping -c 4 8.8.8.8
 ping -c 4 google.com
 
 # 端口测试
-ss -tlnp                              # 监听端口
-nc -zv localhost 80                   # 本地端口测试
+ss -tlnp # 监听端口
+nc -zv localhost 80 # 本地端口测试
 
 # 网卡信息
 ethtool eth0
-ethtool -S eth0                       # 统计信息
+ethtool -S eth0 # 统计信息
 
 # 网络日志
 journalctl -u NetworkManager -f
@@ -628,7 +628,7 @@ sudo firewall-cmd --zone=public --list-all
 
 ```bash
 sudo firewall-cmd --permanent --add-service={http,https}
-sudo firewall-cmd --permanent --add-port=8080/tcp    # 备用端口
+sudo firewall-cmd --permanent --add-port=8080/tcp # 备用端口
 sudo firewall-cmd --reload
 ```
 
@@ -638,8 +638,8 @@ sudo firewall-cmd --reload
 # 只允许内网访问
 sudo firewall-cmd --permanent --new-zone=dbzone
 sudo firewall-cmd --permanent --zone=dbzone --add-source=192.168.0.0/16
-sudo firewall-cmd --permanent --zone=dbzone --add-port=3306/tcp    # MySQL
-sudo firewall-cmd --permanent --zone=dbzone --add-port=5432/tcp    # PostgreSQL
+sudo firewall-cmd --permanent --zone=dbzone --add-port=3306/tcp # MySQL
+sudo firewall-cmd --permanent --zone=dbzone --add-port=5432/tcp # PostgreSQL
 sudo firewall-cmd --reload
 ```
 

@@ -28,33 +28,33 @@ ABI 约定（x86_64 System V）：
 ```rust
 // 调用 C 函数
 extern "C" {
-    fn abs(input: i32) -> i32;
-    fn malloc(size: usize) -> *mut u8;
-    fn free(ptr: *mut u8);
+ fn abs(input: i32) -> i32;
+ fn malloc(size: usize) -> *mut u8;
+ fn free(ptr: *mut u8);
 }
 
 unsafe {
-    let result = abs(-42);
+ let result = abs(-42);
 }
 
 // 导出给 C 使用
 #[no_mangle]
 pub extern "C" fn add_numbers(a: i32, b: i32) -> i32 {
-    a + b
+ a + b
 }
 
 // C 兼容的结构体
 #[repr(C)]
 struct Point {
-    x: f64,
-    y: f64,
+ x: f64,
+ y: f64,
 }
 
 // 将 Rust Vec 转为 C 数组
 fn to_c_array(v: Vec<i32>) -> (*mut i32, usize) {
-    let mut v = std::mem::ManuallyDrop::new(v);
-    (v.as_mut_ptr(), v.len())
-    // 调用者负责 free！
+ let mut v = std::mem::ManuallyDrop::new(v);
+ (v.as_mut_ptr(), v.len())
+ // 调用者负责 free！
 }
 ```
 
@@ -63,14 +63,14 @@ fn to_c_array(v: Vec<i32>) -> (*mut i32, usize) {
 ```rust
 // C 分配 → Rust 使用 → C 释放
 unsafe {
-    let ptr: *mut u8 = malloc(1024);
-    // ... 通过 ptr 读写 ...
-    free(ptr);
+ let ptr: *mut u8 = malloc(1024);
+ // ... 通过 ptr 读写 ...
+ free(ptr);
 }
 
 // Rust 分配 → 传给 C → 通过回调释放
 extern "C" fn rust_free(ptr: *mut c_void) {
-    unsafe { drop(Box::from_raw(ptr as *mut MyStruct)); }
+ unsafe { drop(Box::from_raw(ptr as *mut MyStruct)); }
 }
 ```
 

@@ -47,11 +47,11 @@ array<int, 5> arr = {1, 2, 3, 4, 5}
 
 // 遍历
 for i from 0 to arr.size() - 1:
-    print arr[i]
+ print arr[i]
 
 // 范围 for 遍历
 for each x in arr:
-    print x
+ print x
 
 // 全部填充
 arr.fill(0)

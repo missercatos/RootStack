@@ -40,34 +40,34 @@ st.push(2)
 st.push(3)
 
 // 查看栈顶
-print st.top()           // 3
+print st.top() // 3
 
 // 弹出
-st.pop()                 // 移除 3
-print st.top()           // 2
+st.pop() // 移除 3
+print st.top() // 2
 
 // 括号匹配
 stack<char> bracket
 for each c in expression:
-    if c is '(' or '[' or '{':
-        bracket.push(c)
-    else if c is ')' or ']' or '}':
-        if bracket.empty():
-            return false
-        top = bracket.top()
-        if not match(top, c):
-            return false
-        bracket.pop()
+ if c is '(' or '[' or '{':
+ bracket.push(c)
+ else if c is ')' or ']' or '}':
+ if bracket.empty():
+ return false
+ top = bracket.top()
+ if not match(top, c):
+ return false
+ bracket.pop()
 return bracket.empty()
 
 // 十进制转二进制
 stack<int> bits
 while n > 0:
-    bits.push(n % 2)
-    n = n / 2
+ bits.push(n % 2)
+ n = n / 2
 while not bits.empty():
-    print bits.top()
-    bits.pop()
+ print bits.top()
+ bits.pop()
 ```
 
 stack 没有 `clear()`，清空用 `while (!empty()) pop()` 或 `st = stack<int>()`。

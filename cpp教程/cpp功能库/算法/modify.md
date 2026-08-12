@@ -53,59 +53,59 @@ C++ 标准库提供丰富的序列修改算法：复制、移动、替换、去�
 
 ```
 FUNCTION demo_copy_transform:
-    src = [1, 2, 3, 4, 5]
-    dst = ARRAY OF SIZE(src.SIZE())
+ src = [1, 2, 3, 4, 5]
+ dst = ARRAY OF SIZE(src.SIZE())
 
-    COPY(src, dst)                           // dst = [1, 2, 3, 4, 5]
+ COPY(src, dst) // dst = [1, 2, 3, 4, 5]
 
-    TRANSFORM(src, dst, LAMBDA(x):
-        RETURN x * x                         // 平方
-    )                                        // dst = [1, 4, 9, 16, 25]
+ TRANSFORM(src, dst, LAMBDA(x):
+ RETURN x * x // 平方
+ ) // dst = [1, 4, 9, 16, 25]
 
-    TRANSFORM(src, dst, LAMBDA(x):
-        RETURN x * 10
-    )
+ TRANSFORM(src, dst, LAMBDA(x):
+ RETURN x * 10
+ )
 ```
 
 ### erase-remove idiom
 
 ```
 FUNCTION demo_remove:
-    v = [1, 3, 2, 3, 5, 3]
+ v = [1, 3, 2, 3, 5, 3]
 
-    v.ERASE(REMOVE(v, 3), v.END())          // v = [1, 2, 5]
+ v.ERASE(REMOVE(v, 3), v.END()) // v = [1, 2, 5]
 
-    v = [1, 2, 3, 4, 5, 6]
-    v.ERASE(REMOVE_IF(v, LAMBDA(x):
-        RETURN x % 2 == 0                    // 移除所有偶数
-    ), v.END())                              // v = [1, 3, 5]
+ v = [1, 2, 3, 4, 5, 6]
+ v.ERASE(REMOVE_IF(v, LAMBDA(x):
+ RETURN x % 2 == 0 // 移除所有偶数
+ ), v.END()) // v = [1, 3, 5]
 ```
 
 ### 去重与反转
 
 ```
 FUNCTION demo_unique_reverse:
-    v = [3, 1, 2, 3, 2, 1]
+ v = [3, 1, 2, 3, 2, 1]
 
-    SORT(v)                                  // [1, 1, 2, 2, 3, 3]
-    v.ERASE(UNIQUE(v), v.END())              // [1, 2, 3]
+ SORT(v) // [1, 1, 2, 2, 3, 3]
+ v.ERASE(UNIQUE(v), v.END()) // [1, 2, 3]
 
-    REVERSE(v)                               // [3, 2, 1]
+ REVERSE(v) // [3, 2, 1]
 
-    ROTATE(v, v.BEGIN() + 1)                 // [2, 1, 3] 左旋
+ ROTATE(v, v.BEGIN() + 1) // [2, 1, 3] 左旋
 ```
 
 ### 填充与生成
 
 ```
 FUNCTION demo_fill:
-    v = VECTOR<INT>(5)
-    FILL(v, 42)                              // [42, 42, 42, 42, 42]
+ v = VECTOR<INT>(5)
+ FILL(v, 42) // [42, 42, 42, 42, 42]
 
-    counter = 0
-    GENERATE(v, LAMBDA:
-        RETURN counter++
-    )                                        // [0, 1, 2, 3, 4]
+ counter = 0
+ GENERATE(v, LAMBDA:
+ RETURN counter++
+ ) // [0, 1, 2, 3, 4]
 ```
 
 ---

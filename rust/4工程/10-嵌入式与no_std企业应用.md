@@ -24,21 +24,21 @@
 #![no_std]
 #![no_main]
 
-use panic_halt as _;  // panic = 停止 CPU
+use panic_halt as _; // panic = 停止 CPU
 
 #[cortex_m_rt::entry]
 fn main() -> ! {
-    let peripherals = stm32f4::Peripherals::take().unwrap();
+ let peripherals = stm32f4::Peripherals::take().unwrap();
 
-    // GPIO 配置
-    let gpioc = peripherals.GPIOC;
-    let rcc = peripherals.RCC;
+ // GPIO 配置
+ let gpioc = peripherals.GPIOC;
+ let rcc = peripherals.RCC;
 
-    // ... 点亮 LED ...
+ // ... 点亮 LED ...
 
-    loop {
-        // 主循环
-    }
+ loop {
+ // 主循环
+ }
 }
 ```
 

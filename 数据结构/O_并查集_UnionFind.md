@@ -14,18 +14,18 @@
 
 ```mermaid
 graph TD
-    subgraph "初始: {0}, {1}, {2}, {3}, {4}"
-        D0["0→0"] 
-        D1["1→1"]
-        D2["2→2"]
-        D3["3→3"]
-        D4["4→4"]
-    end
-    subgraph "Union(0,2) Union(1,3) Union(0,1) 后"
-        R["0 (根)"] --> N2["2"]
-        R --> N1["1"]
-        N1 --> N3["3"]
-    end
+ subgraph "初始: {0}, {1}, {2}, {3}, {4}"
+ D0["0→0"] 
+ D1["1→1"]
+ D2["2→2"]
+ D3["3→3"]
+ D4["4→4"]
+ end
+ subgraph "Union(0,2) Union(1,3) Union(0,1) 后"
+ R["0 (根)"] --> N2["2"]
+ R --> N1["1"]
+ N1 --> N3["3"]
+ end
 ```
 
 ### 路径压缩
@@ -34,22 +34,22 @@ graph TD
 
 ```c
 int find(int* parent, int x) {
-    if (parent[x] != x)
-        parent[x] = find(parent, parent[x]);  // 递归压缩: x→根
-    return parent[x];
+ if (parent[x] != x)
+ parent[x] = find(parent, parent[x]); // 递归压缩: x→根
+ return parent[x];
 }
 ```
 
 ```mermaid
 graph LR
-    subgraph "Find(4) 前"
-        P0["0→0"] --> P1["1→0"] --> P4["4→3"] --> P3["3→1"] --> P1
-    end
-    subgraph "Find(4) 后 — 路径被压缩"
-        Q0["0→0"] --> Q1["1→0"] 
-        Q0 --> Q4["4→0"]
-        Q0 --> Q3["3→0"]
-    end
+ subgraph "Find(4) 前"
+ P0["0→0"] --> P1["1→0"] --> P4["4→3"] --> P3["3→1"] --> P1
+ end
+ subgraph "Find(4) 后 — 路径被压缩"
+ Q0["0→0"] --> Q1["1→0"] 
+ Q0 --> Q4["4→0"]
+ Q0 --> Q3["3→0"]
+ end
 ```
 
 ### 按秩合并
@@ -58,11 +58,11 @@ graph LR
 
 ```c
 void union_sets(int* parent, int* rank, int x, int y) {
-    int rx = find(parent, x), ry = find(parent, y);
-    if (rx == ry) return;
-    if (rank[rx] < rank[ry])      parent[rx] = ry;
-    else if (rank[rx] > rank[ry]) parent[ry] = rx;
-    else { parent[ry] = rx; rank[rx]++; }
+ int rx = find(parent, x), ry = find(parent, y);
+ if (rx == ry) return;
+ if (rank[rx] < rank[ry]) parent[rx] = ry;
+ else if (rank[rx] > rank[ry]) parent[ry] = rx;
+ else { parent[ry] = rx; rank[rx]++; }
 }
 ```
 
@@ -89,51 +89,51 @@ $\alpha(n)$ 增长极度缓慢——在实际宇宙中所有可想象的输入�
 #include <stdlib.h>
 
 typedef struct {
-    int* parent;
-    int* rank;
-    int* size;     // 每个根节点的集合大小
-    int n;
+ int* parent;
+ int* rank;
+ int* size; // 每个根节点的集合大小
+ int n;
 } UnionFind;
 
 void uf_init(UnionFind* uf, int n) {
-    uf->n = n;
-    uf->parent = malloc(n * sizeof(int));
-    uf->rank   = calloc(n, sizeof(int));
-    uf->size   = malloc(n * sizeof(int));
-    for (int i = 0; i < n; i++) {
-        uf->parent[i] = i;
-        uf->size[i] = 1;
-    }
+ uf->n = n;
+ uf->parent = malloc(n * sizeof(int));
+ uf->rank = calloc(n, sizeof(int));
+ uf->size = malloc(n * sizeof(int));
+ for (int i = 0; i < n; i++) {
+ uf->parent[i] = i;
+ uf->size[i] = 1;
+ }
 }
 
 int uf_find(UnionFind* uf, int x) {
-    if (uf->parent[x] != x)
-        uf->parent[x] = uf_find(uf, uf->parent[x]);
-    return uf->parent[x];
+ if (uf->parent[x] != x)
+ uf->parent[x] = uf_find(uf, uf->parent[x]);
+ return uf->parent[x];
 }
 
 void uf_union(UnionFind* uf, int x, int y) {
-    int rx = uf_find(uf, x), ry = uf_find(uf, y);
-    if (rx == ry) return;
-    if (uf->rank[rx] < uf->rank[ry]) {
-        uf->parent[rx] = ry;
-        uf->size[ry] += uf->size[rx];
-    } else if (uf->rank[rx] > uf->rank[ry]) {
-        uf->parent[ry] = rx;
-        uf->size[rx] += uf->size[ry];
-    } else {
-        uf->parent[ry] = rx;
-        uf->rank[rx]++;
-        uf->size[rx] += uf->size[ry];
-    }
+ int rx = uf_find(uf, x), ry = uf_find(uf, y);
+ if (rx == ry) return;
+ if (uf->rank[rx] < uf->rank[ry]) {
+ uf->parent[rx] = ry;
+ uf->size[ry] += uf->size[rx];
+ } else if (uf->rank[rx] > uf->rank[ry]) {
+ uf->parent[ry] = rx;
+ uf->size[rx] += uf->size[ry];
+ } else {
+ uf->parent[ry] = rx;
+ uf->rank[rx]++;
+ uf->size[rx] += uf->size[ry];
+ }
 }
 
 int uf_connected(UnionFind* uf, int x, int y) {
-    return uf_find(uf, x) == uf_find(uf, y);
+ return uf_find(uf, x) == uf_find(uf, y);
 }
 
 void uf_destroy(UnionFind* uf) {
-    free(uf->parent); free(uf->rank); free(uf->size);
+ free(uf->parent); free(uf->rank); free(uf->size);
 }
 ```
 
@@ -174,47 +174,47 @@ void uf_destroy(UnionFind* uf) {
 #include <stdlib.h>
 
 typedef struct {
-    int* parent;
-    int* rank;
-    int count;    // 连通分量数
+ int* parent;
+ int* rank;
+ int count; // 连通分量数
 } UnionFind;
 
 void uf_init(UnionFind* uf, int n) {
-    uf->parent = malloc(n * sizeof(int));
-    uf->rank = calloc(n, sizeof(int));
-    uf->count = n;
-    for (int i = 0; i < n; i++)
-        uf->parent[i] = i;
+ uf->parent = malloc(n * sizeof(int));
+ uf->rank = calloc(n, sizeof(int));
+ uf->count = n;
+ for (int i = 0; i < n; i++)
+ uf->parent[i] = i;
 }
 
 void uf_destroy(UnionFind* uf) {
-    free(uf->parent);
-    free(uf->rank);
+ free(uf->parent);
+ free(uf->rank);
 }
 
 int uf_find(UnionFind* uf, int x) {
-    if (uf->parent[x] != x)
-        uf->parent[x] = uf_find(uf, uf->parent[x]);  // 路径压缩
-    return uf->parent[x];
+ if (uf->parent[x] != x)
+ uf->parent[x] = uf_find(uf, uf->parent[x]); // 路径压缩
+ return uf->parent[x];
 }
 
 int uf_unite(UnionFind* uf, int x, int y) {
-    int px = uf_find(uf, x);
-    int py = uf_find(uf, y);
-    if (px == py) return 0;
+ int px = uf_find(uf, x);
+ int py = uf_find(uf, y);
+ if (px == py) return 0;
 
-    if (uf->rank[px] < uf->rank[py]) {
-        int t = px; px = py; py = t;
-    }
-    uf->parent[py] = px;
-    if (uf->rank[px] == uf->rank[py])
-        uf->rank[px]++;
-    uf->count--;
-    return 1;
+ if (uf->rank[px] < uf->rank[py]) {
+ int t = px; px = py; py = t;
+ }
+ uf->parent[py] = px;
+ if (uf->rank[px] == uf->rank[py])
+ uf->rank[px]++;
+ uf->count--;
+ return 1;
 }
 
 int uf_connected(UnionFind* uf, int x, int y) {
-    return uf_find(uf, x) == uf_find(uf, y);
+ return uf_find(uf, x) == uf_find(uf, y);
 }
 
 int uf_get_count(UnionFind* uf) { return uf->count; }
@@ -226,67 +226,67 @@ int uf_get_count(UnionFind* uf) { return uf->count; }
 
 ```c
 typedef struct {
-    int* parent;
-    int* rank;
-    int* weight;   // weight[i] = i 到 parent[i] 的权值差
+ int* parent;
+ int* rank;
+ int* weight; // weight[i] = i 到 parent[i] 的权值差
 } WeightedUnionFind;
 
 void wuf_init(WeightedUnionFind* uf, int n) {
-    uf->parent = malloc(n * sizeof(int));
-    uf->rank = calloc(n, sizeof(int));
-    uf->weight = calloc(n, sizeof(int));
-    for (int i = 0; i < n; i++)
-        uf->parent[i] = i;
+ uf->parent = malloc(n * sizeof(int));
+ uf->rank = calloc(n, sizeof(int));
+ uf->weight = calloc(n, sizeof(int));
+ for (int i = 0; i < n; i++)
+ uf->parent[i] = i;
 }
 
 void wuf_destroy(WeightedUnionFind* uf) {
-    free(uf->parent);
-    free(uf->rank);
-    free(uf->weight);
+ free(uf->parent);
+ free(uf->rank);
+ free(uf->weight);
 }
 
 int wuf_find(WeightedUnionFind* uf, int x, int* out_weight) {
-    if (uf->parent[x] == x) {
-        *out_weight = 0;
-        return x;
-    }
-    int w;
-    int root = wuf_find(uf, uf->parent[x], &w);
-    uf->parent[x] = root;
-    uf->weight[x] += w;
-    *out_weight = uf->weight[x];
-    return root;
+ if (uf->parent[x] == x) {
+ *out_weight = 0;
+ return x;
+ }
+ int w;
+ int root = wuf_find(uf, uf->parent[x], &w);
+ uf->parent[x] = root;
+ uf->weight[x] += w;
+ *out_weight = uf->weight[x];
+ return root;
 }
 
 // 声明: value(y) - value(x) = w
 // 返回 1 合并成功，0 表示 x 和 y 已连通且与 w 矛盾
 int wuf_unite(WeightedUnionFind* uf, int x, int y, int w) {
-    int wx, wy;
-    int px = wuf_find(uf, x, &wx);
-    int py = wuf_find(uf, y, &wy);
-    if (px == py)
-        return (wy - wx) == w;
+ int wx, wy;
+ int px = wuf_find(uf, x, &wx);
+ int py = wuf_find(uf, y, &wy);
+ if (px == py)
+ return (wy - wx) == w;
 
-    if (uf->rank[px] < uf->rank[py]) {
-        uf->parent[px] = py;
-        uf->weight[px] = wy - wx - w;
-    } else {
-        uf->parent[py] = px;
-        uf->weight[py] = wx - wy + w;
-        if (uf->rank[px] == uf->rank[py])
-            uf->rank[px]++;
-    }
-    return 1;
+ if (uf->rank[px] < uf->rank[py]) {
+ uf->parent[px] = py;
+ uf->weight[px] = wy - wx - w;
+ } else {
+ uf->parent[py] = px;
+ uf->weight[py] = wx - wy + w;
+ if (uf->rank[px] == uf->rank[py])
+ uf->rank[px]++;
+ }
+ return 1;
 }
 
 // 查询 x 和 y 的权值差，不连通时返回 0
 int wuf_query(WeightedUnionFind* uf, int x, int y, int* diff) {
-    int wx, wy;
-    int px = wuf_find(uf, x, &wx);
-    int py = wuf_find(uf, y, &wy);
-    if (px != py) return 0;
-    *diff = wy - wx;
-    return 1;
+ int wx, wy;
+ int px = wuf_find(uf, x, &wx);
+ int py = wuf_find(uf, y, &wy);
+ if (px != py) return 0;
+ *diff = wy - wx;
+ return 1;
 }
 ```
 

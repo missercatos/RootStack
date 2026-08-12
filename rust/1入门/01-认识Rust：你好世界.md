@@ -8,9 +8,9 @@ Rust 是系统编程语言，编译后端基于 LLVM。编译器 `rustc` 将源�
 
 ```mermaid
 flowchart LR
-    A["main.rs"] --> B["rustc"]
-    B --> C["二进制文件"]
-    C --> D["操作系统执行"]
+ A["main.rs"] --> B["rustc"]
+ B --> C["二进制文件"]
+ C --> D["操作系统执行"]
 ```
 
 Rust 将多数安全检查前移到编译期，运行时行为等价于手工管理的 C/C++ 代码，没有 JIT 和 GC 开销。面向的领域包括：系统编程、嵌入式、WebAssembly、网络服务、CLI 工具、密码学和安全底层。
@@ -37,16 +37,16 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```rust
 // src/main.rs — cargo new 自动生成
 fn main() {
-    println!("Hello, world!");
+ println!("Hello, world!");
 }
 ```
 
 ```bash
-cargo new hello     # 创建项目
-cargo build          # 编译（debug）
+cargo new hello # 创建项目
+cargo build # 编译（debug）
 cargo build --release # 编译（release，优化）
-cargo run            # 编译 + 运行
-cargo check          # 仅检查语法，不生成二进制（最快）
+cargo run # 编译 + 运行
+cargo check # 仅检查语法，不生成二进制（最快）
 ```
 
 > `println!` 是宏，不是函数。`!` 表明宏调用，编译期展开为格式化代码。
@@ -91,7 +91,7 @@ edition = "2021"
 
 ```rust
 fn main() {
-    println!("Hello,World!");
+ println!("Hello,World!");
 }
 ```
 

@@ -14,7 +14,7 @@
 - **NVMe 驱动**：展示了复杂设备驱动的对比
 - **简单平台驱动**：从零开始的驱动，理解基本模式
 
-> 📌 **完整C语言内核教程**：本章对比了Rust和C的驱动实现。如需全面学习C语言内核编程（包括内存管理、文件系统、设备驱动、并发同步等完整知识体系），请参阅 [[../../内核/系统内核/01_C语言与操作系统|C语言教程: 内核部分]]。特别推荐 [[../../内核/系统内核/04_设备驱动|C语言教程: C设备驱动]]、[[../../内核/系统内核/06_并发与同步|C语言教程: C并发与同步]]、[[../../c语言教程/2深化/03_动态内存管理|C语言教程: 动态内存管理]]、[[../../c语言教程/2深化/01_指针深度剖析|C语言教程: 指针深度剖析]]。
+> **完整C语言内核教程**：本章对比了Rust和C的驱动实现。如需全面学习C语言内核编程（包括内存管理、文件系统、设备驱动、并发同步等完整知识体系），请参阅 [[../../内核/系统内核/01_C语言与操作系统|C语言教程: 内核部分]]。特别推荐 [[../../内核/系统内核/04_设备驱动|C语言教程: C设备驱动]]、[[../../内核/系统内核/06_并发与同步|C语言教程: C并发与同步]]、[[../../c语言教程/2深化/03_动态内存管理|C语言教程: 动态内存管理]]、[[../../c语言教程/2深化/01_指针深度剖析|C语言教程: 指针深度剖析]]。
 
 ## 2. 案例一：Android Binder 驱动
 
@@ -28,24 +28,24 @@ Binder 是 Android 系统中最重要的 IPC 机制。原 C 版本约 6000 行�
 
 ```c
 struct binder_proc {
-    int tmp_ref;             // 引用计数
-    struct mutex outer_lock; // 保护分配的锁
-    struct mutex inner_lock; // 核心操作锁
-    spinlock_t tmp_lock;     // 临时锁
-    // ... 许多字段，约 40 个
+ int tmp_ref; // 引用计数
+ struct mutex outer_lock; // 保护分配的锁
+ struct mutex inner_lock; // 核心操作锁
+ spinlock_t tmp_lock; // 临时锁
+ // ... 许多字段，约 40 个
 };
 
 // 手动增减引用——配对调用易出错
 static struct binder_proc *binder_get_proc(struct binder_proc *proc)
 {
-    atomic_inc(&proc->tmp_ref);
-    return proc;
+ atomic_inc(&proc->tmp_ref);
+ return proc;
 }
 
 static void binder_put_proc(struct binder_proc *proc)
 {
-    if (atomic_dec_and_test(&proc->tmp_ref))
-        binder_free_proc(proc);  // 忘记调用 → 内存泄漏
+ if (atomic_dec_and_test(&proc->tmp_ref))
+ binder_free_proc(proc); // 忘记调用 → 内存泄漏
 }
 ```
 
@@ -54,28 +54,28 @@ static void binder_put_proc(struct binder_proc *proc)
 ```c
 static long binder_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
-    int ret;
-    struct binder_proc *proc = filp->private_data;
+ int ret;
+ struct binder_proc *proc = filp->private_data;
 
-    proc = binder_get_proc(proc);
-    if (proc == NULL) return -ENOMEM;
+ proc = binder_get_proc(proc);
+ if (proc == NULL) return -ENOMEM;
 
-    thread = binder_get_thread(proc);
-    if (thread == NULL) { ret = -ENOMEM; goto err_get_thread; }
+ thread = binder_get_thread(proc);
+ if (thread == NULL) { ret = -ENOMEM; goto err_get_thread; }
 
-    switch (cmd) {
-    case BINDER_WRITE_READ:
-        if (copy_from_user(&bwr, ubuf, sizeof(bwr)))
-            { ret = -EFAULT; goto err_copy; }
-        // ... 更多分支，每个有 goto 标签
-    }
+ switch (cmd) {
+ case BINDER_WRITE_READ:
+ if (copy_from_user(&bwr, ubuf, sizeof(bwr)))
+ { ret = -EFAULT; goto err_copy; }
+ // ... 更多分支，每个有 goto 标签
+ }
 
 err_write:
 err_copy:
-    binder_put_thread(thread);
+ binder_put_thread(thread);
 err_get_thread:
-    binder_put_proc(proc);
-    return ret;
+ binder_put_proc(proc);
+ return ret;
 }
 ```
 
@@ -97,21 +97,21 @@ err_get_thread:
 ```rust
 // Rust 版本——Arc 自动管理引用计数
 pub struct Process {
-    inner: Mutex<ProcessInner>,
-    // Process 通过 Arc<Process> 共享，Clone 自动 inc ref，Drop 自动 dec ref
+ inner: Mutex<ProcessInner>,
+ // Process 通过 Arc<Process> 共享，Clone 自动 inc ref，Drop 自动 dec ref
 }
 
 // 线程结构也使用 Arc
 pub struct Thread {
-    inner: Mutex<ThreadInner>,
-    process: Arc<Process>,  // 持有进程的引用——保证 Process 在线程存活期间不释放
+ inner: Mutex<ThreadInner>,
+ process: Arc<Process>, // 持有进程的引用——保证 Process 在线程存活期间不释放
 }
 
 impl Process {
-    // 获取进程引用——直接 clone Arc，编译器保证引用计数匹配
-    pub fn get_ref(self: &Arc<Self>) -> Arc<Self> {
-        self.clone()
-    }
+ // 获取进程引用——直接 clone Arc，编译器保证引用计数匹配
+ pub fn get_ref(self: &Arc<Self>) -> Arc<Self> {
+ self.clone()
+ }
 }
 ```
 
@@ -120,40 +120,40 @@ impl Process {
 ```rust
 // Rust 版本——锁自动保护内部数据（简化自 drivers/android/rust/）
 struct ProcessInner {
-    threads: Vec<Arc<Thread>>,
-    nodes: BTreeMap<u64, Arc<Node>>,
-    refs_by_desc: BTreeMap<u32, Arc<Ref>>,
-    refs_by_node: BTreeMap<u64, Arc<Ref>>,
-    max_threads: u32,
-    requested_threads: u32,
-    is_dead: bool,
-    work_available: CondVar,
+ threads: Vec<Arc<Thread>>,
+ nodes: BTreeMap<u64, Arc<Node>>,
+ refs_by_desc: BTreeMap<u32, Arc<Ref>>,
+ refs_by_node: BTreeMap<u64, Arc<Ref>>,
+ max_threads: u32,
+ requested_threads: u32,
+ is_dead: bool,
+ work_available: CondVar,
 }
 
 impl Process {
-    // 注册线程——Mutex 自动保护
-    pub fn register_thread(self: &Arc<Self>) -> Result<Arc<Thread>> {
-        let mut inner = self.inner.lock();
-        if inner.is_dead {
-            return Err(Error::EBADF);
-        }
-        if inner.threads.len() >= inner.max_threads as usize {
-            return Err(Error::EBUSY);
-        }
-        // ... 创建 Thread, 持有 self.clone()
-        // Arc 保证 Process 在线程存活期间不被释放
-    }
+ // 注册线程——Mutex 自动保护
+ pub fn register_thread(self: &Arc<Self>) -> Result<Arc<Thread>> {
+ let mut inner = self.inner.lock();
+ if inner.is_dead {
+ return Err(Error::EBADF);
+ }
+ if inner.threads.len() >= inner.max_threads as usize {
+ return Err(Error::EBUSY);
+ }
+ // ... 创建 Thread, 持有 self.clone()
+ // Arc 保证 Process 在线程存活期间不被释放
+ }
 
-    // 线程检查工作——使用 CondVar 等待
-    pub fn wait_for_work(self: &Arc<Self>) -> Result<bool> {
-        let mut inner = self.inner.lock();
-        if inner.is_dead {
-            return Err(Error::EBADF);
-        }
-        // 等待直到有工作或死亡
-        inner.work_available.wait(&mut inner);
-        Ok(!inner.is_dead)
-    }
+ // 线程检查工作——使用 CondVar 等待
+ pub fn wait_for_work(self: &Arc<Self>) -> Result<bool> {
+ let mut inner = self.inner.lock();
+ if inner.is_dead {
+ return Err(Error::EBADF);
+ }
+ // 等待直到有工作或死亡
+ inner.work_available.wait(&mut inner);
+ Ok(!inner.is_dead)
+ }
 }
 ```
 
@@ -166,43 +166,43 @@ impl Process {
 // ioctl 命令定义为枚举，获得穷举检查
 #[repr(u32)]
 enum BinderIoctl {
-    WriteRead = 0xc000,  // 实际使用 _IOWR macro 值
-    SetMaxThreads = 0xc001,
-    SetContextMgr = 0xc002,
-    ThreadExit = 0xc003,
-    Version = 0xc004,
+ WriteRead = 0xc000, // 实际使用 _IOWR macro 值
+ SetMaxThreads = 0xc001,
+ SetContextMgr = 0xc002,
+ ThreadExit = 0xc003,
+ Version = 0xc004,
 }
 
 impl file::FileOperations for BinderDevice {
-    type Data = Arc<Process>;
-    type OpenData = ();
+ type Data = Arc<Process>;
+ type OpenData = ();
 
-    fn ioctl(
-        process: &Arc<Process>,
-        _file: &File,
-        cmd: u32,
-        arg: usize,
-    ) -> Result<u32> {
-        match cmd.try_into() {
-            Ok(BinderIoctl::WriteRead) => {
-                let mut bwr: binder_write_read = unsafe { core::mem::zeroed() };
-                // copy_from_user —— 使用安全的 IO buffer
-                // 注意：内核提供 io_buffer 抽象来替代不安全的 copy_from_user
-                // ...
-                Ok(0)
-            }
-            Ok(BinderIoctl::SetMaxThreads) => {
-                let mut inner = process.inner.lock();
-                inner.max_threads = arg as u32;  // 锁保护下修改
-                Ok(0)
-            }
-            Ok(BinderIoctl::Version) => {
-                // 返回版本号
-                Ok(BINDER_CURRENT_PROTOCOL_VERSION)
-            }
-            Err(_) => Err(Error::ENOTTY),
-        }
-    }
+ fn ioctl(
+ process: &Arc<Process>,
+ _file: &File,
+ cmd: u32,
+ arg: usize,
+ ) -> Result<u32> {
+ match cmd.try_into() {
+ Ok(BinderIoctl::WriteRead) => {
+ let mut bwr: binder_write_read = unsafe { core::mem::zeroed() };
+ // copy_from_user —— 使用安全的 IO buffer
+ // 注意：内核提供 io_buffer 抽象来替代不安全的 copy_from_user
+ // ...
+ Ok(0)
+ }
+ Ok(BinderIoctl::SetMaxThreads) => {
+ let mut inner = process.inner.lock();
+ inner.max_threads = arg as u32; // 锁保护下修改
+ Ok(0)
+ }
+ Ok(BinderIoctl::Version) => {
+ // 返回版本号
+ Ok(BINDER_CURRENT_PROTOCOL_VERSION)
+ }
+ Err(_) => Err(Error::ENOTTY),
+ }
+ }
 }
 ```
 
@@ -232,66 +232,66 @@ C 版本在 `drivers/nvme/host/pci.c`（约 4000 行）。Rust 版本正在开�
 ```c
 // C 版本：DMA 缓冲区分配和使用（简化）
 struct nvme_queue {
-    struct nvme_dev *dev;
-    spinlock_t q_lock;
-    struct nvme_command *sq_cmds;      // 提交队列（DMA）
-    struct nvme_completion *cqes;      // 完成队列（DMA）
-    dma_addr_t sq_dma_addr;            // 提交队列物理地址
-    dma_addr_t cq_dma_addr;            // 完成队列物理地址
-    u32 sq_head;
-    u32 sq_tail;
-    u32 cq_head;
-    u16 qid;
-    u16 cq_vector;
-    // ...
+ struct nvme_dev *dev;
+ spinlock_t q_lock;
+ struct nvme_command *sq_cmds; // 提交队列（DMA）
+ struct nvme_completion *cqes; // 完成队列（DMA）
+ dma_addr_t sq_dma_addr; // 提交队列物理地址
+ dma_addr_t cq_dma_addr; // 完成队列物理地址
+ u32 sq_head;
+ u32 sq_tail;
+ u32 cq_head;
+ u16 qid;
+ u16 cq_vector;
+ // ...
 };
 
 static int nvme_alloc_queue(struct nvme_queue **out_nvmeq, int qid)
 {
-    struct nvme_queue *nvmeq;
+ struct nvme_queue *nvmeq;
 
-    nvmeq = kzalloc(sizeof(*nvmeq), GFP_KERNEL);
-    if (!nvmeq)
-        return -ENOMEM;  // 如果失败，需要跳转到 cleanup
+ nvmeq = kzalloc(sizeof(*nvmeq), GFP_KERNEL);
+ if (!nvmeq)
+ return -ENOMEM; // 如果失败，需要跳转到 cleanup
 
-    // 分配提交队列（DMA 一致内存）
-    nvmeq->sq_cmds = dma_alloc_coherent(dev->dev, SQ_SIZE,
-                                         &nvmeq->sq_dma_addr, GFP_KERNEL);
-    if (!nvmeq->sq_cmds) {
-        kfree(nvmeq);  // 可能忘记释放
-        return -ENOMEM;
-    }
+ // 分配提交队列（DMA 一致内存）
+ nvmeq->sq_cmds = dma_alloc_coherent(dev->dev, SQ_SIZE,
+ &nvmeq->sq_dma_addr, GFP_KERNEL);
+ if (!nvmeq->sq_cmds) {
+ kfree(nvmeq); // 可能忘记释放
+ return -ENOMEM;
+ }
 
-    // 分配完成队列
-    nvmeq->cqes = dma_alloc_coherent(dev->dev, CQ_SIZE,
-                                      &nvmeq->cq_dma_addr, GFP_KERNEL);
-    if (!nvmeq->cqes) {
-        dma_free_coherent(dev->dev, SQ_SIZE, nvmeq->sq_cmds, nvmeq->sq_dma_addr);
-        kfree(nvmeq);
-        return -ENOMEM;
-    }
+ // 分配完成队列
+ nvmeq->cqes = dma_alloc_coherent(dev->dev, CQ_SIZE,
+ &nvmeq->cq_dma_addr, GFP_KERNEL);
+ if (!nvmeq->cqes) {
+ dma_free_coherent(dev->dev, SQ_SIZE, nvmeq->sq_cmds, nvmeq->sq_dma_addr);
+ kfree(nvmeq);
+ return -ENOMEM;
+ }
 
-    *out_nvmeq = nvmeq;
-    return 0;
-    // 注意：需要 3 个清理点，每次新增分配都要修改清理路径
+ *out_nvmeq = nvmeq;
+ return 0;
+ // 注意：需要 3 个清理点，每次新增分配都要修改清理路径
 }
 
 // 中断处理函数——需要手动管理并发
 static irqreturn_t nvme_irq(int irq, void *data)
 {
-    struct nvme_queue *nvmeq = data;
-    irqreturn_t ret = IRQ_NONE;
-    u16 start, end;
+ struct nvme_queue *nvmeq = data;
+ irqreturn_t ret = IRQ_NONE;
+ u16 start, end;
 
-    // 数据的这个指针在中断注册期间有效，但之后可能被释放！
-    // 需要手动维护生命周期：仅在移除设备时停用中断
-    spin_lock(&nvmeq->q_lock);
-    start = nvmeq->cq_head;
-    end = nvmeq->cq_head;
-    // 环路检查完成队列...
-    spin_unlock(&nvmeq->q_lock);
+ // 数据的这个指针在中断注册期间有效，但之后可能被释放！
+ // 需要手动维护生命周期：仅在移除设备时停用中断
+ spin_lock(&nvmeq->q_lock);
+ start = nvmeq->cq_head;
+ end = nvmeq->cq_head;
+ // 环路检查完成队列...
+ spin_unlock(&nvmeq->q_lock);
 
-    return ret;
+ return ret;
 }
 ```
 
@@ -302,48 +302,48 @@ static irqreturn_t nvme_irq(int irq, void *data)
 use kernel::dma::{DmaAlloc, DmaDirection};
 
 struct NvmeQueue {
-    // DMA 分配自动管理生命周期
-    sq: DmaAlloc<NvmeCommand>,
-    cq: DmaAlloc<NvmeCompletion>,
-    // 队列状态受 mutex 保护
-    state: Mutex<QueueState>,
-    // 中断处理
-    _irq: IrqHandler<Self>,
+ // DMA 分配自动管理生命周期
+ sq: DmaAlloc<NvmeCommand>,
+ cq: DmaAlloc<NvmeCompletion>,
+ // 队列状态受 mutex 保护
+ state: Mutex<QueueState>,
+ // 中断处理
+ _irq: IrqHandler<Self>,
 }
 
 struct QueueState {
-    sq_head: u32,
-    sq_tail: u32,
-    cq_head: u32,
+ sq_head: u32,
+ sq_tail: u32,
+ cq_head: u32,
 }
 
 impl NvmeQueue {
-    fn new(dev: &PciDevice, qid: u16) -> Result<Arc<Self>> {
-        // DMA 分配——Drop 时自动释放
-        let sq = DmaAlloc::new(SQ_SIZE, dev, DmaDirection::Bidirectional, GFP_KERNEL)?;
-        let cq = DmaAlloc::new(CQ_SIZE, dev, DmaDirection::Bidirectional, GFP_KERNEL)?;
-        // ? 自动处理错误，已分配的资源自动释放
+ fn new(dev: &PciDevice, qid: u16) -> Result<Arc<Self>> {
+ // DMA 分配——Drop 时自动释放
+ let sq = DmaAlloc::new(SQ_SIZE, dev, DmaDirection::Bidirectional, GFP_KERNEL)?;
+ let cq = DmaAlloc::new(CQ_SIZE, dev, DmaDirection::Bidirectional, GFP_KERNEL)?;
+ // ? 自动处理错误，已分配的资源自动释放
 
-        let queue = Arc::pin_init(
-            pin_init!(NvmeQueue {
-                sq,
-                cq,
-                state: Mutex::new(QueueState { sq_head: 0, sq_tail: 0, cq_head: 0 }),
-                // IrqHandler 在 Drop 时自动释放中断
-                _irq: IrqHandler::register(irq_number, nvme_irq_handler)?,
-            }),
-            GFP_KERNEL,
-        )?;
+ let queue = Arc::pin_init(
+ pin_init!(NvmeQueue {
+ sq,
+ cq,
+ state: Mutex::new(QueueState { sq_head: 0, sq_tail: 0, cq_head: 0 }),
+ // IrqHandler 在 Drop 时自动释放中断
+ _irq: IrqHandler::register(irq_number, nvme_irq_handler)?,
+ }),
+ GFP_KERNEL,
+ )?;
 
-        Ok(queue)
-    }
+ Ok(queue)
+ }
 
-    // 中断处理——需要类型安全的共享数据访问
-    fn handle_irq(&self) -> IrqReturn {
-        let mut state = self.state.lock();  // 安全获取锁
-        // ... 处理完成队列
-        IrqReturn::Handled
-    }
+ // 中断处理——需要类型安全的共享数据访问
+ fn handle_irq(&self) -> IrqReturn {
+ let mut state = self.state.lock(); // 安全获取锁
+ // ... 处理完成队列
+ IrqReturn::Handled
+ }
 }
 
 // NvmeQueue 的 Drop 自动：
@@ -385,137 +385,137 @@ impl NvmeQueue {
 #include <linux/io.h>
 
 #define DEVICE_NAME "mydevice"
-#define REG_SIZE    0x1000
+#define REG_SIZE 0x1000
 
 struct my_device {
-    void __iomem *regs;
-    struct cdev cdev;
-    dev_t devt;
+ void __iomem *regs;
+ struct cdev cdev;
+ dev_t devt;
 };
 
 static int my_open(struct inode *inode, struct file *filp)
 {
-    struct my_device *dev = container_of(inode->i_cdev,
-                                          struct my_device, cdev);
-    filp->private_data = dev;
-    return 0;
+ struct my_device *dev = container_of(inode->i_cdev,
+ struct my_device, cdev);
+ filp->private_data = dev;
+ return 0;
 }
 
 static ssize_t my_read(struct file *filp, char __user *buf,
-                        size_t count, loff_t *off)
+ size_t count, loff_t *off)
 {
-    struct my_device *dev = filp->private_data;
-    u32 val;
+ struct my_device *dev = filp->private_data;
+ u32 val;
 
-    if (count < sizeof(val))
-        return -EINVAL;
+ if (count < sizeof(val))
+ return -EINVAL;
 
-    val = ioread32(dev->regs + *off);  // 无边界检查！
+ val = ioread32(dev->regs + *off); // 无边界检查！
 
-    if (copy_to_user(buf, &val, sizeof(val)))
-        return -EFAULT;
+ if (copy_to_user(buf, &val, sizeof(val)))
+ return -EFAULT;
 
-    *off += sizeof(val);
-    return sizeof(val);
+ *off += sizeof(val);
+ return sizeof(val);
 }
 
 static ssize_t my_write(struct file *filp, const char __user *buf,
-                         size_t count, loff_t *off)
+ size_t count, loff_t *off)
 {
-    struct my_device *dev = filp->private_data;
-    u32 val;
+ struct my_device *dev = filp->private_data;
+ u32 val;
 
-    if (count < sizeof(val))
-        return -EINVAL;
+ if (count < sizeof(val))
+ return -EINVAL;
 
-    if (copy_from_user(&val, buf, sizeof(val)))
-        return -EFAULT;
+ if (copy_from_user(&val, buf, sizeof(val)))
+ return -EFAULT;
 
-    iowrite32(val, dev->regs + *off);  // 无边界检查！
+ iowrite32(val, dev->regs + *off); // 无边界检查！
 
-    *off += sizeof(val);
-    return sizeof(val);
+ *off += sizeof(val);
+ return sizeof(val);
 }
 
 static long my_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
-    struct my_device *dev = filp->private_data;
+ struct my_device *dev = filp->private_data;
 
-    switch (cmd) {
-    case 0x01:  // 读取状态
-        return ioread32(dev->regs + 0x100);
-    case 0x02:  // 重置设备
-        iowrite32(0, dev->regs + 0x200);
-        return 0;
-    default:
-        return -ENOTTY;
-    }
+ switch (cmd) {
+ case 0x01: // 读取状态
+ return ioread32(dev->regs + 0x100);
+ case 0x02: // 重置设备
+ iowrite32(0, dev->regs + 0x200);
+ return 0;
+ default:
+ return -ENOTTY;
+ }
 }
 
 static struct file_operations my_fops = {
-    .owner = THIS_MODULE,
-    .open = my_open,
-    .read = my_read,
-    .write = my_write,
-    .unlocked_ioctl = my_ioctl,
+ .owner = THIS_MODULE,
+ .open = my_open,
+ .read = my_read,
+ .write = my_write,
+ .unlocked_ioctl = my_ioctl,
 };
 
 static int my_probe(struct platform_device *pdev)
 {
-    struct my_device *dev;
-    struct resource *res;
-    int ret;
+ struct my_device *dev;
+ struct resource *res;
+ int ret;
 
-    dev = devm_kzalloc(&pdev->dev, sizeof(*dev), GFP_KERNEL);
-    if (!dev)
-        return -ENOMEM;
+ dev = devm_kzalloc(&pdev->dev, sizeof(*dev), GFP_KERNEL);
+ if (!dev)
+ return -ENOMEM;
 
-    res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-    if (!res)
-        return -ENODEV;
+ res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ if (!res)
+ return -ENODEV;
 
-    dev->regs = devm_ioremap_resource(&pdev->dev, res);
-    if (IS_ERR(dev->regs))
-        return PTR_ERR(dev->regs);
+ dev->regs = devm_ioremap_resource(&pdev->dev, res);
+ if (IS_ERR(dev->regs))
+ return PTR_ERR(dev->regs);
 
-    ret = alloc_chrdev_region(&dev->devt, 0, 1, DEVICE_NAME);
-    if (ret)
-        return ret;
+ ret = alloc_chrdev_region(&dev->devt, 0, 1, DEVICE_NAME);
+ if (ret)
+ return ret;
 
-    cdev_init(&dev->cdev, &my_fops);
-    ret = cdev_add(&dev->cdev, dev->devt, 1);
-    if (ret) {
-        unregister_chrdev_region(dev->devt, 1);
-        return ret;
-    }
+ cdev_init(&dev->cdev, &my_fops);
+ ret = cdev_add(&dev->cdev, dev->devt, 1);
+ if (ret) {
+ unregister_chrdev_region(dev->devt, 1);
+ return ret;
+ }
 
-    platform_set_drvdata(pdev, dev);
-    pr_info("mydevice: probed\n");
-    return 0;
+ platform_set_drvdata(pdev, dev);
+ pr_info("mydevice: probed\n");
+ return 0;
 }
 
 static int my_remove(struct platform_device *pdev)
 {
-    struct my_device *dev = platform_get_drvdata(pdev);
-    cdev_del(&dev->cdev);
-    unregister_chrdev_region(dev->devt, 1);
-    // ioremap 通过 devm 自动释放
-    return 0;
+ struct my_device *dev = platform_get_drvdata(pdev);
+ cdev_del(&dev->cdev);
+ unregister_chrdev_region(dev->devt, 1);
+ // ioremap 通过 devm 自动释放
+ return 0;
 }
 
 static const struct of_device_id my_of_match[] = {
-    { .compatible = "my,rust-device", },
-    { /* sentinel */ }
+ { .compatible = "my,rust-device", },
+ { /* sentinel */ }
 };
 MODULE_DEVICE_TABLE(of, my_of_match);
 
 static struct platform_driver my_driver = {
-    .probe = my_probe,
-    .remove = my_remove,
-    .driver = {
-        .name = DEVICE_NAME,
-        .of_match_table = my_of_match,
-    },
+ .probe = my_probe,
+ .remove = my_remove,
+ .driver = {
+ .name = DEVICE_NAME,
+ .of_match_table = my_of_match,
+ },
 };
 module_platform_driver(my_driver);
 MODULE_LICENSE("GPL");
@@ -536,158 +536,158 @@ MODULE_LICENSE("GPL");
 // 基于 kernel crate 的实际 API 风格
 
 use kernel::{
-    cdev, chrdev,
-    file::{File, FileOperations},
-    io_buffer::{IoBufferReader, IoBufferWriter},
-    platform,
-    prelude::*,
-    sync::SpinLock,
+ cdev, chrdev,
+ file::{File, FileOperations},
+ io_buffer::{IoBufferReader, IoBufferWriter},
+ platform,
+ prelude::*,
+ sync::SpinLock,
 };
 
 module! {
-    type: MyDeviceDriver,
-    name: "mydevice",
-    author: "Demo",
-    description: "Platform device demo in Rust",
-    license: "GPL",
+ type: MyDeviceDriver,
+ name: "mydevice",
+ author: "Demo",
+ description: "Platform device demo in Rust",
+ license: "GPL",
 }
 
 const REG_SIZE: usize = 0x1000;
 
 /// 设备结构——MMIO 寄存器和设备状态
 struct MyDevice {
-    regs: platform::IoMem<REG_SIZE>,  // 类型安全的内存映射 IO（带边界检查）
-    // cdev 注册由 Registration 管理
+ regs: platform::IoMem<REG_SIZE>, // 类型安全的内存映射 IO（带边界检查）
+ // cdev 注册由 Registration 管理
 }
 
 /// 文件操作：运行时状态
 struct OpenDevice {
-    dev: Arc<MyDevice>,
+ dev: Arc<MyDevice>,
 }
 
 #[vtable]
 impl FileOperations for OpenDevice {
-    type Data = Arc<MyDevice>;
-    type OpenData = Arc<MyDevice>;
+ type Data = Arc<MyDevice>;
+ type OpenData = Arc<MyDevice>;
 
-    fn open(dev: &Self::OpenData, _file: &File) -> Result<Self::Data> {
-        pr_info!("mydevice: opened\n");
-        Ok(dev.clone())
-    }
+ fn open(dev: &Self::OpenData, _file: &File) -> Result<Self::Data> {
+ pr_info!("mydevice: opened\n");
+ Ok(dev.clone())
+ }
 
-    fn read(
-        dev: &MyDevice,
-        _file: &File,
-        writer: &mut impl IoBufferWriter,
-        offset: u64,
-    ) -> Result<usize> {
-        let offset = usize::try_from(offset)
-            .map_err(|_| Error::ERANGE)?;
+ fn read(
+ dev: &MyDevice,
+ _file: &File,
+ writer: &mut impl IoBufferWriter,
+ offset: u64,
+ ) -> Result<usize> {
+ let offset = usize::try_from(offset)
+ .map_err(|_| Error::ERANGE)?;
 
-        // IoMem 自动进行边界检查
-        let val = dev.regs.read32(offset)?;   // offset 超出范围返回 Error
-        let bytes = val.to_le_bytes();
-        writer.write_slice(&bytes)?;
-        Ok(4)
-    }
+ // IoMem 自动进行边界检查
+ let val = dev.regs.read32(offset)?; // offset 超出范围返回 Error
+ let bytes = val.to_le_bytes();
+ writer.write_slice(&bytes)?;
+ Ok(4)
+ }
 
-    fn write(
-        dev: &MyDevice,
-        _file: &File,
-        reader: &mut impl IoBufferReader,
-        offset: u64,
-    ) -> Result<usize> {
-        let offset = usize::try_from(offset)
-            .map_err(|_| Error::ERANGE)?;
+ fn write(
+ dev: &MyDevice,
+ _file: &File,
+ reader: &mut impl IoBufferReader,
+ offset: u64,
+ ) -> Result<usize> {
+ let offset = usize::try_from(offset)
+ .map_err(|_| Error::ERANGE)?;
 
-        let mut buf = [0u8; 4];
-        reader.read_slice(&mut buf)?;
-        let val = u32::from_le_bytes(buf);
+ let mut buf = [0u8; 4];
+ reader.read_slice(&mut buf)?;
+ let val = u32::from_le_bytes(buf);
 
-        // IoMem 自动进行边界检查
-        dev.regs.write32(offset, val)?;
-        Ok(4)
-    }
+ // IoMem 自动进行边界检查
+ dev.regs.write32(offset, val)?;
+ Ok(4)
+ }
 
-    fn ioctl(
-        dev: &MyDevice,
-        _file: &File,
-        cmd: u32,
-        _arg: usize,
-    ) -> Result<u32> {
-        match cmd {
-            0x01 => {
-                let status = dev.regs.read32(0x100)?;
-                Ok(status)
-            }
-            0x02 => {
-                dev.regs.write32(0x200, 0)?;
-                Ok(0)
-            }
-            _ => Err(Error::ENOTTY),
-        }
-    }
+ fn ioctl(
+ dev: &MyDevice,
+ _file: &File,
+ cmd: u32,
+ _arg: usize,
+ ) -> Result<u32> {
+ match cmd {
+ 0x01 => {
+ let status = dev.regs.read32(0x100)?;
+ Ok(status)
+ }
+ 0x02 => {
+ dev.regs.write32(0x200, 0)?;
+ Ok(0)
+ }
+ _ => Err(Error::ENOTTY),
+ }
+ }
 
-    fn release(_data: Self::Data, _file: &File) {
-        pr_info!("mydevice: released\n");
-    }
+ fn release(_data: Self::Data, _file: &File) {
+ pr_info!("mydevice: released\n");
+ }
 }
 
 /// 驱动结构体
 struct MyDeviceDriver {
-    _dev: Arc<MyDevice>,
-    _cdev: chrdev::Registration<1>,
+ _dev: Arc<MyDevice>,
+ _cdev: chrdev::Registration<1>,
 }
 
 impl platform::Driver for MyDeviceDriver {
-    type Data = Arc<MyDevice>;
+ type Data = Arc<MyDevice>;
 
-    fn probe(
-        pdev: &platform::Device,
-        _id: Option<&platform::DeviceId>,
-    ) -> Result<Self::Data> {
-        pr_info!("mydevice: probing\n");
+ fn probe(
+ pdev: &platform::Device,
+ _id: Option<&platform::DeviceId>,
+ ) -> Result<Self::Data> {
+ pr_info!("mydevice: probing\n");
 
-        // 安全的 MMIO 映射——自动检查资源
-        let regs = pdev.ioremap_resource::<REG_SIZE>(0)?;
+ // 安全的 MMIO 映射——自动检查资源
+ let regs = pdev.ioremap_resource::<REG_SIZE>(0)?;
 
-        let dev = Arc::new(MyDevice { regs }, GFP_KERNEL)?;
+ let dev = Arc::new(MyDevice { regs }, GFP_KERNEL)?;
 
-        Ok(dev)
-    }
+ Ok(dev)
+ }
 }
 
 impl kernel::Module for MyDeviceDriver {
-    fn init(module: &'static ThisModule) -> Result<Self> {
-        pr_info!("mydevice: initializing\n");
+ fn init(module: &'static ThisModule) -> Result<Self> {
+ pr_info!("mydevice: initializing\n");
 
-        // 注册平台驱动
-        let platform_reg = platform::Driver::register(
-            module,
-            "mydevice",
-            // 设备树匹配
-            &[platform::DeviceId::new("my,rust-device")],
-            // probe/remove 回调通过平台 Driver trait 提供
-        )?;
+ // 注册平台驱动
+ let platform_reg = platform::Driver::register(
+ module,
+ "mydevice",
+ // 设备树匹配
+ &[platform::DeviceId::new("my,rust-device")],
+ // probe/remove 回调通过平台 Driver trait 提供
+ )?;
 
-        // 注册字符设备
-        let cdev = chrdev::Registration::new_pinned(
-            module,
-            "mydevice",
-            0, // 自动分配设备号
-        )?;
+ // 注册字符设备
+ let cdev = chrdev::Registration::new_pinned(
+ module,
+ "mydevice",
+ 0, // 自动分配设备号
+ )?;
 
-        Ok(MyDeviceDriver {
-            _dev: todo!("need device from probe"),
-            _cdev: cdev,
-        })
-    }
+ Ok(MyDeviceDriver {
+ _dev: todo!("need device from probe"),
+ _cdev: cdev,
+ })
+ }
 }
 
 impl Drop for MyDeviceDriver {
-    fn drop(&mut self) {
-        pr_info!("mydevice: unloaded\n");
-    }
+ fn drop(&mut self) {
+ pr_info!("mydevice: unloaded\n");
+ }
 }
 ```
 
@@ -709,16 +709,16 @@ impl Drop for MyDeviceDriver {
 ### 5.1 内存安全对比矩阵
 
 ```
-                    C 编译时  C 运行时   Rust 编译时  Rust 运行时
-空指针检查           ✗        ✗ (oops)    ✓ (Option)   ✗
-缓冲区溢出           ✗        ✗ (可能)    ✓            ✓ (panic)
-UAF                ✗        ✗          ✓             ✗
-数据竞争            ✗        ✗ (可能)    ✓             ✗
-忘记释放锁          ✗        ✗ (lockdep) ✓ (Guard)    ✗
-未初始化内存        ✗        ✗ (可能)    ✓             ✗
-类型混淆            ✗        ✗          ✓             ✗
-IOMMU 访问越界      ✗        ✗ (可能)    ✓             ✓ (panic)
-中断上下文错误      ✗        ✗ (可能)    ✓ (类型系统)  ✗
+ C 编译时 C 运行时 Rust 编译时 Rust 运行时
+空指针检查 (oops) (Option) 
+缓冲区溢出 (可能) (panic)
+UAF 
+数据竞争 (可能) 
+忘记释放锁 (lockdep) (Guard) 
+未初始化内存 (可能) 
+类型混淆 
+IOMMU 访问越界 (可能) (panic)
+中断上下文错误 (可能) (类型系统) 
 ```
 
 ### 5.2 编译时检查的价值
@@ -774,10 +774,10 @@ LLVM 对 Rust 生成的 IR（中间表示）可以进行与 C 代码相同的优
 ```c
 // 编译通过，但存在 bug
 static int foo(struct device *dev) {
-    void *ptr = kmalloc(1024, GFP_KERNEL);
-    // 忘记检查 ptr 是否为 NULL
-    memset(ptr, 0, 1024);  // 可能 oops
-    return 0;
+ void *ptr = kmalloc(1024, GFP_KERNEL);
+ // 忘记检查 ptr 是否为 NULL
+ memset(ptr, 0, 1024); // 可能 oops
+ return 0;
 }
 ```
 编译时：无警告（除非开启特殊标志）。
@@ -785,9 +785,9 @@ static int foo(struct device *dev) {
 **Rust 版本**：
 ```rust
 fn foo() -> Result<()> {
-    let mut v = Vec::with_capacity(1024, GFP_KERNEL)?;  // ? 强制处理错误
-    v.resize(1024, 0);  // Vec 保证不会为 NULL
-    Ok(())
+ let mut v = Vec::with_capacity(1024, GFP_KERNEL)?; // ? 强制处理错误
+ v.resize(1024, 0); // Vec 保证不会为 NULL
+ Ok(())
 }
 ```
 编译时：如果用 `unwrap()` 代替 `?`，clippy 会警告。
@@ -831,7 +831,7 @@ hybrid_module-y := c_part.o rust_part.o
 ```c
 // c_part.c — 与 Rust 共享数据
 #include <linux/module.h>
-extern int rust_function(int x);  // Rust 函数
+extern int rust_function(int x); // Rust 函数
 EXPORT_SYMBOL_GPL(rust_function);
 
 // Rust 代码放在 rust_part.rs
@@ -843,7 +843,7 @@ use kernel::prelude::*;
 
 #[no_mangle]
 pub extern "C" fn rust_function(x: i32) -> i32 {
-    x + 1
+ x + 1
 }
 ```
 

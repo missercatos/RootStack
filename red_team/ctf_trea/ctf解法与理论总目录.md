@@ -74,6 +74,6 @@
 
 Web 前置技能 -> HTTP 协议、操作系统、数据库、HTML/CSS、程序语言
 Web 工具配置 -> 虚拟机、BurpSuite、Chrome、WebShell、菜刀、端口扫描、远程连接、目录爆破
-Web 方向     -> SQL 注入、XSS、文件上传等
-Misc         -> 图片隐写、流量分析、编码解码等
-Crypto       -> 古典密码、现代密码等
+Web 方向 -> SQL 注入、XSS、文件上传等
+Misc -> 图片隐写、流量分析、编码解码等
+Crypto -> 古典密码、现代密码等

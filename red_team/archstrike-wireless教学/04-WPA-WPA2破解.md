@@ -21,41 +21,41 @@
 ### 1.1 密钥层次结构
 
 ```
-                PSK (预共享密钥) = WiFi密码
-                        │ PBKDF2-HMAC-SHA1(salt=SSID, 4096轮)
-                        v
-                PMK (成对主密钥)
-                        │ PRF(PMK, ANonce, SNonce, AP_MAC, STA_MAC)
-                        v
-                PTK (成对临时密钥)
-                        │
-        ┌───────┬───────┼───────┬───────┐
-        v       v       v       v
-       KCK     KEK      TK    MIC Key
-     认证密钥 加密密钥 临时密钥
+ PSK (预共享密钥) = WiFi密码
+ │ PBKDF2-HMAC-SHA1(salt=SSID, 4096轮)
+ v
+ PMK (成对主密钥)
+ │ PRF(PMK, ANonce, SNonce, AP_MAC, STA_MAC)
+ v
+ PTK (成对临时密钥)
+ │
+ ┌───────┬───────┼───────┬───────┐
+ v v v v
+ KCK KEK TK MIC Key
+ 认证密钥 加密密钥 临时密钥
 ```
 
 ### 1.2 4次握手详细过程
 
 ```mermaid
 sequenceDiagram
-    participant AP as 认证者 (AP)
-    participant STA as 申请者 (客户端)
+ participant AP as 认证者 (AP)
+ participant STA as 申请者 (客户端)
 
-    Note over AP: 生成随机数 ANonce
-    Note over STA: 双方已知 PSK, SSID → PMK
+ Note over AP: 生成随机数 ANonce
+ Note over STA: 双方已知 PSK, SSID → PMK
 
-    AP->>STA: Msg1: ANonce
-    Note over STA: 生成 SNonce
-    Note over STA: PTK = PRF(PMK, AA, SA, ANonce, SNonce)
-    STA->>AP: Msg2: SNonce + MIC(KCK, Msg2)
-    Note over AP: 计算PTK（相同）
-    Note over AP: 用KCK验证MIC
-    AP->>STA: Msg3: ANonce + MIC + GTK(加密)
-    Note over STA: 验证MIC → AP真的知道PMK
-    STA->>AP: Msg4: MIC（确认收到）
-    Note over AP: 安装PTK
-    Note over STA: 握手完成！安装PTK+GTK
+ AP->>STA: Msg1: ANonce
+ Note over STA: 生成 SNonce
+ Note over STA: PTK = PRF(PMK, AA, SA, ANonce, SNonce)
+ STA->>AP: Msg2: SNonce + MIC(KCK, Msg2)
+ Note over AP: 计算PTK（相同）
+ Note over AP: 用KCK验证MIC
+ AP->>STA: Msg3: ANonce + MIC + GTK(加密)
+ Note over STA: 验证MIC → AP真的知道PMK
+ STA->>AP: Msg4: MIC（确认收到）
+ Note over AP: 安装PTK
+ Note over STA: 握手完成！安装PTK+GTK
 ```
 
 ### 1.3 攻击原理
@@ -88,16 +88,16 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    A[需要WPA2握手] --> B{选择策略}
-    B -->|策略1: 被动| C[定向监听目标AP]
-    C --> D[等待合法客户端自然连接]
-    D --> E[捕获4次握手]
-    B -->|策略2: 主动| F[定向监听目标AP]
-    F --> G[发送Deauth伪造帧]
-    G --> H[强制客户端重连]
-    H --> I[捕获重连时的4次握手]
-    E --> J[验证握手完整性]
-    I --> J
+ A[需要WPA2握手] --> B{选择策略}
+ B -->|策略1: 被动| C[定向监听目标AP]
+ C --> D[等待合法客户端自然连接]
+ D --> E[捕获4次握手]
+ B -->|策略2: 主动| F[定向监听目标AP]
+ F --> G[发送Deauth伪造帧]
+ G --> H[强制客户端重连]
+ H --> I[捕获重连时的4次握手]
+ E --> J[验证握手完整性]
+ I --> J
 ```
 
 ### 2.2 策略1：被动等待(完全静默)

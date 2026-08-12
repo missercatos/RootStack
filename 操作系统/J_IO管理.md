@@ -21,12 +21,12 @@ I/O 管理是操作系统中最复杂、最"脏"的部分 -- 它要应对千差�
 
 ```mermaid
 graph TD
-    CPU["CPU"] <-->|"系统总线 (PCIe/AMBA)"| CTRL["设备控制器"]
-    CTRL -->|"控制寄存器 (Command)"| DEV["设备硬件"]
-    CTRL -->|"状态寄存器 (Status)"| DEV
-    CTRL <-->|"数据寄存器 (Data)"| DEV
-    CTRL -->|"中断信号"| INTC["中断控制器"]
-    INTC -->|"IRQ"| CPU
+ CPU["CPU"] <-->|"系统总线 (PCIe/AMBA)"| CTRL["设备控制器"]
+ CTRL -->|"控制寄存器 (Command)"| DEV["设备硬件"]
+ CTRL -->|"状态寄存器 (Status)"| DEV
+ CTRL <-->|"数据寄存器 (Data)"| DEV
+ CTRL -->|"中断信号"| INTC["中断控制器"]
+ INTC -->|"IRQ"| CPU
 ```
 
 控制器包含三类寄存器：
@@ -41,17 +41,17 @@ graph TD
 
 ```
 内存映射 I/O (Memory-Mapped I/O):
-    控制器寄存器映射到物理地址空间
-    CPU 用 mov 指令读写寄存器（如 ARM、RISC-V）
-    volatile uint32_t *reg = (uint32_t *)0x40001000;
-    *reg = CMD_READ;              // 写控制寄存器
-    while (*reg & STATUS_BUSY);   // 读状态寄存器
+ 控制器寄存器映射到物理地址空间
+ CPU 用 mov 指令读写寄存器（如 ARM、RISC-V）
+ volatile uint32_t *reg = (uint32_t *)0x40001000;
+ *reg = CMD_READ; // 写控制寄存器
+ while (*reg & STATUS_BUSY); // 读状态寄存器
 
 端口映射 I/O (Port-Mapped I/O):
-    控制器端口有独立地址空间
-    CPU 用 in/out 指令访问（如 x86）
-    outb(CMD_READ, 0x1F7);        // 写控制端口
-    while (inb(0x1F7) & STATUS_BUSY);  // 读状态端口
+ 控制器端口有独立地址空间
+ CPU 用 in/out 指令访问（如 x86）
+ outb(CMD_READ, 0x1F7); // 写控制端口
+ while (inb(0x1F7) & STATUS_BUSY); // 读状态端口
 ```
 
 x86 同时支持两种方式（PCI 设备通常用 MMIO），ARM/RISC-V 仅支持 MMIO。
@@ -60,21 +60,21 @@ x86 同时支持两种方式（PCI 设备通常用 MMIO），ARM/RISC-V 仅支�
 
 ```mermaid
 graph LR
-    subgraph "设备无关 I/O 层"
-        VFS["VFS/通用块层"]
-    end
-    subgraph "设备驱动层"
-        DRV["nvme.ko / ahci.ko"]
-    end
-    subgraph "硬件层"
-        CTRL["NVMe 控制器"]
-        NAND["NAND 闪存"]
-    end
-    VFS -->|"submit_bio"| DRV
-    DRV -->|"MMIO 写寄存器"| CTRL
-    CTRL -->|"ONFI/Toggle 协议"| NAND
-    NAND -->|"DMA"| DRV
-    DRV -->|"bio_endio"| VFS
+ subgraph "设备无关 I/O 层"
+ VFS["VFS/通用块层"]
+ end
+ subgraph "设备驱动层"
+ DRV["nvme.ko / ahci.ko"]
+ end
+ subgraph "硬件层"
+ CTRL["NVMe 控制器"]
+ NAND["NAND 闪存"]
+ end
+ VFS -->|"submit_bio"| DRV
+ DRV -->|"MMIO 写寄存器"| CTRL
+ CTRL -->|"ONFI/Toggle 协议"| NAND
+ NAND -->|"DMA"| DRV
+ DRV -->|"bio_endio"| VFS
 ```
 
 ### I/O 控制方式
@@ -87,30 +87,30 @@ CPU 反复读状态寄存器，直到设备就绪，然后传输数据。CPU 全
 
 ```mermaid
 flowchart TD
-    A["CPU 发命令给控制器"] --> B["读状态寄存器"]
-    B --> C{"设备就绪?"}
-    C -->|"否 (BUSY)"| B
-    C -->|"是 (READY)"| D["读/写数据寄存器"]
-    D --> E{"传输完成?"}
-    E -->|"否"| B
-    E -->|"是"| F["结束"]
+ A["CPU 发命令给控制器"] --> B["读状态寄存器"]
+ B --> C{"设备就绪?"}
+ C -->|"否 (BUSY)"| B
+ C -->|"是 (READY)"| D["读/写数据寄存器"]
+ D --> E{"传输完成?"}
+ E -->|"否"| B
+ E -->|"是"| F["结束"]
 ```
 
 ```c
 // 轮询方式从磁盘读一个扇区（简化的伪代码）
 void read_sector_polling(int lba, char *buf) {
-    outb(0x1F6, 0xE0 | ((lba >> 24) & 0x0F));  // 驱动器/磁头
-    outb(0x1F2, 1);                               // 扇区数 = 1
-    outb(0x1F3, lba & 0xFF);                      // LBA 低字节
-    outb(0x1F4, (lba >> 8) & 0xFF);
-    outb(0x1F5, (lba >> 16) & 0xFF);
-    outb(0x1F7, 0x20);                            // READ 命令
+ outb(0x1F6, 0xE0 | ((lba >> 24) & 0x0F)); // 驱动器/磁头
+ outb(0x1F2, 1); // 扇区数 = 1
+ outb(0x1F3, lba & 0xFF); // LBA 低字节
+ outb(0x1F4, (lba >> 8) & 0xFF);
+ outb(0x1F5, (lba >> 16) & 0xFF);
+ outb(0x1F7, 0x20); // READ 命令
 
-    while ((inb(0x1F7) & 0x08) == 0)  // 轮询 BSY 和 DRQ 位
-        ;  // 忙等待 —— CPU 什么也不做，就在这循环
+ while ((inb(0x1F7) & 0x08) == 0) // 轮询 BSY 和 DRQ 位
+ ; // 忙等待 —— CPU 什么也不做，就在这循环
 
-    for (int i = 0; i < 256; i++)      // 一次读 2 字节 × 256 = 512 字节
-        ((uint16_t *)buf)[i] = inw(0x1F0);
+ for (int i = 0; i < 256; i++) // 一次读 2 字节 × 256 = 512 字节
+ ((uint16_t *)buf)[i] = inw(0x1F0);
 }
 ```
 
@@ -128,24 +128,24 @@ CPU 发出 I/O 命令后不轮询 -- 切换到其他进程工作。设备完成�
 
 ```mermaid
 sequenceDiagram
-    participant CPU as CPU
-    participant PIC as 中断控制器 (APIC)
-    participant CTRL as 设备控制器
-    participant OS as 操作系统
+ participant CPU as CPU
+ participant PIC as 中断控制器 (APIC)
+ participant CTRL as 设备控制器
+ participant OS as 操作系统
 
-    CPU->>CTRL: 1. 写控制寄存器 (READ 命令)
-    CPU->>OS: 2. 调度其他进程运行 (上下文切换)
-    Note over CPU,OS: CPU 做有用工作
+ CPU->>CTRL: 1. 写控制寄存器 (READ 命令)
+ CPU->>OS: 2. 调度其他进程运行 (上下文切换)
+ Note over CPU,OS: CPU 做有用工作
 
-    CTRL->>CTRL: 3. 设备执行 I/O 操作 (寻道+读)
-    CTRL->>PIC: 4. 操作完成, 拉高 IRQ 线
-    PIC->>CPU: 5. 中断信号到达
-    CPU->>CPU: 6. 完成当前指令后检查中断
-    CPU->>OS: 7. 保存上下文, 查中断向量表
-    OS->>OS: 8. 执行中断服务程序 (ISR)
-    OS->>CTRL: 9. 从数据寄存器读数据
-    OS->>OS: 10. 唤醒等待进程, 返回
-    CPU->>OS: 11. 恢复被中断进程 (或调度新进程)
+ CTRL->>CTRL: 3. 设备执行 I/O 操作 (寻道+读)
+ CTRL->>PIC: 4. 操作完成, 拉高 IRQ 线
+ PIC->>CPU: 5. 中断信号到达
+ CPU->>CPU: 6. 完成当前指令后检查中断
+ CPU->>OS: 7. 保存上下文, 查中断向量表
+ OS->>OS: 8. 执行中断服务程序 (ISR)
+ OS->>CTRL: 9. 从数据寄存器读数据
+ OS->>OS: 10. 唤醒等待进程, 返回
+ CPU->>OS: 11. 恢复被中断进程 (或调度新进程)
 ```
 
 **中断向量表（IVT / IDT）**：
@@ -153,19 +153,19 @@ sequenceDiagram
 ```c
 // 简化表示 —— x86 中为 IDT (Interrupt Descriptor Table)
 struct idt_entry {
-    uint16_t handler_low;   // 中断处理函数地址低 16 位
-    uint16_t selector;      // 代码段选择子
-    uint8_t  ist;           // 中断栈表
-    uint8_t  flags;         // 存在位、DPL、类型
-    uint16_t handler_mid;   // 地址中 16 位
-    uint32_t handler_high;  // 地址高 32 位
-    uint32_t reserved;
+ uint16_t handler_low; // 中断处理函数地址低 16 位
+ uint16_t selector; // 代码段选择子
+ uint8_t ist; // 中断栈表
+ uint8_t flags; // 存在位、DPL、类型
+ uint16_t handler_mid; // 地址中 16 位
+ uint32_t handler_high; // 地址高 32 位
+ uint32_t reserved;
 } __attribute__((packed));
 
 // 中断号 → 处理函数映射
 // IRQ0 = 定时器, IRQ1 = 键盘, IRQ14 = IDE 主通道
 void keyboard_isr() { /* 读键盘扫描码 */ }
-void timer_isr()    { /* 更新 jiffies, 触发调度 */ }
+void timer_isr() { /* 更新 jiffies, 触发调度 */ }
 ```
 
 **中断优先级与嵌套**：
@@ -185,11 +185,11 @@ NMI（Non-Maskable Interrupt）是硬件级的"紧急刹车" -- 内存 ECC 检�
 
 ```mermaid
 graph TD
-    INT["硬件中断触发"] --> TOP["上半部 (Top Half / hardirq)<br/>紧急任务: 读寄存器, 应答中断"]
-    TOP --> SCHED["调度下半部"]
-    SCHED --> B1["softirq<br/>(NET_RX_SOFTIRQ)"]
-    SCHED --> B2["tasklet<br/>(更低优先级)"]
-    SCHED --> B3["workqueue<br/>(可在进程上下文睡眠)"]
+ INT["硬件中断触发"] --> TOP["上半部 (Top Half / hardirq)<br/>紧急任务: 读寄存器, 应答中断"]
+ TOP --> SCHED["调度下半部"]
+ SCHED --> B1["softirq<br/>(NET_RX_SOFTIRQ)"]
+ SCHED --> B2["tasklet<br/>(更低优先级)"]
+ SCHED --> B3["workqueue<br/>(可在进程上下文睡眠)"]
 ```
 
 - **上半部**：在中断上下文中运行，不可睡眠，必须极快（微秒级）
@@ -205,13 +205,13 @@ DMA 控制器（DMAC）接管数据搬运：
 
 ```mermaid
 graph TD
-    subgraph "DMA 传输流程"
-        CPU2["CPU"] -->|"1. 设置 DMA<br/>源/目的地址/字节数"| DMAC["DMA 控制器"]
-        DMAC -->|"2. 向设备发 I/O 命令"| DEV["磁盘控制器"]
-        DEV -->|"3. 数据通过总线<br/>(DMA 周期窃取)"| MEM["物理内存"]
-        DEV -->|"4. 传输完成"| DMAC
-        DMAC -->|"5. 中断通知 CPU"| CPU2
-    end
+ subgraph "DMA 传输流程"
+ CPU2["CPU"] -->|"1. 设置 DMA<br/>源/目的地址/字节数"| DMAC["DMA 控制器"]
+ DMAC -->|"2. 向设备发 I/O 命令"| DEV["磁盘控制器"]
+ DEV -->|"3. 数据通过总线<br/>(DMA 周期窃取)"| MEM["物理内存"]
+ DEV -->|"4. 传输完成"| DMAC
+ DMAC -->|"5. 中断通知 CPU"| CPU2
+ end
 ```
 
 **DMA 传输步骤**：
@@ -237,15 +237,15 @@ graph TD
 ```c
 // scatter-gather 列表
 struct scatterlist {
-    unsigned long  page_link;  // 缓冲区物理页地址
-    unsigned int   offset;     // 页内偏移
-    unsigned int   length;     // 该片段长度
+ unsigned long page_link; // 缓冲区物理页地址
+ unsigned int offset; // 页内偏移
+ unsigned int length; // 该片段长度
 };
 
 // 例如: 一个文件 12KB, 分散在 3 个物理页中
-// sg[0]: page A + offset 0   + length 4096
+// sg[0]: page A + offset 0 + length 4096
 // sg[1]: page B + offset 100 + length 4096
-// sg[2]: page C + offset 0   + length 4096
+// sg[2]: page C + offset 0 + length 4096
 // DMAC 一次性完成三次非连续传输
 ```
 
@@ -257,12 +257,12 @@ struct scatterlist {
 
 ```mermaid
 graph LR
-    CPU2["CPU"] -->|"通道程序地址"| CH["I/O 通道 (专用 CPU)"]
-    CH --> CTRL1["磁盘控制器 A"]
-    CH --> CTRL2["磁盘控制器 B"]
-    CH --> CTRL3["磁带控制器"]
-    CTRL1 --> DISK1["磁盘 A"]
-    CTRL2 --> DISK2["磁盘 B"]
+ CPU2["CPU"] -->|"通道程序地址"| CH["I/O 通道 (专用 CPU)"]
+ CH --> CTRL1["磁盘控制器 A"]
+ CH --> CTRL2["磁盘控制器 B"]
+ CH --> CTRL3["磁带控制器"]
+ CTRL1 --> DISK1["磁盘 A"]
+ CTRL2 --> DISK2["磁盘 B"]
 ```
 
 **选择器通道 vs 多路复用通道**：
@@ -278,10 +278,10 @@ graph LR
 ```c
 // CCW 简化表示
 struct ccw {
-    uint8_t  cmd;      // 读/写/控制/转移
-    uint32_t data_addr; // 内存缓冲区地址
-    uint16_t count;     // 传输字节数
-    uint8_t  flags;     // 链式命令、跳转、中断标志
+ uint8_t cmd; // 读/写/控制/转移
+ uint32_t data_addr; // 内存缓冲区地址
+ uint16_t count; // 传输字节数
+ uint8_t flags; // 链式命令、跳转、中断标志
 };
 ```
 
@@ -295,31 +295,31 @@ I/O 软件采用严格的层次化设计，每层向上提供抽象、向下隐�
 
 ```mermaid
 graph TD
-    subgraph "用户空间"
-        APP["用户程序: scanf / printf"]
-        LIB["C 库: fopen / fread / fwrite"]
-    end
-    subgraph "设备无关 OS I/O 软件"
-        IND["统一接口层<br/>命名/保护/缓冲/错误报告"]
-        BLK["通用块层 (Block Layer)<br/>bio 管理/I/O 调度"]
-    end
-    subgraph "设备驱动"
-        DRV["设备驱动程序<br/>读写控制器寄存器"]
-    end
-    subgraph "中断处理"
-        INT["中断服务程序<br/>响应完成信号"]
-    end
-    subgraph "硬件"
-        HW["设备控制器 + 物理设备"]
-    end
+ subgraph "用户空间"
+ APP["用户程序: scanf / printf"]
+ LIB["C 库: fopen / fread / fwrite"]
+ end
+ subgraph "设备无关 OS I/O 软件"
+ IND["统一接口层<br/>命名/保护/缓冲/错误报告"]
+ BLK["通用块层 (Block Layer)<br/>bio 管理/I/O 调度"]
+ end
+ subgraph "设备驱动"
+ DRV["设备驱动程序<br/>读写控制器寄存器"]
+ end
+ subgraph "中断处理"
+ INT["中断服务程序<br/>响应完成信号"]
+ end
+ subgraph "硬件"
+ HW["设备控制器 + 物理设备"]
+ end
 
-    APP --> LIB
-    LIB --> IND
-    IND --> BLK
-    BLK --> DRV
-    DRV --> HW
-    HW -->|"中断"| INT
-    INT --> DRV
+ APP --> LIB
+ LIB --> IND
+ IND --> BLK
+ BLK --> DRV
+ DRV --> HW
+ HW -->|"中断"| INT
+ INT --> DRV
 ```
 
 #### 中断处理程序
@@ -343,39 +343,39 @@ graph TD
 #include <linux/cdev.h>
 
 static int my_open(struct inode *inode, struct file *filp) {
-    // 初始化设备特定状态
-    return 0;
+ // 初始化设备特定状态
+ return 0;
 }
 
 static ssize_t my_read(struct file *filp, char __user *buf,
-                        size_t count, loff_t *off) {
-    // 从设备硬件读取 count 字节到用户 buf
-    // 使用 copy_to_user() -- 不可直接用 memcpy
-    return bytes_read;
+ size_t count, loff_t *off) {
+ // 从设备硬件读取 count 字节到用户 buf
+ // 使用 copy_to_user() -- 不可直接用 memcpy
+ return bytes_read;
 }
 
 static ssize_t my_write(struct file *filp, const char __user *buf,
-                         size_t count, loff_t *off) {
-    // 将用户 buf 中的数据写入设备
-    return bytes_written;
+ size_t count, loff_t *off) {
+ // 将用户 buf 中的数据写入设备
+ return bytes_written;
 }
 
 static long my_ioctl(struct file *filp, unsigned int cmd,
-                      unsigned long arg) {
-    // 设备特异控制: 设置波特率、查询状态等
-    switch (cmd) {
-        case MY_SET_PARAM: /* ... */ break;
-        case MY_GET_STATUS: /* ... */ break;
-    }
-    return 0;
+ unsigned long arg) {
+ // 设备特异控制: 设置波特率、查询状态等
+ switch (cmd) {
+ case MY_SET_PARAM: /* ... */ break;
+ case MY_GET_STATUS: /* ... */ break;
+ }
+ return 0;
 }
 
 static struct file_operations my_fops = {
-    .owner = THIS_MODULE,
-    .open  = my_open,
-    .read  = my_read,
-    .write = my_write,
-    .unlocked_ioctl = my_ioctl,
+ .owner = THIS_MODULE,
+ .open = my_open,
+ .read = my_read,
+ .write = my_write,
+ .unlocked_ioctl = my_ioctl,
 };
 ```
 
@@ -397,7 +397,7 @@ C 标准库（`libc`）在用户态封装系统调用：
 
 ```c
 // 用户看到的
-fprintf(fp, "hello\n");   // buffered I/O
+fprintf(fp, "hello\n"); // buffered I/O
 
 // 实际触发的内核路径
 // fprintf → fwrite → (缓冲区满 / fflush) → write(2) 系统调用
@@ -418,27 +418,27 @@ fprintf(fp, "hello\n");   // buffered I/O
 
 ```mermaid
 flowchart TD
-    subgraph "无缓冲"
-        direction LR
-        U0["用户进程"] <-->|"每次 1 字节"| D0["设备"]
-    end
-    subgraph "单缓冲"
-        direction LR
-        U1["用户进程"] <-->|"同时"| B1["缓冲区"]
-        B1 <-->|"互斥"| D1["设备"]
-    end
-    subgraph "双缓冲"
-        direction LR
-        U2["用户进程"] <-->|"交替"| B2A["缓冲区 A"]
-        U2 <-->|"交替"| B2B["缓冲区 B"]
-        B2A <--> D2["设备"]
-        B2B <--> D2
-    end
-    subgraph "循环缓冲"
-        direction LR
-        U3["用户进程"] -->|"next_in"| B3["环形缓冲区<br/>(n 个槽)"]
-        D3["设备"] -->|"next_out"| B3
-    end
+ subgraph "无缓冲"
+ direction LR
+ U0["用户进程"] <-->|"每次 1 字节"| D0["设备"]
+ end
+ subgraph "单缓冲"
+ direction LR
+ U1["用户进程"] <-->|"同时"| B1["缓冲区"]
+ B1 <-->|"互斥"| D1["设备"]
+ end
+ subgraph "双缓冲"
+ direction LR
+ U2["用户进程"] <-->|"交替"| B2A["缓冲区 A"]
+ U2 <-->|"交替"| B2B["缓冲区 B"]
+ B2A <--> D2["设备"]
+ B2B <--> D2
+ end
+ subgraph "循环缓冲"
+ direction LR
+ U3["用户进程"] -->|"next_in"| B3["环形缓冲区<br/>(n 个槽)"]
+ D3["设备"] -->|"next_out"| B3
+ end
 ```
 
 **单缓冲性能分析**：
@@ -468,27 +468,27 @@ flowchart TD
 #define BUF_SIZE 1024
 
 typedef struct {
-    char  ring[BUF_SIZE];
-    int   head;      // 生产者写入位置
-    int   tail;      // 消费者读取位置
-    int   count;     // 当前数据量
-    sem_t empty;     // 空闲槽数信号量 (初值 = BUF_SIZE)
-    sem_t full;      // 已填充槽数信号量 (初值 = 0)
+ char ring[BUF_SIZE];
+ int head; // 生产者写入位置
+ int tail; // 消费者读取位置
+ int count; // 当前数据量
+ sem_t empty; // 空闲槽数信号量 (初值 = BUF_SIZE)
+ sem_t full; // 已填充槽数信号量 (初值 = 0)
 } circ_buf_t;
 
 void circ_put(circ_buf_t *cb, char c) {
-    sem_wait(&cb->empty);                // 有空槽?
-    cb->ring[cb->head] = c;
-    cb->head = (cb->head + 1) % BUF_SIZE;
-    sem_post(&cb->full);                 // 增加一个满槽
+ sem_wait(&cb->empty); // 有空槽?
+ cb->ring[cb->head] = c;
+ cb->head = (cb->head + 1) % BUF_SIZE;
+ sem_post(&cb->full); // 增加一个满槽
 }
 
 char circ_get(circ_buf_t *cb) {
-    sem_wait(&cb->full);                 // 有数据?
-    char c = cb->ring[cb->tail];
-    cb->tail = (cb->tail + 1) % BUF_SIZE;
-    sem_post(&cb->empty);                // 释放一个空槽
-    return c;
+ sem_wait(&cb->full); // 有数据?
+ char c = cb->ring[cb->tail];
+ cb->tail = (cb->tail + 1) % BUF_SIZE;
+ sem_post(&cb->empty); // 释放一个空槽
+ return c;
 }
 ```
 
@@ -517,24 +517,24 @@ SPOOLing = **S**imultaneous **P**eripheral **O**perations **O**n-**L**ine。本�
 
 ```mermaid
 graph TD
-    subgraph "用户进程"
-        P1["进程 A: 打印 job1"]
-        P2["进程 B: 打印 job2"]
-        P3["进程 C: 打印 job3"]
-    end
-    subgraph "SPOOLing 系统"
-        IW["输入井 (磁盘文件)<br/>/var/spool/printer/"]
-        SD["SPOOLing 守护进程<br/>(spooling daemon)"]
-        OW["输出井 (磁盘文件)<br/>/var/spool/printer/"]
-    end
-    subgraph "物理设备"
-        PR["物理打印机"]
-    end
-    P1 -->|"write"| IW
-    P2 -->|"write"| IW
-    P3 -->|"write"| IW
-    IW -->|"排队输出"| SD
-    SD -->|"串行控制"| PR
+ subgraph "用户进程"
+ P1["进程 A: 打印 job1"]
+ P2["进程 B: 打印 job2"]
+ P3["进程 C: 打印 job3"]
+ end
+ subgraph "SPOOLing 系统"
+ IW["输入井 (磁盘文件)<br/>/var/spool/printer/"]
+ SD["SPOOLing 守护进程<br/>(spooling daemon)"]
+ OW["输出井 (磁盘文件)<br/>/var/spool/printer/"]
+ end
+ subgraph "物理设备"
+ PR["物理打印机"]
+ end
+ P1 -->|"write"| IW
+ P2 -->|"write"| IW
+ P3 -->|"write"| IW
+ IW -->|"排队输出"| SD
+ SD -->|"串行控制"| PR
 ```
 
 **输入井**：进程将打印数据写入磁盘文件（快），不必等待打印机（慢）。
@@ -556,8 +556,8 @@ lp -d office_printer report.pdf
 # 4. 打印机完成 → 删除临时文件
 
 # 查看打印队列
-lpq               # 列出等待中的打印任务
-lprm 5            # 取消编号为 5 的任务
+lpq # 列出等待中的打印任务
+lprm 5 # 取消编号为 5 的任务
 ```
 
 SPOOLing 不仅用于打印。Linux 的邮件系统（MTA 如 Postfix）、`at`/`batch` 批处理调度都是 SPOOLing 思想的变体。进程将任务"假脱机"到磁盘队列，后台守护进程逐一处理。
@@ -583,8 +583,8 @@ SPOOLing 的核心效果是**将独占设备改造为共享虚拟设备**：
 
 ```mermaid
 graph TD
-    APP["应用程序<br/>fd = open('/dev/printer')"] --> LDT["逻辑设备表 (LDT)"]
-    LDT -->|"映射"| PHYS["物理设备: /dev/lp0"]
+ APP["应用程序<br/>fd = open('/dev/printer')"] --> LDT["逻辑设备表 (LDT)"]
+ LDT -->|"映射"| PHYS["物理设备: /dev/lp0"]
 ```
 
 逻辑设备表（LDT）每个条目：
@@ -606,12 +606,12 @@ graph TD
 
 ```mermaid
 graph TD
-    SDT["SDT<br/>系统设备表<br/>(所有设备)"] --> DCT1["DCT<br/>设备控制表<br/>(设备 0)"]
-    SDT --> DCT2["DCT<br/>设备控制表<br/>(设备 1)"]
-    DCT1 --> COCT1["COCT<br/>控制器控制表"]
-    COCT1 --> CHCT1["CHCT<br/>通道控制表"]
-    DCT2 --> COCT2["COCT<br/>控制器控制表"]
-    COCT2 --> CHCT2["CHCT<br/>通道控制表"]
+ SDT["SDT<br/>系统设备表<br/>(所有设备)"] --> DCT1["DCT<br/>设备控制表<br/>(设备 0)"]
+ SDT --> DCT2["DCT<br/>设备控制表<br/>(设备 1)"]
+ DCT1 --> COCT1["COCT<br/>控制器控制表"]
+ COCT1 --> CHCT1["CHCT<br/>通道控制表"]
+ DCT2 --> COCT2["COCT<br/>控制器控制表"]
+ COCT2 --> CHCT2["CHCT<br/>通道控制表"]
 ```
 
 | 表 | 全称 | 记录内容 |
@@ -624,12 +624,12 @@ graph TD
 ```c
 // DCT 简化定义
 struct dct {
-    int    device_id;         // 设备标识符
-    int    device_type;       // 块 / 字符
-    int    status;            // 空闲 / 已分配 / 故障
-    int    pid;               // 当前占用进程 PID
-    struct list_head waitq;   // 等待本设备的进程队列
-    struct coct *controller;  // 指向对应控制器
+ int device_id; // 设备标识符
+ int device_type; // 块 / 字符
+ int status; // 空闲 / 已分配 / 故障
+ int pid; // 当前占用进程 PID
+ struct list_head waitq; // 等待本设备的进程队列
+ struct coct *controller; // 指向对应控制器
 };
 ```
 
@@ -669,16 +669,16 @@ struct dct {
 
 ```mermaid
 graph TD
-    subgraph "磁盘结构"
-        direction LR
-        PL["盘片 (Platter)"] --> TR["磁道 (Track)"]
-        TR --> SEC["扇区 (Sector)<br/>传统 512B / 现代 4KB"]
-        PL2["多盘片同号磁道"] --> CYL["柱面 (Cylinder)"]
-    end
-    subgraph "寻址方式"
-        CHS["CHS: 柱面/磁头/扇区<br/>(柱面, 磁头, 扇区)"] -->|"24bit C, 8bit H, 6bit S"| CAP["上限 ~8GB (已淘汰)"]
-        LBA["LBA: 逻辑块地址<br/>扇区从 0 顺序编号"] -->|"48bit"| CAP2["上限 128PB"]
-    end
+ subgraph "磁盘结构"
+ direction LR
+ PL["盘片 (Platter)"] --> TR["磁道 (Track)"]
+ TR --> SEC["扇区 (Sector)<br/>传统 512B / 现代 4KB"]
+ PL2["多盘片同号磁道"] --> CYL["柱面 (Cylinder)"]
+ end
+ subgraph "寻址方式"
+ CHS["CHS: 柱面/磁头/扇区<br/>(柱面, 磁头, 扇区)"] -->|"24bit C, 8bit H, 6bit S"| CAP["上限 ~8GB (已淘汰)"]
+ LBA["LBA: 逻辑块地址<br/>扇区从 0 顺序编号"] -->|"48bit"| CAP2["上限 128PB"]
+ end
 ```
 
 CHS（Cylinder-Head-Sector）是传统寻址方式，但因位宽限制早已被 LBA（Logical Block Addressing）取代。现代磁盘控制器内部将 LBA 映射到物理扇区（可能重映射坏块）。
@@ -715,7 +715,7 @@ SSD 没有机械部件，因此无寻道和旋转延迟，随机访问 ~0.1ms。
 请求队列: 55, 58, 39, 18, 90, 160, 150, 38, 184
 磁头轨迹: 100→55→58→39→18→90→160→150→38→184
 移动距离: |100-55|+|55-58|+|58-39|+|39-18|+|18-90|+|90-160|+|160-150|+|150-38|+|38-184|
-       = 45 + 3 + 19 + 21 + 72 + 70 + 10 + 112 + 146 = 498 道
+ = 45 + 3 + 19 + 21 + 72 + 70 + 10 + 112 + 146 = 498 道
 ```
 
 ##### SSTF（最短寻道时间优先）
@@ -736,17 +736,17 @@ SSTF 存在**饥饿**风险：如果不断有新请求出现在磁头附近，�
 
 ```
 初始: 100, 向大号方向移动
-100→150 (50) →160 (10) →184 (24)  [到达远端] → 折返
+100→150 (50) →160 (10) →184 (24) [到达远端] → 折返
 →90 (94) →58 (32) →55 (3) →39 (16) →38 (1) →18 (20)
 总移动 = 50+10+24+94+32+3+16+1+20 = 250 道
 ```
 
 ```mermaid
 graph LR
-    subgraph "SCAN 扫描轨迹"
-        direction LR
-        A["18"] --- B["38"] --- C["39"] --- D["55"] --- E["58"] --- F["90"] --- G["100 ●"] --- H["150"] --- I["160"] --- J["184"]
-    end
+ subgraph "SCAN 扫描轨迹"
+ direction LR
+ A["18"] --- B["38"] --- C["39"] --- D["55"] --- E["58"] --- F["90"] --- G["100 ●"] --- H["150"] --- I["160"] --- J["184"]
+ end
 ```
 
 SCAN 的弱点：磁头刚过 90 道，请求 38 到达，38 必须等到磁头扫到远端再折返，等待时间长。
@@ -757,7 +757,7 @@ SCAN 的弱点：磁头刚过 90 道，请求 38 到达，38 必须等到磁头�
 
 ```
 初始: 100, 向大号移动
-100→150→160→184   [到达远端] → 快速返回 0 → 18→38→39→55→58→90
+100→150→160→184 [到达远端] → 快速返回 0 → 18→38→39→55→58→90
 总移动 = (184-100) + (184-0) + (90-0) = 84+184+90 = 358 道
 ```
 
@@ -769,7 +769,7 @@ SCAN 的优化 -- 磁头不扫到绝对边缘，扫到**最远请求**就折返�
 
 ```
 初始: 100, 向大号移动 (最远请求: 184)
-100→150→160→184   [折返] → 90→58→55→39→38→18
+100→150→160→184 [折返] → 90→58→55→39→38→18
 总移动 = (184-100) + (184-18) = 84+166 = 250 道
 ```
 
@@ -779,7 +779,7 @@ C-SCAN + LOOK 的优化：单向服务，到最远请求后直接跳到最近请
 
 ```
 初始: 100, 向大号移动
-100→150→160→184   [跳到 18] → 18→38→39→55→58→90
+100→150→160→184 [跳到 18] → 18→38→39→55→58→90
 总移动 = (184-100) + (184-18) + (90-18) = 84+166+72 = 322 道
 ```
 
@@ -802,9 +802,9 @@ Linux 默认 I/O 调度器（内核 5.0+ 使用 `mq-deadline`）将读请求和�
 
 ```
 +------+-------+------+----------+------+
-| Gap  | Sync  | Addr | Data     | ECC  |
+| Gap | Sync | Addr | Data | ECC |
 +------+-------+------+----------+------+
-  16B    1B      6B    512B/4KB   8-16B
+ 16B 1B 6B 512B/4KB 8-16B
 ```
 
 **分区**（Partitioning）：将磁盘划分成分区，每个分区可作为独立的文件系统。MBR 分区表在扇区 0 存储分区信息，GPT 在扇区 1-N 存储更现代的方案。
@@ -897,12 +897,12 @@ I/O 是虚拟化中最大的性能瓶颈。三种方案对比：
 
 ```mermaid
 graph TD
-    subgraph "virtio 半虚拟化"
-        GAPP["Guest: 应用程序"] --> GVFS["Guest: VFS"]
-        GVFS --> FRONT["Guest: virtio-blk 前端驱动"]
-        FRONT -->|"virtqueue (共享内存)"| BACK["Host: virtio-blk 后端 (QEMU/KVM)"]
-        BACK --> VFS2["Host: VFS → 块层 → 物理磁盘"]
-    end
+ subgraph "virtio 半虚拟化"
+ GAPP["Guest: 应用程序"] --> GVFS["Guest: VFS"]
+ GVFS --> FRONT["Guest: virtio-blk 前端驱动"]
+ FRONT -->|"virtqueue (共享内存)"| BACK["Host: virtio-blk 后端 (QEMU/KVM)"]
+ BACK --> VFS2["Host: VFS → 块层 → 物理磁盘"]
+ end
 ```
 
 virtio 是 Linux 中虚拟机 I/O 的事实标准。前端和后端通过 `virtqueue`（本质上是共享内存中的环形缓冲区）通信，避免了全模拟的每次 I/O 多次 VM Exit 开销。`virtio-blk` 是块设备版本，`virtio-scsi` 是 SCSI 子系统版本（支持更多企业特性如 UNMAP）。

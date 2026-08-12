@@ -10,12 +10,12 @@ macOS 的 Finder（访达）每打开/保存过一个文件夹，就会在**该�
 
 ```mermaid
 flowchart LR
-    A[macOS Finder 访问/保存文件夹] --> B[自动生成 .DS_Store]
-    B --> C[记录视图设置]
-    B --> D[记录自定义属性 noteustr 备注]
-    B --> E[记录目录文件清单]
-    E --> F[攻击者下载 .DS_Store]
-    F --> G[解析出全部文件名 → 顺藤摸瓜]
+ A[macOS Finder 访问/保存文件夹] --> B[自动生成 .DS_Store]
+ B --> C[记录视图设置]
+ B --> D[记录自定义属性 noteustr 备注]
+ B --> E[记录目录文件清单]
+ E --> F[攻击者下载 .DS_Store]
+ F --> G[解析出全部文件名 → 顺藤摸瓜]
 ```
 
 两个关键点：
@@ -81,7 +81,7 @@ curl -s "http://目标/968fbc9c0cca038046a8b427db1d0864.txt"
 ```bash
 # 下载 + 解析（文件名是 UTF-16BE，strings 解不出）
 curl -s "http://目标/.DS_Store" -o .DS_Store
-dsstore --notes .DS_Store          # 用上面同一工具解析本地文件
+dsstore --notes .DS_Store # 用上面同一工具解析本地文件
 ```
 
 > `dsstore` 支持本地文件与 URL 两种输入：`dsstore .DS_Store`（本地）/ `dsstore http://目标/.DS_Store`（在线）。解析原理：B-tree 头部定位 → 读记录 `len+UTF-16BE名字+类型+备注`，块大小按 `1 << (addr & 0x1f)` 提取，结构异常时回退 UTF-16BE 扫描。

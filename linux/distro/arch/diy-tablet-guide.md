@@ -1,10 +1,10 @@
 ---
 tags:
-  - diy
-  - 树莓派
-  - archlinux
-  - gnome
-  - 触屏
+ - diy
+ - 树莓派
+ - archlinux
+ - gnome
+ - 触屏
 created: 2026-06-12
 ---
 
@@ -29,89 +29,89 @@ created: 2026-06-12
 
 ```mermaid
 graph TB
-    subgraph 供电链路
-        AC[🏠 220V 交流电<br/>家用插座] -->|USB 充电头| USBC[USB-C 5V 3A]
-    end
+ subgraph 供电链路
+ AC[ 220V 交流电<br/>家用插座] -->|USB 充电头| USBC[USB-C 5V 3A]
+ end
 
-    subgraph 树莓派 4B
-        PWR[USB-C 电源口]
-        HDMI[micro-HDMI 口]
-        USB[USB-A 口]
-        GPIO[GPIO 排针]
-        CPU[BCM2711<br/>4×A72]
-        GPU[VideoCore VI<br/>V3D 开源驱动]
-    end
+ subgraph 树莓派 4B
+ PWR[USB-C 电源口]
+ HDMI[micro-HDMI 口]
+ USB[USB-A 口]
+ GPIO[GPIO 排针]
+ CPU[BCM2711<br/>4×A72]
+ GPU[VideoCore VI<br/>V3D 开源驱动]
+ end
 
-    subgraph 4.3寸触屏控制板
-        HDMI_IN[HDMI 输入口]
-        TOUCH[Micro-USB 触摸口]
-        PWR_IN[5V 供电端子]
-        LCD[800×480 IPS LCD]
-        TP[电容触摸层]
-    end
+ subgraph 4.3寸触屏控制板
+ HDMI_IN[HDMI 输入口]
+ TOUCH[Micro-USB 触摸口]
+ PWR_IN[5V 供电端子]
+ LCD[800×480 IPS LCD]
+ TP[电容触摸层]
+ end
 
-    AC --> USBC
-    USBC -->|供电 1| PWR
-    GPIO -->|Pin 4 5V<br/>Pin 6 GND| PWR_IN
-    HDMI -->|HDMI 信号| HDMI_IN
-    USB -->|USB HID 触控数据| TOUCH
-    PWR --> CPU
-    CPU --> GPU
-    HDMI_IN --> LCD
-    TOUCH --> TP
-    LCD --> TP
+ AC --> USBC
+ USBC -->|供电 1| PWR
+ GPIO -->|Pin 4 5V<br/>Pin 6 GND| PWR_IN
+ HDMI -->|HDMI 信号| HDMI_IN
+ USB -->|USB HID 触控数据| TOUCH
+ PWR --> CPU
+ CPU --> GPU
+ HDMI_IN --> LCD
+ TOUCH --> TP
+ LCD --> TP
 
-    style AC fill:#ff6b35,color:#fff
-    style USBC fill:#2ecc71,color:#fff
-    style Pi fill:#c0392b,color:#fff
-    style 屏幕 fill:#3498db,color:#fff
+ style AC fill:#ff6b35,color:#fff
+ style USBC fill:#2ecc71,color:#fff
+ style Pi fill:#c0392b,color:#fff
+ style 屏幕 fill:#3498db,color:#fff
 ```
 
 ### 1.1 详细接线对照
 
 ```mermaid
 graph LR
-    subgraph Pi[树莓派 4B]
-        direction TB
-        P1[micro-HDMI]
-        P2[USB-A]
-        P3["GPIO Pin 4<br/>(5V 供电)"]
-        P4["GPIO Pin 6<br/>(GND 地线)"]
-        P5["USB-C<br/>(主板供电)"]
-    end
+ subgraph Pi[树莓派 4B]
+ direction TB
+ P1[micro-HDMI]
+ P2[USB-A]
+ P3["GPIO Pin 4<br/>(5V 供电)"]
+ P4["GPIO Pin 6<br/>(GND 地线)"]
+ P5["USB-C<br/>(主板供电)"]
+ end
 
-    subgraph Screen[4.3 寸触屏控制板]
-        direction TB
-        S1[HDMI 输入口]
-        S2["Micro-USB<br/>(触摸数据口)"]
-        S3["5V 输入<br/>供电端子"]
-        S4["GND<br/>接地端子"]
-    end
+ subgraph Screen[4.3 寸触屏控制板]
+ direction TB
+ S1[HDMI 输入口]
+ S2["Micro-USB<br/>(触摸数据口)"]
+ S3["5V 输入<br/>供电端子"]
+ S4["GND<br/>接地端子"]
+ end
 
-    subgraph Power[电源]
-        direction TB
-        PW1[手机充电头<br/>AC→DC 5V]
-        PW2[220V 交流插座]
-    end
+ subgraph Power[电源]
+ direction TB
+ PW1[手机充电头<br/>AC→DC 5V]
+ PW2[220V 交流插座]
+ end
 
-    P1 -.->|"HDMI 信号线"| S1
-    P2 -.->|"USB 触控线"| S2
-    P3 -.->|"杜邦线 (红)"| S3
-    P4 -.->|"杜邦线 (黑)"| S4
-    P5 -.->|"USB-C 数据线"| PW1
-    PW1 -.->|"插头"| PW2
+ P1 -.->|"HDMI 信号线"| S1
+ P2 -.->|"USB 触控线"| S2
+ P3 -.->|"杜邦线 (红)"| S3
+ P4 -.->|"杜邦线 (黑)"| S4
+ P5 -.->|"USB-C 数据线"| PW1
+ PW1 -.->|"插头"| PW2
 
-    style Pi fill:#2c3e50,color:#fff
-    style Screen fill:#34495e,color:#fff
-    style Power fill:#16a085,color:#fff
+ style Pi fill:#2c3e50,color:#fff
+ style Screen fill:#34495e,color:#fff
+ style Power fill:#16a085,color:#fff
 ```
 
 ### 1.2 GPIO 供电接脚位置
 
 | 功能 | GPIO 编号 | 物理 Pin | 线色 |
 |------|----------|----------|------|
-| 5V 输出 | — | Pin 4 | 🔴 红 |
-| GND | — | Pin 6 | ⚫ 黑 |
+| 5V 输出 | — | Pin 4 | 红 |
+| GND | — | Pin 6 | 黑 |
 
 > [!warning] GPIO 接线注意
 > GPIO Pin 4/6 在排针的同一列、紧挨着（外列上端第 2、3 个）。**务必确认 Pin 编号再接线，接错 5V/GND 会烧屏。**
@@ -127,24 +127,24 @@ graph LR
 
 ```mermaid
 flowchart TD
-    A["下单收件<br/>Pi 4B + 屏 + SD"] --> B["1️⃣ 硬件接线<br/>GPIO/HDMI/USB"]
-    B --> C["2️⃣ 烧录系统<br/>SD 卡分区+写入"]
-    C --> D["3️⃣ 上电 + SSH 登录<br/>首次启动配置"]
-    D --> E["4️⃣ GPU 驱动<br/>config.txt 改显示"]
-    E --> F["5️⃣ 安装 GNOME<br/>pacman 拉桌面"]
-    F --> G["6️⃣ 触屏调优<br/>onboard + libinput"]
-    G --> H["7️⃣ 美化 & 省电<br/>主题 + ZRAM + powertop"]
-    H --> I["✅ 跑验机脚本<br/>check.sh 全验证"]
+ A["下单收件<br/>Pi 4B + 屏 + SD"] --> B["1⃣ 硬件接线<br/>GPIO/HDMI/USB"]
+ B --> C["2⃣ 烧录系统<br/>SD 卡分区+写入"]
+ C --> D["3⃣ 上电 + SSH 登录<br/>首次启动配置"]
+ D --> E["4⃣ GPU 驱动<br/>config.txt 改显示"]
+ E --> F["5⃣ 安装 GNOME<br/>pacman 拉桌面"]
+ F --> G["6⃣ 触屏调优<br/>onboard + libinput"]
+ G --> H["7⃣ 美化 & 省电<br/>主题 + ZRAM + powertop"]
+ H --> I[" 跑验机脚本<br/>check.sh 全验证"]
 
-    style A fill:#e67e22,color:#fff
-    style B fill:#e74c3c,color:#fff
-    style C fill:#9b59b6,color:#fff
-    style D fill:#3498db,color:#fff
-    style E fill:#2ecc71,color:#fff
-    style F fill:#1abc9c,color:#fff
-    style G fill:#f39c12,color:#fff
-    style H fill:#e91e63,color:#fff
-    style I fill:#27ae60,color:#fff
+ style A fill:#e67e22,color:#fff
+ style B fill:#e74c3c,color:#fff
+ style C fill:#9b59b6,color:#fff
+ style D fill:#3498db,color:#fff
+ style E fill:#2ecc71,color:#fff
+ style F fill:#1abc9c,color:#fff
+ style G fill:#f39c12,color:#fff
+ style H fill:#e91e63,color:#fff
+ style I fill:#27ae60,color:#fff
 ```
 
 ---
@@ -161,7 +161,7 @@ curl -LO http://os.archlinuxarm.org/os/ArchLinuxARM-rpi-aarch64-latest.tar.gz
 ### 3.2 分区 MicroSD
 
 ```bash
-DEV=/dev/sdX          # 替换为你的 SD 卡设备名（lsblk 确认）
+DEV=/dev/sdX # 替换为你的 SD 卡设备名（lsblk 确认）
 
 # 清除分区表
 sudo sgdisk --zap-all $DEV
@@ -215,7 +215,7 @@ ssh alarm@<树莓派IP>
 
 # 默认账号密码
 # 用户名: alarm
-# 密码:   alarm
+# 密码: alarm
 # root 密码: root
 ```
 
@@ -306,61 +306,61 @@ dtparam=spi=on
 
 ```mermaid
 flowchart TD
-    subgraph Hardware[硬件层]
-        TP[电容触摸面板]
-        LCD[LCD 显示面板]
-    end
+ subgraph Hardware[硬件层]
+ TP[电容触摸面板]
+ LCD[LCD 显示面板]
+ end
 
-    subgraph Kernel[内核驱动层]
-        USB_HID["USB HID 驱动
+ subgraph Kernel[内核驱动层]
+ USB_HID["USB HID 驱动
 hid_multitouch"]
-        HDMI["HDMI 显示驱动
+ HDMI["HDMI 显示驱动
 vc4-kms-v3d"]
-    end
+ end
 
-    subgraph Input[输入抽象层]
-        LIBINPUT["libinput
+ subgraph Input[输入抽象层]
+ LIBINPUT["libinput
 触控事件标准化"]
-        MESA["Mesa 3D
+ MESA["Mesa 3D
 Vulkan/OpenGL"]
-    end
+ end
 
-    subgraph Display[显示服务层]
-        WAYLAND["Wayland Compositor
+ subgraph Display[显示服务层]
+ WAYLAND["Wayland Compositor
 Mutter"]
-        OSK["虚拟键盘
+ OSK["虚拟键盘
 onboard"]
-    end
+ end
 
-    subgraph App[应用层]
-        GNOME_SHELL[GNOME Shell 桌面]
-        APPS[Firefox / Inkscape / osu!]
-    end
+ subgraph App[应用层]
+ GNOME_SHELL[GNOME Shell 桌面]
+ APPS[Firefox / Inkscape / osu!]
+ end
 
-    TP -->|手指坐标| USB_HID
-    USB_HID -->|evdev 事件| LIBINPUT
-    LIBINPUT -->|标准化事件| WAYLAND
-    WAYLAND -->|渲染合成| GNOME_SHELL
-    WAYLAND -->|转发点击| APPS
-    MESA -->|GPU 渲染| WAYLAND
-    WAYLAND -->|帧缓冲| HDMI
-    HDMI -->|显示| LCD
+ TP -->|手指坐标| USB_HID
+ USB_HID -->|evdev 事件| LIBINPUT
+ LIBINPUT -->|标准化事件| WAYLAND
+ WAYLAND -->|渲染合成| GNOME_SHELL
+ WAYLAND -->|转发点击| APPS
+ MESA -->|GPU 渲染| WAYLAND
+ WAYLAND -->|帧缓冲| HDMI
+ HDMI -->|显示| LCD
 
-    style TP fill:#e74c3c,color:#fff
-    style LCD fill:#3498db,color:#fff
-    style USB_HID fill:#9b59b6,color:#fff
-    style LIBINPUT fill:#2ecc71,color:#fff
-    style WAYLAND fill:#e67e22,color:#fff
+ style TP fill:#e74c3c,color:#fff
+ style LCD fill:#3498db,color:#fff
+ style USB_HID fill:#9b59b6,color:#fff
+ style LIBINPUT fill:#2ecc71,color:#fff
+ style WAYLAND fill:#e67e22,color:#fff
 ```
 
 安装 GNOME 桌面环境:
 
 ```bash
 sudo pacman -S --noconfirm \
-  gnome \
-  gnome-tweaks \
-  networkmanager \
-  xdg-user-dirs
+ gnome \
+ gnome-tweaks \
+ networkmanager \
+ xdg-user-dirs
 
 sudo systemctl enable gdm
 sudo systemctl enable NetworkManager
@@ -379,15 +379,15 @@ sudo reboot
 
 ```bash
 sudo pacman -Rns --noconfirm \
-  gnome-contacts \
-  gnome-maps \
-  gnome-weather \
-  gnome-clocks \
-  totem \
-  epiphany \
-  gnome-calendar \
-  gnome-boxes \
-  evolution-data-server
+ gnome-contacts \
+ gnome-maps \
+ gnome-weather \
+ gnome-clocks \
+ totem \
+ epiphany \
+ gnome-calendar \
+ gnome-boxes \
+ evolution-data-server
 ```
 
 ---
@@ -536,51 +536,51 @@ echo "=== 所有验证完成 ==="
 
 ```mermaid
 graph TB
-    subgraph 供电
-        PB["10000mAh PD 充电宝
+ subgraph 供电
+ PB["10000mAh PD 充电宝
 15W 输出"]
-    end
+ end
 
-    subgraph 核心[树莓派 5]
-        P5[Pi 5 4GB/8GB]
-        NVME["128GB NVMe SSD
+ subgraph 核心[树莓派 5]
+ P5[Pi 5 4GB/8GB]
+ NVME["128GB NVMe SSD
 M.2 插槽"]
-    end
+ end
 
-    subgraph 主屏
-        MAIN["10.1 寸 IPS 1280×800
+ subgraph 主屏
+ MAIN["10.1 寸 IPS 1280×800
 电容触控"]
-    end
+ end
 
-    subgraph 副屏[背部副屏]
-        SPI[SPI 总线]
-        SUB["1.28 寸圆形 LCD 240×240
+ subgraph 副屏[背部副屏]
+ SPI[SPI 总线]
+ SUB["1.28 寸圆形 LCD 240×240
 GC9A01 驱动"]
-        ANIM["循环播放 GIF 动画
+ ANIM["循环播放 GIF 动画
 ffmpeg + framebuffer"]
-    end
+ end
 
-    subgraph 外设
-        WACOM["外接 Wacom 绘图板
+ subgraph 外设
+ WACOM["外接 Wacom 绘图板
 USB / 蓝牙"]
-        KB["蓝牙键盘"]
-    end
+ KB["蓝牙键盘"]
+ end
 
-    PB -->|USB-C PD 5V| P5
-    P5 -->|micro-HDMI| MAIN
-    P5 -->|USB| MAIN
-    P5 --> SPI
-    SPI --> SUB
-    SUB --> ANIM
-    P5 --> NVME
-    WACOM -.->|需要矢量绘图时连接| P5
-    KB -.->|需要打字时连接| P5
+ PB -->|USB-C PD 5V| P5
+ P5 -->|micro-HDMI| MAIN
+ P5 -->|USB| MAIN
+ P5 --> SPI
+ SPI --> SUB
+ SUB --> ANIM
+ P5 --> NVME
+ WACOM -.->|需要矢量绘图时连接| P5
+ KB -.->|需要打字时连接| P5
 
-    style P5 fill:#c0392b,color:#fff
-    style MAIN fill:#2980b9,color:#fff
-    style SUB fill:#8e44ad,color:#fff
-    style NVME fill:#27ae60,color:#fff
-    style PB fill:#f39c12,color:#fff
+ style P5 fill:#c0392b,color:#fff
+ style MAIN fill:#2980b9,color:#fff
+ style SUB fill:#8e44ad,color:#fff
+ style NVME fill:#27ae60,color:#fff
+ style PB fill:#f39c12,color:#fff
 ```
 
 ### 10.1 硬件对比

@@ -2,14 +2,14 @@
 
 - [[#一、服务识别的核心价值|一、服务识别的核心价值]]
 - [[#二、amap — 应用映射与 Banner 抓取|二、amap — 应用映射与 Banner 抓取]]
-  - [[#2.1 安装与基本使用|2.1 安装与基本使用]]
-  - [[#2.2 批量扫描|2.2 批量扫描]]
-  - [[#2.3 高级触发模式|2.3 高级触发模式]]
-  - [[#2.4 指纹数据库与加速|2.4 指纹数据库与加速]]
+ - [[#2.1 安装与基本使用|2.1 安装与基本使用]]
+ - [[#2.2 批量扫描|2.2 批量扫描]]
+ - [[#2.3 高级触发模式|2.3 高级触发模式]]
+ - [[#2.4 指纹数据库与加速|2.4 指纹数据库与加速]]
 - [[#三、unicornscan — TCP/UDP 高速探测|三、unicornscan — TCP/UDP 高速探测]]
-  - [[#3.1 安装与 TCP 扫描|3.1 安装与 TCP 扫描]]
-  - [[#3.2 UDP 扫描|3.2 UDP 扫描]]
-  - [[#3.3 Banner 抓取与高级参数|3.3 Banner 抓取与高级参数]]
+ - [[#3.1 安装与 TCP 扫描|3.1 安装与 TCP 扫描]]
+ - [[#3.2 UDP 扫描|3.2 UDP 扫描]]
+ - [[#3.3 Banner 抓取与高级参数|3.3 Banner 抓取与高级参数]]
 - [[#四、分层服务识别策略|四、分层服务识别策略]]
 - [[#五、识别非标准服务的技巧|五、识别非标准服务的技巧]]
 - [[#六、实践演练 — 完整服务识别|六、实践演练 — 完整服务识别]]
@@ -17,27 +17,27 @@
 
 ```mermaid
 flowchart LR
-    subgraph Layer1[第一层: 端口发现]
-        M[masscan<br/>全端口 1-65535<br/>10K-100K pps]
-        U1[unicornscan -mT<br/>TCP 常用端口]
-        U2[unicornscan -mU<br/>UDP 端口]
-    end
+ subgraph Layer1[第一层: 端口发现]
+ M[masscan<br/>全端口 1-65535<br/>10K-100K pps]
+ U1[unicornscan -mT<br/>TCP 常用端口]
+ U2[unicornscan -mU<br/>UDP 端口]
+ end
 
-    subgraph Layer2[第二层: Banner 抓取]
-        A[amap -bqvH<br/>多触发器识别]
-        UNI[unicornscan -Iv<br/>即时 Banner]
-    end
+ subgraph Layer2[第二层: Banner 抓取]
+ A[amap -bqvH<br/>多触发器识别]
+ UNI[unicornscan -Iv<br/>即时 Banner]
+ end
 
-    subgraph Layer3[第三层: 深度验证]
-        N[nmap -sV -sC<br/>精确版本 + 漏洞脚本]
-        M2[手动 nc/curl<br/>自定义探测]
-    end
+ subgraph Layer3[第三层: 深度验证]
+ N[nmap -sV -sC<br/>精确版本 + 漏洞脚本]
+ M2[手动 nc/curl<br/>自定义探测]
+ end
 
-    Layer1 --> Layer2 --> Layer3
+ Layer1 --> Layer2 --> Layer3
 
-    style M fill:#67c23a,color:#fff
-    style A fill:#409eff,color:#fff
-    style N fill:#e6a23c,color:#fff
+ style M fill:#67c23a,color:#fff
+ style A fill:#409eff,color:#fff
+ style N fill:#e6a23c,color:#fff
 ```
 
 ## 一、服务识别的核心价值
@@ -125,11 +125,11 @@ amap 通过发送多种触发数据包来识别服务。可以指定触发方式
 
 ```bash
 # 各种触发模式示例
-amap -M 192.168.1.100 445     # SMB
-amap -H 192.168.1.100 8080    # HTTP 服务
-amap -S 192.168.1.100 443     # SSL 服务
-amap -U 192.168.1.100 161     # SNMP
-amap -N 192.168.1.100 21      # FTP
+amap -M 192.168.1.100 445 # SMB
+amap -H 192.168.1.100 8080 # HTTP 服务
+amap -S 192.168.1.100 443 # SSL 服务
+amap -U 192.168.1.100 161 # SNMP
+amap -N 192.168.1.100 21 # FTP
 
 # 未知服务全面探测（组合多种触发器）
 amap -bqvHM 192.168.1.100 9999
@@ -156,7 +156,7 @@ head -50 /usr/share/amap/appdefs.trig
 
 # 设置并发连接数和超时
 amap -bqvH -c 10 -i targets.txt 80 443 8080
-amap -bqvH -t 3 192.168.1.100 80      # 连接超时 3 秒
+amap -bqvH -t 3 192.168.1.100 80 # 连接超时 3 秒
 
 # 组合高速扫描
 amap -bqv -c 20 -t 2 -i targets.txt 22 80 443 8080 8443 3389
@@ -178,20 +178,20 @@ jq -r '.[].ports[].port' masscan_full.json > open_ports.txt
 
 # 用 amap 逐一识别
 while read port; do
-  echo "=== Checking port $port ==="
-  amap -bqvH 192.168.1.100 "$port"
+ echo "=== Checking port $port ==="
+ amap -bqvH 192.168.1.100 "$port"
 done < open_ports.txt
 ```
 
 数据库服务识别:
 
 ```bash
-amap -bqvM 192.168.1.100 3306    # MySQL
-amap -bqvM 192.168.1.100 1433    # MSSQL
-amap -bqvM 192.168.1.100 5432    # PostgreSQL
-amap -bqvM 192.168.1.100 6379    # Redis
-amap -bqvM 192.168.1.100 27017   # MongoDB
-amap -bqvM 192.168.1.100 1521    # Oracle TNS
+amap -bqvM 192.168.1.100 3306 # MySQL
+amap -bqvM 192.168.1.100 1433 # MSSQL
+amap -bqvM 192.168.1.100 5432 # PostgreSQL
+amap -bqvM 192.168.1.100 6379 # Redis
+amap -bqvM 192.168.1.100 27017 # MongoDB
+amap -bqvM 192.168.1.100 1521 # Oracle TNS
 ```
 
 ## 三、unicornscan — TCP/UDP 高速探测
@@ -217,10 +217,10 @@ sudo unicornscan -mT 192.168.1.0/24:22,80,443
 
 输出示例:
 ```
-TCP open                     ssh[   22]         from 192.168.1.1  ttl 64
-TCP open                    http[   80]         from 192.168.1.1  ttl 64
-TCP open                   https[  443]         from 192.168.1.1  ttl 64
-TCP open          microsoft-ds[  445]           from 192.168.1.100  ttl 128
+TCP open ssh[ 22] from 192.168.1.1 ttl 64
+TCP open http[ 80] from 192.168.1.1 ttl 64
+TCP open https[ 443] from 192.168.1.1 ttl 64
+TCP open microsoft-ds[ 445] from 192.168.1.100 ttl 128
 ```
 
 ### 3.2 UDP 扫描
@@ -254,10 +254,10 @@ sudo unicornscan -mU -Iv 192.168.1.100:53,161,123
 
 输出示例（含 Banner）:
 ```
-TCP open                     ssh[   22]         from 192.168.1.1  ttl 64
-        banner: SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.1
-TCP open                    http[   80]         from 192.168.1.1  ttl 64
-        banner: HTTP/1.1 200 OK\r\nServer: nginx/1.18.0 (Ubuntu)
+TCP open ssh[ 22] from 192.168.1.1 ttl 64
+ banner: SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.1
+TCP open http[ 80] from 192.168.1.1 ttl 64
+ banner: HTTP/1.1 200 OK\r\nServer: nginx/1.18.0 (Ubuntu)
 ```
 
 | 参数 | 说明 |
@@ -288,7 +288,7 @@ sudo unicornscan -mU -r 10000 192.168.1.0/24:1-1000,1024-65535 -o phase1_udp.txt
 ```bash
 # 批量 Banner 抓取（amap）
 cat open_ports.txt | while read ip port; do
-  amap -bqvH "$ip" "$port"
+ amap -bqvH "$ip" "$port"
 done > phase2_banners.txt
 
 # 或使用 unicornscan
@@ -331,8 +331,8 @@ sudo unicornscan -mU -r 2000 "$TARGET":53,123,161,500,1900,4500,5353 -o "$OUTDIR
 echo ">>> Phase 3: Banner 抓取 (amap)"
 IFS=',' read -ra PORT_ARRAY <<< "$TCP_PORTS"
 for port in "${PORT_ARRAY[@]}"; do
-  echo "  - 探测端口 $port ..."
-  amap -bqvHM "$TARGET" "$port" >> "$OUTDIR/p3_banners" 2>&1
+ echo " - 探测端口 $port ..."
+ amap -bqvHM "$TARGET" "$port" >> "$OUTDIR/p3_banners" 2>&1
 done
 
 echo ">>> Phase 4: 服务版本精确探测 (nmap)"
@@ -365,7 +365,7 @@ echo "EHLO test" | nc target 25
 echo "INFO" | nc target 6379
 
 # VNC
-nc target 5900 | head -1        # 输出: RFB 003.008
+nc target 5900 | head -1 # 输出: RFB 003.008
 ```
 
 ### 7.2 Banner 欺骗检测
@@ -384,8 +384,8 @@ nc target 5900 | head -1        # 输出: RFB 003.008
 ```bash
 # 收集所有 SSH banner
 for host in $(cat alive_hosts.txt); do
-  echo "=== $host ==="
-  echo "" | nc -w 3 "$host" 22 2>/dev/null
+ echo "=== $host ==="
+ echo "" | nc -w 3 "$host" 22 2>/dev/null
 done > all_ssh_banners.txt
 
 # 分析版本分布

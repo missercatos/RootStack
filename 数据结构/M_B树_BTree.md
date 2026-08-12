@@ -14,26 +14,26 @@ B 树是为磁盘存储优化的自平衡多路搜索树。与二叉树不同，
 
 ```mermaid
 graph TD
-    subgraph 3阶B树示例（t=2）
-        R["[10, 20]"] --> C1["[3, 5, 7]"]
-        R --> C2["[15, 18]"]
-        R --> C3["[25, 30, 35]"]
-        C1 --> L1["[1, 2]"]
-        C1 --> L2["[4]"]
-        C1 --> L3["[6]"]
-        C1 --> L4["[8, 9]"]
-        C2 --> L5["[13, 14]"]
-        C2 --> L6["[16, 17]"]
-        C2 --> L7["[19]"]
-        C3 --> L8["[22, 24]"]
-        C3 --> L9["[27, 28]"]
-        C3 --> L10["[32, 33]"]
-        C3 --> L11["[37, 40]"]
-    end
-    style R fill:#4a90d9,color:#fff
-    style C1 fill:#5ba3e6,color:#fff
-    style C2 fill:#5ba3e6,color:#fff
-    style C3 fill:#5ba3e6,color:#fff
+ subgraph 3阶B树示例（t=2）
+ R["[10, 20]"] --> C1["[3, 5, 7]"]
+ R --> C2["[15, 18]"]
+ R --> C3["[25, 30, 35]"]
+ C1 --> L1["[1, 2]"]
+ C1 --> L2["[4]"]
+ C1 --> L3["[6]"]
+ C1 --> L4["[8, 9]"]
+ C2 --> L5["[13, 14]"]
+ C2 --> L6["[16, 17]"]
+ C2 --> L7["[19]"]
+ C3 --> L8["[22, 24]"]
+ C3 --> L9["[27, 28]"]
+ C3 --> L10["[32, 33]"]
+ C3 --> L11["[37, 40]"]
+ end
+ style R fill:#4a90d9,color:#fff
+ style C1 fill:#5ba3e6,color:#fff
+ style C2 fill:#5ba3e6,color:#fff
+ style C3 fill:#5ba3e6,color:#fff
 ```
 
 ### B 树的定义（m 阶）
@@ -97,34 +97,34 @@ $$
 
 ```mermaid
 graph TD
-    subgraph B+树结构
-        IR["[10, 20, 30]"] --> IL1["[5, 8]"]
-        IR --> IL2["[15, 18]"]
-        IR --> IL3["[25, 28]"]
-        IR --> IL4["[35, 40]"]
-        IL1 --> L1["[1, 3, 5|●]"]
-        IL1 --> L2["[8, 9|●]"]
-        IL2 --> L3["[12, 15|●]"]
-        IL2 --> L4["[18, 19|●]"]
-        IL3 --> L5["[22, 25|●]"]
-        IL3 --> L6["[28, 29|●]"]
-        IL4 --> L7["[32, 35|●]"]
-        IL4 --> L8["[40, 42|●]"]
-        L1 --> L2 --> L3 --> L4 --> L5 --> L6 --> L7 --> L8
-    end
-    style IR fill:#4a90d9,color:#fff
-    style IL1 fill:#5ba3e6,color:#fff
-    style IL2 fill:#5ba3e6,color:#fff
-    style IL3 fill:#5ba3e6,color:#fff
-    style IL4 fill:#5ba3e6,color:#fff
-    style L1 fill:#afa,color:#333
-    style L2 fill:#afa,color:#333
-    style L3 fill:#afa,color:#333
-    style L4 fill:#afa,color:#333
-    style L5 fill:#afa,color:#333
-    style L6 fill:#afa,color:#333
-    style L7 fill:#afa,color:#333
-    style L8 fill:#afa,color:#333
+ subgraph B+树结构
+ IR["[10, 20, 30]"] --> IL1["[5, 8]"]
+ IR --> IL2["[15, 18]"]
+ IR --> IL3["[25, 28]"]
+ IR --> IL4["[35, 40]"]
+ IL1 --> L1["[1, 3, 5|●]"]
+ IL1 --> L2["[8, 9|●]"]
+ IL2 --> L3["[12, 15|●]"]
+ IL2 --> L4["[18, 19|●]"]
+ IL3 --> L5["[22, 25|●]"]
+ IL3 --> L6["[28, 29|●]"]
+ IL4 --> L7["[32, 35|●]"]
+ IL4 --> L8["[40, 42|●]"]
+ L1 --> L2 --> L3 --> L4 --> L5 --> L6 --> L7 --> L8
+ end
+ style IR fill:#4a90d9,color:#fff
+ style IL1 fill:#5ba3e6,color:#fff
+ style IL2 fill:#5ba3e6,color:#fff
+ style IL3 fill:#5ba3e6,color:#fff
+ style IL4 fill:#5ba3e6,color:#fff
+ style L1 fill:#afa,color:#333
+ style L2 fill:#afa,color:#333
+ style L3 fill:#afa,color:#333
+ style L4 fill:#afa,color:#333
+ style L5 fill:#afa,color:#333
+ style L6 fill:#afa,color:#333
+ style L7 fill:#afa,color:#333
+ style L8 fill:#afa,color:#333
 ```
 
 (Note: B+树中只有叶子节点存实际数据，内部节点只存键用于路由。叶子通过 next 指针相连，支持高效范围查询。)
@@ -138,123 +138,123 @@ graph TD
 ```c
 #include <stdlib.h>
 
-#define BT_MIN_DEGREE 2   // 最小度数 t，节点键数在 [t-1, 2t-1]
+#define BT_MIN_DEGREE 2 // 最小度数 t，节点键数在 [t-1, 2t-1]
 
 typedef struct BTNode {
-    int* keys;
-    struct BTNode** children;
-    int num_keys;
-    int is_leaf;
+ int* keys;
+ struct BTNode** children;
+ int num_keys;
+ int is_leaf;
 } BTNode;
 
 typedef struct {
-    BTNode* root;
-    int t;   // 最小度数
+ BTNode* root;
+ int t; // 最小度数
 } BTree;
 
 BTNode* bt_create_node(int t, int is_leaf) {
-    BTNode* node = malloc(sizeof(BTNode));
-    node->keys = malloc((2 * t - 1) * sizeof(int));
-    node->children = malloc(2 * t * sizeof(BTNode*));
-    node->num_keys = 0;
-    node->is_leaf = is_leaf;
-    return node;
+ BTNode* node = malloc(sizeof(BTNode));
+ node->keys = malloc((2 * t - 1) * sizeof(int));
+ node->children = malloc(2 * t * sizeof(BTNode*));
+ node->num_keys = 0;
+ node->is_leaf = is_leaf;
+ return node;
 }
 
 void bt_init(BTree* tree, int degree) {
-    tree->t = degree;
-    tree->root = NULL;
+ tree->t = degree;
+ tree->root = NULL;
 }
 
 // 分裂满子节点 child = parent->children[idx]
 static void bt_split_child(BTree* tree, BTNode* parent, int idx) {
-    int t = tree->t;
-    BTNode* child = parent->children[idx];
-    BTNode* new_node = bt_create_node(t, child->is_leaf);
-    new_node->num_keys = t - 1;
+ int t = tree->t;
+ BTNode* child = parent->children[idx];
+ BTNode* new_node = bt_create_node(t, child->is_leaf);
+ new_node->num_keys = t - 1;
 
-    // 后半部分键移入新节点
-    for (int i = 0; i < t - 1; i++)
-        new_node->keys[i] = child->keys[i + t];
-    // 非叶子则移动子节点
-    if (!child->is_leaf)
-        for (int i = 0; i < t; i++)
-            new_node->children[i] = child->children[i + t];
-    child->num_keys = t - 1;
+ // 后半部分键移入新节点
+ for (int i = 0; i < t - 1; i++)
+ new_node->keys[i] = child->keys[i + t];
+ // 非叶子则移动子节点
+ if (!child->is_leaf)
+ for (int i = 0; i < t; i++)
+ new_node->children[i] = child->children[i + t];
+ child->num_keys = t - 1;
 
-    // 中间键提升到父节点
-    for (int i = parent->num_keys; i > idx; i--)
-        parent->children[i + 1] = parent->children[i];
-    parent->children[idx + 1] = new_node;
-    for (int i = parent->num_keys - 1; i >= idx; i--)
-        parent->keys[i + 1] = parent->keys[i];
-    parent->keys[idx] = child->keys[t - 1];
-    parent->num_keys++;
+ // 中间键提升到父节点
+ for (int i = parent->num_keys; i > idx; i--)
+ parent->children[i + 1] = parent->children[i];
+ parent->children[idx + 1] = new_node;
+ for (int i = parent->num_keys - 1; i >= idx; i--)
+ parent->keys[i + 1] = parent->keys[i];
+ parent->keys[idx] = child->keys[t - 1];
+ parent->num_keys++;
 }
 
 // 插入到非满节点
 static void bt_insert_non_full(BTree* tree, BTNode* node, int key) {
-    int i = node->num_keys - 1;
-    if (node->is_leaf) {
-        while (i >= 0 && key < node->keys[i]) {
-            node->keys[i + 1] = node->keys[i];
-            i--;
-        }
-        node->keys[i + 1] = key;
-        node->num_keys++;
-    } else {
-        while (i >= 0 && key < node->keys[i]) i--;
-        i++;
-        if (node->children[i]->num_keys == 2 * tree->t - 1) {
-            bt_split_child(tree, node, i);
-            if (key > node->keys[i]) i++;
-        }
-        bt_insert_non_full(tree, node->children[i], key);
-    }
+ int i = node->num_keys - 1;
+ if (node->is_leaf) {
+ while (i >= 0 && key < node->keys[i]) {
+ node->keys[i + 1] = node->keys[i];
+ i--;
+ }
+ node->keys[i + 1] = key;
+ node->num_keys++;
+ } else {
+ while (i >= 0 && key < node->keys[i]) i--;
+ i++;
+ if (node->children[i]->num_keys == 2 * tree->t - 1) {
+ bt_split_child(tree, node, i);
+ if (key > node->keys[i]) i++;
+ }
+ bt_insert_non_full(tree, node->children[i], key);
+ }
 }
 
 void bt_insert(BTree* tree, int key) {
-    int t = tree->t;
-    if (!tree->root) {
-        tree->root = bt_create_node(t, 1);
-        tree->root->keys[0] = key;
-        tree->root->num_keys = 1;
-        return;
-    }
-    if (tree->root->num_keys == 2 * t - 1) {
-        BTNode* new_root = bt_create_node(t, 0);
-        new_root->children[0] = tree->root;
-        bt_split_child(tree, new_root, 0);
-        tree->root = new_root;
-    }
-    bt_insert_non_full(tree, tree->root, key);
+ int t = tree->t;
+ if (!tree->root) {
+ tree->root = bt_create_node(t, 1);
+ tree->root->keys[0] = key;
+ tree->root->num_keys = 1;
+ return;
+ }
+ if (tree->root->num_keys == 2 * t - 1) {
+ BTNode* new_root = bt_create_node(t, 0);
+ new_root->children[0] = tree->root;
+ bt_split_child(tree, new_root, 0);
+ tree->root = new_root;
+ }
+ bt_insert_non_full(tree, tree->root, key);
 }
 
 static int bt_search_node(BTNode* node, int key) {
-    int i = 0;
-    while (i < node->num_keys && key > node->keys[i]) i++;
-    if (i < node->num_keys && node->keys[i] == key) return 1;
-    if (node->is_leaf) return 0;
-    return bt_search_node(node->children[i], key);
+ int i = 0;
+ while (i < node->num_keys && key > node->keys[i]) i++;
+ if (i < node->num_keys && node->keys[i] == key) return 1;
+ if (node->is_leaf) return 0;
+ return bt_search_node(node->children[i], key);
 }
 
 int bt_search(BTree* tree, int key) {
-    return tree->root ? bt_search_node(tree->root, key) : 0;
+ return tree->root ? bt_search_node(tree->root, key) : 0;
 }
 
 static void bt_destroy_rec(BTNode* node, int is_leaf) {
-    if (!node) return;
-    if (!is_leaf)
-        for (int i = 0; i <= node->num_keys; i++)
-            bt_destroy_rec(node->children[i], 0);
-    free(node->keys);
-    free(node->children);
-    free(node);
+ if (!node) return;
+ if (!is_leaf)
+ for (int i = 0; i <= node->num_keys; i++)
+ bt_destroy_rec(node->children[i], 0);
+ free(node->keys);
+ free(node->children);
+ free(node);
 }
 
 void bt_destroy(BTree* tree) {
-    if (tree->root) bt_destroy_rec(tree->root, tree->root->is_leaf);
-    tree->root = NULL;
+ if (tree->root) bt_destroy_rec(tree->root, tree->root->is_leaf);
+ tree->root = NULL;
 }
 ```
 
@@ -264,113 +264,113 @@ void bt_destroy(BTree* tree) {
 
 ```mermaid
 graph TD
-    subgraph 插入前：[3,5,7,9] 已满
-        N1["[3, 5, 7, 9]"]
-        style N1 fill:#faa,color:#333
-    end
-    subgraph 步骤1：创建右兄弟
-        N2["[3, 5]"] --- MID["↑6↑"] --- N3["[7, 9]"]
-        style N2 fill:#afa,color:#333
-        style N3 fill:#afa,color:#333
-        style MID fill:#ffa,color:#333
-    end
-    subgraph 步骤2：中间键6提升到父节点
-        PARENT["父节点接收6"] --> LEFT["[3, 5]"]
-        PARENT --> RIGHT["[7, 9]"]
-        style PARENT fill:#4a90d9,color:#fff
-        style LEFT fill:#afa,color:#333
-        style RIGHT fill:#afa,color:#333
-    end
-    N1 -->|"分裂规则：\n⌈(m-1)/2⌉ = 2个键留左\n⌊(m-1)/2⌋ = 2个键移右\n中间键上提"| N2
-    N2 -.->|"6 插入到右半区"| N3
-    N3 -.->|"若父节点也满\n递归分裂"| PARENT
+ subgraph 插入前：[3,5,7,9] 已满
+ N1["[3, 5, 7, 9]"]
+ style N1 fill:#faa,color:#333
+ end
+ subgraph 步骤1：创建右兄弟
+ N2["[3, 5]"] --- MID["↑6↑"] --- N3["[7, 9]"]
+ style N2 fill:#afa,color:#333
+ style N3 fill:#afa,color:#333
+ style MID fill:#ffa,color:#333
+ end
+ subgraph 步骤2：中间键6提升到父节点
+ PARENT["父节点接收6"] --> LEFT["[3, 5]"]
+ PARENT --> RIGHT["[7, 9]"]
+ style PARENT fill:#4a90d9,color:#fff
+ style LEFT fill:#afa,color:#333
+ style RIGHT fill:#afa,color:#333
+ end
+ N1 -->|"分裂规则：\n⌈(m-1)/2⌉ = 2个键留左\n⌊(m-1)/2⌋ = 2个键移右\n中间键上提"| N2
+ N2 -.->|"6 插入到右半区"| N3
+ N3 -.->|"若父节点也满\n递归分裂"| PARENT
 ```
 
 ### B+ 树（简化版，叶子链表 + 仅处理叶子分裂）
 
 ```c
 typedef struct BPNode {
-    int* keys;
-    struct BPNode** children;   // 仅内部节点使用
-    struct BPNode* next;        // 叶子链表
-    int num_keys;
-    int is_leaf;
+ int* keys;
+ struct BPNode** children; // 仅内部节点使用
+ struct BPNode* next; // 叶子链表
+ int num_keys;
+ int is_leaf;
 } BPNode;
 
 typedef struct {
-    BPNode* root;
-    int order;   // 阶数，每个节点最多 order 个键
+ BPNode* root;
+ int order; // 阶数，每个节点最多 order 个键
 } BPlusTree;
 
 BPNode* bp_create_node(int order, int is_leaf) {
-    BPNode* node = malloc(sizeof(BPNode));
-    node->keys = malloc(order * sizeof(int));
-    node->children = is_leaf ? NULL : malloc((order + 1) * sizeof(BPNode*));
-    node->next = NULL;
-    node->num_keys = 0;
-    node->is_leaf = is_leaf;
-    return node;
+ BPNode* node = malloc(sizeof(BPNode));
+ node->keys = malloc(order * sizeof(int));
+ node->children = is_leaf ? NULL : malloc((order + 1) * sizeof(BPNode*));
+ node->next = NULL;
+ node->num_keys = 0;
+ node->is_leaf = is_leaf;
+ return node;
 }
 
 void bp_init(BPlusTree* tree, int order) {
-    tree->order = order;
-    tree->root = NULL;
+ tree->order = order;
+ tree->root = NULL;
 }
 
 static BPNode* bp_find_leaf(BPlusTree* tree, int key) {
-    BPNode* cur = tree->root;
-    while (cur && !cur->is_leaf) {
-        int i = 0;
-        while (i < cur->num_keys && key >= cur->keys[i]) i++;
-        cur = cur->children[i];
-    }
-    return cur;
+ BPNode* cur = tree->root;
+ while (cur && !cur->is_leaf) {
+ int i = 0;
+ while (i < cur->num_keys && key >= cur->keys[i]) i++;
+ cur = cur->children[i];
+ }
+ return cur;
 }
 
 void bp_insert(BPlusTree* tree, int key) {
-    int order = tree->order;
-    if (!tree->root) {
-        tree->root = bp_create_node(order, 1);
-        tree->root->keys[0] = key;
-        tree->root->num_keys = 1;
-        return;
-    }
-    BPNode* leaf = bp_find_leaf(tree, key);
-    int pos = 0;
-    while (pos < leaf->num_keys && leaf->keys[pos] < key) pos++;
-    for (int i = leaf->num_keys; i > pos; i--)
-        leaf->keys[i] = leaf->keys[i - 1];
-    leaf->keys[pos] = key;
-    leaf->num_keys++;
+ int order = tree->order;
+ if (!tree->root) {
+ tree->root = bp_create_node(order, 1);
+ tree->root->keys[0] = key;
+ tree->root->num_keys = 1;
+ return;
+ }
+ BPNode* leaf = bp_find_leaf(tree, key);
+ int pos = 0;
+ while (pos < leaf->num_keys && leaf->keys[pos] < key) pos++;
+ for (int i = leaf->num_keys; i > pos; i--)
+ leaf->keys[i] = leaf->keys[i - 1];
+ leaf->keys[pos] = key;
+ leaf->num_keys++;
 
-    // 叶子溢出，分裂（简化：仅处理叶子分裂）
-    if (leaf->num_keys >= order) {
-        BPNode* new_leaf = bp_create_node(order, 1);
-        int mid = leaf->num_keys / 2;
-        new_leaf->num_keys = leaf->num_keys - mid;
-        for (int i = 0; i < new_leaf->num_keys; i++)
-            new_leaf->keys[i] = leaf->keys[mid + i];
-        leaf->num_keys = mid;
-        new_leaf->next = leaf->next;
-        leaf->next = new_leaf;
-        // 如果 leaf 是根则创建新根
-        if (leaf == tree->root) {
-            BPNode* new_root = bp_create_node(order, 0);
-            new_root->keys[0] = new_leaf->keys[0];
-            new_root->children[0] = leaf;
-            new_root->children[1] = new_leaf;
-            new_root->num_keys = 1;
-            tree->root = new_root;
-        }
-    }
+ // 叶子溢出，分裂（简化：仅处理叶子分裂）
+ if (leaf->num_keys >= order) {
+ BPNode* new_leaf = bp_create_node(order, 1);
+ int mid = leaf->num_keys / 2;
+ new_leaf->num_keys = leaf->num_keys - mid;
+ for (int i = 0; i < new_leaf->num_keys; i++)
+ new_leaf->keys[i] = leaf->keys[mid + i];
+ leaf->num_keys = mid;
+ new_leaf->next = leaf->next;
+ leaf->next = new_leaf;
+ // 如果 leaf 是根则创建新根
+ if (leaf == tree->root) {
+ BPNode* new_root = bp_create_node(order, 0);
+ new_root->keys[0] = new_leaf->keys[0];
+ new_root->children[0] = leaf;
+ new_root->children[1] = new_leaf;
+ new_root->num_keys = 1;
+ tree->root = new_root;
+ }
+ }
 }
 
 int bp_search(BPlusTree* tree, int key) {
-    if (!tree->root) return 0;
-    BPNode* leaf = bp_find_leaf(tree, key);
-    for (int i = 0; i < leaf->num_keys; i++)
-        if (leaf->keys[i] == key) return 1;
-    return 0;
+ if (!tree->root) return 0;
+ BPNode* leaf = bp_find_leaf(tree, key);
+ for (int i = 0; i < leaf->num_keys; i++)
+ if (leaf->keys[i] == key) return 1;
+ return 0;
 }
 ```
 
@@ -391,18 +391,18 @@ B+ 树是 B 树在数据库领域的实际变体——所有键都存储在叶�
 
 ```mermaid
 graph TD
-    subgraph "B+ 树结构"
-        R["内部节点: [20|40]"] --> C1["内部: [10|15]"]
-        R --> C2["内部: [30|35]"]
-        R --> C3["内部: [50]"]
-        C1 --> L1["叶子: (3,ptr) (5,ptr) (8,ptr)"] 
-        C1 --> L2["叶子: (12,ptr) (14,ptr)"]
-        C1 --> L3["叶子: (17,ptr) (19,ptr)"]
-        C2 --> L4["叶子: (22,ptr) (25,ptr) (28,ptr)"]
-        C2 --> L5["叶子: (32,ptr) (34,ptr)"]
-        C3 --> L6["叶子: (42,ptr) (45,ptr) (48,ptr)"]
-        L1 -->|"链表 →"| L2 -->|"链表 →"| L3 -->|"链表 →"| L4 -->|"链表 →"| L5 -->|"链表 →"| L6
-    end
+ subgraph "B+ 树结构"
+ R["内部节点: [20|40]"] --> C1["内部: [10|15]"]
+ R --> C2["内部: [30|35]"]
+ R --> C3["内部: [50]"]
+ C1 --> L1["叶子: (3,ptr) (5,ptr) (8,ptr)"] 
+ C1 --> L2["叶子: (12,ptr) (14,ptr)"]
+ C1 --> L3["叶子: (17,ptr) (19,ptr)"]
+ C2 --> L4["叶子: (22,ptr) (25,ptr) (28,ptr)"]
+ C2 --> L5["叶子: (32,ptr) (34,ptr)"]
+ C3 --> L6["叶子: (42,ptr) (45,ptr) (48,ptr)"]
+ L1 -->|"链表 →"| L2 -->|"链表 →"| L3 -->|"链表 →"| L4 -->|"链表 →"| L5 -->|"链表 →"| L6
+ end
 ```
 
 ### MySQL InnoDB 内部的 B+ 树

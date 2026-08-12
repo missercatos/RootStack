@@ -15,9 +15,9 @@
 
 ```mermaid
 graph TD
-    CN["计算机网络"] --> RS["Resource Sharing<br/>资源共享"]
-    CN --> CT["Communication<br/>通信"]
-    CN --> DP["Distributed Processing<br/>分布式处理"]
+ CN["计算机网络"] --> RS["Resource Sharing<br/>资源共享"]
+ CN --> CT["Communication<br/>通信"]
+ CN --> DP["Distributed Processing<br/>分布式处理"]
 ```
 
 **更精确的定义**：计算机网络 = 若干**自治计算机**的集合 + 遵循统一**协议** + 通过**通信链路**互连。自治意味着每台计算机可独立运行，不依赖网络中其他节点。
@@ -29,14 +29,14 @@ graph TD
 | 划分视角 | 组成部分 | 说明 |
 |----------|---------|------|
 | **物理组成** | 主机 (Host) / 端系统 (End System) | 产生或消费数据的设备 |
-|  | 通信设备 (Networking Devices) | 交换机、路由器、防火墙、负载均衡器 |
-|  | 传输介质 (Transmission Media) | 双绞线、光纤 (单模/多模)、同轴电缆、无线电波 |
-|  | 网络协议 (Protocol) | 约定数据格式、时序与语义的规则集合 |
-|  | 网络软件 (Software) | 操作系统协议栈 (Linux 内核 `net/` 子系统)、应用软件 |
+| | 通信设备 (Networking Devices) | 交换机、路由器、防火墙、负载均衡器 |
+| | 传输介质 (Transmission Media) | 双绞线、光纤 (单模/多模)、同轴电缆、无线电波 |
+| | 网络协议 (Protocol) | 约定数据格式、时序与语义的规则集合 |
+| | 网络软件 (Software) | 操作系统协议栈 (Linux 内核 `net/` 子系统)、应用软件 |
 | **逻辑组成** | 通信子网 (Communication Subnet) | 物理层 + 数据链路层 + 网络层 (路由器、交换机构成的转发平面) |
-|  | 资源子网 (Resource Subnet) | 传输层 + 应用层 + 端系统上的应用软件 |
+| | 资源子网 (Resource Subnet) | 传输层 + 应用层 + 端系统上的应用软件 |
 | **功能组成** | 边缘部分 (Edge) | 端系统，产生/消费数据 |
-|  | 核心部分 (Core) | 路由器、交换机，负责数据转发 (packet switching) |
+| | 核心部分 (Core) | 路由器、交换机，负责数据转发 (packet switching) |
 
 #### 1.3 功能
 
@@ -54,27 +54,27 @@ graph TD
 
 ```mermaid
 graph TD
-    NET["计算机网络分类"] --> byScope["按覆盖范围"]
-    NET --> byTopo["按拓扑结构"]
-    NET --> byTech["按传输技术"]
-    NET --> byOwner["按所有权"]
+ NET["计算机网络分类"] --> byScope["按覆盖范围"]
+ NET --> byTopo["按拓扑结构"]
+ NET --> byTech["按传输技术"]
+ NET --> byOwner["按所有权"]
 
-    byScope --> PAN["PAN 个域网<br/>&lt;10m"]
-    byScope --> LAN["LAN 局域网<br/>10m~几km"]
-    byScope --> MAN["MAN 城域网<br/>几km~几十km"]
-    byScope --> WAN["WAN 广域网<br/>几十km~几千km"]
+ byScope --> PAN["PAN 个域网<br/>&lt;10m"]
+ byScope --> LAN["LAN 局域网<br/>10m~几km"]
+ byScope --> MAN["MAN 城域网<br/>几km~几十km"]
+ byScope --> WAN["WAN 广域网<br/>几十km~几千km"]
 
-    byTopo --> Star["星型"]
-    byTopo --> Bus["总线型"]
-    byTopo --> Ring["环型"]
-    byTopo --> Mesh["网状(Mesh)"]
-    byTopo --> Tree["树型/混合"]
+ byTopo --> Star["星型"]
+ byTopo --> Bus["总线型"]
+ byTopo --> Ring["环型"]
+ byTopo --> Mesh["网状(Mesh)"]
+ byTopo --> Tree["树型/混合"]
 
-    byTech --> BC["广播式<br/>Broadcast"]
-    byTech --> P2P["点对点<br/>Point-to-Point"]
+ byTech --> BC["广播式<br/>Broadcast"]
+ byTech --> P2P["点对点<br/>Point-to-Point"]
 
-    byOwner --> Public["公用网"]
-    byOwner --> Private["专用网"]
+ byOwner --> Public["公用网"]
+ byOwner --> Private["专用网"]
 ```
 
 | 类型 | 范围 | 典型协议/技术 | 典型场景 | 速度量级 |
@@ -150,16 +150,16 @@ graph TD
 
 ```mermaid
 graph LR
-    HostA["主机 A"] -->|"处理时延 + 排队时延"| R1["路由器 R1"]
-    R1 -->|"处理 + 排队"| R2["路由器 R2"]
-    R2 -->|"处理 + 排队"| HostB["主机 B"]
+ HostA["主机 A"] -->|"处理时延 + 排队时延"| R1["路由器 R1"]
+ R1 -->|"处理 + 排队"| R2["路由器 R2"]
+ R2 -->|"处理 + 排队"| HostB["主机 B"]
 
-    subgraph "每个节点的时延构成"
-        Proc["处理时延<br/>查路由表、差错检测<br/>通常 < 1ms"]
-        Queue["排队时延<br/>在输出队列等待<br/>取决于拥塞程度,可变"]
-        Trans["发送时延<br/>= 分组长度 / 发送速率<br/>L / R"]
-        Prop["传播时延<br/>= 信道长度 / 信号传播速度<br/>d / v"]
-    end
+ subgraph "每个节点的时延构成"
+ Proc["处理时延<br/>查路由表、差错检测<br/>通常 < 1ms"]
+ Queue["排队时延<br/>在输出队列等待<br/>取决于拥塞程度,可变"]
+ Trans["发送时延<br/>= 分组长度 / 发送速率<br/>L / R"]
+ Prop["传播时延<br/>= 信道长度 / 信号传播速度<br/>d / v"]
+ end
 ```
 
 | 时延类型 | 公式 | 说明 | 影响因素 |
@@ -173,8 +173,8 @@ graph LR
 
 ```
 设: a = 平均分组到达速率 (packets/s)
-    R = 链路速率 (bps)
-    L = 平均分组长度 (bits)
+ R = 链路速率 (bps)
+ L = 平均分组长度 (bits)
 
 流量强度 (Traffic Intensity) = La / R
 
@@ -187,14 +187,14 @@ graph LR
 
 ```
 条件: 链路长度 1000 km, 传播速度 2×10⁸ m/s
-      链路速率 100 Mbps
-      分组长度 1000 Bytes
+ 链路速率 100 Mbps
+ 分组长度 1000 Bytes
 
 1. 发送时延 = (1000 × 8) / (100 × 10⁶) = 8000 / 10⁸ = 80 μs
 2. 传播时延 = (1000 × 10³) / (2 × 10⁸) = 5 ms
-   
-   结论: 本例中传播时延是发送时延的 5000000/80 = 62500 倍
-   长距离链路上,传播时延主导总时延。
+ 
+ 结论: 本例中传播时延是发送时延的 5000000/80 = 62500 倍
+ 长距离链路上,传播时延主导总时延。
 ```
 
 > **辨析要点**：发送时延与传播时延是**独立**的概念。发送时延取决于分组长度和发送速率，发生在主机/路由器内部；传播时延取决于物理距离和信号速度，发生在传输介质上。两者可以同时发生 (流水线效应)。
@@ -207,7 +207,7 @@ graph LR
 
 ```
 时延带宽积 = 传播时延 × 带宽
-           = (d / v) × R
+ = (d / v) × R
 
 单位: bits (比特数)
 ```
@@ -219,7 +219,7 @@ graph LR
 时延带宽积 = 20 × 10⁻³ × 1 × 10⁹ = 20 × 10⁶ bits = 20 Mb = 2.5 MB
 
 含义: 接收端收到第一个比特时,发送端已发出 2.5 MB 数据。
-     这 2.5 MB 正在"管道"中传输 — 这些是 "in-flight" 数据。
+ 这 2.5 MB 正在"管道"中传输 — 这些是 "in-flight" 数据。
 ```
 
 **TCP 拥塞控制的关联**：TCP 的理想发送窗口大小应接近时延带宽积 (`BDP = RTT × C`)。窗口太小则链路利用率低，窗口太大则引发拥塞。这是 BBR 拥塞控制算法的核心思想（详见 [[E_传输层]]）。
@@ -240,16 +240,16 @@ RTT = 2 × 传播时延 + 中间节点处理时延 + 接收端处理时延
 
 ```bash
 # Linux 中观测 RTT
-ping -c 4 8.8.8.8             # ICMP echo, 应用层估计
-traceroute -n 8.8.8.8         # 逐跳 RTT
-ss -ti                        # 查看 TCP 连接的平滑 RTT (SRTT) 和 RTT 方差 (RTTVAR)
+ping -c 4 8.8.8.8 # ICMP echo, 应用层估计
+traceroute -n 8.8.8.8 # 逐跳 RTT
+ss -ti # 查看 TCP 连接的平滑 RTT (SRTT) 和 RTT 方差 (RTTVAR)
 ```
 
 **TCP 超时重传 (RTO) 与 RTT 的关系**：
 
 ```
-SRTT(i+1) = (1 - α) × SRTT(i) + α × SampleRTT    (α 通常为 0.125)
-RTTVAR(i+1) = (1 - β) × RTTVAR(i) + β × |SampleRTT - SRTT(i)|   (β 通常为 0.25)
+SRTT(i+1) = (1 - α) × SRTT(i) + α × SampleRTT (α 通常为 0.125)
+RTTVAR(i+1) = (1 - β) × RTTVAR(i) + β × |SampleRTT - SRTT(i)| (β 通常为 0.25)
 RTO = SRTT + 4 × RTTVAR
 ```
 
@@ -266,10 +266,10 @@ RTO = SRTT + 4 × RTTVAR
 
 ```mermaid
 graph LR
-    U["利用率 U"] -->|"U → 0"| LowQ["排队时延 → 0"]
-    U -->|"U → 1"| HighQ["排队时延 → ∞"]
+ U["利用率 U"] -->|"U → 0"| LowQ["排队时延 → 0"]
+ U -->|"U → 1"| HighQ["排队时延 → ∞"]
 
-    D0["D0 = 空闲负载时延"] --> D["D = D0 / (1 - U)"]
+ D0["D0 = 空闲负载时延"] --> D["D = D0 / (1 - U)"]
 ```
 
 设 D₀ 为零负载时的时延 (`空载时延 = 传播时延 + 处理时延`)，则：
@@ -277,9 +277,9 @@ graph LR
 ```
 D = D₀ / (1 - U)
 
-当 U = 0.5: D = 2 × D₀    (时延翻倍)
-当 U = 0.9: D = 10 × D₀   (时延扩展 10 倍)
-当 U = 0.99: D = 100 × D₀  (崩溃)
+当 U = 0.5: D = 2 × D₀ (时延翻倍)
+当 U = 0.9: D = 10 × D₀ (时延扩展 10 倍)
+当 U = 0.99: D = 100 × D₀ (崩溃)
 ```
 
 **工程实践**：骨干网运营商通常在利用率达到 30%-50% 时考虑扩容，以保持在拥塞崩溃的悬崖之前。
@@ -299,12 +299,12 @@ D = D₀ / (1 - U)
 
 ```mermaid
 graph TD
-    subgraph "拥塞控制闭环"
-        PL["丢包事件"] -->|"检测到丢包<br/>3 dup ACK / Timeout"| TCP["TCP 拥塞窗口缩减<br/>ssthresh = cwnd/2<br/>cwnd = 1 MSS (超时)"]
-        TCP -->|"窗口降低"| Rate["发送速率下降"]
-        Rate -->|"队列深度减少"| LessPL["丢包减少"]
-        LessPL -->|"窗口逐步增长<br/>慢启动 / 拥塞避免"| TCP
-    end
+ subgraph "拥塞控制闭环"
+ PL["丢包事件"] -->|"检测到丢包<br/>3 dup ACK / Timeout"| TCP["TCP 拥塞窗口缩减<br/>ssthresh = cwnd/2<br/>cwnd = 1 MSS (超时)"]
+ TCP -->|"窗口降低"| Rate["发送速率下降"]
+ Rate -->|"队列深度减少"| LessPL["丢包减少"]
+ LessPL -->|"窗口逐步增长<br/>慢启动 / 拥塞避免"| TCP
+ end
 ```
 
 ---
@@ -315,35 +315,35 @@ OSI (Open Systems Interconnection) 模型由 ISO 制定，是网络通信的**�
 
 ```mermaid
 graph TD
-    subgraph "OSI 七层模型 — 数据封装与解封装"
-        direction TB
+ subgraph "OSI 七层模型 — 数据封装与解封装"
+ direction TB
 
-        subgraph HostA_TOP["发送方 (封装)"]
-            A7["7. 应用层<br/>Application<br/>————<br/>PDU: Data / Message<br/>协议: HTTP, SMTP, FTP, DNS, SNMP"]
-            A6["6. 表示层<br/>Presentation<br/>————<br/>PDU: Data<br/>功能: 编码转换、加密、压缩<br/>协议: SSL/TLS, MIME, JPEG, ASCII"]
-            A5["5. 会话层<br/>Session<br/>————<br/>PDU: Data<br/>功能: 会话建立/管理/同步<br/>协议: SOCKS, NetBIOS, RPC, SIP"]
-            A4["4. 传输层<br/>Transport<br/>————<br/>PDU: Segment (TCP) / Datagram (UDP)<br/>功能: 端到端可靠/不可靠传输<br/>协议: TCP, UDP, SCTP, QUIC"]
-            A3["3. 网络层<br/>Network<br/>————<br/>PDU: Packet / Datagram<br/>功能: 路由选择、逻辑编址<br/>协议: IP, ICMP, ARP, OSPF, BGP, IPsec"]
-            A2["2. 数据链路层<br/>Data Link<br/>————<br/>PDU: Frame<br/>功能: 成帧、MAC编址、差错检测<br/>协议: Ethernet, PPP, Wi-Fi (802.11), VLAN"]
-            A1["1. 物理层<br/>Physical<br/>————<br/>PDU: Bit<br/>功能: 比特流透明传输<br/>介质: 双绞线、光纤、无线电"]
+ subgraph HostA_TOP["发送方 (封装)"]
+ A7["7. 应用层<br/>Application<br/>————<br/>PDU: Data / Message<br/>协议: HTTP, SMTP, FTP, DNS, SNMP"]
+ A6["6. 表示层<br/>Presentation<br/>————<br/>PDU: Data<br/>功能: 编码转换、加密、压缩<br/>协议: SSL/TLS, MIME, JPEG, ASCII"]
+ A5["5. 会话层<br/>Session<br/>————<br/>PDU: Data<br/>功能: 会话建立/管理/同步<br/>协议: SOCKS, NetBIOS, RPC, SIP"]
+ A4["4. 传输层<br/>Transport<br/>————<br/>PDU: Segment (TCP) / Datagram (UDP)<br/>功能: 端到端可靠/不可靠传输<br/>协议: TCP, UDP, SCTP, QUIC"]
+ A3["3. 网络层<br/>Network<br/>————<br/>PDU: Packet / Datagram<br/>功能: 路由选择、逻辑编址<br/>协议: IP, ICMP, ARP, OSPF, BGP, IPsec"]
+ A2["2. 数据链路层<br/>Data Link<br/>————<br/>PDU: Frame<br/>功能: 成帧、MAC编址、差错检测<br/>协议: Ethernet, PPP, Wi-Fi (802.11), VLAN"]
+ A1["1. 物理层<br/>Physical<br/>————<br/>PDU: Bit<br/>功能: 比特流透明传输<br/>介质: 双绞线、光纤、无线电"]
 
-            A7 --> A6 --> A5 --> A4 --> A3 --> A2 --> A1
-        end
+ A7 --> A6 --> A5 --> A4 --> A3 --> A2 --> A1
+ end
 
-        A1 -->|"比特流<br/>传输介质"| B1
-    end
+ A1 -->|"比特流<br/>传输介质"| B1
+ end
 
-    subgraph HostB_BOT["接收方 (解封装)"]
-        B1["1. 物理层<br/>————<br/>接收比特流, 上传"]
-        B2["2. 数据链路层<br/>————<br/>解帧, CRC校验"]
-        B3["3. 网络层<br/>————<br/>路由查找, 解IP头"]
-        B4["4. 传输层<br/>————<br/>端口解复用, 重组"]
-        B5["5. 会话层<br/>————<br/>会话恢复"]
-        B6["6. 表示层<br/>————<br/>解密, 解码, 解压"]
-        B7["7. 应用层<br/>————<br/>交付应用进程"]
+ subgraph HostB_BOT["接收方 (解封装)"]
+ B1["1. 物理层<br/>————<br/>接收比特流, 上传"]
+ B2["2. 数据链路层<br/>————<br/>解帧, CRC校验"]
+ B3["3. 网络层<br/>————<br/>路由查找, 解IP头"]
+ B4["4. 传输层<br/>————<br/>端口解复用, 重组"]
+ B5["5. 会话层<br/>————<br/>会话恢复"]
+ B6["6. 表示层<br/>————<br/>解密, 解码, 解压"]
+ B7["7. 应用层<br/>————<br/>交付应用进程"]
 
-        B1 --> B2 --> B3 --> B4 --> B5 --> B6 --> B7
-    end
+ B1 --> B2 --> B3 --> B4 --> B5 --> B6 --> B7
+ end
 ```
 
 **各层详细职责与 PDU 总结**：
@@ -362,17 +362,17 @@ graph TD
 
 ```mermaid
 flowchart TD
-    AppData["应用层数据<br/>(Data)"] -->|"+ TCP/UDP Header"| Segment["传输层: Segment/Datagram<br/>{TCP Hdr | Data}"]
-    Segment -->|"+ IP Header"| Packet["网络层: Packet<br/>{IP Hdr | TCP Hdr | Data}"]
-    Packet -->|"+ MAC Header + FCS"| Frame["数据链路层: Frame<br/>{MAC Hdr | IP Hdr | TCP Hdr | Data | FCS}"]
-    Frame -->|"物理层编码"| BitStream["物理层: 比特流<br/>101100101..."]
+ AppData["应用层数据<br/>(Data)"] -->|"+ TCP/UDP Header"| Segment["传输层: Segment/Datagram<br/>{TCP Hdr | Data}"]
+ Segment -->|"+ IP Header"| Packet["网络层: Packet<br/>{IP Hdr | TCP Hdr | Data}"]
+ Packet -->|"+ MAC Header + FCS"| Frame["数据链路层: Frame<br/>{MAC Hdr | IP Hdr | TCP Hdr | Data | FCS}"]
+ Frame -->|"物理层编码"| BitStream["物理层: 比特流<br/>101100101..."]
 
-    subgraph "每层追加的头部信息"
-        TCPH["TCP Hdr: SrcPort, DstPort, SeqNo, AckNo, Flags, Window, Checksum"]
-        IPH["IP Hdr: SrcIP, DstIP, TTL, Protocol, Checksum, Flags, Fragment Offset"]
-        MACH["MAC Hdr: DstMAC, SrcMAC, EtherType/VLAN Tag"]
-        FCSV["FCS: CRC32 帧校验序列 <br/>(Frame Check Sequence)"]
-    end
+ subgraph "每层追加的头部信息"
+ TCPH["TCP Hdr: SrcPort, DstPort, SeqNo, AckNo, Flags, Window, Checksum"]
+ IPH["IP Hdr: SrcIP, DstIP, TTL, Protocol, Checksum, Flags, Fragment Offset"]
+ MACH["MAC Hdr: DstMAC, SrcMAC, EtherType/VLAN Tag"]
+ FCSV["FCS: CRC32 帧校验序列 <br/>(Frame Check Sequence)"]
+ end
 ```
 
 **各层职责要点**：
@@ -401,30 +401,30 @@ TCP/IP 是互联网实际运行的协议栈。OSI 七层是教学模型，TCP/IP
 
 ```mermaid
 flowchart LR
-    subgraph OSI["OSI 七层模型"]
-        O7["7. 应用层"]
-        O6["6. 表示层"]
-        O5["5. 会话层"]
-        O4["4. 传输层"]
-        O3["3. 网络层"]
-        O2["2. 数据链路层"]
-        O1["1. 物理层"]
-    end
+ subgraph OSI["OSI 七层模型"]
+ O7["7. 应用层"]
+ O6["6. 表示层"]
+ O5["5. 会话层"]
+ O4["4. 传输层"]
+ O3["3. 网络层"]
+ O2["2. 数据链路层"]
+ O1["1. 物理层"]
+ end
 
-    subgraph TCPIP["TCP/IP 四层模型"]
-        T4["应用层<br/>Application Layer<br/>————<br/>HTTP, SMTP, FTP, DNS, SSH,<br/>TLS, MIME, RPC, NFS"]
-        T3["传输层<br/>Transport Layer<br/>————<br/>TCP, UDP, SCTP, QUIC"]
-        T2["网络互联层<br/>Internet Layer<br/>————<br/>IP (v4/v6), ICMP, IGMP,<br/>ARP, IPsec"]
-        T1["网络接口层<br/>Network Interface Layer<br/>————<br/>Ethernet, Wi-Fi, PPP,<br/>帧中继, 物理介质"]
-    end
+ subgraph TCPIP["TCP/IP 四层模型"]
+ T4["应用层<br/>Application Layer<br/>————<br/>HTTP, SMTP, FTP, DNS, SSH,<br/>TLS, MIME, RPC, NFS"]
+ T3["传输层<br/>Transport Layer<br/>————<br/>TCP, UDP, SCTP, QUIC"]
+ T2["网络互联层<br/>Internet Layer<br/>————<br/>IP (v4/v6), ICMP, IGMP,<br/>ARP, IPsec"]
+ T1["网络接口层<br/>Network Interface Layer<br/>————<br/>Ethernet, Wi-Fi, PPP,<br/>帧中继, 物理介质"]
+ end
 
-    O7 -->|合并| T4
-    O6 -->|合并| T4
-    O5 -->|合并| T4
-    O4 -->|对应| T3
-    O3 -->|对应| T2
-    O2 -->|合并| T1
-    O1 -->|合并| T1
+ O7 -->|合并| T4
+ O6 -->|合并| T4
+ O5 -->|合并| T4
+ O4 -->|对应| T3
+ O3 -->|对应| T2
+ O2 -->|合并| T1
+ O1 -->|合并| T1
 ```
 
 **映射关系与差异总结**：
@@ -444,27 +444,27 @@ flowchart LR
 
 ```mermaid
 graph TD
-    subgraph "应用层 (宽 — 协议繁多)"
-        A1["HTTP"] ; A2["SMTP"] ; A3["DNS"] ; A4["FTP"] ; A5["SSH"]
-        A6["BitTorrent"] ; A7["QUIC"] ; A8["gRPC"] ; A9["MQTT"]
-    end
+ subgraph "应用层 (宽 — 协议繁多)"
+ A1["HTTP"] ; A2["SMTP"] ; A3["DNS"] ; A4["FTP"] ; A5["SSH"]
+ A6["BitTorrent"] ; A7["QUIC"] ; A8["gRPC"] ; A9["MQTT"]
+ end
 
-    subgraph "传输层 (窄 — 协议少而精)"
-        T1["TCP"] ; T2["UDP"]
-    end
+ subgraph "传输层 (窄 — 协议少而精)"
+ T1["TCP"] ; T2["UDP"]
+ end
 
-    subgraph "网络互联层 (极窄 — 唯一)"
-        I1["IP<br/>(IPv4 / IPv6)"]
-    end
+ subgraph "网络互联层 (极窄 — 唯一)"
+ I1["IP<br/>(IPv4 / IPv6)"]
+ end
 
-    subgraph "网络接口层 (宽 — 物理技术多样)"
-        N1["Ethernet"] ; N2["Wi-Fi"] ; N3["4G/5G"] ; N4["光纤"]
-        N5["DOCSIS"] ; N6["卫星"] ; N7["BLE"]
-    end
+ subgraph "网络接口层 (宽 — 物理技术多样)"
+ N1["Ethernet"] ; N2["Wi-Fi"] ; N3["4G/5G"] ; N4["光纤"]
+ N5["DOCSIS"] ; N6["卫星"] ; N7["BLE"]
+ end
 
-    A1 & A2 & A3 & A4 & A5 & A6 & A7 & A8 & A9 --> T1 & T2
-    T1 & T2 --> I1
-    I1 --> N1 & N2 & N3 & N4 & N5 & N6 & N7
+ A1 & A2 & A3 & A4 & A5 & A6 & A7 & A8 & A9 --> T1 & T2
+ T1 & T2 --> I1
+ I1 --> N1 & N2 & N3 & N4 & N5 & N6 & N7
 ```
 
 **沙漏模型的哲学**：IP 是 Internet 的"窄腰" (narrow waist)。IP 之上支持任意传输层和应用层协议，IP 之下可运行于任意物理网络之上。这种设计使得互联网具有极强的可扩展性 — 新增上层应用或底层物理技术无需修改 IP 层。
@@ -477,21 +477,21 @@ graph TD
 
 ```mermaid
 graph TD
-    L5["5. 应用层<br/>Application Layer<br/>PDU: Message"]
-    L4["4. 传输层<br/>Transport Layer<br/>PDU: Segment (TCP) / Datagram (UDP)"]
-    L3["3. 网络层<br/>Network Layer<br/>PDU: Datagram (Packet)"]
-    L2["2. 数据链路层<br/>Data Link Layer<br/>PDU: Frame"]
-    L1["1. 物理层<br/>Physical Layer<br/>PDU: Bit"]
+ L5["5. 应用层<br/>Application Layer<br/>PDU: Message"]
+ L4["4. 传输层<br/>Transport Layer<br/>PDU: Segment (TCP) / Datagram (UDP)"]
+ L3["3. 网络层<br/>Network Layer<br/>PDU: Datagram (Packet)"]
+ L2["2. 数据链路层<br/>Data Link Layer<br/>PDU: Frame"]
+ L1["1. 物理层<br/>Physical Layer<br/>PDU: Bit"]
 
-    L5 -->|"数据封装"| L4 -->|"加 TCP/UDP 头"| L3 -->|"加 IP 头"| L2 -->|"加 MAC 头 + FCS"| L1 -->|"编码为比特流"| Medium["物理传输介质"]
+ L5 -->|"数据封装"| L4 -->|"加 TCP/UDP 头"| L3 -->|"加 IP 头"| L2 -->|"加 MAC 头 + FCS"| L1 -->|"编码为比特流"| Medium["物理传输介质"]
 
-    subgraph "各层协议示例"
-        L5Ex["HTTP, HTTPS, DNS, FTP, SMTP, SSH, SNMP, DHCP"]
-        L4Ex["TCP, UDP"]
-        L3Ex["IP, ICMP, ARP, OSPF, BGP, RIP"]
-        L2Ex["Ethernet, PPP, Wi-Fi (802.11), ARP（链路层实现）"]
-        L1Ex["RS-232, V.35, RJ-45, 光纤, 无线电频谱"]
-    end
+ subgraph "各层协议示例"
+ L5Ex["HTTP, HTTPS, DNS, FTP, SMTP, SSH, SNMP, DHCP"]
+ L4Ex["TCP, UDP"]
+ L3Ex["IP, ICMP, ARP, OSPF, BGP, RIP"]
+ L2Ex["Ethernet, PPP, Wi-Fi (802.11), ARP（链路层实现）"]
+ L1Ex["RS-232, V.35, RJ-45, 光纤, 无线电频谱"]
+ end
 ```
 
 **五层参考模型 vs 其他模型**：
@@ -514,13 +514,13 @@ graph TD
 
 ```mermaid
 graph TD
-    subgraph "三个核心概念"
-        Protocol["协议 (Protocol)<br/>————<br/>对等层之间的通信规则<br/>是'水平的'<br/>————<br/>例: 两个 TCP 实体之间<br/>遵守 TCP 协议通信"]
-        Interface["接口 (Interface)<br/>————<br/>相邻层之间交换信息的边界<br/>是连接点<br/>————<br/>例: socket API 是应用层<br/>与传输层之间的接口"]
-        Service["服务 (Service)<br/>————<br/>下层通过接口向上层<br/>提供的功能<br/>是'垂直的'<br/>————<br/>例: TCP 为应用层提供<br/>可靠的字节流服务"]
-    end
+ subgraph "三个核心概念"
+ Protocol["协议 (Protocol)<br/>————<br/>对等层之间的通信规则<br/>是'水平的'<br/>————<br/>例: 两个 TCP 实体之间<br/>遵守 TCP 协议通信"]
+ Interface["接口 (Interface)<br/>————<br/>相邻层之间交换信息的边界<br/>是连接点<br/>————<br/>例: socket API 是应用层<br/>与传输层之间的接口"]
+ Service["服务 (Service)<br/>————<br/>下层通过接口向上层<br/>提供的功能<br/>是'垂直的'<br/>————<br/>例: TCP 为应用层提供<br/>可靠的字节流服务"]
+ end
 
-    Protocol --- Interface --- Service
+ Protocol --- Interface --- Service
 ```
 
 **正式定义**：
@@ -546,20 +546,20 @@ graph TD
 
 ```mermaid
 graph TD
-    subgraph "SAP 的分层标识体系"
-        App1["进程 A<br/>(PID 1234)"]
-        App2["进程 B<br/>(PID 5678)"]
+ subgraph "SAP 的分层标识体系"
+ App1["进程 A<br/>(PID 1234)"]
+ App2["进程 B<br/>(PID 5678)"]
 
-        TP4["传输层</br>TCP/UDP"]
-        NW3["网络层</br>IP"]
-        DL2["数据链路层</br>Ethernet"]
+ TP4["传输层</br>TCP/UDP"]
+ NW3["网络层</br>IP"]
+ DL2["数据链路层</br>Ethernet"]
 
-        App1 -->|"Port 80 (SAP)"| TP4
-        App2 -->|"Port 443 (SAP)"| TP4
-        TP4 -->|"Protocol=6 (TCP SAP)"| NW3
-        NW3 -->|"EtherType=0x0800 (SAP)"| DL2
-        DL2 -->|"eth0 (物理 SAP)"| PHY["物理层"]
-    end
+ App1 -->|"Port 80 (SAP)"| TP4
+ App2 -->|"Port 443 (SAP)"| TP4
+ TP4 -->|"Protocol=6 (TCP SAP)"| NW3
+ NW3 -->|"EtherType=0x0800 (SAP)"| DL2
+ DL2 -->|"eth0 (物理 SAP)"| PHY["物理层"]
+ end
 ```
 
 #### 6.3 服务原语 (Service Primitives)
@@ -577,50 +577,50 @@ graph TD
 
 ```mermaid
 sequenceDiagram
-    participant AppA as 应用进程 A<br/>(Client)
-    participant TCP_A as 传输层实体 A<br/>(TCP Stack)
-    participant NetA as 网络层 A
-    participant NetB as 网络层 B
-    participant TCP_B as 传输层实体 B<br/>(TCP Stack)
-    participant AppB as 应用进程 B<br/>(Server)
+ participant AppA as 应用进程 A<br/>(Client)
+ participant TCP_A as 传输层实体 A<br/>(TCP Stack)
+ participant NetA as 网络层 A
+ participant NetB as 网络层 B
+ participant TCP_B as 传输层实体 B<br/>(TCP Stack)
+ participant AppB as 应用进程 B<br/>(Server)
 
-    Note over AppA,AppB: 连接建立 — 4 类服务原语
+ Note over AppA,AppB: 连接建立 — 4 类服务原语
 
-    AppA->>TCP_A: CONNECT.Request<br/>(dest IP, dest Port)
-    TCP_A->>NetA: TCP SYN 段<br/>(Seq=x)
-    NetA->>NetB: IP Datagram
-    NetB->>TCP_B: TCP SYN 段
-    TCP_B->>AppB: CONNECT.Indication<br/>(src IP, src Port)
+ AppA->>TCP_A: CONNECT.Request<br/>(dest IP, dest Port)
+ TCP_A->>NetA: TCP SYN 段<br/>(Seq=x)
+ NetA->>NetB: IP Datagram
+ NetB->>TCP_B: TCP SYN 段
+ TCP_B->>AppB: CONNECT.Indication<br/>(src IP, src Port)
 
-    AppB->>TCP_B: CONNECT.Response<br/>(接受连接)
-    TCP_B->>NetB: TCP SYN+ACK 段<br/>(Seq=y, Ack=x+1)
-    NetB->>NetA: IP Datagram
-    NetA->>TCP_A: TCP SYN+ACK 段
-    TCP_A->>AppA: CONNECT.Confirm<br/>(连接已建立)
+ AppB->>TCP_B: CONNECT.Response<br/>(接受连接)
+ TCP_B->>NetB: TCP SYN+ACK 段<br/>(Seq=y, Ack=x+1)
+ NetB->>NetA: IP Datagram
+ NetA->>TCP_A: TCP SYN+ACK 段
+ TCP_A->>AppA: CONNECT.Confirm<br/>(连接已建立)
 
-    Note over AppA,AppB: 连接已就绪, 可传输数据
+ Note over AppA,AppB: 连接已就绪, 可传输数据
 
-    AppA->>TCP_A: DATA.Request<br/>(payload)
-    TCP_A->>NetA: TCP Data 段
-    NetA->>NetB: IP Datagram
-    NetB->>TCP_B: TCP Data 段
-    TCP_B->>AppB: DATA.Indication<br/>(payload delivered)
+ AppA->>TCP_A: DATA.Request<br/>(payload)
+ TCP_A->>NetA: TCP Data 段
+ NetA->>NetB: IP Datagram
+ NetB->>TCP_B: TCP Data 段
+ TCP_B->>AppB: DATA.Indication<br/>(payload delivered)
 ```
 
 **无连接服务的二原语交互** (以 UDP `sendto()` 为例)：
 
 ```mermaid
 sequenceDiagram
-    participant AppA as 应用进程 A
-    participant UDP_A as UDP 实体 A
-    participant UDP_B as UDP 实体 B
-    participant AppB as 应用进程 B
+ participant AppA as 应用进程 A
+ participant UDP_A as UDP 实体 A
+ participant UDP_B as UDP 实体 B
+ participant AppB as 应用进程 B
 
-    AppA->>UDP_A: UNITDATA.Request<br/>(dest IP, dest Port, payload)
-    UDP_A->>UDP_B: UDP Datagram<br/>(无连接, 直接发送)
-    UDP_B->>AppB: UNITDATA.Indication<br/>(src IP, src Port, payload)
+ AppA->>UDP_A: UNITDATA.Request<br/>(dest IP, dest Port, payload)
+ UDP_A->>UDP_B: UDP Datagram<br/>(无连接, 直接发送)
+ UDP_B->>AppB: UNITDATA.Indication<br/>(src IP, src Port, payload)
 
-    Note over AppA,AppB: 无连接 — 无 Confirm, 无 Response<br/>上层自己处理丢失
+ Note over AppA,AppB: 无连接 — 无 Confirm, 无 Response<br/>上层自己处理丢失
 ```
 
 **要点**：
@@ -654,13 +654,13 @@ sequenceDiagram
 
 ```mermaid
 graph TD
-    subgraph "分层设计 — 好处与代价"
-        direction LR
-        Benefits["好处 (Pros)"] -->|权衡| Costs["代价 (Cons)"]
+ subgraph "分层设计 — 好处与代价"
+ direction LR
+ Benefits["好处 (Pros)"] -->|权衡| Costs["代价 (Cons)"]
 
-        B1["1. 模块化: 每层独立开发、维护、替换<br/>2. 标准化: 接口统一, 不同厂商可互操作<br/>3. 问题隔离: 故障排查可从任意层切入<br/>4. 协议演进: 上层应用升级无需改动传输层<br/>5. 教学分析: 分层使复杂系统可理解"]
-        C1["1. 层间冗余: 相邻层可能重复实现相同功能<br/>   例: 链路层 CRC + 传输层校验和<br/>2. 信息隐藏过度: 上层无法利用下层优化<br/>   例: TCP 不知底层链路丢包还是拥塞丢包<br/>3. 跨层交互需求: HTTP/3 将 TLS 移入 QUIC<br/>   打破了传统分层<br/>4. 处理开销: 每层加/剥头部,额外 CPU 周期<br/>5. OSI 的历史教训:<br/>   过度分层导致协议栈臃肿 (会话层/表示<br/>   层的边界在实践中模糊)"]
-    end
+ B1["1. 模块化: 每层独立开发、维护、替换<br/>2. 标准化: 接口统一, 不同厂商可互操作<br/>3. 问题隔离: 故障排查可从任意层切入<br/>4. 协议演进: 上层应用升级无需改动传输层<br/>5. 教学分析: 分层使复杂系统可理解"]
+ C1["1. 层间冗余: 相邻层可能重复实现相同功能<br/> 例: 链路层 CRC + 传输层校验和<br/>2. 信息隐藏过度: 上层无法利用下层优化<br/> 例: TCP 不知底层链路丢包还是拥塞丢包<br/>3. 跨层交互需求: HTTP/3 将 TLS 移入 QUIC<br/> 打破了传统分层<br/>4. 处理开销: 每层加/剥头部,额外 CPU 周期<br/>5. OSI 的历史教训:<br/> 过度分层导致协议栈臃肿 (会话层/表示<br/> 层的边界在实践中模糊)"]
+ end
 ```
 
 | 好处 | 具体体现 | 工程例子 |
@@ -706,36 +706,36 @@ graph TD
 
 ```mermaid
 graph TD
-    subgraph "L7 应用层"
-        BP["Burp Suite<br/>HTTP/HTTPS 代理"]
-        SS["sqlmap<br/>SQL 注入"]
-        CS["Cobalt Strike<br/>C2 Framework"]
-    end
-    subgraph "L4 传输层"
-        NM["nmap -sS/-sT<br/>端口扫描"]
-        HP["hping3<br/>数据包构造"]
-    end
-    subgraph "L3 网络层"
-        SC["scapy<br/>任意数据包构造"]
-        FR["fragroute<br/>分片绕过"]
-    end
-    subgraph "L2 数据链路层"
-        ASP["arpspoof / bettercap<br/>ARP 欺骗与 MITM"]
-        ET["ettercap<br/>综合 MITM"]
-    end
-    subgraph "L1 物理层"
-        HW["硬件嗅探器<br/>Throwing Star LAN Tap"]
-    end
+ subgraph "L7 应用层"
+ BP["Burp Suite<br/>HTTP/HTTPS 代理"]
+ SS["sqlmap<br/>SQL 注入"]
+ CS["Cobalt Strike<br/>C2 Framework"]
+ end
+ subgraph "L4 传输层"
+ NM["nmap -sS/-sT<br/>端口扫描"]
+ HP["hping3<br/>数据包构造"]
+ end
+ subgraph "L3 网络层"
+ SC["scapy<br/>任意数据包构造"]
+ FR["fragroute<br/>分片绕过"]
+ end
+ subgraph "L2 数据链路层"
+ ASP["arpspoof / bettercap<br/>ARP 欺骗与 MITM"]
+ ET["ettercap<br/>综合 MITM"]
+ end
+ subgraph "L1 物理层"
+ HW["硬件嗅探器<br/>Throwing Star LAN Tap"]
+ end
 ```
 
 **跨层攻击链** (以 MITM + 凭据窃取为例)：
 
 ```mermaid
 flowchart LR
-    L2_MAC["L2: ARP Spoofing<br/>(arpspoof)"] -->|"建立 MITM 位置"| L3_IP["L3: IP 转发开启<br/>(ip_forward=1)"]
-    L3_IP -->|"流量透明转发"| L4_Port["L4: 重定向流量<br/>(iptables REDIRECT)"]
-    L4_Port -->|"HTTP → 代理"| L7_SSL["L7: SSL Stripping<br/>(sslstrip)"]
-    L7_SSL -->|"降级到 HTTP 明文"| Cred["获取用户名/密码"]
+ L2_MAC["L2: ARP Spoofing<br/>(arpspoof)"] -->|"建立 MITM 位置"| L3_IP["L3: IP 转发开启<br/>(ip_forward=1)"]
+ L3_IP -->|"流量透明转发"| L4_Port["L4: 重定向流量<br/>(iptables REDIRECT)"]
+ L4_Port -->|"HTTP → 代理"| L7_SSL["L7: SSL Stripping<br/>(sslstrip)"]
+ L7_SSL -->|"降级到 HTTP 明文"| Cred["获取用户名/密码"]
 ```
 
 ---
@@ -748,33 +748,33 @@ flowchart LR
 
 ```mermaid
 graph TD
-    subgraph "物理拓扑 (Underlay Network)"
-        PhyNIC["物理网卡<br/>eth0 (NIC)"]
-        PhySwitch["物理交换机<br/>(ToR)"]
-        PhyRouter["物理路由器"]
-    end
+ subgraph "物理拓扑 (Underlay Network)"
+ PhyNIC["物理网卡<br/>eth0 (NIC)"]
+ PhySwitch["物理交换机<br/>(ToR)"]
+ PhyRouter["物理路由器"]
+ end
 
-    subgraph "Overlay Network (VXLAN/Geneve)"
-        VXLAN_TEP["VTEP<br/>(VXLAN Tunnel Endpoint)"]
-        VXLAN_Frame["VXLAN 封装<br/>{Outer ETH | Outer IP | Outer UDP | VXLAN HDR | Inner ETH | Inner IP | Payload}"]
-    end
+ subgraph "Overlay Network (VXLAN/Geneve)"
+ VXLAN_TEP["VTEP<br/>(VXLAN Tunnel Endpoint)"]
+ VXLAN_Frame["VXLAN 封装<br/>{Outer ETH | Outer IP | Outer UDP | VXLAN HDR | Inner ETH | Inner IP | Payload}"]
+ end
 
-    subgraph "容器网络接口 (CNI)"
-        CNI0["cni0 / flannel.1<br/>容器网桥"]
-        VethPair["veth pair<br/>{容器端 eth0 ↔ 宿主机端 vethXXXX}"]
-        PodNS["Pod Network Namespace<br/>独立协议栈"]
-    end
+ subgraph "容器网络接口 (CNI)"
+ CNI0["cni0 / flannel.1<br/>容器网桥"]
+ VethPair["veth pair<br/>{容器端 eth0 ↔ 宿主机端 vethXXXX}"]
+ PodNS["Pod Network Namespace<br/>独立协议栈"]
+ end
 
-    subgraph "K8s 网络模型"
-        Service["ClusterIP / NodePort<br/>(kube-proxy)"]
-        NetPol["NetworkPolicy<br/>(Calico / Cilium)"]
-    end
+ subgraph "K8s 网络模型"
+ Service["ClusterIP / NodePort<br/>(kube-proxy)"]
+ NetPol["NetworkPolicy<br/>(Calico / Cilium)"]
+ end
 
-    PhyNIC --> PhySwitch --> PhyRouter
-    VethPair --> CNI0 --> VXLAN_TEP --> VXLAN_Frame --> PhyNIC
-    PodNS --> VethPair
-    Service --> CNI0
-    NetPol --> PodNS
+ PhyNIC --> PhySwitch --> PhyRouter
+ VethPair --> CNI0 --> VXLAN_TEP --> VXLAN_Frame --> PhyNIC
+ PodNS --> VethPair
+ Service --> CNI0
+ NetPol --> PodNS
 ```
 
 #### 9.2 容器数据包完整路径
@@ -783,14 +783,14 @@ graph TD
 
 ```mermaid
 flowchart TD
-    Pod["Pod App<br/>(pid=1 in netns)"] -->|"1. socket() → write()<br/>应用层数据"| TCP_NS["Pod netns: TCP 封装<br/>SrcPort, DstPort, Seq, Ack"]
-    TCP_NS -->|"2. 传输层分段"| IP_NS["Pod netns: IP 封装<br/>SrcIP=10.244.1.5, DstIP=8.8.8.8"]
-    IP_NS -->|"3. 网络层路由查找<br/>default route → eth0"| Veth_In["veth pair (Pod 端 eth0)"]
-    Veth_In -->|"4. 跨 namespace<br/>veth pair 转发"| Veth_Out["veth pair (宿主机端)"]
-    Veth_Out -->|"5. 进入 cni0 网桥<br/>L2 转发"| Bridge["cni0 Bridge"]
-    Bridge -->|"6. 路由: 10.244.x.x → via flannel.1"| Overlay["VXLAN/Geneve 封装<br/>{Outer IP | Inner IP | Payload}"]
-    Overlay -->|"7. 宿主机路由<br/>default route → eth0"| HostEth["宿主机物理网卡 eth0"]
-    HostEth -->|"8. 发送到物理网络"| Internet["互联网"]
+ Pod["Pod App<br/>(pid=1 in netns)"] -->|"1. socket() → write()<br/>应用层数据"| TCP_NS["Pod netns: TCP 封装<br/>SrcPort, DstPort, Seq, Ack"]
+ TCP_NS -->|"2. 传输层分段"| IP_NS["Pod netns: IP 封装<br/>SrcIP=10.244.1.5, DstIP=8.8.8.8"]
+ IP_NS -->|"3. 网络层路由查找<br/>default route → eth0"| Veth_In["veth pair (Pod 端 eth0)"]
+ Veth_In -->|"4. 跨 namespace<br/>veth pair 转发"| Veth_Out["veth pair (宿主机端)"]
+ Veth_Out -->|"5. 进入 cni0 网桥<br/>L2 转发"| Bridge["cni0 Bridge"]
+ Bridge -->|"6. 路由: 10.244.x.x → via flannel.1"| Overlay["VXLAN/Geneve 封装<br/>{Outer IP | Inner IP | Payload}"]
+ Overlay -->|"7. 宿主机路由<br/>default route → eth0"| HostEth["宿主机物理网卡 eth0"]
+ HostEth -->|"8. 发送到物理网络"| Internet["互联网"]
 ```
 
 **关键的内核组件**：
@@ -821,18 +821,18 @@ CNI (Container Network Interface) 定义了容器运行时与网络插件之间�
 
 ```mermaid
 flowchart TD
-    Pkt["进入 Pod 的出站数据包"] --> Route["路由查找"]
+ Pkt["进入 Pod 的出站数据包"] --> Route["路由查找"]
 
-    Route -->|"同节点 Pod"| Bridge["cni0 Bridge L2 转发"]
-    Route -->|"跨节点 Pod"| OverlayRoute{"CNI 类型?"}
+ Route -->|"同节点 Pod"| Bridge["cni0 Bridge L2 转发"]
+ Route -->|"跨节点 Pod"| OverlayRoute{"CNI 类型?"}
 
-    OverlayRoute -->|"Flannel VXLAN"| VXLAN["VXLAN 封装 → 内核 VXLAN → 物理网卡"]
-    OverlayRoute -->|"Calico BGP"| BGP["直接 L3 路由 → 宿主机 IP → 物理网卡"]
-    OverlayRoute -->|"Cilium eBPF"| eBPF["eBPF 程序直通 → 直接修改包 → 物理网卡"]
-    OverlayRoute -->|"host-gw"| HostGW["直接路由: next hop = 目标节点 IP"]
+ OverlayRoute -->|"Flannel VXLAN"| VXLAN["VXLAN 封装 → 内核 VXLAN → 物理网卡"]
+ OverlayRoute -->|"Calico BGP"| BGP["直接 L3 路由 → 宿主机 IP → 物理网卡"]
+ OverlayRoute -->|"Cilium eBPF"| eBPF["eBPF 程序直通 → 直接修改包 → 物理网卡"]
+ OverlayRoute -->|"host-gw"| HostGW["直接路由: next hop = 目标节点 IP"]
 
-    Route -->|"出集群 (外部)"| SNAT["iptables MASQUERADE<br/>源地址: Pod IP → 宿主机 IP"]
-    SNAT -->|"通过物理网卡"| Internet2["互联网"]
+ Route -->|"出集群 (外部)"| SNAT["iptables MASQUERADE<br/>源地址: Pod IP → 宿主机 IP"]
+ SNAT -->|"通过物理网卡"| Internet2["互联网"]
 ```
 
 **容器网络与分层模型的映射**：
@@ -854,30 +854,30 @@ VXLAN (典型的容器 Overlay 协议) 的完整数据包结构直观展示了**
 
 ```
 +-------------------------------------------+
-| 物理层: 比特流 (100Gbps 光纤/铜缆)         |
+| 物理层: 比特流 (100Gbps 光纤/铜缆) |
 +-------------------------------------------+
-| L2: 外部 MAC 头 (Src/Dst MAC)              |   ← 物理网络 (Underlay)
-|     EtherType = 0x0800 (IPv4)             |
+| L2: 外部 MAC 头 (Src/Dst MAC) | ← 物理网络 (Underlay)
+| EtherType = 0x0800 (IPv4) |
 +-------------------------------------------+
-| L3: 外部 IP 头 (Src/Dst IP of host)       |
-|     Protocol = 17 (UDP)                   |
+| L3: 外部 IP 头 (Src/Dst IP of host) |
+| Protocol = 17 (UDP) |
 +-------------------------------------------+
-| L4: 外部 UDP 头 (DstPort = 4789, VXLAN)   |   ← Overlay 封装边界
+| L4: 外部 UDP 头 (DstPort = 4789, VXLAN) | ← Overlay 封装边界
 +-------------------------------------------+
-| VXLAN Header: VNI (24-bit Virtual Net ID) |   ← Overlay 标识
+| VXLAN Header: VNI (24-bit Virtual Net ID) | ← Overlay 标识
 +-------------------------------------------+
-| L2: 内部 MAC 头 (Pod Src/Dst MAC)          |   ← 容器网络 (Overlay)
-|     EtherType = 0x0800 (IPv4)             |
+| L2: 内部 MAC 头 (Pod Src/Dst MAC) | ← 容器网络 (Overlay)
+| EtherType = 0x0800 (IPv4) |
 +-------------------------------------------+
-| L3: 内部 IP 头 (Pod Src/Dst IP)           |
-|     Protocol = 6 (TCP)                    |
+| L3: 内部 IP 头 (Pod Src/Dst IP) |
+| Protocol = 6 (TCP) |
 +-------------------------------------------+
-| L4: 内部 TCP 头 (Src/Dst Port)             |
-|     SYN / ACK / PSH / FIN                 |
+| L4: 内部 TCP 头 (Src/Dst Port) |
+| SYN / ACK / PSH / FIN |
 +-------------------------------------------+
-| 应用层: HTTP Request / gRPC / DNS Query     |
+| 应用层: HTTP Request / gRPC / DNS Query |
 +-------------------------------------------+
-| FCS (CRC-32)                              |
+| FCS (CRC-32) |
 +-------------------------------------------+
 ```
 

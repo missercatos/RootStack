@@ -18,33 +18,33 @@
 
 ```mermaid
 graph TD
-    subgraph 红黑树示例（B=黑, R=红）
-        N11["11 B"] --> N21["2 R"]
-        N11 --> N31["14 B"]
-        N21 --> N41["1 B"]
-        N21 --> N51["7 B"]
-        N31 --> N61["15 R"]
-        N31 --> N71["NIL"]
-        N41 --> N81["NIL"]
-        N41 --> N91["NIL"]
-        N51 --> N101["5 R"]
-        N51 --> N111["8 R"]
-        N61 --> N121["NIL"]
-        N61 --> N131["NIL"]
-    end
-    style N11 fill:#333,color:#fff
-    style N31 fill:#333,color:#fff
-    style N41 fill:#333,color:#fff
-    style N51 fill:#333,color:#fff
-    style N21 fill:#f00,color:#fff
-    style N61 fill:#f00,color:#fff
-    style N101 fill:#f00,color:#fff
-    style N111 fill:#f00,color:#fff
-    style N71 fill:#999,color:#fff
-    style N81 fill:#999,color:#fff
-    style N91 fill:#999,color:#fff
-    style N121 fill:#999,color:#fff
-    style N131 fill:#999,color:#fff
+ subgraph 红黑树示例（B=黑, R=红）
+ N11["11 B"] --> N21["2 R"]
+ N11 --> N31["14 B"]
+ N21 --> N41["1 B"]
+ N21 --> N51["7 B"]
+ N31 --> N61["15 R"]
+ N31 --> N71["NIL"]
+ N41 --> N81["NIL"]
+ N41 --> N91["NIL"]
+ N51 --> N101["5 R"]
+ N51 --> N111["8 R"]
+ N61 --> N121["NIL"]
+ N61 --> N131["NIL"]
+ end
+ style N11 fill:#333,color:#fff
+ style N31 fill:#333,color:#fff
+ style N41 fill:#333,color:#fff
+ style N51 fill:#333,color:#fff
+ style N21 fill:#f00,color:#fff
+ style N61 fill:#f00,color:#fff
+ style N101 fill:#f00,color:#fff
+ style N111 fill:#f00,color:#fff
+ style N71 fill:#999,color:#fff
+ style N81 fill:#999,color:#fff
+ style N91 fill:#999,color:#fff
+ style N121 fill:#999,color:#fff
+ style N131 fill:#999,color:#fff
 ```
 
 ### 复杂度
@@ -68,14 +68,14 @@ $$
 1. 将红黑树中所有红色节点"合并"到其父节点（黑色），得到一棵 2-3-4 树
 2. 合并后所有叶子在同一层，每个节点有 2~4 个子节点
 3. 合并后的树高度为 $bh$（黑色高度），满足：
-   $$
-   n + 1 \geq 2^{bh}
-   $$
+ $$
+ n + 1 \geq 2^{bh}
+ $$
 4. 由于红色节点不能连续，有 $bh \geq h/2$
 5. 代入得 $n + 1 \geq 2^{h/2}$，两边取对数：
-   $$
-   h \leq 2 \cdot \log_2(n + 1)
-   $$
+ $$
+ h \leq 2 \cdot \log_2(n + 1)
+ $$
 
 **推论**：红黑树的查找、插入、删除时间复杂度均为 $O(\log n)$
 
@@ -96,15 +96,15 @@ $$
 
 ```mermaid
 graph TD
-    subgraph "红黑树"
-        B1["10 (B)"] --> R1["5 (R)"]
-        B1 --> R2["15 (R)"]
-        R1 --> B2["2 (B)"]
-        R1 --> B3["7 (B)"]
-    end
-    subgraph "等价 2-3-4 树 — 红色节点被'吸收'到黑色父节点"
-        NODE["[5|10|15] (3-node + red children)<br/>子节点: 2, 7"]
-    end
+ subgraph "红黑树"
+ B1["10 (B)"] --> R1["5 (R)"]
+ B1 --> R2["15 (R)"]
+ R1 --> B2["2 (B)"]
+ R1 --> B3["7 (B)"]
+ end
+ subgraph "等价 2-3-4 树 — 红色节点被'吸收'到黑色父节点"
+ NODE["[5|10|15] (3-node + red children)<br/>子节点: 2, 7"]
+ end
 ```
 
 这个同构揭示了红黑树设计的本质：**红链接 = 属于同一个 2-3-4 节点的键**。性质 4（不能有连续红色）保证了两个红链接不能相邻——因为如果两个红色节点互为父子，它们在 2-3-4 树中会产生超过 3 个键的超大节点。
@@ -117,12 +117,12 @@ graph TD
 
 ```mermaid
 flowchart TD
-    INSERT["插入红色节点 Z<br/>父节点 P 也是红色"] --> CHECK{"叔叔(U)颜色?"}
-    CHECK -->|"U 是红色"| CASE1["情况1: 颜色翻转<br/>P和U变黑, G变红<br/>问题上移到G"]
-    CASE1 --> UP["对 G 递归修复"]
-    CHECK -->|"U 是黑色<br/>Z/P/G 构成折线"| CASE2["情况2: 旋转拉直<br/>对 P 旋转使 Z/P/G 成直线"]
-    CASE2 --> CASE3
-    CHECK -->|"U 是黑色<br/>Z/P/G 成直线"| CASE3["情况3: 旋转+变色<br/>旋转 G, 交换 P 和 G 的颜色<br/>修复完成"]
+ INSERT["插入红色节点 Z<br/>父节点 P 也是红色"] --> CHECK{"叔叔(U)颜色?"}
+ CHECK -->|"U 是红色"| CASE1["情况1: 颜色翻转<br/>P和U变黑, G变红<br/>问题上移到G"]
+ CASE1 --> UP["对 G 递归修复"]
+ CHECK -->|"U 是黑色<br/>Z/P/G 构成折线"| CASE2["情况2: 旋转拉直<br/>对 P 旋转使 Z/P/G 成直线"]
+ CASE2 --> CASE3
+ CHECK -->|"U 是黑色<br/>Z/P/G 成直线"| CASE3["情况3: 旋转+变色<br/>旋转 G, 交换 P 和 G 的颜色<br/>修复完成"]
 ```
 
 - **情况 1**（U 红色）：父叔双双从红变黑，爷从黑变红。这保持了性质 5（黑高不变），但可能在更高层引入红-红冲突——递归向上修复
@@ -149,135 +149,135 @@ flowchart TD
 typedef enum { RED, BLACK } Color;
 
 typedef struct RBNode {
-    int data;
-    Color color;
-    struct RBNode *left, *right, *parent;
+ int data;
+ Color color;
+ struct RBNode *left, *right, *parent;
 } RBNode;
 
 typedef struct {
-    RBNode* root;
-    RBNode* NIL;     // 哨兵空节点（黑色）
+ RBNode* root;
+ RBNode* NIL; // 哨兵空节点（黑色）
 } RBTree;
 
 RBNode* rb_create_node(int val) {
-    RBNode* node = malloc(sizeof(RBNode));
-    node->data = val;
-    node->color = RED;
-    node->left = node->right = node->parent = NULL;
-    return node;
+ RBNode* node = malloc(sizeof(RBNode));
+ node->data = val;
+ node->color = RED;
+ node->left = node->right = node->parent = NULL;
+ return node;
 }
 
 void rb_init(RBTree* t) {
-    t->NIL = malloc(sizeof(RBNode));
-    t->NIL->color = BLACK;
-    t->NIL->left = t->NIL->right = t->NIL->parent = NULL;
-    t->root = t->NIL;
+ t->NIL = malloc(sizeof(RBNode));
+ t->NIL->color = BLACK;
+ t->NIL->left = t->NIL->right = t->NIL->parent = NULL;
+ t->root = t->NIL;
 }
 
 static void rb_left_rotate(RBTree* t, RBNode* x) {
-    RBNode* y = x->right;
-    x->right = y->left;
-    if (y->left != t->NIL) y->left->parent = x;
-    y->parent = x->parent;
-    if (x->parent == t->NIL) t->root = y;
-    else if (x == x->parent->left) x->parent->left = y;
-    else x->parent->right = y;
-    y->left = x;
-    x->parent = y;
+ RBNode* y = x->right;
+ x->right = y->left;
+ if (y->left != t->NIL) y->left->parent = x;
+ y->parent = x->parent;
+ if (x->parent == t->NIL) t->root = y;
+ else if (x == x->parent->left) x->parent->left = y;
+ else x->parent->right = y;
+ y->left = x;
+ x->parent = y;
 }
 
 static void rb_right_rotate(RBTree* t, RBNode* y) {
-    RBNode* x = y->left;
-    y->left = x->right;
-    if (x->right != t->NIL) x->right->parent = y;
-    x->parent = y->parent;
-    if (y->parent == t->NIL) t->root = x;
-    else if (y == y->parent->left) y->parent->left = x;
-    else y->parent->right = x;
-    x->right = y;
-    y->parent = x;
+ RBNode* x = y->left;
+ y->left = x->right;
+ if (x->right != t->NIL) x->right->parent = y;
+ x->parent = y->parent;
+ if (y->parent == t->NIL) t->root = x;
+ else if (y == y->parent->left) y->parent->left = x;
+ else y->parent->right = x;
+ x->right = y;
+ y->parent = x;
 }
 
 static void rb_insert_fixup(RBTree* t, RBNode* z) {
-    while (z->parent != t->NIL && z->parent->color == RED) {
-        if (z->parent == z->parent->parent->left) {
-            RBNode* y = z->parent->parent->right;
-            if (y->color == RED) {
-                z->parent->color = BLACK;
-                y->color = BLACK;
-                z->parent->parent->color = RED;
-                z = z->parent->parent;
-            } else {
-                if (z == z->parent->right) {
-                    z = z->parent;
-                    rb_left_rotate(t, z);
-                }
-                z->parent->color = BLACK;
-                z->parent->parent->color = RED;
-                rb_right_rotate(t, z->parent->parent);
-            }
-        } else {
-            RBNode* y = z->parent->parent->left;
-            if (y->color == RED) {
-                z->parent->color = BLACK;
-                y->color = BLACK;
-                z->parent->parent->color = RED;
-                z = z->parent->parent;
-            } else {
-                if (z == z->parent->left) {
-                    z = z->parent;
-                    rb_right_rotate(t, z);
-                }
-                z->parent->color = BLACK;
-                z->parent->parent->color = RED;
-                rb_left_rotate(t, z->parent->parent);
-            }
-        }
-    }
-    t->root->color = BLACK;
+ while (z->parent != t->NIL && z->parent->color == RED) {
+ if (z->parent == z->parent->parent->left) {
+ RBNode* y = z->parent->parent->right;
+ if (y->color == RED) {
+ z->parent->color = BLACK;
+ y->color = BLACK;
+ z->parent->parent->color = RED;
+ z = z->parent->parent;
+ } else {
+ if (z == z->parent->right) {
+ z = z->parent;
+ rb_left_rotate(t, z);
+ }
+ z->parent->color = BLACK;
+ z->parent->parent->color = RED;
+ rb_right_rotate(t, z->parent->parent);
+ }
+ } else {
+ RBNode* y = z->parent->parent->left;
+ if (y->color == RED) {
+ z->parent->color = BLACK;
+ y->color = BLACK;
+ z->parent->parent->color = RED;
+ z = z->parent->parent;
+ } else {
+ if (z == z->parent->left) {
+ z = z->parent;
+ rb_right_rotate(t, z);
+ }
+ z->parent->color = BLACK;
+ z->parent->parent->color = RED;
+ rb_left_rotate(t, z->parent->parent);
+ }
+ }
+ }
+ t->root->color = BLACK;
 }
 
 int rb_insert(RBTree* t, int value) {
-    RBNode* z = rb_create_node(value);
-    z->left = z->right = t->NIL;
+ RBNode* z = rb_create_node(value);
+ z->left = z->right = t->NIL;
 
-    RBNode* y = t->NIL;
-    RBNode* x = t->root;
-    while (x != t->NIL) {
-        y = x;
-        if (z->data < x->data) x = x->left;
-        else if (z->data > x->data) x = x->right;
-        else { free(z); return 0; }  // 不允许重复
-    }
-    z->parent = y;
-    if (y == t->NIL) t->root = z;
-    else if (z->data < y->data) y->left = z;
-    else y->right = z;
+ RBNode* y = t->NIL;
+ RBNode* x = t->root;
+ while (x != t->NIL) {
+ y = x;
+ if (z->data < x->data) x = x->left;
+ else if (z->data > x->data) x = x->right;
+ else { free(z); return 0; } // 不允许重复
+ }
+ z->parent = y;
+ if (y == t->NIL) t->root = z;
+ else if (z->data < y->data) y->left = z;
+ else y->right = z;
 
-    rb_insert_fixup(t, z);
-    return 1;
+ rb_insert_fixup(t, z);
+ return 1;
 }
 
 int rb_search(RBTree* t, int value) {
-    RBNode* cur = t->root;
-    while (cur != t->NIL) {
-        if (value == cur->data) return 1;
-        cur = (value < cur->data) ? cur->left : cur->right;
-    }
-    return 0;
+ RBNode* cur = t->root;
+ while (cur != t->NIL) {
+ if (value == cur->data) return 1;
+ cur = (value < cur->data) ? cur->left : cur->right;
+ }
+ return 0;
 }
 
 static void rb_destroy_rec(RBTree* t, RBNode* node) {
-    if (node == t->NIL) return;
-    rb_destroy_rec(t, node->left);
-    rb_destroy_rec(t, node->right);
-    free(node);
+ if (node == t->NIL) return;
+ rb_destroy_rec(t, node->left);
+ rb_destroy_rec(t, node->right);
+ free(node);
 }
 
 void rb_destroy(RBTree* t) {
-    rb_destroy_rec(t, t->root);
-    free(t->NIL);
-    t->root = t->NIL = NULL;
+ rb_destroy_rec(t, t->root);
+ free(t->NIL);
+ t->root = t->NIL = NULL;
 }
 ```
 
@@ -293,39 +293,39 @@ void rb_destroy(RBTree* t) {
 
 ```mermaid
 graph TD
-    subgraph 情况1：叔叔是红色
-        direction TB
-        G1["g(黑)"] --> P1["p(红) ✗"]
-        G1 --> U1["u(红)"]
-        P1 --> Z1["z(红) NEW"]
-        P1 --> NIL1["NIL"]
-        U1 --> NIL2["NIL"]
-        U1 --> NIL3["NIL"]
-        style G1 fill:#333,color:#fff
-        style P1 fill:#f00,color:#fff
-        style U1 fill:#f00,color:#fff
-        style Z1 fill:#f00,color:#fff
-        style NIL1 fill:#999,color:#fff
-        style NIL2 fill:#999,color:#fff
-        style NIL3 fill:#999,color:#fff
-    end
-    subgraph 变色后
-        direction TB
-        G2["g(红)"] --> P2["p(黑) ✓"]
-        G2 --> U2["u(黑) ✓"]
-        P2 --> Z2["z(红)"]
-        P2 --> NIL4["NIL"]
-        U2 --> NIL5["NIL"]
-        U2 --> NIL6["NIL"]
-        style G2 fill:#f00,color:#fff
-        style P2 fill:#333,color:#fff
-        style U2 fill:#333,color:#fff
-        style Z2 fill:#f00,color:#fff
-        style NIL4 fill:#999,color:#fff
-        style NIL5 fill:#999,color:#fff
-        style NIL6 fill:#999,color:#fff
-    end
-    G1 -->|"p,u 变黑 → g 变红 → z=g"| G2
+ subgraph 情况1：叔叔是红色
+ direction TB
+ G1["g(黑)"] --> P1["p(红) "]
+ G1 --> U1["u(红)"]
+ P1 --> Z1["z(红) NEW"]
+ P1 --> NIL1["NIL"]
+ U1 --> NIL2["NIL"]
+ U1 --> NIL3["NIL"]
+ style G1 fill:#333,color:#fff
+ style P1 fill:#f00,color:#fff
+ style U1 fill:#f00,color:#fff
+ style Z1 fill:#f00,color:#fff
+ style NIL1 fill:#999,color:#fff
+ style NIL2 fill:#999,color:#fff
+ style NIL3 fill:#999,color:#fff
+ end
+ subgraph 变色后
+ direction TB
+ G2["g(红)"] --> P2["p(黑) "]
+ G2 --> U2["u(黑) "]
+ P2 --> Z2["z(红)"]
+ P2 --> NIL4["NIL"]
+ U2 --> NIL5["NIL"]
+ U2 --> NIL6["NIL"]
+ style G2 fill:#f00,color:#fff
+ style P2 fill:#333,color:#fff
+ style U2 fill:#333,color:#fff
+ style Z2 fill:#f00,color:#fff
+ style NIL4 fill:#999,color:#fff
+ style NIL5 fill:#999,color:#fff
+ style NIL6 fill:#999,color:#fff
+ end
+ G1 -->|"p,u 变黑 → g 变红 → z=g"| G2
 ```
 
 #### 情况 2：叔叔 u 是黑色，z 与 p 同侧（直线型）
@@ -336,43 +336,43 @@ graph TD
 
 ```mermaid
 graph TD
-    subgraph 情况2（左左型）：叔叔黑色+直线
-        direction TB
-        G1["g(黑)"] --> P1["p(红) ✗"]
-        G1 --> U1["u(黑)"]
-        P1 --> Z1["z(红) NEW"]
-        P1 --> NIL1["NIL"]
-        Z1 --> NIL2["NIL"]
-        Z1 --> NIL3["NIL"]
-        U1 --> NIL4["NIL"]
-        U1 --> NIL5["NIL"]
-        style G1 fill:#f00,color:#fff
-        style P1 fill:#f00,color:#fff
-        style U1 fill:#333,color:#fff
-        style Z1 fill:#f00,color:#fff
-        style NIL1 fill:#999,color:#fff
-        style NIL2 fill:#999,color:#fff
-        style NIL3 fill:#999,color:#fff
-        style NIL4 fill:#999,color:#fff
-        style NIL5 fill:#999,color:#fff
-    end
-    subgraph 右旋+变色后
-        direction TB
-        P2["p(黑) ✓"] --> Z2["z(红)"]
-        P2 --> G2["g(红)"]
-        Z2 --> NIL6["NIL"]
-        Z2 --> NIL7["NIL"]
-        G2 --> NIL8["NIL"]
-        G2 --> U2["u(黑)"]
-        style P2 fill:#333,color:#fff
-        style Z2 fill:#f00,color:#fff
-        style G2 fill:#f00,color:#fff
-        style U2 fill:#333,color:#fff
-        style NIL6 fill:#999,color:#fff
-        style NIL7 fill:#999,color:#fff
-        style NIL8 fill:#999,color:#fff
-    end
-    G1 -->|"右旋 g + p变黑,g变红"| P2
+ subgraph 情况2（左左型）：叔叔黑色+直线
+ direction TB
+ G1["g(黑)"] --> P1["p(红) "]
+ G1 --> U1["u(黑)"]
+ P1 --> Z1["z(红) NEW"]
+ P1 --> NIL1["NIL"]
+ Z1 --> NIL2["NIL"]
+ Z1 --> NIL3["NIL"]
+ U1 --> NIL4["NIL"]
+ U1 --> NIL5["NIL"]
+ style G1 fill:#f00,color:#fff
+ style P1 fill:#f00,color:#fff
+ style U1 fill:#333,color:#fff
+ style Z1 fill:#f00,color:#fff
+ style NIL1 fill:#999,color:#fff
+ style NIL2 fill:#999,color:#fff
+ style NIL3 fill:#999,color:#fff
+ style NIL4 fill:#999,color:#fff
+ style NIL5 fill:#999,color:#fff
+ end
+ subgraph 右旋+变色后
+ direction TB
+ P2["p(黑) "] --> Z2["z(红)"]
+ P2 --> G2["g(红)"]
+ Z2 --> NIL6["NIL"]
+ Z2 --> NIL7["NIL"]
+ G2 --> NIL8["NIL"]
+ G2 --> U2["u(黑)"]
+ style P2 fill:#333,color:#fff
+ style Z2 fill:#f00,color:#fff
+ style G2 fill:#f00,color:#fff
+ style U2 fill:#333,color:#fff
+ style NIL6 fill:#999,color:#fff
+ style NIL7 fill:#999,color:#fff
+ style NIL8 fill:#999,color:#fff
+ end
+ G1 -->|"右旋 g + p变黑,g变红"| P2
 ```
 
 如果 z 是 p 的右孩子（右左型），则先左旋 p 转为左左型 → 按左左型处理。
@@ -385,48 +385,48 @@ graph TD
 
 ```mermaid
 graph TD
-    subgraph 情况3（左右型）：叔叔黑色+三角
-        direction TB
-        G1["g(黑)"] --> P1["p(红) ✗"]
-        G1 --> U1["u(黑)"]
-        P1 --> NIL1["NIL"]
-        P1 --> Z1["z(红) NEW"]
-        Z1 --> NIL2["NIL"]
-        Z1 --> NIL3["NIL"]
-        U1 --> NIL4["NIL"]
-        U1 --> NIL5["NIL"]
-        style G1 fill:#f00,color:#fff
-        style P1 fill:#f00,color:#fff
-        style U1 fill:#333,color:#fff
-        style Z1 fill:#f00,color:#fff
-        style NIL1 fill:#999,color:#fff
-        style NIL2 fill:#999,color:#fff
-        style NIL3 fill:#999,color:#fff
-        style NIL4 fill:#999,color:#fff
-        style NIL5 fill:#999,color:#fff
-    end
-    subgraph 左旋p后（转为左左型）
-        direction TB
-        G2["g(黑)"] --> Z2["z(红)"]
-        G2 --> U2["u(黑)"]
-        Z2 --> P2["p(红)"]
-        Z2 --> NIL6["NIL"]
-        P2 --> NIL7["NIL"]
-        P2 --> NIL8["NIL"]
-        U2 --> NIL9["NIL"]
-        U2 --> NIL10["NIL"]
-        style G2 fill:#f00,color:#fff
-        style Z2 fill:#f00,color:#fff
-        style U2 fill:#333,color:#fff
-        style P2 fill:#f00,color:#fff
-        style NIL6 fill:#999,color:#fff
-        style NIL7 fill:#999,color:#fff
-        style NIL8 fill:#999,color:#fff
-        style NIL9 fill:#999,color:#fff
-        style NIL10 fill:#999,color:#fff
-    end
-    G1 -->|"左旋 p"| G2
-    G2 -.->|"再按情况2 右旋 g + 变色"| END["✓ 平衡"]
+ subgraph 情况3（左右型）：叔叔黑色+三角
+ direction TB
+ G1["g(黑)"] --> P1["p(红) "]
+ G1 --> U1["u(黑)"]
+ P1 --> NIL1["NIL"]
+ P1 --> Z1["z(红) NEW"]
+ Z1 --> NIL2["NIL"]
+ Z1 --> NIL3["NIL"]
+ U1 --> NIL4["NIL"]
+ U1 --> NIL5["NIL"]
+ style G1 fill:#f00,color:#fff
+ style P1 fill:#f00,color:#fff
+ style U1 fill:#333,color:#fff
+ style Z1 fill:#f00,color:#fff
+ style NIL1 fill:#999,color:#fff
+ style NIL2 fill:#999,color:#fff
+ style NIL3 fill:#999,color:#fff
+ style NIL4 fill:#999,color:#fff
+ style NIL5 fill:#999,color:#fff
+ end
+ subgraph 左旋p后（转为左左型）
+ direction TB
+ G2["g(黑)"] --> Z2["z(红)"]
+ G2 --> U2["u(黑)"]
+ Z2 --> P2["p(红)"]
+ Z2 --> NIL6["NIL"]
+ P2 --> NIL7["NIL"]
+ P2 --> NIL8["NIL"]
+ U2 --> NIL9["NIL"]
+ U2 --> NIL10["NIL"]
+ style G2 fill:#f00,color:#fff
+ style Z2 fill:#f00,color:#fff
+ style U2 fill:#333,color:#fff
+ style P2 fill:#f00,color:#fff
+ style NIL6 fill:#999,color:#fff
+ style NIL7 fill:#999,color:#fff
+ style NIL8 fill:#999,color:#fff
+ style NIL9 fill:#999,color:#fff
+ style NIL10 fill:#999,color:#fff
+ end
+ G1 -->|"左旋 p"| G2
+ G2 -.->|"再按情况2 右旋 g + 变色"| END[" 平衡"]
 ```
 
 ---

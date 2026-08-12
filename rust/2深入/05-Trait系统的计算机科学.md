@@ -27,7 +27,7 @@ trait Animal { fn speak(&self); fn name(&self) -> &str; }
 
 ```rust
 // 非 object-safe: 返回 Self
-trait Clone { fn clone(&self) -> Self; }  // dyn Clone 不可用
+trait Clone { fn clone(&self) -> Self; } // dyn Clone 不可用
 
 // Object-safe: Self 不在返回值位置
 trait Display { fn fmt(&self, f: &mut Formatter) -> fmt::Result; }
@@ -36,16 +36,16 @@ trait Display { fn fmt(&self, f: &mut Formatter) -> fmt::Result; }
 ### Super-trait
 
 ```rust
-trait Animal: Display {}  // Animal 要求 Display 已实现
+trait Animal: Display {} // Animal 要求 Display 已实现
 ```
 
 ### 标记 trait
 
 ```rust
-trait Send {}      // 可跨线程传递所有权
-trait Sync {}      // 可跨线程共享引用
-trait Copy {}       // 赋值时按位复制
-trait Sized {}      // 编译时已知大小（默认绑定）
+trait Send {} // 可跨线程传递所有权
+trait Sync {} // 可跨线程共享引用
+trait Copy {} // 赋值时按位复制
+trait Sized {} // 编译时已知大小（默认绑定）
 ```
 
 ### 静态 vs 动态成本
@@ -67,8 +67,8 @@ trait Sized {}      // 编译时已知大小（默认绑定）
 
 ```rust
 students.sort_by(|a, b| b.total.cmp(&a.total)
-    .then_with(|| a.chinese.cmp(&b.chinese))
-    .then_with(|| a.id.cmp(&b.id)));
+ .then_with(|| a.chinese.cmp(&b.chinese))
+ .then_with(|| a.id.cmp(&b.id)));
 ```
 
 ### AI 自检

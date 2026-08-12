@@ -32,49 +32,49 @@ title: "C++ 功能库 — regex"
 
 ```
 FUNCTION demo_regex:
-    pattern = REGEX("[0-9]+")
+ pattern = REGEX("[0-9]+")
 
-    IF REGEX_MATCH("12345", pattern) THEN
-        PRINT "全是数字"
-    END IF
+ IF REGEX_MATCH("12345", pattern) THEN
+ PRINT "全是数字"
+ END IF
 
-    s = "abc123def456ghi"
-    IF REGEX_SEARCH(s, pattern) THEN
-        PRINT "找到数字"
-    END IF
+ s = "abc123def456ghi"
+ IF REGEX_SEARCH(s, pattern) THEN
+ PRINT "找到数字"
+ END IF
 
-    result = REGEX_REPLACE(s, pattern, "#")
-    PRINT result                           // "abc#def#ghi"
+ result = REGEX_REPLACE(s, pattern, "#")
+ PRINT result // "abc#def#ghi"
 ```
 
 ### 捕获组
 
 ```
 FUNCTION demo_capture:
-    email_pattern = REGEX(R"((\w+)@(\w+\.\w+))")
-    s = "contact@example.com"
-    match = SMATCH()
+ email_pattern = REGEX(R"((\w+)@(\w+\.\w+))")
+ s = "contact@example.com"
+ match = SMATCH()
 
-    IF REGEX_SEARCH(s, match, email_pattern) THEN
-        PRINT match[0]      // "contact@example.com"  完整匹配
-        PRINT match[1]      // "contact"               第一个捕获组
-        PRINT match[2]      // "example.com"           第二个捕获组
-    END IF
+ IF REGEX_SEARCH(s, match, email_pattern) THEN
+ PRINT match[0] // "contact@example.com" 完整匹配
+ PRINT match[1] // "contact" 第一个捕获组
+ PRINT match[2] // "example.com" 第二个捕获组
+ END IF
 ```
 
 ### 遍历所有匹配
 
 ```
 FUNCTION demo_iter:
-    pattern = REGEX("[0-9]+")
-    s = "a=10, b=20, c=30"
+ pattern = REGEX("[0-9]+")
+ s = "a=10, b=20, c=30"
 
-    it = REGEX_ITERATOR(s.BEGIN(), s.END(), pattern)
-    END_IT = REGEX_ITERATOR()
-    WHILE it != END_IT:
-        PRINT it.STR()
-        it++
-    END WHILE                           // 依次输出: 10 20 30
+ it = REGEX_ITERATOR(s.BEGIN(), s.END(), pattern)
+ END_IT = REGEX_ITERATOR()
+ WHILE it != END_IT:
+ PRINT it.STR()
+ it++
+ END WHILE // 依次输出: 10 20 30
 ```
 
 ---

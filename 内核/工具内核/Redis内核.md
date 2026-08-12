@@ -25,28 +25,28 @@ Redis 是一个内存数据结构服务器，用纯 C 编写 (约 12 万行)。�
 ```c
 // ae 事件循环核心 (ae.c)
 typedef struct aeEventLoop {
-    aeFileEvent *events;   // 注册的 fd 及其回调
-    aeFiredEvent *fired;   // epoll_wait 返回的就绪事件
-    aeTimeEvent *timeEventHead;  // 时间事件链表 (最近到期排最前)
+ aeFileEvent *events; // 注册的 fd 及其回调
+ aeFiredEvent *fired; // epoll_wait 返回的就绪事件
+ aeTimeEvent *timeEventHead; // 时间事件链表 (最近到期排最前)
 };
 
 void aeMain(aeEventLoop *eventLoop) {
-    while (!eventLoop->stop) {
-        // 计算离最近时间事件的毫秒数, 作为 epoll_wait 超时
-        tv = shortestTimeEventTimeout(eventLoop);
+ while (!eventLoop->stop) {
+ // 计算离最近时间事件的毫秒数, 作为 epoll_wait 超时
+ tv = shortestTimeEventTimeout(eventLoop);
 
-        // 阻塞等待 I/O 事件 (epoll_wait)
-        numevents = aeApiPoll(eventLoop, tv);
+ // 阻塞等待 I/O 事件 (epoll_wait)
+ numevents = aeApiPoll(eventLoop, tv);
 
-        // 处理所有就绪的文件事件
-        for (i = 0; i < numevents; i++) {
-            fileEvent->rfileProc(...); // 读事件回调
-            fileEvent->wfileProc(...); // 写事件回调
-        }
+ // 处理所有就绪的文件事件
+ for (i = 0; i < numevents; i++) {
+ fileEvent->rfileProc(...); // 读事件回调
+ fileEvent->wfileProc(...); // 写事件回调
+ }
 
-        // 处理所有到期的时间事件
-        processTimeEvents(eventLoop);
-    }
+ // 处理所有到期的时间事件
+ processTimeEvents(eventLoop);
+ }
 }
 ```
 
@@ -55,27 +55,27 @@ void aeMain(aeEventLoop *eventLoop) {
 ```c
 // SDS -- Simple Dynamic String
 struct sdshdr {
-    int len;     // 已使用长度 (O(1) strlen)
-    int free;    // 剩余空间 (减少 realloc)
-    char buf[];  // 柔性数组, 实际数据
+ int len; // 已使用长度 (O(1) strlen)
+ int free; // 剩余空间 (减少 realloc)
+ char buf[]; // 柔性数组, 实际数据
 };
 
 // Dict -- 渐近式 rehash 哈希表
 struct dict {
-    dictEntry **table[2];   // table[0] 是当前, table[1] 是 rehash 目标
-    long rehashidx;         // -1 表示未在 rehash
-    // ...
+ dictEntry **table[2]; // table[0] 是当前, table[1] 是 rehash 目标
+ long rehashidx; // -1 表示未在 rehash
+ // ...
 };
 // 每次 CRUD 操作附带移动 1 个桶, 分步完成 rehash
 
 // Skiplist -- 有序集合的底层
 struct zskiplistNode {
-    sds ele;                      // 元素值
-    double score;                 // 排序分数
-    struct zskiplistLevel {
-        struct zskiplistNode *forward;  // 前向指针
-        unsigned int span;              // 跨度 (快速 rank 查询)
-    } level[];                    // 多层 index (随机层数, 概率 1/4)
+ sds ele; // 元素值
+ double score; // 排序分数
+ struct zskiplistLevel {
+ struct zskiplistNode *forward; // 前向指针
+ unsigned int span; // 跨度 (快速 rank 查询)
+ } level[]; // 多层 index (随机层数, 概率 1/4)
 };
 ```
 
@@ -83,29 +83,29 @@ struct zskiplistNode {
 
 ```
 主进程 (Redis Server):
-    fork()
-      |
-      +-- 子进程:
-      |       遍历所有 DB (共享内存 Copy-on-Write)
-      |       将所有 key-value 序列化写入 dump.rdb
-      |       退出
-      |
-      +-- 父进程:
-              继续处理客户端请求
-              如果父进程修改了数据 → 触发 Copy-on-Write → 子进程看到旧版本
-              (fork 时刻的快照, 不是实时数据)
+ fork()
+ |
+ +-- 子进程:
+ | 遍历所有 DB (共享内存 Copy-on-Write)
+ | 将所有 key-value 序列化写入 dump.rdb
+ | 退出
+ |
+ +-- 父进程:
+ 继续处理客户端请求
+ 如果父进程修改了数据 → 触发 Copy-on-Write → 子进程看到旧版本
+ (fork 时刻的快照, 不是实时数据)
 ```
 
 ## AOF 持久化
 
 ```
 每条成功执行的写命令追加到 AOF 文件:
-    SET key "hello"  →  AOF: *3\r\n$3\r\nSET\r\n$3\r\nkey\r\n$5\r\nhello\r\n
+ SET key "hello" → AOF: *3\r\n$3\r\nSET\r\n$3\r\nkey\r\n$5\r\nhello\r\n
 
 AOF 重写 (BGREWRITEAOF):
-    在子进程中, 基于当前内存数据生成最小命令集合
-    例如: 一条 RPUSH list A → RPUSH list B → RPUSH list C
-    重写为: RPUSH list A B C   (合并为一条)
+ 在子进程中, 基于当前内存数据生成最小命令集合
+ 例如: 一条 RPUSH list A → RPUSH list B → RPUSH list C
+ 重写为: RPUSH list A B C (合并为一条)
 ```
 
 ## 主从复制
@@ -113,8 +113,8 @@ AOF 重写 (BGREWRITEAOF):
 ```
 1. 从库连接主库, 发送 PSYNC <replication_id> <offset>
 2. 主库检测是否可以部分同步 (offset 在复制缓冲区中)
-   部分同步: 发送 offset 之后的增量命令
-   全量同步: fork → 生成 RDB → 发送 RDB 给从库 → 发送缓冲区增量命令
+ 部分同步: 发送 offset 之后的增量命令
+ 全量同步: fork → 生成 RDB → 发送 RDB 给从库 → 发送缓冲区增量命令
 3. 从库加载 RDB → 执行增量命令 → 进入实时同步
 4. 主库每条写命令同时发送给所有已连接的从库
 ```

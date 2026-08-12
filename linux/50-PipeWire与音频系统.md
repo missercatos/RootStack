@@ -7,13 +7,13 @@
 ## 39.1 Linux 多媒体管道历史
 
 ```
-1992        2002        2004         2009          2017
- │           │           │            │             │
- ▼           ▼           ▼            ▼             ▼
+1992 2002 2004 2009 2017
+ │ │ │ │ │
+ ▼ ▼ ▼ ▼ ▼
 OSS ──────► ALSA ──────► ALSA ──────► PulseAudio ──► PipeWire
-(内核音频)   (取代 OSS)   + JACK       (桌面音频)     (统一一切)
-                         (专业音频)    + JACK
-                                      (仍然独立)
+(内核音频) (取代 OSS) + JACK (桌面音频) (统一一切)
+ (专业音频) + JACK
+ (仍然独立)
 ```
 
 | 时代 | 系统 | 定位 | 局限 |
@@ -28,17 +28,17 @@ PipeWire 的目标是 **一个框架替代所有**：
 
 ```
 ┌──────────────────────────────────────────────────┐
-│                   PipeWire                        │
-│  ┌──────────────┬───────────────┬──────────────┐  │
-│  │  音频处理     │   视频处理     │  MIDI 处理   │  │
-│  │  (替代       │   (屏幕共享    │  (替代       │  │
-│  │   PulseAudio │    摄像头)     │   JACK MIDI) │  │
-│  │   + JACK)    │               │              │  │
-│  └──────────────┴───────────────┴──────────────┘  │
-│  ┌──────────────────────────────────────────────┐  │
-│  │          兼容层                                │  │
-│  │  pipewire-pulse │ pipewire-jack │ pipewire-alsa │
-│  └──────────────────────────────────────────────┘  │
+│ PipeWire │
+│ ┌──────────────┬───────────────┬──────────────┐ │
+│ │ 音频处理 │ 视频处理 │ MIDI 处理 │ │
+│ │ (替代 │ (屏幕共享 │ (替代 │ │
+│ │ PulseAudio │ 摄像头) │ JACK MIDI) │ │
+│ │ + JACK) │ │ │ │
+│ └──────────────┴───────────────┴──────────────┘ │
+│ ┌──────────────────────────────────────────────┐ │
+│ │ 兼容层 │ │
+│ │ pipewire-pulse │ pipewire-jack │ pipewire-alsa │
+│ └──────────────────────────────────────────────┘ │
 └──────────────────────────────────────────────────┘
 ```
 
@@ -51,15 +51,15 @@ PipeWire 的目标是 **一个框架替代所有**：
 PipeWire 采用 **图模型（Graph Model）**，所有音视频处理抽象为节点和链接：
 
 ```
-┌──────────┐     ┌──────────┐     ┌──────────┐
-│  Source   │────►│ Filter   │────►│  Sink    │
-│  (输入)   │     │ (处理)   │     │ (输出)   │
-│          │     │          │     │          │
-│ [out_FL] │────►│[in] [out]│────►│ [in_FL]  │
-│ [out_FR] │────►│[in] [out]│────►│ [in_FR]  │
-└──────────┘     └──────────┘     └──────────┘
-   节点              节点             节点
-        链接              链接
+┌──────────┐ ┌──────────┐ ┌──────────┐
+│ Source │────►│ Filter │────►│ Sink │
+│ (输入) │ │ (处理) │ │ (输出) │
+│ │ │ │ │ │
+│ [out_FL] │────►│[in] [out]│────►│ [in_FL] │
+│ [out_FR] │────►│[in] [out]│────►│ [in_FR] │
+└──────────┘ └──────────┘ └──────────┘
+ 节点 节点 节点
+ 链接 链接
 ```
 
 核心概念：
@@ -77,20 +77,20 @@ PipeWire 采用 **图模型（Graph Model）**，所有音视频处理抽象为�
 
 ```
 ┌─────────────────────────────────────────────┐
-│              PipeWire Daemon                 │
-│  ┌──────────┐  ┌──────────┐  ┌───────────┐  │
-│  │  Core    │  │ Modules  │  │  SPA      │  │
-│  │  (核心)  │  │ (模块)   │  │  Plugins  │  │
-│  └──────────┘  └──────────┘  └───────────┘  │
-│                                              │
-│  模块:                     SPA 插件:          │
-│  - module-rt              - alsa             │
-│  - module-protocol-native - v4l2             │
-│  - module-client-node     - bluez5           │
-│  - module-adapter         - audiomixer       │
-│  - module-metadata        - audioconvert     │
-│  - module-session-manager - audiotestsrc     │
-│  - module-filter-chain    - videotestsrc     │
+│ PipeWire Daemon │
+│ ┌──────────┐ ┌──────────┐ ┌───────────┐ │
+│ │ Core │ │ Modules │ │ SPA │ │
+│ │ (核心) │ │ (模块) │ │ Plugins │ │
+│ └──────────┘ └──────────┘ └───────────┘ │
+│ │
+│ 模块: SPA 插件: │
+│ - module-rt - alsa │
+│ - module-protocol-native - v4l2 │
+│ - module-client-node - bluez5 │
+│ - module-adapter - audiomixer │
+│ - module-metadata - audioconvert │
+│ - module-session-manager - audiotestsrc │
+│ - module-filter-chain - videotestsrc │
 └─────────────────────────────────────────────┘
 ```
 
@@ -99,8 +99,8 @@ SPA（Simple Plugin API）是 PipeWire 的插件框架，提供硬件抽象和�
 ```bash
 # 列出 SPA 插件
 ls /usr/lib/spa-0.2/
-# alsa/  audiomixer/  audioconvert/  audiotestsrc/
-# bluez5/  control/  support/  v4l2/  videotestsrc/  vulkan/
+# alsa/ audiomixer/ audioconvert/ audiotestsrc/
+# bluez5/ control/ support/ v4l2/ videotestsrc/ vulkan/
 ```
 
 ### 兼容层
@@ -147,8 +147,8 @@ pw-jack jack_lsp
 sudo pacman -S pipewire-alsa
 
 # ALSA 应用自动路由到 PipeWire
-aplay -l           # 列出设备
-aplay test.wav     # 播放
+aplay -l # 列出设备
+aplay test.wav # 播放
 
 # /etc/alsa/conf.d/ 中的配置将 ALSA 重定向到 PipeWire
 cat /etc/alsa/conf.d/50-pipewire.conf
@@ -171,11 +171,11 @@ sudo pacman -S pipewire pipewire-audio
 # - wireplumber（会话管理器）
 
 # 图形化音量控制
-sudo pacman -S pavucontrol     # PulseAudio 前端（通过兼容层工作）
+sudo pacman -S pavucontrol # PulseAudio 前端（通过兼容层工作）
 
 # 额外工具
-sudo pacman -S helvum          # 图形化节点连接管理器
-sudo pacman -S qpwgraph        # 另一个图形化管理器
+sudo pacman -S helvum # 图形化节点连接管理器
+sudo pacman -S qpwgraph # 另一个图形化管理器
 
 # 启动服务（systemd user service）
 systemctl --user enable --now pipewire.socket
@@ -191,7 +191,7 @@ systemctl --user status wireplumber
 ### 配置文件结构
 
 ```
-/usr/share/pipewire/              ← 默认配置（不要修改）
+/usr/share/pipewire/ ← 默认配置（不要修改）
 ├── pipewire.conf
 ├── pipewire-pulse.conf
 ├── client.conf
@@ -199,18 +199,18 @@ systemctl --user status wireplumber
 ├── jack.conf
 ├── minimal.conf
 └── pipewire.conf.avail/
-    ├── 10-rates.conf
-    └── ...
+ ├── 10-rates.conf
+ └── ...
 
-~/.config/pipewire/               ← 用户覆盖配置
-├── pipewire.conf.d/              ← 片段式覆盖（推荐）
-│   └── 10-custom.conf
+~/.config/pipewire/ ← 用户覆盖配置
+├── pipewire.conf.d/ ← 片段式覆盖（推荐）
+│ └── 10-custom.conf
 ├── pipewire-pulse.conf.d/
-│   └── 10-custom.conf
+│ └── 10-custom.conf
 ├── client.conf.d/
-│   └── 10-custom.conf
+│ └── 10-custom.conf
 └── client-rt.conf.d/
-    └── 10-custom.conf
+ └── 10-custom.conf
 ```
 
 重要原则：**不要直接复制和修改主配置文件**，使用 `.conf.d/` 目录下的片段文件进行覆盖。
@@ -228,12 +228,12 @@ cat /usr/share/pipewire/pipewire.conf
 ```json5
 // ~/.config/pipewire/pipewire.conf.d/10-custom.conf
 context.properties = {
-    default.clock.rate          = 48000
-    default.clock.allowed-rates = [ 44100 48000 96000 ]
-    default.clock.quantum       = 1024
-    default.clock.min-quantum   = 32
-    default.clock.max-quantum   = 2048
-    default.clock.force-quantum = 0
+ default.clock.rate = 48000
+ default.clock.allowed-rates = [ 44100 48000 96000 ]
+ default.clock.quantum = 1024
+ default.clock.min-quantum = 32
+ default.clock.max-quantum = 2048
+ default.clock.force-quantum = 0
 }
 ```
 
@@ -255,9 +255,9 @@ context.properties = {
 延迟(ms) = quantum / rate × 1000
 
 示例：
-1024 / 48000 × 1000 ≈ 21.3ms  （默认，适合桌面）
-256 / 48000 × 1000 ≈ 5.3ms    （低延迟）
-64 / 48000 × 1000 ≈ 1.3ms     （极低延迟，需要好的硬件）
+1024 / 48000 × 1000 ≈ 21.3ms （默认，适合桌面）
+256 / 48000 × 1000 ≈ 5.3ms （低延迟）
+64 / 48000 × 1000 ≈ 1.3ms （极低延迟，需要好的硬件）
 ```
 
 ### 低延迟配置
@@ -265,20 +265,20 @@ context.properties = {
 ```json5
 // ~/.config/pipewire/pipewire.conf.d/20-lowlatency.conf
 context.properties = {
-    default.clock.rate          = 48000
-    default.clock.quantum       = 256
-    default.clock.min-quantum   = 64
-    default.clock.max-quantum   = 256
+ default.clock.rate = 48000
+ default.clock.quantum = 256
+ default.clock.min-quantum = 64
+ default.clock.max-quantum = 256
 }
 ```
 
 ```json5
 // ~/.config/pipewire/pipewire-pulse.conf.d/20-lowlatency.conf
 pulse.properties = {
-    pulse.min.req     = 256/48000
-    pulse.default.req = 256/48000
-    pulse.max.req     = 256/48000
-    pulse.min.quantum = 256/48000
+ pulse.min.req = 256/48000
+ pulse.default.req = 256/48000
+ pulse.max.req = 256/48000
+ pulse.min.quantum = 256/48000
 }
 ```
 
@@ -287,18 +287,18 @@ pulse.properties = {
 ```json5
 // ~/.config/pipewire/pipewire.conf.d/20-hifi.conf
 context.properties = {
-    default.clock.rate          = 96000
-    default.clock.allowed-rates = [ 44100 48000 88200 96000 176400 192000 ]
-    default.clock.quantum       = 2048
+ default.clock.rate = 96000
+ default.clock.allowed-rates = [ 44100 48000 88200 96000 176400 192000 ]
+ default.clock.quantum = 2048
 }
 ```
 
 ```json5
 // ~/.config/pipewire/client-rt.conf.d/20-hifi.conf
 stream.properties = {
-    resample.quality   = 14        # SRC 重采样质量 (0-15, 15=最高)
-    resample.disable   = false
-    channelmix.disable = false
+ resample.quality = 14 # SRC 重采样质量 (0-15, 15=最高)
+ resample.disable = false
+ channelmix.disable = false
 }
 ```
 
@@ -312,25 +312,25 @@ WirePlumber 是 PipeWire 的 **会话管理器（Session Manager）**，负责�
 
 ```
 ┌─────────────────────────────────────────────┐
-│               WirePlumber                    │
-│                                              │
-│  ┌──────────┐  ┌──────────┐  ┌───────────┐  │
-│  │ 设备发现  │  │ 策略引擎  │  │ 路由管理   │  │
-│  │ & 管理   │  │ (Lua)    │  │ & 链接    │  │
-│  └──────────┘  └──────────┘  └───────────┘  │
-│                                              │
-│  功能:                                        │
-│  - 自动发现音频/视频设备                        │
-│  - 自动创建节点                                │
-│  - 管理默认设备                                │
-│  - 处理设备插拔事件                             │
-│  - 实施音频路由策略                             │
-│  - 保存/恢复音量和路由状态                       │
+│ WirePlumber │
+│ │
+│ ┌──────────┐ ┌──────────┐ ┌───────────┐ │
+│ │ 设备发现 │ │ 策略引擎 │ │ 路由管理 │ │
+│ │ & 管理 │ │ (Lua) │ │ & 链接 │ │
+│ └──────────┘ └──────────┘ └───────────┘ │
+│ │
+│ 功能: │
+│ - 自动发现音频/视频设备 │
+│ - 自动创建节点 │
+│ - 管理默认设备 │
+│ - 处理设备插拔事件 │
+│ - 实施音频路由策略 │
+│ - 保存/恢复音量和路由状态 │
 └──────────┬──────────────────────────────────┘
-           │ Session Manager Protocol
-           ▼
+ │ Session Manager Protocol
+ ▼
 ┌─────────────────────────────────────────────┐
-│              PipeWire Daemon                 │
+│ PipeWire Daemon │
 └─────────────────────────────────────────────┘
 ```
 
@@ -348,48 +348,48 @@ WirePlumber 是 PipeWire 的 **会话管理器（Session Manager）**，负责�
 
 ```
 ┌───────────────────────────────────────────┐
-│             WirePlumber                    │
-│                                            │
-│  ┌──────────────┐  ┌───────────────────┐   │
-│  │  Core (C/GLib)│  │  Lua 脚本引擎     │   │
-│  │              │  │                   │   │
-│  │  - 对象管理   │  │  - 策略脚本       │   │
-│  │  - 事件系统   │  │  - 路由逻辑       │   │
-│  │  - 模块加载   │  │  - 自定义规则     │   │
-│  └──────────────┘  └───────────────────┘   │
-│                                            │
-│  ┌──────────────────────────────────────┐   │
-│  │         配置层                         │   │
-│  │  wireplumber.conf                     │   │
-│  │  *.lua.d/ 片段                        │   │
-│  │  JSON-like 配置文件                    │   │
-│  └──────────────────────────────────────┘   │
+│ WirePlumber │
+│ │
+│ ┌──────────────┐ ┌───────────────────┐ │
+│ │ Core (C/GLib)│ │ Lua 脚本引擎 │ │
+│ │ │ │ │ │
+│ │ - 对象管理 │ │ - 策略脚本 │ │
+│ │ - 事件系统 │ │ - 路由逻辑 │ │
+│ │ - 模块加载 │ │ - 自定义规则 │ │
+│ └──────────────┘ └───────────────────┘ │
+│ │
+│ ┌──────────────────────────────────────┐ │
+│ │ 配置层 │ │
+│ │ wireplumber.conf │ │
+│ │ *.lua.d/ 片段 │ │
+│ │ JSON-like 配置文件 │ │
+│ └──────────────────────────────────────┘ │
 └───────────────────────────────────────────┘
 ```
 
 ### WirePlumber 配置文件结构
 
 ```
-/usr/share/wireplumber/             ← 默认配置
+/usr/share/wireplumber/ ← 默认配置
 ├── wireplumber.conf
 ├── main.lua.d/
-│   ├── 10-default-policy.lua
-│   ├── 20-default-access.lua
-│   ├── 30-alsa-monitor.lua
-│   ├── 40-device-defaults.lua
-│   ├── 50-default-access-config.lua
-│   └── ...
+│ ├── 10-default-policy.lua
+│ ├── 20-default-access.lua
+│ ├── 30-alsa-monitor.lua
+│ ├── 40-device-defaults.lua
+│ ├── 50-default-access-config.lua
+│ └── ...
 ├── bluetooth.lua.d/
 ├── policy.lua.d/
 └── scripts/
 
-~/.config/wireplumber/              ← 用户覆盖
+~/.config/wireplumber/ ← 用户覆盖
 ├── wireplumber.conf.d/
-│   └── 10-custom.conf
+│ └── 10-custom.conf
 ├── main.lua.d/
-│   └── 51-custom-rename.lua
+│ └── 51-custom-rename.lua
 ├── bluetooth.lua.d/
-│   └── 51-custom-bluetooth.lua
+│ └── 51-custom-bluetooth.lua
 └── policy.lua.d/
 ```
 
@@ -412,10 +412,10 @@ wpctl set-default <node-id>
 # 示例：查看所有 sink（输出设备）
 wpctl status
 # Audio
-#  ├─ Sinks:
-#  │      46. Built-in Audio Analog Stereo   [vol: 0.80]
-#  │  *   52. USB Headset                    [vol: 0.65]
-#  │      58. HDMI Audio                     [vol: 1.00]
+# ├─ Sinks:
+# │ 46. Built-in Audio Analog Stereo [vol: 0.80]
+# │ * 52. USB Headset [vol: 0.65]
+# │ 58. HDMI Audio [vol: 1.00]
 
 # 设置默认 sink
 wpctl set-default 46
@@ -426,34 +426,34 @@ wpctl set-default 46
 ```
 # ~/.config/wireplumber/wireplumber.conf.d/51-device-priority.conf
 monitor.alsa.rules = [
-  {
-    matches = [
-      {
-        node.name = "alsa_output.usb-*"
-      }
-    ]
-    actions = {
-      update-props = {
-        priority.driver = 2000
-        priority.session = 2000
-        node.description = "USB 耳机"
-      }
-    }
-  }
-  {
-    matches = [
-      {
-        node.name = "alsa_output.pci-*analog-stereo"
-      }
-    ]
-    actions = {
-      update-props = {
-        priority.driver = 1000
-        priority.session = 1000
-        node.description = "内置扬声器"
-      }
-    }
-  }
+ {
+ matches = [
+ {
+ node.name = "alsa_output.usb-*"
+ }
+ ]
+ actions = {
+ update-props = {
+ priority.driver = 2000
+ priority.session = 2000
+ node.description = "USB 耳机"
+ }
+ }
+ }
+ {
+ matches = [
+ {
+ node.name = "alsa_output.pci-*analog-stereo"
+ }
+ ]
+ actions = {
+ update-props = {
+ priority.driver = 1000
+ priority.session = 1000
+ node.description = "内置扬声器"
+ }
+ }
+ }
 ]
 ```
 
@@ -462,18 +462,18 @@ monitor.alsa.rules = [
 ```
 # ~/.config/wireplumber/wireplumber.conf.d/51-disable-hdmi.conf
 monitor.alsa.rules = [
-  {
-    matches = [
-      {
-        node.name = "alsa_output.pci-*hdmi*"
-      }
-    ]
-    actions = {
-      update-props = {
-        node.disabled = true
-      }
-    }
-  }
+ {
+ matches = [
+ {
+ node.name = "alsa_output.pci-*hdmi*"
+ }
+ ]
+ actions = {
+ update-props = {
+ node.disabled = true
+ }
+ }
+ }
 ]
 ```
 
@@ -482,21 +482,21 @@ monitor.alsa.rules = [
 ```
 # ~/.config/wireplumber/wireplumber.conf.d/51-routes.conf
 monitor.alsa.rules = [
-  {
-    matches = [
-      {
-        node.name = "alsa_output.pci-0000_00_1f.3.analog-stereo"
-      }
-    ]
-    actions = {
-      update-props = {
-        audio.format = "S32LE"
-        audio.rate = 96000
-        audio.channels = 2
-        audio.position = [ FL FR ]
-      }
-    }
-  }
+ {
+ matches = [
+ {
+ node.name = "alsa_output.pci-0000_00_1f.3.analog-stereo"
+ }
+ ]
+ actions = {
+ update-props = {
+ audio.format = "S32LE"
+ audio.rate = 96000
+ audio.channels = 2
+ audio.position = [ FL FR ]
+ }
+ }
+ }
 ]
 ```
 
@@ -511,14 +511,14 @@ WirePlumber 允许通过 Lua 脚本实现自定义逻辑。
 -- 当 USB 耳机插入时自动切换
 
 rule = {
-  matches = {
-    {
-      { "node.name", "matches", "alsa_output.usb-*" },
-    },
-  },
-  apply_properties = {
-    ["priority.session"] = 3000,
-  },
+ matches = {
+ {
+ { "node.name", "matches", "alsa_output.usb-*" },
+ },
+ },
+ apply_properties = {
+ ["priority.session"] = 3000,
+ },
 }
 
 table.insert(alsa_monitor.rules, rule)
@@ -529,7 +529,7 @@ table.insert(alsa_monitor.rules, rule)
 ```
 # ~/.config/wireplumber/wireplumber.conf.d/51-app-volume.conf
 wireplumber.settings = {
-  # 按应用名设置默认音量
+ # 按应用名设置默认音量
 }
 
 # 或使用 wpctl 手动设置应用音量
@@ -543,19 +543,19 @@ wireplumber.settings = {
 ```
 # ~/.config/wireplumber/wireplumber.conf.d/51-auto-mute.conf
 monitor.alsa.rules = [
-  {
-    matches = [
-      {
-        node.name = "alsa_output.pci-*analog-stereo"
-      }
-    ]
-    actions = {
-      update-props = {
-        # 插入耳机时自动静音扬声器（ALSA 驱动层处理）
-        api.alsa.headroom = 0
-      }
-    }
-  }
+ {
+ matches = [
+ {
+ node.name = "alsa_output.pci-*analog-stereo"
+ }
+ ]
+ actions = {
+ update-props = {
+ # 插入耳机时自动静音扬声器（ALSA 驱动层处理）
+ api.alsa.headroom = 0
+ }
+ }
+ }
 ]
 ```
 
@@ -566,15 +566,15 @@ monitor.alsa.rules = [
 wpctl status
 
 # 设备和流管理
-wpctl inspect <id>                    # 查看对象详细信息
-wpctl set-default <id>                # 设置默认设备
-wpctl set-volume <id> <vol>           # 设置音量（0.0-1.5）
-wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.8    # 设置默认 sink 音量
-wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+    # 增加 5%
-wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-    # 减少 5%
-wpctl set-mute <id> toggle            # 切换静音
-wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle   # 切换默认 sink 静音
-wpctl set-profile <id> <index>        # 设置设备配置文件
+wpctl inspect <id> # 查看对象详细信息
+wpctl set-default <id> # 设置默认设备
+wpctl set-volume <id> <vol> # 设置音量（0.0-1.5）
+wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.8 # 设置默认 sink 音量
+wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+ # 增加 5%
+wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- # 减少 5%
+wpctl set-mute <id> toggle # 切换静音
+wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle # 切换默认 sink 静音
+wpctl set-profile <id> <index> # 设置设备配置文件
 
 # 查看特定类型的对象
 wpctl status | grep -A20 "Sinks"
@@ -585,9 +585,9 @@ wpctl get-volume @DEFAULT_AUDIO_SINK@
 
 # Waybar 集成示例（~/.config/waybar/config）
 # "pulseaudio": {
-#     "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
-#     "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
-#     "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+# "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+# "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
+# "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
 # }
 ```
 
@@ -622,9 +622,9 @@ systemctl --user restart wireplumber
 pw-top
 
 # 输出示例：
-# S   ID QUANT  RATE   WAIT   BUSY  W/Q  B/Q  ERR FORMAT          NAME
-# S   46  1024 48000  14.2ms  0.8ms  0.7  0.0    0 S16LE 2 48000  Built-in Audio
-# S   52  1024 48000   1.2ms  0.3ms  0.1  0.0    0 S16LE 2 48000  Firefox
+# S ID QUANT RATE WAIT BUSY W/Q B/Q ERR FORMAT NAME
+# S 46 1024 48000 14.2ms 0.8ms 0.7 0.0 0 S16LE 2 48000 Built-in Audio
+# S 52 1024 48000 1.2ms 0.3ms 0.1 0.0 0 S16LE 2 48000 Firefox
 #
 # S: 状态（S=运行, I=空闲, E=错误）
 # QUANT: 量子大小
@@ -656,14 +656,14 @@ pw-dump | jq '.[] | select(.type == "PipeWire:Interface:Node") | .info.props["no
 pw-cli
 
 # 常用命令
-pw-cli list-objects             # 列出所有对象
-pw-cli info <id>                # 查看对象信息
-pw-cli enum-params <id> Props   # 查看节点属性
+pw-cli list-objects # 列出所有对象
+pw-cli info <id> # 查看对象信息
+pw-cli enum-params <id> Props # 查看节点属性
 
 # 非交互式
-pw-cli ls Node                  # 列出所有节点
-pw-cli ls Port                  # 列出所有端口
-pw-cli ls Link                  # 列出所有链接
+pw-cli ls Node # 列出所有节点
+pw-cli ls Port # 列出所有端口
+pw-cli ls Link # 列出所有链接
 ```
 
 ### pw-record / pw-play / pw-cat
@@ -678,9 +678,9 @@ pw-play music.wav
 pw-play --target=@DEFAULT_AUDIO_SINK@ music.flac
 
 # pw-cat（通用音频管道）
-pw-cat --playback music.wav          # 等同 pw-play
-pw-cat --record output.wav           # 等同 pw-record
-pw-cat --midi --playback song.mid    # MIDI 播放
+pw-cat --playback music.wav # 等同 pw-play
+pw-cat --record output.wav # 等同 pw-record
+pw-cat --midi --playback song.mid # MIDI 播放
 
 # 音频测试信号
 pw-cat --playback --format=f32 --rate=48000 --channels=2 /dev/zero
@@ -692,9 +692,9 @@ spa-monitor alsa/monitor
 
 ```bash
 # 列出所有端口
-pw-link -o             # 输出端口
-pw-link -i             # 输入端口
-pw-link -l             # 所有链接
+pw-link -o # 输出端口
+pw-link -i # 输入端口
+pw-link -l # 所有链接
 
 # 创建链接
 pw-link "Firefox:output_FL" "Built-in Audio:playback_FL"
@@ -722,8 +722,8 @@ pw-dot | dot -Tsvg -o pipewire-graph.svg
 pw-dot | dot -Tsvg > /tmp/pw-graph.svg && xdg-open /tmp/pw-graph.svg
 
 # 或使用图形工具
-helvum          # GTK 图形节点管理器
-qpwgraph        # Qt 图形节点管理器
+helvum # GTK 图形节点管理器
+qpwgraph # Qt 图形节点管理器
 ```
 
 ---
@@ -735,10 +735,10 @@ qpwgraph        # Qt 图形节点管理器
 ```bash
 # 安装 xdg-desktop-portal 后端
 sudo pacman -S xdg-desktop-portal
-sudo pacman -S xdg-desktop-portal-wlr       # wlroots 合成器
-sudo pacman -S xdg-desktop-portal-hyprland   # Hyprland
-sudo pacman -S xdg-desktop-portal-gtk        # GNOME
-sudo pacman -S xdg-desktop-portal-kde        # KDE
+sudo pacman -S xdg-desktop-portal-wlr # wlroots 合成器
+sudo pacman -S xdg-desktop-portal-hyprland # Hyprland
+sudo pacman -S xdg-desktop-portal-gtk # GNOME
+sudo pacman -S xdg-desktop-portal-kde # KDE
 
 # 屏幕共享流程：
 # 应用 → D-Bus → xdg-desktop-portal → 合成器捕获 → PipeWire 视频流 → 应用
@@ -821,10 +821,10 @@ wpctl inspect <device-id> | grep -A5 "profile"
 
 ```bash
 # PipeWire 支持的蓝牙编解码器
-# SBC     - 默认，所有蓝牙设备支持
-# AAC     - Apple 设备常用
-# LDAC    - 索尼高保真编解码器（需要 libldac）
-# AptX    - 高通编解码器（需要 libfreeaptx）
+# SBC - 默认，所有蓝牙设备支持
+# AAC - Apple 设备常用
+# LDAC - 索尼高保真编解码器（需要 libldac）
+# AptX - 高通编解码器（需要 libfreeaptx）
 # AptX HD - 高清版本
 # AptX LL - 低延迟版本
 
@@ -840,10 +840,10 @@ pw-dump | jq '.[] | select(.info.props["api.bluez5.codec"] != null) | .info.prop
 ```
 # ~/.config/wireplumber/wireplumber.conf.d/51-bluetooth-codecs.conf
 monitor.bluez.properties = {
-  bluez5.codecs = [ sbc sbc_xq aac ldac aptx aptx_hd aptx_ll aptx_ll_duplex ]
-  bluez5.enable-sbc-xq = true
-  bluez5.enable-msbc = true       # mSBC 宽带语音
-  bluez5.enable-hw-volume = true  # 硬件音量控制
+ bluez5.codecs = [ sbc sbc_xq aac ldac aptx aptx_hd aptx_ll aptx_ll_duplex ]
+ bluez5.enable-sbc-xq = true
+ bluez5.enable-msbc = true # mSBC 宽带语音
+ bluez5.enable-hw-volume = true # 硬件音量控制
 }
 ```
 
@@ -881,19 +881,19 @@ journalctl --user -u wireplumber | grep -i bluez
 ```
 # ~/.config/wireplumber/wireplumber.conf.d/51-bluetooth-buffer.conf
 monitor.bluez.rules = [
-  {
-    matches = [
-      {
-        node.name = "bluez_output.*"
-      }
-    ]
-    actions = {
-      update-props = {
-        api.bluez5.a2dp.internal-delay = 2500
-        session.suspend-timeout-seconds = 0
-      }
-    }
-  }
+ {
+ matches = [
+ {
+ node.name = "bluez_output.*"
+ }
+ ]
+ actions = {
+ update-props = {
+ api.bluez5.a2dp.internal-delay = 2500
+ session.suspend-timeout-seconds = 0
+ }
+ }
+ }
 ]
 ```
 
@@ -914,10 +914,10 @@ pw-link -i | grep midi
 pw-link "Midi-Bridge:capture_0" "Yoshimi:input_0"
 
 # 使用 JACK MIDI 工具（通过 pipewire-jack）
-pw-jack a2jmidid -e        # ALSA 到 JACK MIDI 桥接
+pw-jack a2jmidid -e # ALSA 到 JACK MIDI 桥接
 
 # MIDI 监控
-pw-jack jack_midi_dump      # 监控 MIDI 事件
+pw-jack jack_midi_dump # 监控 MIDI 事件
 
 # 安装 MIDI 合成器
 sudo pacman -S fluidsynth
@@ -935,22 +935,22 @@ PipeWire 可以完全替代 JACK，为专业音频应用提供低延迟支持：
 ```json5
 // ~/.config/pipewire/pipewire.conf.d/20-pro-audio.conf
 context.properties = {
-    default.clock.rate          = 48000
-    default.clock.allowed-rates = [ 44100 48000 88200 96000 ]
-    default.clock.quantum       = 128
-    default.clock.min-quantum   = 64
-    default.clock.max-quantum   = 1024
+ default.clock.rate = 48000
+ default.clock.allowed-rates = [ 44100 48000 88200 96000 ]
+ default.clock.quantum = 128
+ default.clock.min-quantum = 64
+ default.clock.max-quantum = 1024
 }
 
 context.modules = [
-    { name = libpipewire-module-rt
-      args = {
-        nice.level    = -11
-        rt.prio       = 88
-        rt.time.soft  = -1
-        rt.time.hard  = -1
-      }
-    }
+ { name = libpipewire-module-rt
+ args = {
+ nice.level = -11
+ rt.prio = 88
+ rt.time.soft = -1
+ rt.time.hard = -1
+ }
+ }
 ]
 ```
 
@@ -966,8 +966,8 @@ ulimit -r
 ```
 
 ```
-@realtime   -   rtprio     98
-@realtime   -   memlock    unlimited
+@realtime - rtprio 98
+@realtime - memlock unlimited
 ```
 
 ```bash
@@ -1011,60 +1011,60 @@ PipeWire 的 `filter-chain` 模块可以创建音频滤波器：
 // ~/.config/pipewire/pipewire.conf.d/30-equalizer.conf
 // 参数均衡器示例
 context.modules = [
-    { name = libpipewire-module-filter-chain
-      args = {
-        node.description = "均衡器"
-        media.name        = "均衡器"
-        filter.graph = {
-            nodes = [
-                {
-                    type  = builtin
-                    name  = eq_band_1
-                    label = bq_peaking
-                    control = { "Freq" = 60 "Q" = 1.0 "Gain" = 3.0 }
-                }
-                {
-                    type  = builtin
-                    name  = eq_band_2
-                    label = bq_peaking
-                    control = { "Freq" = 250 "Q" = 1.0 "Gain" = -2.0 }
-                }
-                {
-                    type  = builtin
-                    name  = eq_band_3
-                    label = bq_peaking
-                    control = { "Freq" = 1000 "Q" = 1.0 "Gain" = 0.0 }
-                }
-                {
-                    type  = builtin
-                    name  = eq_band_4
-                    label = bq_peaking
-                    control = { "Freq" = 4000 "Q" = 1.0 "Gain" = 2.0 }
-                }
-                {
-                    type  = builtin
-                    name  = eq_band_5
-                    label = bq_peaking
-                    control = { "Freq" = 12000 "Q" = 1.0 "Gain" = 1.0 }
-                }
-            ]
-            links = [
-                { output = "eq_band_1:Out" input = "eq_band_2:In" }
-                { output = "eq_band_2:Out" input = "eq_band_3:In" }
-                { output = "eq_band_3:Out" input = "eq_band_4:In" }
-                { output = "eq_band_4:Out" input = "eq_band_5:In" }
-            ]
-        }
-        capture.props = {
-            node.name    = "effect_input.eq"
-            media.class  = Audio/Sink
-        }
-        playback.props = {
-            node.name    = "effect_output.eq"
-            node.passive = true
-        }
-      }
-    }
+ { name = libpipewire-module-filter-chain
+ args = {
+ node.description = "均衡器"
+ media.name = "均衡器"
+ filter.graph = {
+ nodes = [
+ {
+ type = builtin
+ name = eq_band_1
+ label = bq_peaking
+ control = { "Freq" = 60 "Q" = 1.0 "Gain" = 3.0 }
+ }
+ {
+ type = builtin
+ name = eq_band_2
+ label = bq_peaking
+ control = { "Freq" = 250 "Q" = 1.0 "Gain" = -2.0 }
+ }
+ {
+ type = builtin
+ name = eq_band_3
+ label = bq_peaking
+ control = { "Freq" = 1000 "Q" = 1.0 "Gain" = 0.0 }
+ }
+ {
+ type = builtin
+ name = eq_band_4
+ label = bq_peaking
+ control = { "Freq" = 4000 "Q" = 1.0 "Gain" = 2.0 }
+ }
+ {
+ type = builtin
+ name = eq_band_5
+ label = bq_peaking
+ control = { "Freq" = 12000 "Q" = 1.0 "Gain" = 1.0 }
+ }
+ ]
+ links = [
+ { output = "eq_band_1:Out" input = "eq_band_2:In" }
+ { output = "eq_band_2:Out" input = "eq_band_3:In" }
+ { output = "eq_band_3:Out" input = "eq_band_4:In" }
+ { output = "eq_band_4:Out" input = "eq_band_5:In" }
+ ]
+ }
+ capture.props = {
+ node.name = "effect_input.eq"
+ media.class = Audio/Sink
+ }
+ playback.props = {
+ node.name = "effect_output.eq"
+ node.passive = true
+ }
+ }
+ }
 ]
 ```
 
@@ -1079,32 +1079,32 @@ wpctl set-default <eq-sink-id>
 ```json5
 // ~/.config/pipewire/pipewire.conf.d/30-virtual-sink.conf
 context.modules = [
-    { name = libpipewire-module-combine-stream
-      args = {
-        combine.mode = sink
-        node.name = "combined_sink"
-        node.description = "组合输出（扬声器+耳机）"
-        combine.latency-compensate = true
-        combine.props = {
-            audio.position = [ FL FR ]
-        }
-        stream.props = {}
-        stream.rules = [
-            {
-                matches = [
-                    { media.class = "Audio/Sink" node.name = "alsa_output.pci-*analog*" }
-                ]
-                actions = { create-stream = {} }
-            }
-            {
-                matches = [
-                    { media.class = "Audio/Sink" node.name = "alsa_output.usb-*" }
-                ]
-                actions = { create-stream = {} }
-            }
-        ]
-      }
-    }
+ { name = libpipewire-module-combine-stream
+ args = {
+ combine.mode = sink
+ node.name = "combined_sink"
+ node.description = "组合输出（扬声器+耳机）"
+ combine.latency-compensate = true
+ combine.props = {
+ audio.position = [ FL FR ]
+ }
+ stream.props = {}
+ stream.rules = [
+ {
+ matches = [
+ { media.class = "Audio/Sink" node.name = "alsa_output.pci-*analog*" }
+ ]
+ actions = { create-stream = {} }
+ }
+ {
+ matches = [
+ { media.class = "Audio/Sink" node.name = "alsa_output.usb-*" }
+ ]
+ actions = { create-stream = {} }
+ }
+ ]
+ }
+ }
 ]
 ```
 
@@ -1145,7 +1145,7 @@ pw-top
 # 2. 增大量子（增大缓冲区）
 # ~/.config/pipewire/pipewire.conf.d/10-fix-xrun.conf
 # context.properties = {
-#     default.clock.quantum = 2048
+# default.clock.quantum = 2048
 # }
 
 # 3. 检查实时调度
@@ -1153,7 +1153,7 @@ chrt -p $(pidof pipewire)
 # 应该显示 SCHED_FIFO 或 SCHED_RR
 
 # 4. 检查 CPU 负载
-pw-top   # 查看 BUSY 列
+pw-top # 查看 BUSY 列
 ```
 
 ### PulseAudio 应用无法连接
@@ -1178,7 +1178,7 @@ systemctl --user unmask pipewire-pulse.service pipewire-pulse.socket
 
 ```bash
 # 查看当前采样率
-pw-top    # RATE 列
+pw-top # RATE 列
 
 # 启用多采样率支持
 ```
@@ -1186,8 +1186,8 @@ pw-top    # RATE 列
 ```json5
 // ~/.config/pipewire/pipewire.conf.d/10-rates.conf
 context.properties = {
-    default.clock.rate = 48000
-    default.clock.allowed-rates = [ 44100 48000 88200 96000 192000 ]
+ default.clock.rate = 48000
+ default.clock.allowed-rates = [ 44100 48000 88200 96000 192000 ]
 }
 ```
 
@@ -1200,11 +1200,11 @@ context.properties = {
 ```json5
 // ~/.config/pipewire/pipewire.conf.d/10-desktop.conf
 context.properties = {
-    default.clock.rate          = 48000
-    default.clock.allowed-rates = [ 44100 48000 ]
-    default.clock.quantum       = 1024
-    default.clock.min-quantum   = 512
-    default.clock.max-quantum   = 2048
+ default.clock.rate = 48000
+ default.clock.allowed-rates = [ 44100 48000 ]
+ default.clock.quantum = 1024
+ default.clock.min-quantum = 512
+ default.clock.max-quantum = 2048
 }
 ```
 
@@ -1213,10 +1213,10 @@ context.properties = {
 ```json5
 // ~/.config/pipewire/pipewire.conf.d/10-gaming.conf
 context.properties = {
-    default.clock.rate          = 48000
-    default.clock.quantum       = 256
-    default.clock.min-quantum   = 128
-    default.clock.max-quantum   = 512
+ default.clock.rate = 48000
+ default.clock.quantum = 256
+ default.clock.min-quantum = 128
+ default.clock.max-quantum = 512
 }
 ```
 
@@ -1225,11 +1225,11 @@ context.properties = {
 ```json5
 // ~/.config/pipewire/pipewire.conf.d/10-music-production.conf
 context.properties = {
-    default.clock.rate          = 96000
-    default.clock.allowed-rates = [ 44100 48000 88200 96000 ]
-    default.clock.quantum       = 128
-    default.clock.min-quantum   = 64
-    default.clock.max-quantum   = 256
+ default.clock.rate = 96000
+ default.clock.allowed-rates = [ 44100 48000 88200 96000 ]
+ default.clock.quantum = 128
+ default.clock.min-quantum = 64
+ default.clock.max-quantum = 256
 }
 ```
 
@@ -1238,16 +1238,16 @@ context.properties = {
 ```json5
 // ~/.config/pipewire/pipewire.conf.d/10-audiophile.conf
 context.properties = {
-    default.clock.rate          = 192000
-    default.clock.allowed-rates = [ 44100 48000 88200 96000 176400 192000 ]
-    default.clock.quantum       = 2048
+ default.clock.rate = 192000
+ default.clock.allowed-rates = [ 44100 48000 88200 96000 176400 192000 ]
+ default.clock.quantum = 2048
 }
 ```
 
 ```json5
 // ~/.config/pipewire/client-rt.conf.d/10-audiophile.conf
 stream.properties = {
-    resample.quality = 15
+ resample.quality = 15
 }
 ```
 
@@ -1297,7 +1297,7 @@ wpctl status 2>/dev/null | grep -A10 "Bluetooth"
 
 ## 39.14 本章测验
 
-> [!example] 📝 自测题目
+> [!example] 自测题目
 
 > [!question]- 选择题 1：PipeWire 的设计目标是统一替代哪些现有系统？
 > - A. ALSA + OSS
@@ -1320,11 +1320,11 @@ wpctl status 2>/dev/null | grep -A10 "Bluetooth"
 > > WirePlumber 是 PipeWire 的默认会话管理器，负责设备发现、策略管理和路由决策，使用 Lua 脚本引擎提供灵活的可配置策略。
 
 > [!question]- 判断题 3：PipeWire 通过 pipewire-pulse 兼容层可以运行所有依赖 PulseAudio 的应用程序，无需修改应用代码。
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > pipewire-pulse 提供了 PulseAudio 兼容的 socket 和 API，现有 PulseAudio 应用无需任何修改即可在 PipeWire 下运行。同样 pipewire-jack 和 pipewire-alsa 分别提供 JACK 和 ALSA 兼容层。
 
 > [!question]- 选择题 4：以下哪个命令可以查看 PipeWire 当前的音频图（节点和连接）状态？
@@ -1348,11 +1348,11 @@ wpctl status 2>/dev/null | grep -A10 "Bluetooth"
 > > quantum 是每次处理周期中的音频帧数。quantum/采样率 = 延迟时间。例如 quantum=1024，采样率 48000Hz 时，延迟约为 1024/48000 ≈ 21ms。减小 quantum 可降低延迟但增加 CPU 负载。
 
 > [!question]- 判断题 6：`wpctl set-volume @DEFAULT_AUDIO_SINK@ 50%` 可以将默认音频输出设备的音量设置为 50%。
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > `wpctl` 是 WirePlumber 的命令行工具，`@DEFAULT_AUDIO_SINK@` 引用默认音频输出设备，可以直接设置绝对音量百分比或使用 `5%+`/`5%-` 进行相对调节。
 
 > [!question]- 选择题 7：PipeWire 处理蓝牙音频时，支持哪些编解码器？
@@ -1376,11 +1376,11 @@ wpctl status 2>/dev/null | grep -A10 "Bluetooth"
 > > PipeWire 提供视频流传输能力，配合 xdg-desktop-portal 实现 Wayland 环境下的屏幕共享（如视频会议、远程桌面）和安全的摄像头访问。
 
 > [!question]- 判断题 9：PipeWire 的 pipewire-jack 兼容层可以让 JACK 专业音频应用以低延迟运行，无需单独启动 JACK 服务器。
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > pipewire-jack 提供了 JACK API 兼容层，JACK 应用连接到 PipeWire 而非单独的 JACK 服务器，同时桌面音频和专业音频可以共存于同一图中。
 
 > [!question]- 选择题 10：要降低 PipeWire 的音频延迟到适合专业音频制作的水平，应该调整哪个参数？

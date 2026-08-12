@@ -52,15 +52,15 @@ list<int> l
 // 插入
 l.push_back(2)
 l.push_back(3)
-l.push_front(1)          // 1, 2, 3
+l.push_front(1) // 1, 2, 3
 
 // 在第二个元素前插入
 it = next(l.begin(), 1)
-l.insert(it, 10)         // 1, 10, 2, 3
+l.insert(it, 10) // 1, 10, 2, 3
 
 // 遍历
 for each x in l:
-    print x
+ print x
 
 // 排序与去重
 l.sort()
@@ -69,10 +69,10 @@ l.unique()
 // 遍历中删除偶数
 it = l.begin()
 while it != l.end():
-    if *it % 2 == 0:
-        it = l.erase(it)
-    else:
-        ++it
+ if *it % 2 == 0:
+ it = l.erase(it)
+ else:
+ ++it
 ```
 
 ## forward_list 特殊接口
@@ -81,13 +81,13 @@ while it != l.end():
 forward_list<int> fl
 fl.push_front(3)
 fl.push_front(2)
-fl.push_front(1)         // 1, 2, 3
+fl.push_front(1) // 1, 2, 3
 
 // 在开头插入
-fl.insert_after(fl.before_begin(), 0)   // 0, 1, 2, 3
+fl.insert_after(fl.before_begin(), 0) // 0, 1, 2, 3
 
 // 删除第二个元素
-fl.erase_after(fl.begin())              // 0, 2, 3
+fl.erase_after(fl.begin()) // 0, 2, 3
 ```
 
 ## 相关链接

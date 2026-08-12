@@ -3,24 +3,24 @@
 
 ```mermaid
 flowchart LR
-    UserQQ[你的日用QQ] -- 发消息 --> QQServer[腾讯QQ服务器]
-    QQServer -- 消息推送 --> NapCat[NapCat 协议端<br>基于 NTQQ]
-    NapCat -- OneBot v11<br>WebSocket --> AstrBot[AstrBot 机器人框架<br>Python]
-    AstrBot -- API调用 --> DeepSeek[DeepSeek V4 Flash<br>AI大模型]
-    DeepSeek -- AI回复 --> AstrBot
-    AstrBot -- 回复消息 --> NapCat
-    NapCat --> QQServer
-    QQServer --> UserQQ
+ UserQQ[你的日用QQ] -- 发消息 --> QQServer[腾讯QQ服务器]
+ QQServer -- 消息推送 --> NapCat[NapCat 协议端<br>基于 NTQQ]
+ NapCat -- OneBot v11<br>WebSocket --> AstrBot[AstrBot 机器人框架<br>Python]
+ AstrBot -- API调用 --> DeepSeek[DeepSeek V4 Flash<br>AI大模型]
+ DeepSeek -- AI回复 --> AstrBot
+ AstrBot -- 回复消息 --> NapCat
+ NapCat --> QQServer
+ QQServer --> UserQQ
 
-    subgraph VPS[海外VPS - Vultr Tokyo/Singapore]
-        NapCat
-        AstrBot
-        Nginx[Nginx 反向代理<br>HTTPS + SSL]
-    end
+ subgraph VPS[海外VPS - Vultr Tokyo/Singapore]
+ NapCat
+ AstrBot
+ Nginx[Nginx 反向代理<br>HTTPS + SSL]
+ end
 
-    Admin[管理员浏览器] -- HTTPS --> Nginx
-    Nginx -- proxy_pass 6185 --> AstrBot
-    Nginx -- proxy_pass 6099 --> NapCat
+ Admin[管理员浏览器] -- HTTPS --> Nginx
+ Nginx -- proxy_pass 6185 --> AstrBot
+ Nginx -- proxy_pass 6099 --> NapCat
 ```
 
 **组件说明：**
@@ -77,35 +77,35 @@ mkdir -p ~/astrbot && cd ~/astrbot
 ```yaml
 version: "3"
 services:
-  napcat:
-    image: mlikiowa/napcat-docker:latest
-    container_name: napcat
-    restart: always
-    environment:
-      - MODE=astrbot
-    ports:
-      - "6099:6099"
-    volumes:
-      - ./data:/AstrBot/data
-      - ./napcat/config:/app/napcat/config
-      - ./ntqq:/app/.config/QQ
-    networks:
-      - astrbot_network
-  astrbot:
-    image: soulter/astrbot:latest
-    container_name: astrbot
-    restart: always
-    environment:
-      - TZ=Asia/Shanghai
-    ports:
-      - "6185:6185"
-    volumes:
-      - ./data:/AstrBot/data
-    networks:
-      - astrbot_network
+ napcat:
+ image: mlikiowa/napcat-docker:latest
+ container_name: napcat
+ restart: always
+ environment:
+ - MODE=astrbot
+ ports:
+ - "6099:6099"
+ volumes:
+ - ./data:/AstrBot/data
+ - ./napcat/config:/app/napcat/config
+ - ./ntqq:/app/.config/QQ
+ networks:
+ - astrbot_network
+ astrbot:
+ image: soulter/astrbot:latest
+ container_name: astrbot
+ restart: always
+ environment:
+ - TZ=Asia/Shanghai
+ ports:
+ - "6185:6185"
+ volumes:
+ - ./data:/AstrBot/data
+ networks:
+ - astrbot_network
 networks:
-  astrbot_network:
-    driver: bridge
+ astrbot_network:
+ driver: bridge
 ```
 
 > 重要：NapCat 的环境变量 `MODE=astrbot` 告诉它连接 AstrBot。NapCat 和 AstrBot 必须在**同一个 Docker 网络** 内才能通信。
@@ -125,9 +125,9 @@ docker ps
 输出应显示两个容器都在 `Up` 状态：
 
 ```
-CONTAINER ID   IMAGE                           STATUS          PORTS
-xxxxxxxxxxxx   mlikiowa/napcat-docker:latest   Up 5 minutes    0.0.0.0:6099->6099
-xxxxxxxxxxxx   soulter/astrbot:latest          Up 5 minutes    0.0.0.0:6185->6185
+CONTAINER ID IMAGE STATUS PORTS
+xxxxxxxxxxxx mlikiowa/napcat-docker:latest Up 5 minutes 0.0.0.0:6099->6099
+xxxxxxxxxxxx soulter/astrbot:latest Up 5 minutes 0.0.0.0:6185->6185
 ```
 
 
@@ -149,10 +149,10 @@ xxxxxxxxxxxx   soulter/astrbot:latest          Up 5 minutes    0.0.0.0:6185->618
 
 ```json
 {
-  "type": "openai_chat_completion",
-  "api_base": "https://api.deepseek.com/v1",
-  "key": ["你的API_KEY"],
-  "model": "deepseek-chat"
+ "type": "openai_chat_completion",
+ "api_base": "https://api.deepseek.com/v1",
+ "key": ["你的API_KEY"],
+ "model": "deepseek-chat"
 }
 ```
 
@@ -164,14 +164,14 @@ AstrBot 默认可能配置了 `qq_official` 适配器(QQ 官方机器人)。需�
 
 ```json
 "platform": [
-  {
-    "type": "aiocqhttp",
-    "id": "napcat",
-    "enable": true,
-    "ws_reverse_host": "0.0.0.0",
-    "ws_reverse_port": 6199,
-    "token": ""
-  }
+ {
+ "type": "aiocqhttp",
+ "id": "napcat",
+ "enable": true,
+ "ws_reverse_host": "0.0.0.0",
+ "ws_reverse_port": 6199,
+ "token": ""
+ }
 ],
 ```
 
@@ -212,21 +212,21 @@ aiocqhttp(OneBot v11) 适配器已连接。
 
 **排查**：
 ```bash
-docker ps | grep astrbot                    # AstrBot 是否在运行
-docker exec astrbot ss -tlnp 2>/dev/null | grep 6199  # 是否监听 6199
-docker logs astrbot | grep -i "aiocqhttp\|OneBot"     # 适配器是否启动
+docker ps | grep astrbot # AstrBot 是否在运行
+docker exec astrbot ss -tlnp 2>/dev/null | grep 6199 # 是否监听 6199
+docker logs astrbot | grep -i "aiocqhttp\|OneBot" # 适配器是否启动
 ```
 
 **解决**：检查 `cmd_config.json` 中 `platform` 配置的字段名是否正确。注意 `ws_reverse_host` 和 `ws_reverse_port`，不是 `ws_host` 和 `ws_port`。
 
 ```mermaid
 flowchart TD
-    A[NapCat 报 ECONNREFUSED] --> B{AstrBot 容器在运行吗?}
-    B -- 否 --> C[docker compose up -d 启动 AstrBot]
-    B -- 是 --> D{平台适配器配置正确吗?}
-    D -- 否 --> E[检查 cmd_config.json<br>platform 字段为 aiocqhttp<br>端口 6199]
-    D -- 是 --> F[检查两个容器是否同一网络]
-    F --> G[docker network inspect astrbot_network]
+ A[NapCat 报 ECONNREFUSED] --> B{AstrBot 容器在运行吗?}
+ B -- 否 --> C[docker compose up -d 启动 AstrBot]
+ B -- 是 --> D{平台适配器配置正确吗?}
+ D -- 否 --> E[检查 cmd_config.json<br>platform 字段为 aiocqhttp<br>端口 6199]
+ D -- 是 --> F[检查两个容器是否同一网络]
+ F --> G[docker network inspect astrbot_network]
 ```
 
 #### 2. JSONDecodeError
@@ -275,33 +275,33 @@ json.decoder.JSONDecodeError: Extra data: line 71 column 6 (char 1733)
 
 **诊断链路**：
 ```bash
-docker ps | grep astrbot                              # 1. 状态是否为 Restarting
-docker logs astrbot --tail 60 2>&1                    # 2. 看崩溃原因（JSONDecodeError）
-ss -tlnp | grep -E "6185|6199"                        # 3. 端口是否监听（崩溃时无监听）
-nl -ba cmd_config.json | sed -n '55,95p'              # 4. 定位报错行附近的文件内容
+docker ps | grep astrbot # 1. 状态是否为 Restarting
+docker logs astrbot --tail 60 2>&1 # 2. 看崩溃原因（JSONDecodeError）
+ss -tlnp | grep -E "6185|6199" # 3. 端口是否监听（崩溃时无监听）
+nl -ba cmd_config.json | sed -n '55,95p' # 4. 定位报错行附近的文件内容
 ```
 
 **修复流程**：
 ```bash
-cp cmd_config.json cmd_config.json.bak                # 1. 备份（铁律）
+cp cmd_config.json cmd_config.json.bak # 1. 备份（铁律）
 # 2. 打开文件，找到主 JSON 对象结束的 } 之后，删除所有垃圾块/残留字段
 # 3. 检查垃圾块删除处是否缺逗号、数组内是否多了尾逗号
-python3 -c "import json; json.load(open('cmd_config.json')); print('OK')"   # 4. 验证
-docker restart astrbot                                # 5. 重启
-docker ps | grep astrbot                              # 6. 确认 Up
+python3 -c "import json; json.load(open('cmd_config.json')); print('OK')" # 4. 验证
+docker restart astrbot # 5. 重启
+docker ps | grep astrbot # 6. 确认 Up
 ```
 
 ```mermaid
 flowchart TD
-    A[容器 Restarting] --> B[docker logs --tail 60 看报错]
-    B --> C{JSONDecodeError?}
-    C -- Extra data --> D[主对象结束后存在粘贴残留/孤儿字段]
-    C -- Expecting ',' --> E[缺少逗号或格式错误]
-    C -- 其他异常 --> F[按具体堆栈排查]
-    D --> G[备份后删除垃圾块<br>补/删逗号]
-    E --> G
-    G --> H[python3 json.load 验证]
-    H --> I[docker restart + 确认 Up]
+ A[容器 Restarting] --> B[docker logs --tail 60 看报错]
+ B --> C{JSONDecodeError?}
+ C -- Extra data --> D[主对象结束后存在粘贴残留/孤儿字段]
+ C -- Expecting ',' --> E[缺少逗号或格式错误]
+ C -- 其他异常 --> F[按具体堆栈排查]
+ D --> G[备份后删除垃圾块<br>补/删逗号]
+ E --> G
+ G --> H[python3 json.load 验证]
+ H --> I[docker restart + 确认 Up]
 ```
 
 **教训**：
@@ -357,8 +357,8 @@ Verification error details: ... Timeout during connect (likely firewall problem)
 
 **排查**：
 ```bash
-ufw status              # 检查系统防火墙
-ss -tlnp | grep 80      # 检查 Nginx 是否监听 80
+ufw status # 检查系统防火墙
+ss -tlnp | grep 80 # 检查 Nginx 是否监听 80
 ```
 
 **解决**：开放 `ufw allow 80/tcp`，同时检查 Vultr/DigitalOcean 控制台的防火墙策略。
@@ -391,14 +391,14 @@ unknown directive "sl_certificate"
 排查链路：
 ```mermaid
 flowchart TD
-    A[机器人不回复] --> B{NapCat 收到消息吗?}
-    B -- 否 --> C[查看 NapCat 日志<br>检查 QQ 是否在线]
-    B -- 是 --> D{AstrBot 收到消息吗?}
-    D -- 否 --> E[检查 WebSocket 连接<br>docker logs astrbot]
-    D -- 是 --> F{LLM API 调用成功吗?}
-    F -- 否 --> G[检查 API Key 和余额<br>检查网络连通性]
-    F -- 是 --> H{白名单配置?}
-    H -- 不在白名单 --> I[在 WebUI 添加管理员 QQ 号]
+ A[机器人不回复] --> B{NapCat 收到消息吗?}
+ B -- 否 --> C[查看 NapCat 日志<br>检查 QQ 是否在线]
+ B -- 是 --> D{AstrBot 收到消息吗?}
+ D -- 否 --> E[检查 WebSocket 连接<br>docker logs astrbot]
+ D -- 是 --> F{LLM API 调用成功吗?}
+ F -- 否 --> G[检查 API Key 和余额<br>检查网络连通性]
+ F -- 是 --> H{白名单配置?}
+ H -- 不在白名单 --> I[在 WebUI 添加管理员 QQ 号]
 ```
 
 - 查看 NapCat 是否在线：`docker logs napcat | grep "接收"`
@@ -408,10 +408,10 @@ flowchart TD
 **链路 vs 模型二分判定**：先确定消息到底卡在哪一环，再对症下药。
 
 ```bash
-docker logs astrbot --since 1m 2>&1 | wc -l          # 消息到达后日志行数会明显增长
-docker logs astrbot --since 2m 2>&1 | grep -i "napcat\|aiocqhttp"   # 适配器是否收到消息
-docker logs astrbot --since 2m 2>&1 | grep -iE "llm|provider|request|error|exception"  # 模型侧调用
-ss -tlnp | grep 6199                                 # ws_reverse 端口监听
+docker logs astrbot --since 1m 2>&1 | wc -l # 消息到达后日志行数会明显增长
+docker logs astrbot --since 2m 2>&1 | grep -i "napcat\|aiocqhttp" # 适配器是否收到消息
+docker logs astrbot --since 2m 2>&1 | grep -iE "llm|provider|request|error|exception" # 模型侧调用
+ss -tlnp | grep 6199 # ws_reverse 端口监听
 ```
 
 | 现象 | 结论 | 下一步 |
@@ -431,10 +431,10 @@ ss -tlnp | grep 6199                                 # ws_reverse 端口监听
 **三层排查**（从内到外逐层确认，避免冤枉防火墙）：
 
 ```bash
-docker ps | grep astrbot                              # ① 容器是否运行？Restarting 会瞬间断开
-ss -tlnp | grep 6185                                  # ② 端口是否监听？
-curl -sI http://127.0.0.1:6185 | head -1              # ③ 本机自测（绕开防火墙直接测应用）
-ufw status / firewalld-cmd --list-all                 # ④ 系统防火墙
+docker ps | grep astrbot # ① 容器是否运行？Restarting 会瞬间断开
+ss -tlnp | grep 6185 # ② 端口是否监听？
+curl -sI http://127.0.0.1:6185 | head -1 # ③ 本机自测（绕开防火墙直接测应用）
+ufw status / firewalld-cmd --list-all # ④ 系统防火墙
 # ⑤ 云厂商安全组 / 防火墙策略放行 6185
 ```
 
@@ -501,10 +501,10 @@ ufw status / firewalld-cmd --list-all                 # ④ 系统防火墙
 
 ```mermaid
 flowchart LR
-    A[互联网] --> B[第一层: 云厂商安全组<br>Vultr/AWS/阿里云]
-    B --> C[第二层: 系统防火墙<br>ufw / iptables / nftables]
-    C --> D[第三层: 应用层鉴权<br>Token / 密码 / IP白名单]
-    D --> E[服务]
+ A[互联网] --> B[第一层: 云厂商安全组<br>Vultr/AWS/阿里云]
+ B --> C[第二层: 系统防火墙<br>ufw / iptables / nftables]
+ C --> D[第三层: 应用层鉴权<br>Token / 密码 / IP白名单]
+ D --> E[服务]
 ```
 
 排查连通性问题时，从外到内逐层检查：
@@ -528,24 +528,24 @@ Nginx 配置可复用于**任何需要 HTTPS 的 Web 服务**，只需改动 `se
 
 ```nginx
 server {
-    listen 443 ssl;
-    server_name 你的域名;
+ listen 443 ssl;
+ server_name 你的域名;
 
-    ssl_certificate /path/to/fullchain.cer;
-    ssl_certificate_key /path/to/private.key;
+ ssl_certificate /path/to/fullchain.cer;
+ ssl_certificate_key /path/to/private.key;
 
-    location / {
-        proxy_pass http://127.0.0.1:你的本地端口;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    }
+ location / {
+ proxy_pass http://127.0.0.1:你的本地端口;
+ proxy_set_header Host $host;
+ proxy_set_header X-Real-IP $remote_addr;
+ proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+ }
 }
 
 server {
-    listen 80;
-    server_name 你的域名;
-    return 301 https://$server_name$request_uri;
+ listen 80;
+ server_name 你的域名;
+ return 301 https://$server_name$request_uri;
 }
 ```
 

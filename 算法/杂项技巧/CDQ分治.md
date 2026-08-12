@@ -19,18 +19,18 @@ CDQ 分治由陈丹琦（IOI2008 金牌）提出，是一种通过**分治降维
 
 ```cpp
 void cdq(int l, int r) {
-  if (l == r) return;
-  int mid = (l + r) >> 1;
-  cdq(l, mid); cdq(mid + 1, r);
-  int i = l, j = mid + 1, k = l;
-  while (i <= mid && j <= r) {
-    if (b[i] <= b[j]) add(c[i], 1), tmp[k++] = i++;
-    else ans[tmp[k++] = j++] += query(c[j]);
-  }
-  while (i <= mid) add(c[i], 1), tmp[k++] = i++;
-  while (j <= r) ans[tmp[k++] = j++] += query(c[j]);
-  for (i = l; i <= mid; ++i) add(c[i], -1);
-  for (i = l; i <= r; ++i) a[i] = tmp[i];
+ if (l == r) return;
+ int mid = (l + r) >> 1;
+ cdq(l, mid); cdq(mid + 1, r);
+ int i = l, j = mid + 1, k = l;
+ while (i <= mid && j <= r) {
+ if (b[i] <= b[j]) add(c[i], 1), tmp[k++] = i++;
+ else ans[tmp[k++] = j++] += query(c[j]);
+ }
+ while (i <= mid) add(c[i], 1), tmp[k++] = i++;
+ while (j <= r) ans[tmp[k++] = j++] += query(c[j]);
+ for (i = l; i <= mid; ++i) add(c[i], -1);
+ for (i = l; i <= r; ++i) a[i] = tmp[i];
 }
 ```
 

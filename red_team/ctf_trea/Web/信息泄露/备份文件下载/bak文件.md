@@ -10,17 +10,17 @@
 
 ```mermaid
 flowchart LR
-    A[编辑器/工具保存文件] --> B[自动留下备份]
-    B --> C[index.php.bak]
-    B --> D[index.php~]
-    B --> E[.index.php.swp]
-    B --> F[部署时打包备份]
-    F --> G[index.php.tar.gz / www.zip]
-    C --> H[备份留在 Web 目录]
-    D --> H
-    E --> H
-    G --> H
-    H --> I[攻击者直接下载源码]
+ A[编辑器/工具保存文件] --> B[自动留下备份]
+ B --> C[index.php.bak]
+ B --> D[index.php~]
+ B --> E[.index.php.swp]
+ B --> F[部署时打包备份]
+ F --> G[index.php.tar.gz / www.zip]
+ C --> H[备份留在 Web 目录]
+ D --> H
+ E --> H
+ G --> H
+ H --> I[攻击者直接下载源码]
 ```
 
 | 备份来源 | 典型文件名 | 说明 |
@@ -69,8 +69,8 @@ flowchart LR
 ```bash
 # 1. 后缀枚举（提示已点名 index.php）
 for ext in bak old ~ swp txt; do
-  code=$(curl -s -o /dev/null -w "%{http_code}" "http://目标/index.php.$ext")
-  [ "$code" != "404" ] && echo "HIT: /index.php.$ext -> $code"
+ code=$(curl -s -o /dev/null -w "%{http_code}" "http://目标/index.php.$ext")
+ [ "$code" != "404" ] && echo "HIT: /index.php.$ext -> $code"
 done
 # 命中 index.php.bak
 

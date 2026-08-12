@@ -3,14 +3,14 @@
 ## 目录
 - [[#一、漏洞扫描方法论|一、漏洞扫描方法论]]
 - [[#二、nikto服务器扫描器|二、nikto服务器扫描器]]
-  - [[#2.1 基本命令|2.1 基本命令]]
-  - [[#2.2 命令选项详解|2.2 命令选项详解]]
-  - [[#2.3 输出格式与高级用法|2.3 输出格式与高级用法]]
+ - [[#2.1 基本命令|2.1 基本命令]]
+ - [[#2.2 命令选项详解|2.2 命令选项详解]]
+ - [[#2.3 输出格式与高级用法|2.3 输出格式与高级用法]]
 - [[#三、wafw00f检测|三、wafw00f检测]]
 - [[#四、OWASP ZAP综合代理扫描器|四、OWASP ZAP综合代理扫描器]]
-  - [[#4.1 被动扫描|4.1 被动扫描]]
-  - [[#4.2 主动扫描|4.2 主动扫描]]
-  - [[#4.3 命令行模式|4.3 命令行模式]]
+ - [[#4.1 被动扫描|4.1 被动扫描]]
+ - [[#4.2 主动扫描|4.2 主动扫描]]
+ - [[#4.3 命令行模式|4.3 命令行模式]]
 - [[#五、Nuclei模板扫描器|五、Nuclei模板扫描器]]
 - [[#六、多扫描器对比实战|六、多扫描器对比实战]]
 - [[#七、扫描器最佳实践|七、扫描器最佳实践]]
@@ -23,21 +23,21 @@
 
 ```
 信息收集 → 漏洞扫描 → 漏洞利用 → 后渗透 → 报告
-(模块02)   (本模块)   (模块4-7)   (模块08)
+(模块02) (本模块) (模块4-7) (模块08)
 ```
 
 参见 [[../网安基础知识/02-Web技术基础|Web技术基础]] 了解Web应用架构和漏洞类型基础。
 
 ```mermaid
 flowchart TD
-    START[开始漏洞扫描] --> P1[第1层: 被动扫描<br/>ZAP被动/手工浏览]
-    P1 --> P2[第2层: 轻量扫描<br/>whatweb/wafw00f/dirb common]
-    P2 --> P3[第3层: 标准扫描<br/>nikto/gobuster big]
-    P3 --> P4[第4层: 重型扫描<br/>ZAP主动/Nuclei]
-    P4 --> V1[手工验证]
-    P4 --> V2[交叉验证]
-    V1 --> RPT[输出报告]
-    V2 --> RPT
+ START[开始漏洞扫描] --> P1[第1层: 被动扫描<br/>ZAP被动/手工浏览]
+ P1 --> P2[第2层: 轻量扫描<br/>whatweb/wafw00f/dirb common]
+ P2 --> P3[第3层: 标准扫描<br/>nikto/gobuster big]
+ P3 --> P4[第4层: 重型扫描<br/>ZAP主动/Nuclei]
+ P4 --> V1[手工验证]
+ P4 --> V2[交叉验证]
+ V1 --> RPT[输出报告]
+ V2 --> RPT
 ```
 
 **漏洞扫描原理：** 发送精心构造的请求 → 分析响应特征 → 匹配漏洞特征库 → 报告潜在漏洞。
@@ -91,11 +91,11 @@ nikto -h http://example.com -Pause 2
 
 # Tuning选项（多线程扫描分类）
 nikto -h http://example.com -Tuning 123456789
-#   1 = 文件上传注入   2 = 异常文件/CGI
-#   3 = XSS            4 = 目录遍历
-#   5 = 过时/默认文件   6 = 信息泄露
-#   7 = 服务器配置问题   8 = 远程文件检索
-#   9 = 拒绝服务（谨慎！） 0 = 全部
+# 1 = 文件上传注入 2 = 异常文件/CGI
+# 3 = XSS 4 = 目录遍历
+# 5 = 过时/默认文件 6 = 信息泄露
+# 7 = 服务器配置问题 8 = 远程文件检索
+# 9 = 拒绝服务（谨慎！） 0 = 全部
 
 # 代理和认证
 nikto -h http://example.com -useproxy http://127.0.0.1:8080
@@ -114,10 +114,10 @@ nikto -h http://example.com -o report.xml -Format xml
 
 # 组合示例
 nikto -h http://testphp.vulnweb.com \
-      -o nikto_testphp.html \
-      -Format html \
-      -Tuning 12345678 \
-      -timeout 10 -no404
+ -o nikto_testphp.html \
+ -Format html \
+ -Tuning 12345678 \
+ -timeout 10 -no404
 
 # 批量扫描 / 排除主机 / 更新数据库
 nikto -h targets.txt -exclude 192.168.1.10
@@ -162,14 +162,14 @@ OWASP ZAP是世界使用最广泛的免费Web安全工具之一，结合了拦�
 
 ```mermaid
 flowchart TD
-    ZAP[启动ZAP: zaproxy] --> PROXY[代理监听: 127.0.0.1:8080]
-    PROXY --> FF[Firefox配置代理]
-    FF --> CERT[导入ZAP SSL证书]
-    CERT --> BROWSE[浏览目标网站]
-    BROWSE --> PASSIVE[被动扫描自动分析]
-    PASSIVE --> ACTIVE[主动扫描:右键→Attack→Active Scan]
-    ACTIVE --> SPIDER[爬虫: Spider + Ajax Spider]
-    SPIDER --> RPT[Report→Generate Report]
+ ZAP[启动ZAP: zaproxy] --> PROXY[代理监听: 127.0.0.1:8080]
+ PROXY --> FF[Firefox配置代理]
+ FF --> CERT[导入ZAP SSL证书]
+ CERT --> BROWSE[浏览目标网站]
+ BROWSE --> PASSIVE[被动扫描自动分析]
+ PASSIVE --> ACTIVE[主动扫描:右键→Attack→Active Scan]
+ ACTIVE --> SPIDER[爬虫: Spider + Ajax Spider]
+ SPIDER --> RPT[Report→Generate Report]
 ```
 
 ### 4.1 被动扫描
@@ -239,12 +239,12 @@ mkdir /home/a/scan_results
 
 # Step 2: nikto扫描
 nikto -h http://testphp.vulnweb.com \
-      -o /home/a/scan_results/nikto_report.html \
-      -Format html -Tuning 12345678
+ -o /home/a/scan_results/nikto_report.html \
+ -Format html -Tuning 12345678
 
 # Step 3: wafw00f检测
 wafw00f -v http://testphp.vulnweb.com \
-        -o /home/a/scan_results/wafw00f_result.json -f json
+ -o /home/a/scan_results/wafw00f_result.json -f json
 
 # Step 4: ZAP扫描
 # 4a: 启动ZAP: zaproxy
@@ -258,8 +258,8 @@ nuclei -u http://testphp.vulnweb.com -o /home/a/scan_results/nuclei_result.txt
 
 # Step 6: dirb补充扫描
 dirb http://testphp.vulnweb.com /usr/share/dirb/wordlists/common.txt \
-     -X .php,.bak,.old,.txt,.zip,.sql \
-     -o /home/a/scan_results/dirb_report.txt
+ -X .php,.bak,.old,.txt,.zip,.sql \
+ -o /home/a/scan_results/dirb_report.txt
 ```
 
 **分析对比要点：**

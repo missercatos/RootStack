@@ -27,71 +27,71 @@ title: "C++ 功能库 — pair / tuple"
 
 ```
 FUNCTION demo_pair:
-    p = PAIR<STRING, INT>("Alice", 25)
-    PRINT p.FIRST, p.SECOND                    // Alice 25
+ p = PAIR<STRING, INT>("Alice", 25)
+ PRINT p.FIRST, p.SECOND // Alice 25
 
-    auto [name, age] = p                        // 结构化绑定 (C++17)
-    PRINT name, age
+ auto [name, age] = p // 结构化绑定 (C++17)
+ PRINT name, age
 
-    p2 = MAKE_PAIR("Bob", 30)                   // 自动推导类型
+ p2 = MAKE_PAIR("Bob", 30) // 自动推导类型
 
-    // 用于 map 的 key-value
-    entry = MAP<STRING, INT>::VALUE_TYPE("hi", 42)
+ // 用于 map 的 key-value
+ entry = MAP<STRING, INT>::VALUE_TYPE("hi", 42)
 
-    // 用于函数返回多值
-    minmax = MINMAX_ELEMENT(v)                  // 返回 pair<迭代器, 迭代器>
-    auto [min_it, max_it] = minmax
+ // 用于函数返回多值
+ minmax = MINMAX_ELEMENT(v) // 返回 pair<迭代器, 迭代器>
+ auto [min_it, max_it] = minmax
 ```
 
 ### tuple
 
 ```
 FUNCTION demo_tuple:
-    t = MAKE_TUPLE("Charlie", 28, 1.75, true)
-    PRINT GET<0>(t)                             // Charlie（按索引）
-    PRINT GET<2>(t)                             // 1.75
+ t = MAKE_TUPLE("Charlie", 28, 1.75, true)
+ PRINT GET<0>(t) // Charlie（按索引）
+ PRINT GET<2>(t) // 1.75
 
-    auto [n, a, h, active] = t                  // 结构化绑定
+ auto [n, a, h, active] = t // 结构化绑定
 
-    // 按类型取（只有无重复类型时可用）
-    PRINT GET<STRING>(t)                        // Charlie
+ // 按类型取（只有无重复类型时可用）
+ PRINT GET<STRING>(t) // Charlie
 ```
 
 ### tie —— 解包到已有变量
 
 ```
 FUNCTION demo_tie:
-    s = STRING();  i = 0;  d = 0.0
-    TIE(s, i, d) = MAKE_TUPLE("hello", 42, 3.14)
-    PRINT s, i, d                               // hello 42 3.14
+ s = STRING(); i = 0; d = 0.0
+ TIE(s, i, d) = MAKE_TUPLE("hello", 42, 3.14)
+ PRINT s, i, d // hello 42 3.14
 
-    // IGNORE 占位符忽略某些值
-    TIE(s, IGNORE, d) = MAKE_TUPLE("world", 99, 2.71)
-    // 99 被忽略
+ // IGNORE 占位符忽略某些值
+ TIE(s, IGNORE, d) = MAKE_TUPLE("world", 99, 2.71)
+ // 99 被忽略
 
-    // 用于比较（tuple 比较是字典序）
-    IF MAKE_TUPLE(a1, a2) < MAKE_TUPLE(b1, b2) THEN
-        PRINT "先比 first，再比 second"
-    END IF
+ // 用于比较（tuple 比较是字典序）
+ IF MAKE_TUPLE(a1, a2) < MAKE_TUPLE(b1, b2) THEN
+ PRINT "先比 first，再比 second"
+ END IF
 ```
 
 ### 高级技巧
 
 ```
 FUNCTION demo_advanced:
-    // 拼接 tuple
-    t1 = MAKE_TUPLE(1, 2)
-    t2 = MAKE_TUPLE(STRING("a"), 3.14)
-    merged = TUPLE_CAT(t1, t2)                  // (1, 2, "a", 3.14)
+ // 拼接 tuple
+ t1 = MAKE_TUPLE(1, 2)
+ t2 = MAKE_TUPLE(STRING("a"), 3.14)
+ merged = TUPLE_CAT(t1, t2) // (1, 2, "a", 3.14)
 
-    // forward_as_tuple: 完美转发打包
-    params = FORWARD_AS_TUPLE(arg1, arg2)       // 原地构造时用
+ // forward_as_tuple: 完美转发打包
+ params = FORWARD_AS_TUPLE(arg1, arg2) // 原地构造时用
 
-    // pair 的投影排序
-    items = VECTOR<PAIR<STRING, INT>>()
-    SORT(items, LAMBDA(a, b):
-        RETURN a.SECOND < b.SECOND              // 按 value 排序
-    )
+ // pair 的投影排序
+ items = VECTOR<PAIR<STRING, INT>>()
+ SORT(items, LAMBDA(a, b):
+ RETURN a.SECOND < b.SECOND // 按 value 排序
+ )
 ```
 
 ---

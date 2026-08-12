@@ -21,16 +21,16 @@
 
 ```
 DAC (自主访问控制)：传统 Linux 权限 (rwx)
-  — 文件所有者决定访问权限
-  — root 可以绕过一切
+ — 文件所有者决定访问权限
+ — root 可以绕过一切
 
 MAC (强制访问控制)：SELinux
-  — 系统管理员定义全局安全策略
-  — root 也受策略限制
-  — SELinux 在 DAC 之后检查（两层防护）
+ — 系统管理员定义全局安全策略
+ — root 也受策略限制
+ — SELinux 在 DAC 之后检查（两层防护）
 
 访问决策流程：
-  进程 → [DAC 检查] → 通过 → [SELinux 检查] → 通过 → 允许访问
+ 进程 → [DAC 检查] → 通过 → [SELinux 检查] → 通过 → 允许访问
 ```
 
 ### 2.2 核心概念
@@ -52,8 +52,8 @@ MAC (强制访问控制)：SELinux
 用户:角色:类型:级别
 
 示例：
-system_u:system_r:httpd_t:s0           ← httpd 进程上下文
-unconfined_u:object_r:httpd_sys_content_t:s0  ← Web 文件上下文
+system_u:system_r:httpd_t:s0 ← httpd 进程上下文
+unconfined_u:object_r:httpd_sys_content_t:s0 ← Web 文件上下文
 ```
 
 ### 2.4 策略类型
@@ -77,9 +77,9 @@ sestatus | grep "Loaded policy name"
 
 | 模式 | 说明 | 日志 |
 |------|------|------|
-| **enforcing** | 强制执行策略，拒绝违规操作并记录 | ✓ |
-| **permissive** | 不强制，但记录违规操作（调试用） | ✓ |
-| **disabled** | 完全关闭 SELinux | ✗ |
+| **enforcing** | 强制执行策略，拒绝违规操作并记录 | |
+| **permissive** | 不强制，但记录违规操作（调试用） | |
+| **disabled** | 完全关闭 SELinux | |
 
 ```bash
 # 查看当前模式
@@ -89,8 +89,8 @@ getenforce
 sestatus
 
 # 临时切换模式（重启失效）
-sudo setenforce 0          # permissive
-sudo setenforce 1          # enforcing
+sudo setenforce 0 # permissive
+sudo setenforce 1 # enforcing
 
 # 永久配置
 sudo vim /etc/selinux/config
@@ -99,7 +99,7 @@ sudo vim /etc/selinux/config
 ```
 SELINUX=enforcing
 # SELINUX=permissive
-# SELINUX=disabled          ← 不推荐
+# SELINUX=disabled ← 不推荐
 SELINUXTYPE=targeted
 ```
 
@@ -273,11 +273,11 @@ sudo ausearch -m avc -ts recent | grep httpd_t
 ### 6.3 理解 AVC 拒绝消息
 
 ```
-type=AVC msg=audit(1705312345.678:1234): avc:  denied  { read } for \
-    pid=12345 comm="httpd" name="index.html" dev="sda1" ino=56789 \
-    scontext=system_u:system_r:httpd_t:s0 \
-    tcontext=unconfined_u:object_r:user_home_t:s0 \
-    tclass=file
+type=AVC msg=audit(1705312345.678:1234): avc: denied { read } for \
+ pid=12345 comm="httpd" name="index.html" dev="sda1" ino=56789 \
+ scontext=system_u:system_r:httpd_t:s0 \
+ tcontext=unconfined_u:object_r:user_home_t:s0 \
+ tclass=file
 
 解读：
 - 进程 httpd (httpd_t 域) 试图读取文件 index.html (user_home_t 类型)
@@ -316,15 +316,15 @@ sudo audit2allow -a
 sudo audit2allow -a -M mypolicy
 
 # 这会生成两个文件：
-# mypolicy.te  — Type Enforcement (策略源文件)
-# mypolicy.pp  — 编译好的策略模块
+# mypolicy.te — Type Enforcement (策略源文件)
+# mypolicy.pp — 编译好的策略模块
 
 # 安装策略模块
 sudo semodule -i mypolicy.pp
 
 # 查看更详细的分析
-sudo audit2allow -a -w          # 解释为什么拒绝
-sudo audit2allow -a -v          # 详细输出
+sudo audit2allow -a -w # 解释为什么拒绝
+sudo audit2allow -a -v # 详细输出
 ```
 
 ### 7.2 完整工作流
@@ -348,9 +348,9 @@ cat custom_httpd.te
 module custom_httpd 1.0;
 
 require {
-    type httpd_t;
-    type user_home_t;
-    class file { read open getattr };
+ type httpd_t;
+ type user_home_t;
+ class file { read open getattr };
 }
 
 #============= httpd_t ==============
@@ -403,8 +403,8 @@ sudo semodule -i mypolicy.pp
 sudo semodule -r mypolicy
 
 # 启用/禁用模块
-sudo semodule -e mypolicy     # 启用
-sudo semodule -d mypolicy     # 禁用
+sudo semodule -e mypolicy # 启用
+sudo semodule -d mypolicy # 禁用
 
 # 升级/替换模块
 sudo semodule -u mypolicy.pp
@@ -531,23 +531,23 @@ sudo restorecon -v /dest/file
 | 配置文件 | 编译后的二进制策略 | 文本文件 |
 | 用户友好 | 较复杂 | 较简单 |
 | 主要使用者 | RHEL/CentOS/Fedora | Debian/Ubuntu/openSUSE |
-| 强制访问控制 | ✓ (MAC) | ✓ (MAC) |
-| 多级安全 (MLS) | ✓ | ✗ |
-| 网络标签 | ✓ | 有限 |
-| RBAC | ✓ | ✗ |
+| 强制访问控制 | (MAC) | (MAC) |
+| 多级安全 (MLS) | | |
+| 网络标签 | | 有限 |
+| RBAC | | |
 | 学习模式 | permissive | complain |
 
 ```bash
 # AppArmor 快速参考 (Debian/Ubuntu 默认)
-sudo aa-status                          # 查看状态
-sudo aa-enforce /etc/apparmor.d/usr.bin.nginx   # 强制
-sudo aa-complain /etc/apparmor.d/usr.bin.nginx  # 学习（类似 permissive）
-sudo aa-genprof /usr/sbin/nginx         # 生成策略
+sudo aa-status # 查看状态
+sudo aa-enforce /etc/apparmor.d/usr.bin.nginx # 强制
+sudo aa-complain /etc/apparmor.d/usr.bin.nginx # 学习（类似 permissive）
+sudo aa-genprof /usr/sbin/nginx # 生成策略
 
 # vs SELinux
-getenforce                              # 查看模式
-sudo setenforce 0                       # permissive
-semanage permissive -a httpd_t          # 域级 permissive
+getenforce # 查看模式
+sudo setenforce 0 # permissive
+semanage permissive -a httpd_t # 域级 permissive
 ```
 
 ---

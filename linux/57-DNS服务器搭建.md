@@ -9,17 +9,17 @@
 ### 两种 DNS 服务器类型
 
 ```
-递归 DNS（Recursive Resolver）            权威 DNS（Authoritative Server）
-    用户请求 google.com                       返回 google.com 的 IP
-    │                                         │
-    ▼                                         ▼
-┌──────────┐  .root  ┌─────────┐    ┌──────────────┐
-│ 递归查询 │ ──────▶ │ 根服务器 │    │ ns1.google   │
-│ (Unbound)│ ◀────── │         │    │ .com 权威DNS │
-└──────────┘  .com   └─────────┘    └──────────────┘
-       │                                         ▲
-       │     ns1.google.com                      │
-       └─────────────────────────────────────────┘
+递归 DNS（Recursive Resolver） 权威 DNS（Authoritative Server）
+ 用户请求 google.com 返回 google.com 的 IP
+ │ │
+ ▼ ▼
+┌──────────┐ .root ┌─────────┐ ┌──────────────┐
+│ 递归查询 │ ──────▶ │ 根服务器 │ │ ns1.google │
+│ (Unbound)│ ◀────── │ │ │ .com 权威DNS │
+└──────────┘ .com └─────────┘ └──────────────┘
+ │ ▲
+ │ ns1.google.com │
+ └─────────────────────────────────────────┘
 ```
 
 | 特性 | 递归 DNS | 权威 DNS |
@@ -49,27 +49,27 @@ sudo dnf install bind bind-utils -y
 sudo pacman -S bind
 
 # 启动
-sudo systemctl enable --now named   # BIND 的服务名是 named
+sudo systemctl enable --now named # BIND 的服务名是 named
 ```
 
 ### 配置文件结构
 
 ```bash
 # 主配置目录
-# Debian/Ubuntu:  /etc/bind/
-# RHEL/Fedora:    /etc/named.conf 或 /etc/named/
-# Arch:           /etc/named.conf
+# Debian/Ubuntu: /etc/bind/
+# RHEL/Fedora: /etc/named.conf 或 /etc/named/
+# Arch: /etc/named.conf
 ```
 
 ```
 /etc/bind/
-├── named.conf            # 主配置文件（包含其他配置）
-├── named.conf.options    # 全局选项
-├── named.conf.local      # 本地 zone 定义
-├── named.conf.default-zones  # 默认 zone
+├── named.conf # 主配置文件（包含其他配置）
+├── named.conf.options # 全局选项
+├── named.conf.local # 本地 zone 定义
+├── named.conf.default-zones # 默认 zone
 ├── zones/
-│   ├── db.example.com       # 正向解析 zone 文件
-│   └── db.192.168.1         # 反向解析 zone 文件
+│ ├── db.example.com # 正向解析 zone 文件
+│ └── db.192.168.1 # 反向解析 zone 文件
 ```
 
 ### 基本配置
@@ -80,15 +80,15 @@ sudo vim /etc/bind/named.conf.options
 
 ```
 options {
-    directory "/var/cache/bind";
-    listen-on port 53 { 127.0.0.1; 192.168.1.10; };
-    listen-on-v6 port 53 { ::1; };
-    allow-query { 192.168.0.0/16; 10.0.0.0/8; localhost; };
-    allow-transfer { 192.168.1.20; };    # 允许从服务器传输 zone
+ directory "/var/cache/bind";
+ listen-on port 53 { 127.0.0.1; 192.168.1.10; };
+ listen-on-v6 port 53 { ::1; };
+ allow-query { 192.168.0.0/16; 10.0.0.0/8; localhost; };
+ allow-transfer { 192.168.1.20; }; # 允许从服务器传输 zone
 
-    recursion no;                         # 权威 DNS 关闭递归
-    dnssec-validation auto;
-    version "Not disclosed";              # 隐藏版本号
+ recursion no; # 权威 DNS 关闭递归
+ dnssec-validation auto;
+ version "Not disclosed"; # 隐藏版本号
 };
 ```
 
@@ -103,9 +103,9 @@ sudo vim /etc/bind/named.conf.local
 
 ```
 zone "example.com" {
-    type master;
-    file "/etc/bind/zones/db.example.com";
-    allow-update { none; };
+ type master;
+ file "/etc/bind/zones/db.example.com";
+ allow-update { none; };
 };
 ```
 
@@ -119,40 +119,40 @@ $TTL 86400
 $ORIGIN example.com.
 
 ; SOA 记录（Start of Authority）
-@   IN  SOA   ns1.example.com. admin.example.com. (
-        2026072401  ; 序列号（YYYYMMDDNN 格式）
-        3600        ; Refresh（从服务器多久检查一次更新）
-        1800        ; Retry（检查失败后重试间隔）
-        604800      ; Expire（从服务器过期时间）
-        86400       ; Minimum TTL（否定应答缓存时间）
+@ IN SOA ns1.example.com. admin.example.com. (
+ 2026072401 ; 序列号（YYYYMMDDNN 格式）
+ 3600 ; Refresh（从服务器多久检查一次更新）
+ 1800 ; Retry（检查失败后重试间隔）
+ 604800 ; Expire（从服务器过期时间）
+ 86400 ; Minimum TTL（否定应答缓存时间）
 )
 
 ; NS 记录（指定域名服务器）
-@   IN  NS    ns1.example.com.
-@   IN  NS    ns2.example.com.
+@ IN NS ns1.example.com.
+@ IN NS ns2.example.com.
 
 ; A 记录（域名 → IPv4）
-ns1  IN  A    192.168.1.10
-ns2  IN  A    192.168.1.20
-@    IN  A    192.168.1.100     ; example.com 本身
+ns1 IN A 192.168.1.10
+ns2 IN A 192.168.1.20
+@ IN A 192.168.1.100 ; example.com 本身
 
 ; AAAA 记录（域名 → IPv6）
-@    IN  AAAA    2001:db8::100
+@ IN AAAA 2001:db8::100
 
 ; CNAME 记录（别名）
-www    IN  CNAME  @
-mail   IN  CNAME  @
-docs   IN  CNAME  ghs.google.com.    ; 指向外部服务
+www IN CNAME @
+mail IN CNAME @
+docs IN CNAME ghs.google.com. ; 指向外部服务
 
 ; MX 记录（邮件服务器）
-@      IN  MX   10 mail.example.com.
-@      IN  MX   20 mx-backup.example.com.
+@ IN MX 10 mail.example.com.
+@ IN MX 20 mx-backup.example.com.
 
 ; TXT 记录（文本记录，SPF/DKIM/验证等）
-@      IN  TXT   "v=spf1 ip4:192.168.1.100 ~all"
+@ IN TXT "v=spf1 ip4:192.168.1.100 ~all"
 
 ; SRV 记录（服务定位）
-_sip._tcp  IN  SRV  10 5 5060 sip.example.com.
+_sip._tcp IN SRV 10 5 5060 sip.example.com.
 ```
 
 ### 反向解析 zone（IP → 域名）
@@ -163,8 +163,8 @@ sudo vim /etc/bind/named.conf.local
 
 ```
 zone "1.168.192.in-addr.arpa" {
-    type master;
-    file "/etc/bind/zones/db.192.168.1";
+ type master;
+ file "/etc/bind/zones/db.192.168.1";
 };
 ```
 
@@ -174,15 +174,15 @@ sudo vim /etc/bind/zones/db.192.168.1
 
 ```
 $TTL 86400
-@   IN  SOA   ns1.example.com. admin.example.com. (
-        2026072401 3600 1800 604800 86400 )
+@ IN SOA ns1.example.com. admin.example.com. (
+ 2026072401 3600 1800 604800 86400 )
 
-    IN  NS    ns1.example.com.
+ IN NS ns1.example.com.
 
-10   IN  PTR   ns1.example.com.
-20   IN  PTR   ns2.example.com.
-100  IN  PTR   example.com.
-101  IN  PTR   web.example.com.
+10 IN PTR ns1.example.com.
+20 IN PTR ns2.example.com.
+100 IN PTR example.com.
+101 IN PTR web.example.com.
 ```
 
 ### 验证与重载
@@ -242,9 +242,9 @@ sudo vim /etc/bind/named.conf.options
 
 ```
 options {
-    allow-transfer { 192.168.1.20; };    # 允许从服务器传输
-    also-notify { 192.168.1.20; };       # 变更时主动通知从服务器
-    notify yes;
+ allow-transfer { 192.168.1.20; }; # 允许从服务器传输
+ also-notify { 192.168.1.20; }; # 变更时主动通知从服务器
+ notify yes;
 };
 ```
 
@@ -256,9 +256,9 @@ sudo vim /etc/bind/named.conf.local
 
 ```
 zone "example.com" {
-    type slave;
-    file "/var/cache/bind/db.example.com.slave";
-    masters { 192.168.1.10; };
+ type slave;
+ file "/var/cache/bind/db.example.com.slave";
+ masters { 192.168.1.10; };
 };
 ```
 
@@ -279,9 +279,9 @@ Unbound 是轻量、安全的递归 DNS 解析器，支持 DNSSEC 验证、缓�
 ### 安装与基本配置
 
 ```bash
-sudo apt install unbound -y    # Debian/Ubuntu
-sudo dnf install unbound -y    # RHEL/Fedora
-sudo pacman -S unbound          # Arch
+sudo apt install unbound -y # Debian/Ubuntu
+sudo dnf install unbound -y # RHEL/Fedora
+sudo pacman -S unbound # Arch
 
 # 编辑配置
 sudo vim /etc/unbound/unbound.conf
@@ -289,35 +289,35 @@ sudo vim /etc/unbound/unbound.conf
 
 ```
 server:
-    interface: 0.0.0.0
-    interface: ::0
-    port: 53
-    access-control: 192.168.0.0/16 allow
-    access-control: 10.0.0.0/8 allow
-    access-control: 127.0.0.0/8 allow
+ interface: 0.0.0.0
+ interface: ::0
+ port: 53
+ access-control: 192.168.0.0/16 allow
+ access-control: 10.0.0.0/8 allow
+ access-control: 127.0.0.0/8 allow
 
-    # 上游 DNS（如需转发而非递归）
-    # forward-zone:
-    #     name: "."
-    #     forward-addr: 8.8.8.8
-    #     forward-addr: 1.1.1.1
+ # 上游 DNS（如需转发而非递归）
+ # forward-zone:
+ # name: "."
+ # forward-addr: 8.8.8.8
+ # forward-addr: 1.1.1.1
 
-    # 拒绝操作时打印最少信息
-    hide-identity: yes
-    hide-version: yes
+ # 拒绝操作时打印最少信息
+ hide-identity: yes
+ hide-version: yes
 
-    # 缓存设置
-    cache-min-ttl: 300
-    cache-max-ttl: 86400
+ # 缓存设置
+ cache-min-ttl: 300
+ cache-max-ttl: 86400
 
-    # DNSSEC
-    auto-trust-anchor-file: "/var/lib/unbound/root.key"
-    val-clean-additional: yes
-    val-permissive-mode: no
+ # DNSSEC
+ auto-trust-anchor-file: "/var/lib/unbound/root.key"
+ val-clean-additional: yes
+ val-permissive-mode: no
 
-    # 隐私
-    qname-minimisation: yes   # DNS 查询名称最小化
-    prefetch: yes             # 缓存条目接近过期时主动刷新
+ # 隐私
+ qname-minimisation: yes # DNS 查询名称最小化
+ prefetch: yes # 缓存条目接近过期时主动刷新
 ```
 
 ```bash
@@ -353,13 +353,13 @@ sudo vim /etc/unbound/unbound.conf.d/custom.conf
 ```
 # 将内部域名的查询转发到本地 BIND 权威服务器
 stub-zone:
-    name: "example.com"
-    stub-addr: 192.168.1.10@53
+ name: "example.com"
+ stub-addr: 192.168.1.10@53
 
 # 反向解析区域
 stub-zone:
-    name: "1.168.192.in-addr.arpa"
-    stub-addr: 192.168.1.10@53
+ name: "1.168.192.in-addr.arpa"
+ stub-addr: 192.168.1.10@53
 
 # 隐私/安全相关的域名本地阻断
 local-zone: "use-application-dns.net" static
@@ -375,8 +375,8 @@ dnsmasq 是嵌入式设备和小型局域网中常用的轻量级 DNS 转发器�
 ### 安装与配置
 
 ```bash
-sudo apt install dnsmasq -y    # Debian/Ubuntu
-sudo dnf install dnsmasq -y    # RHEL/Fedora
+sudo apt install dnsmasq -y # Debian/Ubuntu
+sudo dnf install dnsmasq -y # RHEL/Fedora
 
 # 配置文件： /etc/dnsmasq.conf
 sudo vim /etc/dnsmasq.conf
@@ -409,9 +409,9 @@ cache-size=1000
 
 # DHCP
 dhcp-range=192.168.1.100,192.168.1.200,12h
-dhcp-option=3,192.168.1.1           # 默认网关
-dhcp-option=6,192.168.1.1           # DNS 服务器
-dhcp-host=aa:bb:cc:dd:ee:ff,192.168.1.101,web-server  # 静态 DHCP
+dhcp-option=3,192.168.1.1 # 默认网关
+dhcp-option=6,192.168.1.1 # DNS 服务器
+dhcp-host=aa:bb:cc:dd:ee:ff,192.168.1.101,web-server # 静态 DHCP
 
 # 日志
 log-queries
@@ -488,27 +488,27 @@ sudo vim /etc/coredns/Corefile
 ```dns
 # 递归解析（本地 DNS 缓存）
 . {
-    forward . 8.8.8.8 1.1.1.1
-    cache 3600
-    errors
-    log
-    health :8053
-    prometheus :9153
+ forward . 8.8.8.8 1.1.1.1
+ cache 3600
+ errors
+ log
+ health :8053
+ prometheus :9153
 }
 
 # 权威服务器 — example.com 域
 example.com {
-    file /etc/coredns/example.com.zone
-    log
-    errors
+ file /etc/coredns/example.com.zone
+ log
+ errors
 }
 
 # 内部服务发现 — 从 /etc/hosts 加载
 internal.local {
-    hosts /etc/coredns/internal.hosts {
-        fallthrough
-    }
-    log
+ hosts /etc/coredns/internal.hosts {
+ fallthrough
+ }
+ log
 }
 ```
 
@@ -521,10 +521,10 @@ sudo vim /etc/coredns/example.com.zone
 $ORIGIN example.com.
 $TTL 3600
 
-@   IN SOA ns1.example.com. admin.example.com. 2026072401 7200 3600 1209600 3600
-@   IN NS  ns1.example.com.
-ns1 IN A   192.168.1.10
-@   IN A   192.168.1.100
+@ IN SOA ns1.example.com. admin.example.com. 2026072401 7200 3600 1209600 3600
+@ IN NS ns1.example.com.
+ns1 IN A 192.168.1.10
+@ IN A 192.168.1.100
 www IN CNAME @
 ```
 
@@ -534,9 +534,9 @@ sudo vim /etc/coredns/internal.hosts
 ```
 
 ```
-192.168.1.10   ns1.internal.local
-192.168.1.50   nas.internal.local
-192.168.1.60   printer.internal.local
+192.168.1.10 ns1.internal.local
+192.168.1.50 nas.internal.local
+192.168.1.60 printer.internal.local
 ```
 
 ```bash
@@ -571,11 +571,11 @@ sudo vim /etc/bind/named.conf.options
 
 ```
 options {
-    rate-limit {
-        responses-per-second 5;
-        window 5;
-        slip 2;
-    };
+ rate-limit {
+ responses-per-second 5;
+ window 5;
+ slip 2;
+ };
 };
 ```
 
@@ -603,10 +603,10 @@ sudo vim /etc/bind/named.conf.local
 
 ```
 zone "example.com" {
-    type master;
-    file "/etc/bind/zones/db.example.com.signed";
-    auto-dnssec maintain;
-    inline-signing yes;
+ type master;
+ file "/etc/bind/zones/db.example.com.signed";
+ auto-dnssec maintain;
+ inline-signing yes;
 };
 ```
 
@@ -623,8 +623,8 @@ tsig-keygen -a HMAC-SHA256 slave-key >> /etc/bind/named.conf.local
 
 # 在主从服务器 named.conf 中都配置
 key "slave-key" {
-    algorithm hmac-sha256;
-    secret "生成的base64密钥";
+ algorithm hmac-sha256;
+ secret "生成的base64密钥";
 };
 
 # 主服务器
@@ -664,14 +664,14 @@ dig +dnssec example.com +multi
 
 # 测试递归和缓存时间
 dig example.com | grep "Query time"
-dig example.com | grep "Query time"   # 第二次应接近 0
+dig example.com | grep "Query time" # 第二次应接近 0
 
 # 检查 zone transfer 是否开放（不应对外网开放）
 dig @dns-server example.com AXFR
 
 # 检查 BIND 日志
 sudo journalctl -u named -f
-sudo tail -f /var/log/named/query.log   # 如启用 querylog
+sudo tail -f /var/log/named/query.log # 如启用 querylog
 
 # 检查 Unbound 日志
 sudo journalctl -u unbound -f

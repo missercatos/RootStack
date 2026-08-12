@@ -42,60 +42,60 @@ title: "C++ 功能库 — chrono"
 
 ```
 FUNCTION demo_timer:
-    start = STEADY_CLOCK::NOW()
+ start = STEADY_CLOCK::NOW()
 
-    DO_HEAVY_COMPUTATION()
+ DO_HEAVY_COMPUTATION()
 
-    end = STEADY_CLOCK::NOW()
-    elapsed = end - start
+ end = STEADY_CLOCK::NOW()
+ elapsed = end - start
 
-    ms = DURATION_CAST<MILLISECONDS>(elapsed).COUNT()
-    PRINT "耗时:", ms, "ms"
+ ms = DURATION_CAST<MILLISECONDS>(elapsed).COUNT()
+ PRINT "耗时:", ms, "ms"
 
-    us = DURATION_CAST<MICROSECONDS>(elapsed).COUNT()
-    PRINT "耗时:", us, "μs"
+ us = DURATION_CAST<MICROSECONDS>(elapsed).COUNT()
+ PRINT "耗时:", us, "μs"
 ```
 
 ### C++14 时间字面量
 
 ```
 FUNCTION demo_literals:
-    USING NAMESPACE chrono_literals
+ USING NAMESPACE chrono_literals
 
-    timeout = 500ms                            // 等价于 milliseconds(500)
-    delay = 2s                                 // 等价于 seconds(2)
-    long_wait = 5min                           // 等价于 minutes(5)
+ timeout = 500ms // 等价于 milliseconds(500)
+ delay = 2s // 等价于 seconds(2)
+ long_wait = 5min // 等价于 minutes(5)
 
-    SLEEP_FOR(100ms)                            // 休眠 100 毫秒
-    SLEEP_FOR(1s)                               // 休眠 1 秒
+ SLEEP_FOR(100ms) // 休眠 100 毫秒
+ SLEEP_FOR(1s) // 休眠 1 秒
 ```
 
 ### 时钟的区别
 
 ```
 FUNCTION demo_clocks:
-    // system_clock: 可以转成 C 风格 time_t
-    now_sys = SYSTEM_CLOCK::NOW()
-    tt = SYSTEM_CLOCK::TO_TIME_T(now_sys)      // 转为 time_t
-    PRINT CTIME(&tt)                            // 人类可读时间字符串
+ // system_clock: 可以转成 C 风格 time_t
+ now_sys = SYSTEM_CLOCK::NOW()
+ tt = SYSTEM_CLOCK::TO_TIME_T(now_sys) // 转为 time_t
+ PRINT CTIME(&tt) // 人类可读时间字符串
 
-    // steady_clock: 测量时间间隔（不受系统时间调整影响）
-    t1 = STEADY_CLOCK::NOW()
-    // ... 被测代码 ...
-    t2 = STEADY_CLOCK::NOW()
-    elapsed = t2 - t1                           // 永远 > 0
+ // steady_clock: 测量时间间隔（不受系统时间调整影响）
+ t1 = STEADY_CLOCK::NOW()
+ // ... 被测代码 ...
+ t2 = STEADY_CLOCK::NOW()
+ elapsed = t2 - t1 // 永远 > 0
 ```
 
 ### 时间算术
 
 ```
 FUNCTION demo_arithmetic:
-    t1 = STEADY_CLOCK::NOW()
-    t2 = t1 + 500ms                            // 500ms 后
-    t3 = t2 + 2s                               // 2.5s 后
+ t1 = STEADY_CLOCK::NOW()
+ t2 = t1 + 500ms // 500ms 后
+ t3 = t2 + 2s // 2.5s 后
 
-    d = t3 - t1                                // 2500ms
-    PRINT DURATION_CAST<MILLISECONDS>(d).COUNT()  // 2500
+ d = t3 - t1 // 2500ms
+ PRINT DURATION_CAST<MILLISECONDS>(d).COUNT() // 2500
 ```
 
 ---

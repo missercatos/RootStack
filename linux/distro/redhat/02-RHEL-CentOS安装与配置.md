@@ -27,13 +27,13 @@
 
 ```
 Fedora（上游创新源）
-    ↓ 每 6 个月
+ ↓ 每 6 个月
 CentOS Stream（RHEL 开发预览）
-    ↓ 持续集成
+ ↓ 持续集成
 RHEL（Red Hat 官方企业版）
-    ↓ 源代码公开
+ ↓ 源代码公开
 Rocky Linux / AlmaLinux（社区重建版，100% 兼容）
-    ↓
+ ↓
 Oracle Linux（Oracle 发行版，UEK 内核）
 
 选择建议：
@@ -76,19 +76,19 @@ wget https://mirrors.tuna.tsinghua.edu.cn/fedora/releases/40/Server/x86_64/iso/F
 ```
 1. 启动后选择 "Install Rocky Linux 9.x"
 
-2. 语言: English (United States)   （推荐英文，减少 TTY 乱码）
+2. 语言: English (United States) （推荐英文，减少 TTY 乱码）
 
 3. Installation Summary 界面配置：
-   ├── Keyboard            → English (US)
-   ├── Language Support    → 添加简体中文
-   ├── Time & Date         → Asia/Shanghai, NTP ON
-   ├── Installation Source → 自动检测（或指定镜像 URL）
-   ├── Software Selection  → Server（无 GUI）
-   │   └── 勾选 "Standard" 和 "System Tools"
-   ├── Installation Destination → 选硬盘，Storage Configuration: Custom
-   ├── Network & Hostname  → 设置主机名，开启网卡
-   ├── Root Password       → 设置 root 密码
-   └── User Creation       → 创建管理员用户，设为 Administrator
+ ├── Keyboard → English (US)
+ ├── Language Support → 添加简体中文
+ ├── Time & Date → Asia/Shanghai, NTP ON
+ ├── Installation Source → 自动检测（或指定镜像 URL）
+ ├── Software Selection → Server（无 GUI）
+ │ └── 勾选 "Standard" 和 "System Tools"
+ ├── Installation Destination → 选硬盘，Storage Configuration: Custom
+ ├── Network & Hostname → 设置主机名，开启网卡
+ ├── Root Password → 设置 root 密码
+ └── User Creation → 创建管理员用户，设为 Administrator
 
 4. 点击 "Begin Installation"
 
@@ -100,31 +100,31 @@ wget https://mirrors.tuna.tsinghua.edu.cn/fedora/releases/40/Server/x86_64/iso/F
 ```
 方案 A: 标准分区（生产环境推荐）
 
-/boot           1 GiB       xfs （或 ext4）
-/boot/efi       512 MiB     EFI System （UEFI 模式）
-/              50 GiB       xfs
-/home          剩余空间      xfs     （有用户数据场景）
-swap           8 GiB        swap    （或按需）
+/boot 1 GiB xfs （或 ext4）
+/boot/efi 512 MiB EFI System （UEFI 模式）
+/ 50 GiB xfs
+/home 剩余空间 xfs （有用户数据场景）
+swap 8 GiB swap （或按需）
 
 方案 B: LVM（灵活扩容）
 
-/boot           1 GiB       xfs
-/boot/efi       512 MiB     EFI System
-/              20 GiB       xfs (LVM)
-/var           20 GiB       xfs (LVM)
-/var/log       10 GiB       xfs (LVM)
-/tmp            5 GiB       xfs (LVM)
-/home          剩余         xfs (LVM)
-swap           8 GiB        swap (LVM)
+/boot 1 GiB xfs
+/boot/efi 512 MiB EFI System
+/ 20 GiB xfs (LVM)
+/var 20 GiB xfs (LVM)
+/var/log 10 GiB xfs (LVM)
+/tmp 5 GiB xfs (LVM)
+/home 剩余 xfs (LVM)
+swap 8 GiB swap (LVM)
 
 方案 C: 加密 LVM（安全增强）
 
-/boot           1 GiB       xfs （不加密）
-/boot/efi       512 MiB     EFI System
-LUKS 加密卷    全部剩余     LVM PV
-  ├─ /          20 GiB       xfs
-  ├─ /home      剩余          xfs
-  └─ swap       按需          swap
+/boot 1 GiB xfs （不加密）
+/boot/efi 512 MiB EFI System
+LUKS 加密卷 全部剩余 LVM PV
+ ├─ / 20 GiB xfs
+ ├─ /home 剩余 xfs
+ └─ swap 按需 swap
 ```
 
 ### 3.4 Kickstart 自动化安装
@@ -142,7 +142,7 @@ vim /tmp/ks.cfg
 # 简化的 Kickstart 示例
 # ks.cfg
 #version=RHEL9
-text                               # 文本模式安装
+text # 文本模式安装
 url --url="https://mirrors.tuna.tsinghua.edu.cn/rocky/9/BaseOS/x86_64/os/"
 
 %addon com_redhat_kdump --disable
@@ -258,13 +258,13 @@ sudo dnf install epel-release -y
 
 # 安装基础工具
 sudo dnf install -y \
-    vim git curl wget \
-    htop btop tmux \
-    net-tools iproute \
-    unzip p7zip \
-    man-db man-pages \
-    bash-completion \
-    rsync
+ vim git curl wget \
+ htop btop tmux \
+ net-tools iproute \
+ unzip p7zip \
+ man-db man-pages \
+ bash-completion \
+ rsync
 
 # 安装开发工具
 sudo dnf groupinstall "Development Tools" -y
@@ -278,11 +278,11 @@ nmcli device status
 
 # 设置静态 IP（NetworkManager）
 sudo nmcli connection modify eth0 \
-    ipv4.method manual \
-    ipv4.addresses "192.168.1.100/24" \
-    ipv4.gateway "192.168.1.1" \
-    ipv4.dns "8.8.8.8 1.1.1.1" \
-    connection.autoconnect yes
+ ipv4.method manual \
+ ipv4.addresses "192.168.1.100/24" \
+ ipv4.gateway "192.168.1.1" \
+ ipv4.dns "8.8.8.8 1.1.1.1" \
+ connection.autoconnect yes
 
 # 应用
 sudo nmcli connection up eth0
@@ -346,8 +346,8 @@ getenforce
 sestatus
 
 # 临时切换模式
-sudo setenforce 0           # permissive
-sudo setenforce 1           # enforcing
+sudo setenforce 0 # permissive
+sudo setenforce 1 # enforcing
 
 # 永久配置
 sudo vim /etc/selinux/config
@@ -370,10 +370,10 @@ tuned-adm active
 tuned-adm list
 
 # 选择 profile
-sudo tuned-adm profile throughput-performance   # 吞吐量优先
-sudo tuned-adm profile latency-performance      # 低延迟
-sudo tuned-adm profile virtual-guest            # 虚拟机客户机
-sudo tuned-adm profile virtual-host             # 虚拟机宿主机
+sudo tuned-adm profile throughput-performance # 吞吐量优先
+sudo tuned-adm profile latency-performance # 低延迟
+sudo tuned-adm profile virtual-guest # 虚拟机客户机
+sudo tuned-adm profile virtual-host # 虚拟机宿主机
 
 # 推荐配置
 sudo tuned-adm recommend
@@ -405,13 +405,13 @@ sudo firewall-cmd --reload
 
 ```bash
 # 安装扩展模块
-sudo dnf install cockpit-storaged          # 存储管理
-sudo dnf install cockpit-networkmanager    # 网络管理
-sudo dnf install cockpit-packagekit        # 软件管理
-sudo dnf install cockpit-machines          # 虚拟机管理
-sudo dnf install cockpit-podman            # 容器管理
+sudo dnf install cockpit-storaged # 存储管理
+sudo dnf install cockpit-networkmanager # 网络管理
+sudo dnf install cockpit-packagekit # 软件管理
+sudo dnf install cockpit-machines # 虚拟机管理
+sudo dnf install cockpit-podman # 容器管理
 sudo dnf install cockpit-session-recording # 会话录制
-sudo dnf install cockpit-composer          # 镜像构建
+sudo dnf install cockpit-composer # 镜像构建
 
 # 重启 Cockpit
 sudo systemctl restart cockpit
@@ -460,16 +460,16 @@ sudo vim /etc/dnf/automatic.conf
 
 ```
 [commands]
-upgrade_type = security           # 仅安全更新
-# upgrade_type = default          # 所有更新
+upgrade_type = security # 仅安全更新
+# upgrade_type = default # 所有更新
 
 random_sleep = 300
 download_updates = yes
 apply_updates = yes
 
 [emitters]
-emit_via = motd                   # 登录时提示
-# emit_via = email                # 邮件通知
+emit_via = motd # 登录时提示
+# emit_via = email # 邮件通知
 ```
 
 ```bash
@@ -503,7 +503,7 @@ sudo systemctl restart auditd
 
 # 查看审计日志
 sudo ausearch -k passwd_changes
-sudo aureport -au             # 认证报告
+sudo aureport -au # 认证报告
 ```
 
 ### 7.4 aide 文件完整性检查

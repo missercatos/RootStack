@@ -23,7 +23,7 @@
 ```c
 #include <check.h>
 START_TEST(test_add) {
-    ck_assert_int_eq(add(2, 3), 5);
+ ck_assert_int_eq(add(2, 3), 5);
 }
 END_TEST
 

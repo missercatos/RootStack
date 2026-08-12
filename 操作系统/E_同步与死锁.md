@@ -20,12 +20,12 @@
 ```c
 // 伪代码
 void spin_lock(int *lock) {
-    while (atomic_test_and_set(lock, 1) == 1)
-        /* 自旋等待 */;
+ while (atomic_test_and_set(lock, 1) == 1)
+ /* 自旋等待 */;
 }
 
 void spin_unlock(int *lock) {
-    *lock = 0;
+ *lock = 0;
 }
 ```
 
@@ -40,13 +40,13 @@ void spin_unlock(int *lock) {
 ```c
 // 伪代码
 void mutex_lock(Mutex *m) {
-    if (atomic_test_and_set(&m->locked, 1))
-        block_current_thread();  // 阻塞，让出 CPU
+ if (atomic_test_and_set(&m->locked, 1))
+ block_current_thread(); // 阻塞，让出 CPU
 }
 
 void mutex_unlock(Mutex *m) {
-    m->locked = 0;
-    wake_one_waiting_thread();
+ m->locked = 0;
+ wake_one_waiting_thread();
 }
 ```
 
@@ -71,9 +71,9 @@ void mutex_unlock(Mutex *m) {
 // 伪代码：生产者-消费者
 mutex_lock(&m);
 while (buffer_is_full())
-    cond_wait(&cond, &m);   // 释放 mutex 并阻塞，被唤醒后重新获取 mutex
+ cond_wait(&cond, &m); // 释放 mutex 并阻塞，被唤醒后重新获取 mutex
 buffer_add(item);
-cond_signal(&cond);          // 唤醒一个等待者
+cond_signal(&cond); // 唤醒一个等待者
 mutex_unlock(&m);
 ```
 

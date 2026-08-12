@@ -161,7 +161,7 @@ Linux 是一个类 Unix 的开源操作系统内核，由芬兰赫尔辛基大�
 | 发行版 | 目录 | 内容 |
 |--------|------|------|
 | **Arch Linux** | [[distro/arch/01-安装指南\|Arch 安装]] | 安装指南、pacman 高级、AUR 打包、systemd-homed、深度玩法、自定义系统打包、DIY 平板指南 |
-|  | [[distro/arch/desktop/|Arch 桌面]] | [[distro/arch/desktop/01-Niri配置\|Niri 配置]]、[[distro/arch/desktop/02-Hyprland配置\|Hyprland 配置]]、[[distro/arch/desktop/03-Wayland合成器开发\|Wayland 合成器开发]]、[[distro/arch/desktop/04-终端模拟器配置\|终端模拟器配置]]、[[distro/arch/desktop/05-QuickShell开发\|QuickShell 开发]]、[[distro/arch/desktop/06-显卡驱动配置\|显卡驱动配置]]（含 Legacy 迁移、故障恢复、滚动更新维护）、[[distro/arch/desktop/07-音频驱动配置\|音频驱动配置]]、[[distro/arch/desktop/08-蓝牙驱动配置\|蓝牙驱动配置]]、[[distro/arch/desktop/09-硬件与多媒体配置\|硬件与多媒体配置]]、[[distro/arch/desktop/10-Btrfs高级玩法\|Btrfs 高级玩法]]、[[distro/arch/desktop/11-Steam客户端排障\|Steam 客户端排障]]（CEF 证书信任修复、pressure-vessel 容器注入） |
+| | [[distro/arch/desktop/|Arch 桌面]] | [[distro/arch/desktop/01-Niri配置\|Niri 配置]]、[[distro/arch/desktop/02-Hyprland配置\|Hyprland 配置]]、[[distro/arch/desktop/03-Wayland合成器开发\|Wayland 合成器开发]]、[[distro/arch/desktop/04-终端模拟器配置\|终端模拟器配置]]、[[distro/arch/desktop/05-QuickShell开发\|QuickShell 开发]]、[[distro/arch/desktop/06-显卡驱动配置\|显卡驱动配置]]（含 Legacy 迁移、故障恢复、滚动更新维护）、[[distro/arch/desktop/07-音频驱动配置\|音频驱动配置]]、[[distro/arch/desktop/08-蓝牙驱动配置\|蓝牙驱动配置]]、[[distro/arch/desktop/09-硬件与多媒体配置\|硬件与多媒体配置]]、[[distro/arch/desktop/10-Btrfs高级玩法\|Btrfs 高级玩法]]、[[distro/arch/desktop/11-Steam客户端排障\|Steam 客户端排障]]（CEF 证书信任修复、pressure-vessel 容器注入） |
 | **Debian / Ubuntu** | `distro/debian/` | [[distro/debian/01-apt包管理\|apt 包管理]]、[[distro/debian/02-Debian安装与服务器配置\|安装与服务器配置]]、[[distro/debian/03-dpkg与deb打包\|dpkg 与 deb 打包]]、[[distro/debian/04-netplan与NetworkManager\|netplan 与 NetworkManager]] |
 | **RHEL / Fedora** | `distro/redhat/` | [[distro/redhat/01-dnf-yum包管理\|dnf/yum 包管理]]、[[distro/redhat/02-RHEL-CentOS安装与配置\|安装与配置]]、[[distro/redhat/03-RPM打包与仓库\|RPM 打包与仓库]]、[[distro/redhat/04-SELinux深入\|SELinux 深入]]、[[distro/redhat/05-firewalld与nmcli\|firewalld 与 nmcli]] |
 | **NixOS** | `distro/nix/` | [[distro/nix/01-NixOS安装与声明式配置\|安装与声明式配置]]、[[distro/nix/02-Nix语言与flake\|Nix 语言与 flake]]、[[distro/nix/03-nixpkgs与包管理\|nixpkgs 与包管理]] |
@@ -193,21 +193,21 @@ Linux 是一个类 Unix 的开源操作系统内核，由芬兰赫尔辛基大�
 
 ```
 ┌──────────────────────────────────────────────────┐
-│                   Linux Kernel                   │
+│ Linux Kernel │
 ├──────────────────────────────────────────────────┤
-│  ┌─────────┐  ┌──────────┐  ┌──────────────────┐ │
-│  │ Debian  │  │ Red Hat  │  │  独立/其他       │ │
-│  ├─────────┤  ├──────────┤  ├──────────────────┤ │
-│  │ Ubuntu  │  │ Fedora   │  │ Arch Linux       │ │
-│  │ Linux   │  │ RHEL     │  │ openSUSE         │ │
-│  │ Mint    │  │ CentOS   │  │ Gentoo           │ │
-│  │ Kali    │  │ Rocky    │  │ Alpine           │ │
-│  │ Pop!_OS │  │ Alma     │  │ NixOS            │ │
-│  │ Raspbian│  │ Amazon   │  │ Void Linux       │ │
-│  └─────────┘  └──────────┘  └──────────────────┘ │
-│                                                  │
-│  包管理: dpkg/apt  包管理: rpm/dnf  各自不同     │
-│  配置: 分散式      配置: 集中式      高度定制    │
+│ ┌─────────┐ ┌──────────┐ ┌──────────────────┐ │
+│ │ Debian │ │ Red Hat │ │ 独立/其他 │ │
+│ ├─────────┤ ├──────────┤ ├──────────────────┤ │
+│ │ Ubuntu │ │ Fedora │ │ Arch Linux │ │
+│ │ Linux │ │ RHEL │ │ openSUSE │ │
+│ │ Mint │ │ CentOS │ │ Gentoo │ │
+│ │ Kali │ │ Rocky │ │ Alpine │ │
+│ │ Pop!_OS │ │ Alma │ │ NixOS │ │
+│ │ Raspbian│ │ Amazon │ │ Void Linux │ │
+│ └─────────┘ └──────────┘ └──────────────────┘ │
+│ │
+│ 包管理: dpkg/apt 包管理: rpm/dnf 各自不同 │
+│ 配置: 分散式 配置: 集中式 高度定制 │
 └──────────────────────────────────────────────────┘
 ```
 
@@ -257,11 +257,11 @@ Linux 是一个类 Unix 的开源操作系统内核，由芬兰赫尔辛基大�
 
 ```
 应用程序 (Nginx, Docker, GNOME...)
-    ↓ 调用
+ ↓ 调用
 用户空间库 (glibc, libssl, libcurl...)
-    ↓ 系统调用
+ ↓ 系统调用
 Linux 内核 (进程调度、内存管理、网络栈、文件系统、驱动)
-    ↓ 控制
+ ↓ 控制
 硬件 (CPU、内存、磁盘、网卡、GPU)
 ```
 
@@ -475,18 +475,18 @@ Linux **不是绝对安全**的。虽然其安全架构（权限分离、包管�
 
 ```
 linux/
-├── README.md                          ← 你正在看的主入口
-    ├── 01-*.md ~ 63-*.md                  ← 63 章主教程（按编号排列）
-├── resources/                         ← 辅助资源
-│   ├── 发行版命令速查表.md             ← 跨发行版命令对照
-│   └── 术语对照表.md                   ← 英汉术语速查
-└── distro/                            ← 发行版专项内容
-    ├── arch/                          ← Arch Linux 系列（含桌面子目录）
-    │   ├── 01-~06-                    ← Arch 核心教程
-    │   └── desktop/                   ← Arch 桌面环境配置集
-    ├── debian/                        ← Debian / Ubuntu 系列
-    ├── redhat/                        ← RHEL / Fedora 系列
-    └── nix/                           ← NixOS 系列
+├── README.md ← 你正在看的主入口
+ ├── 01-*.md ~ 63-*.md ← 63 章主教程（按编号排列）
+├── resources/ ← 辅助资源
+│ ├── 发行版命令速查表.md ← 跨发行版命令对照
+│ └── 术语对照表.md ← 英汉术语速查
+└── distro/ ← 发行版专项内容
+ ├── arch/ ← Arch Linux 系列（含桌面子目录）
+ │ ├── 01-~06- ← Arch 核心教程
+ │ └── desktop/ ← Arch 桌面环境配置集
+ ├── debian/ ← Debian / Ubuntu 系列
+ ├── redhat/ ← RHEL / Fedora 系列
+ └── nix/ ← NixOS 系列
 ```
 
 ---
@@ -523,11 +523,11 @@ linux/
 
 ```bash
 # 常用信号操作
-kill -15 <pid>    # 优雅终止（默认）
-kill -9 <pid>     # 强制杀死（最后手段）
-kill -HUP <pid>   # 重载配置（守护进程约定）
-kill -STOP <pid>  # 暂停进程
-kill -CONT <pid>  # 恢复进程
+kill -15 <pid> # 优雅终止（默认）
+kill -9 <pid> # 强制杀死（最后手段）
+kill -HUP <pid> # 重载配置（守护进程约定）
+kill -STOP <pid> # 暂停进程
+kill -CONT <pid> # 恢复进程
 ```
 
 ---
@@ -550,9 +550,9 @@ kill -CONT <pid>  # 恢复进程
 
 ```bash
 # 当 man 返回多个匹配时
-man -f signal      # 等同于 whatis signal，列出所有节中的匹配
-man 2 signal       # 直接查看第 2 节（系统调用）的 signal
-man 7 signal       # 查看第 7 节（概述）的 signal
+man -f signal # 等同于 whatis signal，列出所有节中的匹配
+man 2 signal # 直接查看第 2 节（系统调用）的 signal
+man 7 signal # 查看第 7 节（概述）的 signal
 ```
 
 ---

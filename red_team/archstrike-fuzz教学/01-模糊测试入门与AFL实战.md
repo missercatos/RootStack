@@ -23,13 +23,13 @@
 
 ```mermaid
 flowchart LR
-    A["生成/选择测试输入"] --> B["喂给目标程序"]
-    B --> C["监控程序行为"]
-    C --> D{异常?}
-    D -->|崩溃| E["记录导致异常的输入"]
-    D -->|正常| F["继续下一输入"]
-    E --> A
-    F --> A
+ A["生成/选择测试输入"] --> B["喂给目标程序"]
+ B --> C["监控程序行为"]
+ C --> D{异常?}
+ D -->|崩溃| E["记录导致异常的输入"]
+ D -->|正常| F["继续下一输入"]
+ E --> A
+ F --> A
 ```
 
 ### 1.2 模糊测试的分类
@@ -61,13 +61,13 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    A["编译时插入探针"] --> B["运行程序收集覆盖率"]
-    B --> C["维护全局位图"]
-    C --> D["新输入触发新路径?"]
-    D -->|是| E["加入优秀种子队列"]
-    D -->|否| F["丢弃"]
-    E --> G["优先基于优秀种子变异"]
-    G --> B
+ A["编译时插入探针"] --> B["运行程序收集覆盖率"]
+ B --> C["维护全局位图"]
+ C --> D["新输入触发新路径?"]
+ D -->|是| E["加入优秀种子队列"]
+ D -->|否| F["丢弃"]
+ E --> G["优先基于优秀种子变异"]
+ G --> B
 ```
 
 AFL的独特性：不仅记录是否触发了新边，还记录每条边的命中次数(hit count)，将命中次数近似分为8个桶(1, 2, 3, 4-7, 8-15, 16-31, 32-127, 128+)。
@@ -95,7 +95,7 @@ AFL的独特性：不仅记录是否触发了新边，还记录每条边的命�
 ### 2.1 安装AFL
 
 ```bash
-sudo pacman -S afl      # ArchStrike安装
+sudo pacman -S afl # ArchStrike安装
 
 # 验证安装
 afl-fuzz --help
@@ -182,20 +182,20 @@ afl-cmin -i original_corpus -o minimized_corpus -- ./program @@
 afl-fuzz -i testcases/ -o findings/ -- ./target_program @@
 
 # 参数说明
-# -i testcases/    : 输入种子目录
-# -o findings/     : 输出目录(存放结果)
-# --               : 分隔符
-# @@               : 占位符，AFL替换为测试用例文件路径
+# -i testcases/ : 输入种子目录
+# -o findings/ : 输出目录(存放结果)
+# -- : 分隔符
+# @@ : 占位符，AFL替换为测试用例文件路径
 # 如果程序从stdin读取，可省略@@
 
 # 完整命令示例
 afl-fuzz \
-  -i testcases/ \
-  -o findings/ \
-  -t 1000 \        # 超时时间(毫秒)
-  -m 200 \         # 内存限制(MB)
-  -x dictionary/ \ # 字典文件
-  -- ./target_program @@
+ -i testcases/ \
+ -o findings/ \
+ -t 1000 \ # 超时时间(毫秒)
+ -m 200 \ # 内存限制(MB)
+ -x dictionary/ \ # 字典文件
+ -- ./target_program @@
 ```
 
 ### 3.4 持久模式(Persistent Mode)
@@ -208,15 +208,15 @@ __AFL_FUZZ_INIT();
 
 int main() {
 #ifdef __AFL_HAVE_MANUAL_CONTROL
-  __AFL_INIT();
+ __AFL_INIT();
 #endif
 
-  unsigned char *buf = __AFL_FUZZ_TESTCASE_BUF;
-  while (__AFL_LOOP(10000)) {
-    int len = __AFL_FUZZ_TESTCASE_LEN;
-    process_input(buf, len);
-  }
-  return 0;
+ unsigned char *buf = __AFL_FUZZ_TESTCASE_BUF;
+ while (__AFL_LOOP(10000)) {
+ int len = __AFL_FUZZ_TESTCASE_LEN;
+ process_input(buf, len);
+ }
+ return 0;
 }
 ```
 
@@ -251,14 +251,14 @@ int main() {
 ```
 findings/
 └── default/
-    ├── fuzzer_stats        # Fuzzing统计
-    ├── plot_data           # 绘图数据
-    ├── crashes/            # 崩溃输入
-    │   ├── id:000000,sig:11,src:000042,op:havoc,rep:2
-    │   ├── id:000001,sig:06,src:000128,op:flip1,rep:4
-    │   └── README.txt
-    ├── hangs/              # 挂起输入
-    └── queue/              # 优质种子
+ ├── fuzzer_stats # Fuzzing统计
+ ├── plot_data # 绘图数据
+ ├── crashes/ # 崩溃输入
+ │ ├── id:000000,sig:11,src:000042,op:havoc,rep:2
+ │ ├── id:000001,sig:06,src:000128,op:flip1,rep:4
+ │ └── README.txt
+ ├── hangs/ # 挂起输入
+ └── queue/ # 优质种子
 ```
 
 文件名含义：
@@ -273,12 +273,12 @@ findings/
 # 直接运行crash
 gdb --args ./target_program findings/default/crashes/id:000000,...
 (gdb) run
-(gdb) bt           # 查看调用栈
-(gdb) info registers  # 查看寄存器状态
-(gdb) x/20x $rsp      # 查看栈内容
-(gdb) bt full       # 完整调用栈及局部变量
-(gdb) x/s $rax      # 以字符串形式显示rax指向的内容
-(gdb) x/10gx $rsp   # 显示栈顶的10个8字节值
+(gdb) bt # 查看调用栈
+(gdb) info registers # 查看寄存器状态
+(gdb) x/20x $rsp # 查看栈内容
+(gdb) bt full # 完整调用栈及局部变量
+(gdb) x/s $rax # 以字符串形式显示rax指向的内容
+(gdb) x/10gx $rsp # 显示栈顶的10个8字节值
 
 # 使用core dump
 ulimit -c unlimited
@@ -399,13 +399,13 @@ make -j4 && sudo make install
 # Step 4: 启动AFL
 cd ~/fuzzing-lab
 afl-fuzz -i testcases/ -o findings/ \
-  -t 2000 -m 100 \
-  -- /tmp/jpeg-test/bin/djpeg @@
+ -t 2000 -m 100 \
+ -- /tmp/jpeg-test/bin/djpeg @@
 
 # Step 5: 后台运行(长时间Fuzzing)
 nohup afl-fuzz -i testcases/ -o findings/ \
-  -t 2000 -m 100 -- /tmp/jpeg-test/bin/djpeg @@ \
-  > afl.log 2>&1 &
+ -t 2000 -m 100 -- /tmp/jpeg-test/bin/djpeg @@ \
+ > afl.log 2>&1 &
 
 # Step 6: 分析Crash
 ls findings/default/crashes/

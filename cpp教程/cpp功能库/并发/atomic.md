@@ -39,72 +39,72 @@ title: "C++ 功能库 — atomic"
 
 ```
 FUNCTION demo_counter:
-    counter = ATOMIC<INT>(0)
+ counter = ATOMIC<INT>(0)
 
-    increment = LAMBDA:
-        FOR i = 1 TO 1000:
-            counter++                           // 原子递增，等于 fetch_add(1)
-        END FOR
-    END LAMBDA
+ increment = LAMBDA:
+ FOR i = 1 TO 1000:
+ counter++ // 原子递增，等于 fetch_add(1)
+ END FOR
+ END LAMBDA
 
-    threads = LIST<THREAD>()
-    FOR i = 1 TO 10:
-        threads.PUSH(THREAD(increment))
-    END FOR
-    FOR t IN threads: t.JOIN()
-    PRINT counter                               // 始终为 10000
+ threads = LIST<THREAD>()
+ FOR i = 1 TO 10:
+ threads.PUSH(THREAD(increment))
+ END FOR
+ FOR t IN threads: t.JOIN()
+ PRINT counter // 始终为 10000
 ```
 
 ### CAS 循环 —— 无锁更新
 
 ```
 FUNCTION demo_cas:
-    value = ATOMIC<INT>(0)
+ value = ATOMIC<INT>(0)
 
-    // CAS 循环：线程安全的"如果...则更新"
-    expected = value.LOAD()
-    LOOP:
-        desired = expected + 1
-        IF value.COMPARE_EXCHANGE_STRONG(expected, desired) THEN
-            BREAK                               // 更新成功
-        END IF
-        // expected 已被更新为当前值，继续重试
-    END LOOP
+ // CAS 循环：线程安全的"如果...则更新"
+ expected = value.LOAD()
+ LOOP:
+ desired = expected + 1
+ IF value.COMPARE_EXCHANGE_STRONG(expected, desired) THEN
+ BREAK // 更新成功
+ END IF
+ // expected 已被更新为当前值，继续重试
+ END LOOP
 ```
 
 ### 原子标志位
 
 ```
 FUNCTION demo_flag:
-    flag = ATOMIC<BOOL>(false)
+ flag = ATOMIC<BOOL>(false)
 
-    // 尝试设置标志，返回旧值
-    IF NOT flag.EXCHANGE(true) THEN
-        PRINT "我是第一个拿到锁的线程"
-        DO_CRITICAL_WORK()
-        flag.STORE(false)
-    ELSE
-        PRINT "其他线程已占用"
-    END IF
+ // 尝试设置标志，返回旧值
+ IF NOT flag.EXCHANGE(true) THEN
+ PRINT "我是第一个拿到锁的线程"
+ DO_CRITICAL_WORK()
+ flag.STORE(false)
+ ELSE
+ PRINT "其他线程已占用"
+ END IF
 ```
 
 ### 内存序使用
 
 ```
 FUNCTION demo_memory_order:
-    // acquire-release 成对使用
-    ready = ATOMIC<BOOL>(false)
-    data = 0
+ // acquire-release 成对使用
+ ready = ATOMIC<BOOL>(false)
+ data = 0
 
-    // 写线程
-    data = 42                                   // 普通写入
-    ready.STORE(true, RELEASE)                  // release 保证 data 写入可见
+ // 写线程
+ data = 42 // 普通写入
+ ready.STORE(true, RELEASE) // release 保证 data 写入可见
 
-    // 读线程
-    WHILE NOT ready.LOAD(ACQUIRE):              // acquire 保证读到最新 data
-        THIS_THREAD::YIELD()
-    END WHILE
-    PRINT data                                  // 保证输出 42
+ // 读线程
+ WHILE NOT ready.LOAD(ACQUIRE): // acquire 保证读到最新 data
+ THIS_THREAD::YIELD()
+ END WHILE
+ PRINT data // 保证输出 42
 ```
 
 ---

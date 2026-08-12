@@ -35,43 +35,43 @@ C++ 的标准输入输出基于**流(stream)抽象**——`cin`/`cout` 提供类
 
 ```
 FUNCTION demo_io:
-    x = 0
-    INPUT >> x                              // 类型自动匹配
+ x = 0
+ INPUT >> x // 类型自动匹配
 
-    OUTPUT << "值: " << x << ENDL           // 链式输出
+ OUTPUT << "值: " << x << ENDL // 链式输出
 
-    line = STRING()
-    GETLINE(INPUT, line)                    // 读取整行（含空格）
+ line = STRING()
+ GETLINE(INPUT, line) // 读取整行（含空格）
 
-    ERROR << "错误信息" << ENDL              // 无缓冲，立即输出
+ ERROR << "错误信息" << ENDL // 无缓冲，立即输出
 ```
 
 ### 格式控制
 
 ```
 FUNCTION demo_format:
-    OUTPUT << HEX << 255                    // "ff"
-    OUTPUT << OCT << 8                      // "10"
+ OUTPUT << HEX << 255 // "ff"
+ OUTPUT << OCT << 8 // "10"
 
-    OUTPUT << FIXED << SETPRECISION(3)
-    OUTPUT << 3.14159                       // "3.142"
+ OUTPUT << FIXED << SETPRECISION(3)
+ OUTPUT << 3.14159 // "3.142"
 
-    OUTPUT << SETW(8) << SETFILL('0') << 42 // "00000042"
-    OUTPUT << LEFT << SETW(10) << "name"    // "name      "
+ OUTPUT << SETW(8) << SETFILL('0') << 42 // "00000042"
+ OUTPUT << LEFT << SETW(10) << "name" // "name "
 ```
 
 ### 流状态
 
 ```
 FUNCTION demo_state:
-    x = 0
-    IF INPUT >> x THEN                      // 成功返回 cin（可转 bool）
-        PRINT "读到:", x
-    ELSE
-        INPUT.CLEAR()                       // 清除错误标志
-        INPUT.IGNORE(1000, '\n')            // 丢弃缓冲区中错误内容
-        PRINT "输入无效"
-    END IF
+ x = 0
+ IF INPUT >> x THEN // 成功返回 cin（可转 bool）
+ PRINT "读到:", x
+ ELSE
+ INPUT.CLEAR() // 清除错误标志
+ INPUT.IGNORE(1000, '\n') // 丢弃缓冲区中错误内容
+ PRINT "输入无效"
+ END IF
 ```
 
 ---

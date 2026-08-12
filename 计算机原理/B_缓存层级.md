@@ -7,11 +7,11 @@ CPU 缓存是位于 CPU 与主存之间的高速小容量存储器，大小从 3
 
 ```mermaid
 graph TD
-    A["CPU 寄存器<br/>~0.3ns, ~100B"] --> B["L1 缓存 (指令 + 数据)<br/>~1ns, 32KB"]
-    B --> C["L2 缓存<br/>~5ns, 256KB"]
-    C --> D["L3 缓存 (共享)<br/>~20ns, 8MB"]
-    D --> E["主存 (DRAM)<br/>~100ns, 16GB"]
-    E --> F["磁盘 / SSD<br/>>10us, TB级"]
+ A["CPU 寄存器<br/>~0.3ns, ~100B"] --> B["L1 缓存 (指令 + 数据)<br/>~1ns, 32KB"]
+ B --> C["L2 缓存<br/>~5ns, 256KB"]
+ C --> D["L3 缓存 (共享)<br/>~20ns, 8MB"]
+ D --> E["主存 (DRAM)<br/>~100ns, 16GB"]
+ E --> F["磁盘 / SSD<br/>>10us, TB级"]
 ```
 
 | 存储层级 | 延迟（约） | 容量 | 带宽 |
@@ -27,8 +27,8 @@ graph TD
 CPU 不以字节、也不以机器字为单位从主存读取数据，而是以 **Cache Line** 为单位，一个 cache line 通常为 64 字节（x86 和 ARM）。
 
 ```
-内存视角:   [Byte 0] [Byte 1] ... [Byte 63] [Byte 64] ... [Byte 127] ...
-Cache Line: [       Line 0        ] [         Line 1         ]
+内存视角: [Byte 0] [Byte 1] ... [Byte 63] [Byte 64] ... [Byte 127] ...
+Cache Line: [ Line 0 ] [ Line 1 ]
 ```
 
 每次 CPU 读取任何一个地址，都会将包含该地址的整个 64 字节 cache line 从主存拖入缓存。
@@ -44,8 +44,8 @@ Cache Line: [       Line 0        ] [         Line 1         ]
 
 ```
 vector 遍历: arr[0](hit), arr[1](hit), arr[2](hit), ... arr[15](hit), arr[16](miss→hit)
-list 遍历:   node[0](miss→hit), node[1](miss→hit), node[2](miss→hit), ...
-             ↑ 每个节点地址散列，几乎每次都是 miss
+list 遍历: node[0](miss→hit), node[1](miss→hit), node[2](miss→hit), ...
+ ↑ 每个节点地址散列，几乎每次都是 miss
 ```
 
 ### 缓存关联度（Associativity）
@@ -67,17 +67,17 @@ list 遍历:   node[0](miss→hit), node[1](miss→hit), node[2](miss→hit), ..
 ```c
 // 两个线程各递增自己的计数器，但计数器在同一条 cache line 中
 struct Counters {
-    int counter_a;  // 线程 A 递增
-    int counter_b;  // 线程 B 递增
-    // 两个 int 共 8 字节，在同一条 64 字节 cache line 中
-    // → 每次递增都触发 cache line 在核间 bounce
+ int counter_a; // 线程 A 递增
+ int counter_b; // 线程 B 递增
+ // 两个 int 共 8 字节，在同一条 64 字节 cache line 中
+ // → 每次递增都触发 cache line 在核间 bounce
 };
 
 // 修复：加 padding 填满一条 cache line
 struct PaddedCounters {
-    int counter_a;
-    char _pad[60];  // 填充到 64 字节边界
-    int counter_b;
+ int counter_a;
+ char _pad[60]; // 填充到 64 字节边界
+ int counter_b;
 };
 ```
 

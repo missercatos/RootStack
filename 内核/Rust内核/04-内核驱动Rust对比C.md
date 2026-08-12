@@ -10,10 +10,10 @@ Binder 是 Android 最重要的 IPC 机制。C 版本约 6000 行（2012 年合�
 struct binder_proc { int tmp_ref; struct mutex outer_lock; struct mutex inner_lock; /* ~40字段 */ };
 
 static struct binder_proc *binder_get_proc(struct binder_proc *proc) {
-    atomic_inc(&proc->tmp_ref); return proc;
+ atomic_inc(&proc->tmp_ref); return proc;
 }
 static void binder_put_proc(struct binder_proc *proc) {
-    if (atomic_dec_and_test(&proc->tmp_ref)) binder_free_proc(proc);
+ if (atomic_dec_and_test(&proc->tmp_ref)) binder_free_proc(proc);
 }
 ```
 
@@ -21,14 +21,14 @@ static void binder_put_proc(struct binder_proc *proc) {
 
 ```c
 static long binder_ioctl(struct file *filp, unsigned int cmd, unsigned long arg) {
-    proc = binder_get_proc(proc);
-    if (!proc) return -ENOMEM;
-    thread = binder_get_thread(proc);
-    if (!thread) { ret = -ENOMEM; goto err_get_thread; }
-    switch (cmd) {
-    case BINDER_WRITE_READ:
-        if (copy_from_user(&bwr, ubuf, sizeof(bwr))) { ret = -EFAULT; goto err_copy; }
-    }
+ proc = binder_get_proc(proc);
+ if (!proc) return -ENOMEM;
+ thread = binder_get_thread(proc);
+ if (!thread) { ret = -ENOMEM; goto err_get_thread; }
+ switch (cmd) {
+ case BINDER_WRITE_READ:
+ if (copy_from_user(&bwr, ubuf, sizeof(bwr))) { ret = -EFAULT; goto err_copy; }
+ }
 err_write: err_copy: binder_put_thread(thread);
 err_get_thread: binder_put_proc(proc); return ret;
 }
@@ -49,12 +49,12 @@ pub struct Process { inner: Mutex<ProcessInner> }
 pub struct Thread { inner: Mutex<ThreadInner>, process: Arc<Process> }
 
 impl Process {
-    pub fn get_ref(self: &Arc<Self>) -> Arc<Self> { self.clone() }
-    pub fn register_thread(self: &Arc<Self>) -> Result<Arc<Thread>> {
-        let mut inner = self.inner.lock();
-        if inner.threads.len() >= inner.max_threads as usize { return Err(Error::EBUSY); }
-        // Arc 保证 Process 在线程存活期间不被释放
-    }
+ pub fn get_ref(self: &Arc<Self>) -> Arc<Self> { self.clone() }
+ pub fn register_thread(self: &Arc<Self>) -> Result<Arc<Thread>> {
+ let mut inner = self.inner.lock();
+ if inner.threads.len() >= inner.max_threads as usize { return Err(Error::EBUSY); }
+ // Arc 保证 Process 在线程存活期间不被释放
+ }
 }
 ```
 
@@ -62,15 +62,15 @@ impl Process {
 
 ```rust
 fn ioctl(process: &Arc<Process>, _file: &File, cmd: u32, arg: usize) -> Result<u32> {
-    match cmd.try_into() {
-        Ok(BinderIoctl::WriteRead) => { /* ... */ Ok(0) }
-        Ok(BinderIoctl::SetMaxThreads) => {
-            let mut inner = process.inner.lock();
-            inner.max_threads = arg as u32;
-            Ok(0)
-        }
-        Err(_) => Err(Error::ENOTTY),
-    }
+ match cmd.try_into() {
+ Ok(BinderIoctl::WriteRead) => { /* ... */ Ok(0) }
+ Ok(BinderIoctl::SetMaxThreads) => {
+ let mut inner = process.inner.lock();
+ inner.max_threads = arg as u32;
+ Ok(0)
+ }
+ Err(_) => Err(Error::ENOTTY),
+ }
 }
 ```
 
@@ -94,20 +94,20 @@ fn ioctl(process: &Arc<Process>, _file: &File, cmd: u32, arg: usize) -> Result<u
 C 版本：
 ```c
 struct nvme_queue {
-    struct nvme_command *sq_cmds;   // 提交队列 (DMA)
-    dma_addr_t sq_dma_addr;         // 提交队列物理地址
-    // dma_alloc_coherent 分配，手动 dma_free_coherent 释放
-    // 释放后仍可通过其他指针访问 → UAF
+ struct nvme_command *sq_cmds; // 提交队列 (DMA)
+ dma_addr_t sq_dma_addr; // 提交队列物理地址
+ // dma_alloc_coherent 分配，手动 dma_free_coherent 释放
+ // 释放后仍可通过其他指针访问 → UAF
 };
 ```
 
 Rust 版本：
 ```rust
 struct NvmeQueue {
-    sq: DmaAlloc<NvmeCommand>,      // Drop 自动释放，类型安全
-    cq: DmaAlloc<NvmeCompletion>,
-    state: Mutex<QueueState>,
-    _irq: IrqHandler<Self>,         // Drop 自动释放中断
+ sq: DmaAlloc<NvmeCommand>, // Drop 自动释放，类型安全
+ cq: DmaAlloc<NvmeCompletion>,
+ state: Mutex<QueueState>,
+ _irq: IrqHandler<Self>, // Drop 自动释放中断
 }
 // Drop 自动调用 dma_free_coherent + free_irq
 // 顺序由编译器保证，不会出现错误清理顺序
@@ -124,9 +124,9 @@ Rust：`IrqHandler` 的 Drop 自动同步并释放。借用检查防止释放后
 
 ```c
 static ssize_t my_read(struct file *filp, char __user *buf, size_t count, loff_t *off) {
-    struct my_device *dev = filp->private_data;
-    u32 val = ioread32(dev->regs + *off);  // 无边界检查！
-    copy_to_user(buf, &val, sizeof(val));
+ struct my_device *dev = filp->private_data;
+ u32 val = ioread32(dev->regs + *off); // 无边界检查！
+ copy_to_user(buf, &val, sizeof(val));
 }
 ```
 
@@ -136,10 +136,10 @@ static ssize_t my_read(struct file *filp, char __user *buf, size_t count, loff_t
 
 ```rust
 fn read(dev: &MyDevice, _file: &File, writer: &mut impl IoBufferWriter, offset: u64) -> Result<usize> {
-    let offset = usize::try_from(offset).map_err(|_| Error::ERANGE)?;
-    let val = dev.regs.read32(offset)?;   // 自动边界检查
-    writer.write_slice(&val.to_le_bytes())?;
-    Ok(4)
+ let offset = usize::try_from(offset).map_err(|_| Error::ERANGE)?;
+ let val = dev.regs.read32(offset)?; // 自动边界检查
+ writer.write_slice(&val.to_le_bytes())?;
+ Ok(4)
 }
 ```
 

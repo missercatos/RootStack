@@ -818,10 +818,10 @@ TheAlgorithms 社区在多个语言中提供了算法实现，所有代码均为
 **快读模板**（整数）：
 ```cpp
 int read() {
-    int x = 0, f = 1; char c = getchar();
-    while (c < '0' || c > '9') { if (c == '-') f = -1; c = getchar(); }
-    while (c >= '0' && c <= '9') x = x * 10 + (c ^ 48), c = getchar();
-    return x * f;
+ int x = 0, f = 1; char c = getchar();
+ while (c < '0' || c > '9') { if (c == '-') f = -1; c = getchar(); }
+ while (c >= '0' && c <= '9') x = x * 10 + (c ^ 48), c = getchar();
+ return x * f;
 }
 ```
 
@@ -856,10 +856,10 @@ freopen("output.txt", "w", stdout);
 # brute: 暴力解
 # main: 优化解
 while true; do
-    ./gen > in.txt
-    ./brute < in.txt > ans.txt
-    ./main < in.txt > out.txt
-    diff ans.txt out.txt || break
+ ./gen > in.txt
+ ./brute < in.txt > ans.txt
+ ./main < in.txt > out.txt
+ diff ans.txt out.txt || break
 done
 ```
 
@@ -881,12 +881,12 @@ done
 // 二分猜数示例
 int l = 1, r = 1e9;
 while (l < r) {
-    int mid = (l + r) / 2;
-    cout << "? " << mid << endl;  // flush automatically if endl
-    int resp; cin >> resp;
-    if (resp == 0) { cout << "! " << mid << endl; return; }
-    if (resp > 0) r = mid - 1;
-    else l = mid + 1;
+ int mid = (l + r) / 2;
+ cout << "? " << mid << endl; // flush automatically if endl
+ int resp; cin >> resp;
+ if (resp == 0) { cout << "! " << mid << endl; return; }
+ if (resp > 0) r = mid - 1;
+ else l = mid + 1;
 }
 ```
 

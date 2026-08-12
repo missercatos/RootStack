@@ -24,54 +24,54 @@ constexpr int dx[4] = {1, -1, 0, 0}, dy[4] = {0, 0, 1, -1};
 int fx, fy; char ch;
 
 struct matrix {
-  int a[5][5];
-  bool operator<(matrix x) const {
-    for (int i = 1; i <= 3; i++)
-      for (int j = 1; j <= 3; j++)
-        if (a[i][j] != x.a[i][j]) return a[i][j] < x.a[i][j];
-    return false;
-  }
+ int a[5][5];
+ bool operator<(matrix x) const {
+ for (int i = 1; i <= 3; i++)
+ for (int j = 1; j <= 3; j++)
+ if (a[i][j] != x.a[i][j]) return a[i][j] < x.a[i][j];
+ return false;
+ }
 } f, st;
 
 int h(matrix a) { // 不在位的棋子数（可采纳）
-  int ret = 0;
-  for (int i = 1; i <= 3; i++)
-    for (int j = 1; j <= 3; j++)
-      if (a.a[i][j] != st.a[i][j] && a.a[i][j]) ret++;
-  return ret;
+ int ret = 0;
+ for (int i = 1; i <= 3; i++)
+ for (int j = 1; j <= 3; j++)
+ if (a.a[i][j] != st.a[i][j] && a.a[i][j]) ret++;
+ return ret;
 }
 
 struct node {
-  matrix a; int t;
-  bool operator<(node x) const { return t + h(a) > x.t + h(x.a); }
+ matrix a; int t;
+ bool operator<(node x) const { return t + h(a) > x.t + h(x.a); }
 } x;
 
 priority_queue<node> q;
 set<matrix> s;
 
 int main() {
-  // 目标状态
-  int tar[3][3] = {{1,2,3},{8,0,4},{7,6,5}};
-  for (int i = 1; i <= 3; i++)
-    for (int j = 1; j <= 3; j++) st.a[i][j] = tar[i-1][j-1];
-  for (int i = 1; i <= 3; i++)
-    for (int j = 1; j <= 3; j++) cin >> ch, f.a[i][j] = ch - '0';
-  s.insert(f); q.push({f, 0});
-  while (!q.empty()) {
-    x = q.top(); q.pop();
-    if (!h(x.a)) { cout << x.t << '\n'; return 0; }
-    for (int i = 1; i <= 3; i++)
-      for (int j = 1; j <= 3; j++)
-        if (!x.a.a[i][j]) fx = i, fy = j;
-    for (int i = 0; i < 4; i++) {
-      int xx = fx + dx[i], yy = fy + dy[i];
-      if (xx < 1 || xx > 3 || yy < 1 || yy > 3) continue;
-      swap(x.a.a[fx][fy], x.a.a[xx][yy]);
-      if (!s.count(x.a)) s.insert(x.a), q.push({x.a, x.t + 1});
-      swap(x.a.a[fx][fy], x.a.a[xx][yy]);
-    }
-  }
-  return 0;
+ // 目标状态
+ int tar[3][3] = {{1,2,3},{8,0,4},{7,6,5}};
+ for (int i = 1; i <= 3; i++)
+ for (int j = 1; j <= 3; j++) st.a[i][j] = tar[i-1][j-1];
+ for (int i = 1; i <= 3; i++)
+ for (int j = 1; j <= 3; j++) cin >> ch, f.a[i][j] = ch - '0';
+ s.insert(f); q.push({f, 0});
+ while (!q.empty()) {
+ x = q.top(); q.pop();
+ if (!h(x.a)) { cout << x.t << '\n'; return 0; }
+ for (int i = 1; i <= 3; i++)
+ for (int j = 1; j <= 3; j++)
+ if (!x.a.a[i][j]) fx = i, fy = j;
+ for (int i = 0; i < 4; i++) {
+ int xx = fx + dx[i], yy = fy + dy[i];
+ if (xx < 1 || xx > 3 || yy < 1 || yy > 3) continue;
+ swap(x.a.a[fx][fy], x.a.a[xx][yy]);
+ if (!s.count(x.a)) s.insert(x.a), q.push({x.a, x.t + 1});
+ swap(x.a.a[fx][fy], x.a.a[xx][yy]);
+ }
+ }
+ return 0;
 }
 ```
 

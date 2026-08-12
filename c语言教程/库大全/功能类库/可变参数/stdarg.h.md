@@ -36,15 +36,15 @@ void foo(...);
 
 ```c
 int sum(int count, ...) {
-    va_list args;
-    va_start(args, count);
+ va_list args;
+ va_start(args, count);
 
-    int total = 0;
-    for (int i = 0; i < count; i++)
-        total += va_arg(args, int);
+ int total = 0;
+ for (int i = 0; i < count; i++)
+ total += va_arg(args, int);
 
-    va_end(args);
-    return total;
+ va_end(args);
+ return total;
 }
 /* sum(4, 10, 20, 30, 40) -> 100 */
 ```
@@ -90,10 +90,10 @@ int sum(int count, ...) {
 
 ```c
 void log_info(const char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    vfprintf(stderr, fmt, args);
-    va_end(args);
+ va_list args;
+ va_start(args, fmt);
+ vfprintf(stderr, fmt, args);
+ va_end(args);
 }
 ```
 

@@ -47,9 +47,9 @@ path = "src/main.rs"
 # CI (GitHub Actions 示例)
 # .github/workflows/ci.yml
 - uses: actions-rs/cargo@v1
-  with:
-    command: test
-    args: --all-features
+ with:
+ command: test
+ args: --all-features
 - run: cargo fmt --all -- --check
 - run: cargo clippy --all-targets -- -D warnings
 - run: cargo audit

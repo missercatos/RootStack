@@ -9,12 +9,12 @@ Linux 通过 VFS 层统一不同文件系统的访问方式。用户程序调用
 
 ```mermaid
 graph TD
-    A["用户程序: open / read / write / close"] --> B["VFS 虚拟文件系统层"]
-    B --> C["ext4"]
-    B --> D["XFS"]
-    B --> E["NTFS"]
-    B --> F["NFS (网络文件系统)"]
-    B --> G["tmpfs (内存文件系统)"]
+ A["用户程序: open / read / write / close"] --> B["VFS 虚拟文件系统层"]
+ B --> C["ext4"]
+ B --> D["XFS"]
+ B --> E["NTFS"]
+ B --> F["NFS (网络文件系统)"]
+ B --> G["tmpfs (内存文件系统)"]
 ```
 
 ### inode
@@ -28,10 +28,10 @@ graph TD
 
 ```mermaid
 graph LR
-    A["inode"] --> B["直接块 0-11<br/>(12 个，每个 4KB)"]
-    A --> C["间接块<br/>(指向更多数据块)"]
-    C --> D["双重间接块"]
-    D --> E["三重间接块"]
+ A["inode"] --> B["直接块 0-11<br/>(12 个，每个 4KB)"]
+ A --> C["间接块<br/>(指向更多数据块)"]
+ C --> D["双重间接块"]
+ D --> E["三重间接块"]
 ```
 
 inode 本身不存储文件名——文件名存储在**目录**中，目录本质上是一个将文件名映射到 inode 编号的特殊文件。
@@ -41,8 +41,8 @@ inode 本身不存储文件名——文件名存储在**目录**中，目录本�
 ```c
 // 简化表示
 struct dirent {
-    int    inode_number;   // inode 编号
-    char   name[256];      // 文件名
+ int inode_number; // inode 编号
+ char name[256]; // 文件名
 };
 ```
 
@@ -58,7 +58,7 @@ struct dirent {
 
 ```c
 int fd = open("/path/to/file", O_RDONLY);
-// fd = 3  -- 一个整数索引
+// fd = 3 -- 一个整数索引
 // 内核中: task.files.fd[3] → struct file → inode → data blocks
 ```
 
@@ -69,16 +69,16 @@ int fd = open("/path/to/file", O_RDONLY);
 标准 C 库（`fopen` / `fprintf` / `fwrite`）在用户态维护自己的缓冲区，直到缓冲区满、调用 `fflush`、或程序退出时才执行实际的 `write()` 系统调用。
 
 ```c
-fprintf(fp, "hello");  // 可能还在 C 库的用户态缓冲区中，未写入磁盘
-fflush(fp);            // 强制 flush 到内核的 page cache
-fsync(fileno(fp));     // 强制内核将 page cache 写入磁盘
+fprintf(fp, "hello"); // 可能还在 C 库的用户态缓冲区中，未写入磁盘
+fflush(fp); // 强制 flush 到内核的 page cache
+fsync(fileno(fp)); // 强制内核将 page cache 写入磁盘
 ```
 
 三层缓冲：
 
 ```
 C 库缓冲区 (用户态) → 内核 Page Cache (内核态) → 磁盘 (物理)
-     fflush              fsync / fdatasync
+ fflush fsync / fdatasync
 ```
 
 **崩溃一致性**：如果在内核 page cache 和磁盘之间发生断电，未写入磁盘的数据会丢失。数据库（如 SQLite）在每次事务提交后调用 `fsync` 确保数据写入磁盘。
@@ -89,10 +89,10 @@ C 库缓冲区 (用户态) → 内核 Page Cache (内核态) → 磁盘 (物理)
 
 ```mermaid
 graph LR
-    A["应用程序"] -->|"写入 SQ backlog"| B["Submission Queue (SQ)"]
-    B --> C["内核异步处理 I/O"]
-    C --> D["Completion Queue (CQ)"]
-    D -->|"应用程序读取结果"| A
+ A["应用程序"] -->|"写入 SQ backlog"| B["Submission Queue (SQ)"]
+ B --> C["内核异步处理 I/O"]
+ C --> D["Completion Queue (CQ)"]
+ D -->|"应用程序读取结果"| A
 ```
 
 `io_uring` 代表了 Linux 异步 I/O 的未来方向。传统的 `epoll` poll 模型将在开发者转向 `io_uring` 后逐渐被替代。

@@ -20,8 +20,8 @@
 #include <brotli/encode.h>
 size_t encoded_size = BrotliEncoderMaxCompressedSize(input_size);
 BrotliEncoderCompress(BROTLI_DEFAULT_QUALITY, BROTLI_DEFAULT_WINDOW,
-                       BROTLI_DEFAULT_MODE, input_size, input,
-                       &encoded_size, output);
+ BROTLI_DEFAULT_MODE, input_size, input,
+ &encoded_size, output);
 ```
 
 **跨语言参考**: [[../../../2深化/08_标准库深度|C标准库深度剖析]]

@@ -3,17 +3,17 @@
 ## 目录
 - [[#一、信息收集方法论|一、信息收集方法论]]
 - [[#二、whatweb指纹识别|二、whatweb指纹识别]]
-  - [[#2.1 工具介绍|2.1 工具介绍]]
-  - [[#2.2 侵略性级别|2.2 侵略性级别]]
-  - [[#2.3 实战命令详解|2.3 实战命令详解]]
+ - [[#2.1 工具介绍|2.1 工具介绍]]
+ - [[#2.2 侵略性级别|2.2 侵略性级别]]
+ - [[#2.3 实战命令详解|2.3 实战命令详解]]
 - [[#三、wpscan深度扫描|三、wpscan深度扫描]]
-  - [[#3.1 枚举用户|3.1 枚举用户]]
-  - [[#3.2 枚举插件与主题|3.2 枚举插件与主题]]
-  - [[#3.3 暴力破解与高级用法|3.3 暴力破解与高级用法]]
+ - [[#3.1 枚举用户|3.1 枚举用户]]
+ - [[#3.2 枚举插件与主题|3.2 枚举插件与主题]]
+ - [[#3.3 暴力破解与高级用法|3.3 暴力破解与高级用法]]
 - [[#四、joomscan扫描|四、joomscan扫描]]
 - [[#五、dirb目录爆破|五、dirb目录爆破]]
-  - [[#5.1 基本命令与选项|5.1 基本命令与选项]]
-  - [[#5.2 输出解读与字典技巧|5.2 输出解读与字典技巧]]
+ - [[#5.1 基本命令与选项|5.1 基本命令与选项]]
+ - [[#5.2 输出解读与字典技巧|5.2 输出解读与字典技巧]]
 - [[#六、gobuster高速目录爆破|六、gobuster高速目录爆破]]
 - [[#七、cms-explorer|七、cms-explorer]]
 - [[#八、综合信息收集流程实战|八、综合信息收集流程实战]]
@@ -28,20 +28,20 @@
 
 ```mermaid
 flowchart TD
-    P[被动信息收集] --> A[搜索引擎: Google Dork/Shodan]
-    P --> B[WHOIS/DNS查询]
-    P --> C[公开信息: GitHub/搜索引擎缓存]
-    P --> D[SSL证书透明度: crt.sh]
-    A2[主动信息收集] --> E[手动浏览网站]
-    A2 --> F[whatweb指纹识别]
-    A2 --> G[dirb/gobuster目录爆破]
-    A2 --> H[wpscan/joomscan CMS扫描]
-    A2 --> I[特殊文件探测: .git/.env/backup]
-    E --> J[攻击面分析报告]
-    F --> J
-    G --> J
-    H --> J
-    I --> J
+ P[被动信息收集] --> A[搜索引擎: Google Dork/Shodan]
+ P --> B[WHOIS/DNS查询]
+ P --> C[公开信息: GitHub/搜索引擎缓存]
+ P --> D[SSL证书透明度: crt.sh]
+ A2[主动信息收集] --> E[手动浏览网站]
+ A2 --> F[whatweb指纹识别]
+ A2 --> G[dirb/gobuster目录爆破]
+ A2 --> H[wpscan/joomscan CMS扫描]
+ A2 --> I[特殊文件探测: .git/.env/backup]
+ E --> J[攻击面分析报告]
+ F --> J
+ G --> J
+ H --> J
+ I --> J
 ```
 
 **信息收集维度：**
@@ -161,14 +161,14 @@ wpscan --url http://example.com --enumerate vp
 ```bash
 # 暴力破解
 wpscan --url http://example.com \
-       --usernames admin \
-       --passwords /usr/share/wordlists/rockyou.txt
+ --usernames admin \
+ --passwords /usr/share/wordlists/rockyou.txt
 
 # 完整扫描组合命令
 wpscan --url http://example.com \
-       --enumerate u,p,t,vp \
-       --api-token YOUR_WPSCAN_API_TOKEN \
-       --output wpscan_result.txt
+ --enumerate u,p,t,vp \
+ --api-token YOUR_WPSCAN_API_TOKEN \
+ --output wpscan_result.txt
 
 # 随机User-Agent + Stealthy模式
 wpscan --url http://example.com --random-user-agent --stealthy
@@ -224,14 +224,14 @@ dirb http://testphp.vulnweb.com
 dirb http://testphp.vulnweb.com /usr/share/dirb/wordlists/common.txt
 
 # 常见字典路径
-# /usr/share/dirb/wordlists/common.txt       ← 通用字典（推荐）
-# /usr/share/dirb/wordlists/big.txt          ← 大型字典
-# /usr/share/dirb/wordlists/vulns/           ← 漏洞目录字典
-# /usr/share/wordlists/dirb/common.txt       ← ArchStrike路径
+# /usr/share/dirb/wordlists/common.txt ← 通用字典（推荐）
+# /usr/share/dirb/wordlists/big.txt ← 大型字典
+# /usr/share/dirb/wordlists/vulns/ ← 漏洞目录字典
+# /usr/share/wordlists/dirb/common.txt ← ArchStrike路径
 
 # 指定文件扩展名
 dirb http://example.com /usr/share/dirb/wordlists/common.txt \
-     -X .php,.bak,.old,.txt,.zip
+ -X .php,.bak,.old,.txt,.zip
 
 # 自定义HTTP头 / 代理 / Cookie
 dirb http://example.com -H "Cookie: PHPSESSID=abc123"
@@ -249,12 +249,12 @@ dirb http://example.com -a "Mozilla/5.0 (Custom Scanner)"
 
 ```mermaid
 flowchart LR
-    DIRB[dirb扫描] --> S200[CODE:200 存在且可访问]
-    DIRB --> S301[CODE:301 重定向 → 可能到登录页]
-    DIRB --> S302[CODE:302 临时重定向]
-    DIRB --> S403[CODE:403 存在但禁止访问]
-    DIRB --> S401[CODE:401 需要认证]
-    DIRB --> S500[CODE:500 可能存在漏洞]
+ DIRB[dirb扫描] --> S200[CODE:200 存在且可访问]
+ DIRB --> S301[CODE:301 重定向 → 可能到登录页]
+ DIRB --> S302[CODE:302 临时重定向]
+ DIRB --> S403[CODE:403 存在但禁止访问]
+ DIRB --> S401[CODE:401 需要认证]
+ DIRB --> S500[CODE:500 可能存在漏洞]
 ```
 
 **常见发现：** `/admin/`管理后台、`/backup/`备份目录、`/.git/`Git仓库泄露、`/phpinfo.php`PHP信息页、`robots.txt`爬虫协议、`/sitemap.xml`站点地图、`/wp-config.php.bak`WordPress配置备份、`/.env`Laravel环境配置。
@@ -274,39 +274,39 @@ gobuster是用Go语言编写的高性能目录扫描器，速度远快于dirb。
 ```bash
 # 目录爆破模式
 gobuster dir -u http://testphp.vulnweb.com \
-             -w /usr/share/wordlists/dirb/common.txt
+ -w /usr/share/wordlists/dirb/common.txt
 
 # DNS子域名爆破
 gobuster dns -d example.com -w /usr/share/wordlists/subdomains.txt
 
 # 指定扩展名
 gobuster dir -u http://example.com \
-             -w /usr/share/wordlists/dirb/common.txt \
-             -x php,txt,bak,old,zip
+ -w /usr/share/wordlists/dirb/common.txt \
+ -x php,txt,bak,old,zip
 
 # 指定/排除状态码
 gobuster dir -u http://example.com \
-             -w /usr/share/wordlists/dirb/common.txt \
-             -s "200,204,301,302,307,401,403"
+ -w /usr/share/wordlists/dirb/common.txt \
+ -s "200,204,301,302,307,401,403"
 gobuster dir -u http://example.com \
-             -w /usr/share/wordlists/dirb/common.txt \
-             -b "404,400"
+ -w /usr/share/wordlists/dirb/common.txt \
+ -b "404,400"
 
 # 多线程 / 代理 / Cookie / UA / 跟随重定向 / 延迟
 gobuster dir -u http://example.com \
-             -w /usr/share/wordlists/dirb/common.txt \
-             -t 50 -p http://127.0.0.1:8080 \
-             -c "PHPSESSID=abc123" \
-             -a "Mozilla/5.0 (Custom)" \
-             --follow-redirect --delay 500ms
+ -w /usr/share/wordlists/dirb/common.txt \
+ -t 50 -p http://127.0.0.1:8080 \
+ -c "PHPSESSID=abc123" \
+ -a "Mozilla/5.0 (Custom)" \
+ --follow-redirect --delay 500ms
 
 # 跳过SSL验证 / 自定义头 / 输出文件
 gobuster dir -k -u https://example.com \
-             -w /usr/share/wordlists/dirb/common.txt
+ -w /usr/share/wordlists/dirb/common.txt
 gobuster dir -u http://example.com \
-             -w /usr/share/wordlists/dirb/common.txt \
-             -H "X-Forwarded-For: 127.0.0.1" \
-             -o gobuster_result.txt
+ -w /usr/share/wordlists/dirb/common.txt \
+ -H "X-Forwarded-For: 127.0.0.1" \
+ -o gobuster_result.txt
 ```
 
 ---
@@ -332,13 +332,13 @@ cms-explorer http://example.com
 
 ```mermaid
 flowchart TD
-    S1[Step1: 手动浏览] --> S2[Step2: whatweb指纹]
-    S2 --> S3[Step3: dirb目录爆破]
-    S3 --> S4[Step4: gobuster补充]
-    S4 --> S5[Step5: CMS专项扫描]
-    S5 --> S6[Step6: curl手工探测]
-    S6 --> S7[Step7: F12开发者工具]
-    S7 --> S8[Step8: 整理报告]
+ S1[Step1: 手动浏览] --> S2[Step2: whatweb指纹]
+ S2 --> S3[Step3: dirb目录爆破]
+ S3 --> S4[Step4: gobuster补充]
+ S4 --> S5[Step5: CMS专项扫描]
+ S5 --> S6[Step6: curl手工探测]
+ S6 --> S7[Step7: F12开发者工具]
+ S7 --> S8[Step8: 整理报告]
 ```
 
 **Step 1: 手动浏览**
@@ -359,8 +359,8 @@ dirb http://testphp.vulnweb.com /usr/share/dirb/wordlists/common.txt
 **Step 4: gobuster补充**
 ```bash
 gobuster dir -u http://testphp.vulnweb.com \
-         -w /usr/share/wordlists/dirb/big.txt \
-         -x php,txt,bak,old,zip,sql -t 50
+ -w /usr/share/wordlists/dirb/big.txt \
+ -x php,txt,bak,old,zip,sql -t 50
 ```
 
 **Step 5: 如果目标是WordPress**
@@ -390,13 +390,13 @@ curl -I http://testphp.vulnweb.com/phpMyAdmin/
 
 ```
 /usr/share/dirb/wordlists/
-  common.txt          ← 通用目录字典
-  big.txt             ← 大型字典
-  small.txt           ← 小型快速字典
-  vulns/              ← 漏洞相关字典
+ common.txt ← 通用目录字典
+ big.txt ← 大型字典
+ small.txt ← 小型快速字典
+ vulns/ ← 漏洞相关字典
 /usr/share/wordlists/
-  dirb/ dirbuster/ wfuzz/
-  rockyou.txt         ← 密码字典
+ dirb/ dirbuster/ wfuzz/
+ rockyou.txt ← 密码字典
 ```
 
 ### 创建自定义字典

@@ -28,13 +28,13 @@
 Debian 发行版生命周期（以当前 Bookworm 为例）:
 
 Stable (Bookworm) ← 稳定版，生产环境首选
-    ├── Updates     ← 重要非安全更新
-    ├── Security    ← 安全更新
-    └── Backports   ← 从 Testing 回移植的新软件
+ ├── Updates ← 重要非安全更新
+ ├── Security ← 安全更新
+ └── Backports ← 从 Testing 回移植的新软件
 
-Testing (Trixie)   ← 下一版 Stable 的候选
-Unstable (Sid)     ← 滚动更新，始终叫 Sid
-Experimental       ← 激进软件包测试
+Testing (Trixie) ← 下一版 Stable 的候选
+Unstable (Sid) ← 滚动更新，始终叫 Sid
+Experimental ← 激进软件包测试
 ```
 
 | 版本 | 适用场景 | 更新频率 |
@@ -47,14 +47,14 @@ Experimental       ← 激进软件包测试
 ### 2.2 Ubuntu 与 Debian 的关系
 
 ```
-Debian                  → 上游基础
-  ├── Ubuntu            → 基于 Debian Sid，每 6 个月发布
-  │     ├── Linux Mint  → 基于 Ubuntu
-  │     ├── Pop!_OS     → 基于 Ubuntu
-  │     ├── Elementary  → 基于 Ubuntu
-  │     ├── KDE Neon    → 基于 Ubuntu LTS
-  │     └── Deepin      → 基于 Debian/Ubuntu 混合
-  └── Raspbian/Raspberry Pi OS → 基于 Debian
+Debian → 上游基础
+ ├── Ubuntu → 基于 Debian Sid，每 6 个月发布
+ │ ├── Linux Mint → 基于 Ubuntu
+ │ ├── Pop!_OS → 基于 Ubuntu
+ │ ├── Elementary → 基于 Ubuntu
+ │ ├── KDE Neon → 基于 Ubuntu LTS
+ │ └── Deepin → 基于 Debian/Ubuntu 混合
+ └── Raspbian/Raspberry Pi OS → 基于 Debian
 ```
 
 Ubuntu LTS vs 非 LTS:
@@ -99,10 +99,10 @@ sudo dd bs=4M if=debian-12.0.0-amd64-netinst.iso of=/dev/sdb conv=fsync oflag=di
 6. 镜像: 选择 https → mirrors.tuna.tsinghua.edu.cn → /debian/
 7. 分区: 选择 "Guided - use entire disk" 或手动
 8. 软件选择:
-   ✓ SSH server          （服务器必须）
-   ✗ Debian desktop      （服务器不装桌面）
-   ✗ Web server          （手动配置更好）
-   ✓ Standard system utilities
+ SSH server （服务器必须）
+ Debian desktop （服务器不装桌面）
+ Web server （手动配置更好）
+ Standard system utilities
 9. GRUB: 安装到 /dev/sda（主硬盘）
 ```
 
@@ -111,29 +111,29 @@ sudo dd bs=4M if=debian-12.0.0-amd64-netinst.iso of=/dev/sdb conv=fsync oflag=di
 ```
 方案 A: ext4 + swap（传统稳健）
 
-/dev/sda1   512M    EFI System (ESP)     /boot/efi
-/dev/sda2   20G     ext4                 /
-/dev/sda3   RAM大小  swap                swap
-/dev/sda4   剩余     ext4                 /var
+/dev/sda1 512M EFI System (ESP) /boot/efi
+/dev/sda2 20G ext4 /
+/dev/sda3 RAM大小 swap swap
+/dev/sda4 剩余 ext4 /var
 （/home 可选，视需求）
 
 方案 B: LVM + ext4（灵活扩容）
 
-/dev/sda1   512M    EFI System           /boot/efi
-/dev/sda2   剩余     LVM PV
-  ├─ lv_root    20G   ext4               /
-  ├─ lv_swap    RAM   swap               swap
-  ├─ lv_var     剩余   ext4               /var
-  └─ lv_home    可选   ext4               /home
+/dev/sda1 512M EFI System /boot/efi
+/dev/sda2 剩余 LVM PV
+ ├─ lv_root 20G ext4 /
+ ├─ lv_swap RAM swap swap
+ ├─ lv_var 剩余 ext4 /var
+ └─ lv_home 可选 ext4 /home
 
 方案 C: Btrfs + 子卷（高级，参照 Arch 安装指南中的方案）
 
-/dev/sda1   512M    EFI System           /boot/efi
-/dev/sda2   剩余     Btrfs
-  ├─ @               /                    ext4 或 btrfs
-  ├─ @home           /home
-  ├─ @log            /var/log
-  └─ @snapshots      /.snapshots
+/dev/sda1 512M EFI System /boot/efi
+/dev/sda2 剩余 Btrfs
+ ├─ @ / ext4 或 btrfs
+ ├─ @home /home
+ ├─ @log /var/log
+ └─ @snapshots /.snapshots
 ```
 
 ### 3.4 自动化安装（preseed.cfg）
@@ -217,9 +217,9 @@ iface eth0 inet dhcp
 # 静态 IP
 # auto eth0
 # iface eth0 inet static
-#     address 192.168.1.100/24
-#     gateway 192.168.1.1
-#     dns-nameservers 8.8.8.8 1.1.1.1
+# address 192.168.1.100/24
+# gateway 192.168.1.1
+# dns-nameservers 8.8.8.8 1.1.1.1
 ```
 
 ### 4.2 Netplan 配置（Ubuntu 默认）
@@ -233,19 +233,19 @@ sudo vim /etc/netplan/00-installer-config.yaml
 
 ```yaml
 network:
-  version: 2
-  ethernets:
-    eth0:
-      dhcp4: true
-  # 静态 IP 示例:
-  # eth0:
-  #   addresses:
-  #     - 192.168.1.100/24
-  #   routes:
-  #     - to: default
-  #       via: 192.168.1.1
-  #   nameservers:
-  #     addresses: [8.8.8.8, 1.1.1.1]
+ version: 2
+ ethernets:
+ eth0:
+ dhcp4: true
+ # 静态 IP 示例:
+ # eth0:
+ # addresses:
+ # - 192.168.1.100/24
+ # routes:
+ # - to: default
+ # via: 192.168.1.1
+ # nameservers:
+ # addresses: [8.8.8.8, 1.1.1.1]
 ```
 
 ```bash
@@ -291,15 +291,15 @@ sudo apt update && sudo apt full-upgrade -y
 
 # 安装基础工具
 sudo apt install -y \
-    vim git curl wget \
-    htop btop tmux \
-    net-tools iproute2 bridge-utils \
-    unzip p7zip-full \
-    nftables ufw \
-    openssh-server fail2ban \
-    man-db manpages \
-    build-essential \
-    rsync
+ vim git curl wget \
+ htop btop tmux \
+ net-tools iproute2 bridge-utils \
+ unzip p7zip-full \
+ nftables ufw \
+ openssh-server fail2ban \
+ man-db manpages \
+ build-essential \
+ rsync
 
 # 可选：安装 firewalld（替代 ufw）
 # sudo apt install -y firewalld
@@ -321,14 +321,14 @@ sudo vim /etc/ssh/sshd_config
 
 ```
 # 推荐的 SSH 安全配置
-Port 2222                              # 更改默认端口
-PermitRootLogin no                     # 禁止 root SSH 登录
-PasswordAuthentication no              # 禁用密码登录（只用密钥）
+Port 2222 # 更改默认端口
+PermitRootLogin no # 禁止 root SSH 登录
+PasswordAuthentication no # 禁用密码登录（只用密钥）
 PubkeyAuthentication yes
 AuthorizedKeysFile .ssh/authorized_keys
-MaxAuthTries 3                         # 最大重试次数
-ClientAliveInterval 300                # 保活间隔
-ClientAliveCountMax 2                  # 保活次数
+MaxAuthTries 3 # 最大重试次数
+ClientAliveInterval 300 # 保活间隔
+ClientAliveCountMax 2 # 保活次数
 X11Forwarding no
 AllowAgentForwarding no
 AllowTcpForwarding no
@@ -597,10 +597,10 @@ sudo systemctl enable --now prometheus-node-exporter
 ```bash
 # 查看系统日志
 journalctl -xe
-journalctl -b                    # 本次启动的日志
-journalctl -b -1                 # 上次启动的日志
+journalctl -b # 本次启动的日志
+journalctl -b -1 # 上次启动的日志
 journalctl --since "1 hour ago"
-journalctl -u nginx -f           # 实时跟踪
+journalctl -u nginx -f # 实时跟踪
 
 # 限制日志大小
 sudo vim /etc/systemd/journald.conf
@@ -627,7 +627,7 @@ sudo systemctl restart systemd-journald
 sudo apt install tuned
 sudo systemctl enable --now tuned
 sudo tuned-adm active
-sudo tuned-adm profile throughput-performance  # 或 virtual-guest / latency-performance
+sudo tuned-adm profile throughput-performance # 或 virtual-guest / latency-performance
 
 # CPU 调度器
 sudo apt install linux-cpupower

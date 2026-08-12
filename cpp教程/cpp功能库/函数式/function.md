@@ -23,74 +23,74 @@ title: "C++ 功能库 — function / bind"
 
 ```
 FUNCTION demo_function:
-    // function 可以持有任何匹配签名的可调用物
-    op = FUNCTION<INT(INT, INT)>()
+ // function 可以持有任何匹配签名的可调用物
+ op = FUNCTION<INT(INT, INT)>()
 
-    // 赋值为 lambda
-    op = LAMBDA(a, b): RETURN a + b
-    PRINT op(3, 5)                              // 8
+ // 赋值为 lambda
+ op = LAMBDA(a, b): RETURN a + b
+ PRINT op(3, 5) // 8
 
-    // 赋值为函数对象
-    multiplier = FUNCTOR:
-        factor = 0
-        CONSTRUCTOR(f): factor = f
-        CALL(x): RETURN x * factor
-    END FUNCTOR
-    op = BIND(multiplier(3), _1, _2)
+ // 赋值为函数对象
+ multiplier = FUNCTOR:
+ factor = 0
+ CONSTRUCTOR(f): factor = f
+ CALL(x): RETURN x * factor
+ END FUNCTOR
+ op = BIND(multiplier(3), _1, _2)
 
-    // 存入容器，多态调用
-    callbacks = VECTOR<FUNCTION<VOID()>>()
-    callbacks.PUSH(LAMBDA: PRINT "first")
-    callbacks.PUSH(LAMBDA: PRINT "second")
-    FOR f IN callbacks: f()
+ // 存入容器，多态调用
+ callbacks = VECTOR<FUNCTION<VOID()>>()
+ callbacks.PUSH(LAMBDA: PRINT "first")
+ callbacks.PUSH(LAMBDA: PRINT "second")
+ FOR f IN callbacks: f()
 ```
 
 ### bind —— 参数绑定
 
 ```
 FUNCTION demo_bind:
-    ADD_FUNC add(a, b, c): RETURN a + b + c
+ ADD_FUNC add(a, b, c): RETURN a + b + c
 
-    add_10 = BIND(add, 10, _1, _2)              // 固定第一个参数
-    PRINT add_10(3, 5)                          // 18（10+3+5）
+ add_10 = BIND(add, 10, _1, _2) // 固定第一个参数
+ PRINT add_10(3, 5) // 18（10+3+5）
 
-    add_10_20 = BIND(add, 10, 20, _1)           // 固定前两个
-    PRINT add_10_20(30)                         // 60
+ add_10_20 = BIND(add, 10, 20, _1) // 固定前两个
+ PRINT add_10_20(30) // 60
 
-    reversed = BIND(add, _3, _2, _1)            // 重排
-    PRINT reversed(1, 2, 3)                     // 6（3+2+1）
+ reversed = BIND(add, _3, _2, _1) // 重排
+ PRINT reversed(1, 2, 3) // 6（3+2+1）
 ```
 
 ### bind 与成员函数
 
 ```
 FUNCTION demo_member_bind:
-    Printer = OBJECT:
-        msg = STRING()
-        print_prefix = METHOD(prefix):
-            PRINT prefix, msg
-        END METHOD
-    END OBJECT
+ Printer = OBJECT:
+ msg = STRING()
+ print_prefix = METHOD(prefix):
+ PRINT prefix, msg
+ END METHOD
+ END OBJECT
 
-    p = Printer{msg = "World"}
-    bound = BIND(&Printer::print_prefix, p, "Hello")
-    bound()                                     // "Hello World"
+ p = Printer{msg = "World"}
+ bound = BIND(&Printer::print_prefix, p, "Hello")
+ bound() // "Hello World"
 
-    // 也可以用 mem_fn
-    f = MEM_FN(&Printer::print_prefix)
-    f(p, "Hello")                               // "Hello World"
+ // 也可以用 mem_fn
+ f = MEM_FN(&Printer::print_prefix)
+ f(p, "Hello") // "Hello World"
 ```
 
 ### reference_wrapper —— 按引用传递
 
 ```
 FUNCTION demo_ref:
-    counter = 0
+ counter = 0
 
-    // bind 默认按值捕获，需要 REF 才能引用
-    inc = BIND(LAMBDA(n): n++, REF(counter))
-    inc()                                       // 修改的是 counter 引用
-    PRINT counter                               // 1
+ // bind 默认按值捕获，需要 REF 才能引用
+ inc = BIND(LAMBDA(n): n++, REF(counter))
+ inc() // 修改的是 counter 引用
+ PRINT counter // 1
 ```
 
 ---

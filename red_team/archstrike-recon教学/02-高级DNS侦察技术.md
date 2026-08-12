@@ -2,9 +2,9 @@
 
 - [[#一、DNS 侦察的核心价值|一、DNS 侦察的核心价值]]
 - [[#二、fierce — DNS 枚举与子域名发现|二、fierce — DNS 枚举与子域名发现]]
-  - [[#2.1 基本域名扫描|2.1 基本域名扫描]]
-  - [[#2.2 指定 DNS 服务器与自定义字典|2.2 指定 DNS 服务器与自定义字典]]
-  - [[#2.3 控制扫描范围与输出|2.3 控制扫描范围与输出]]
+ - [[#2.1 基本域名扫描|2.1 基本域名扫描]]
+ - [[#2.2 指定 DNS 服务器与自定义字典|2.2 指定 DNS 服务器与自定义字典]]
+ - [[#2.3 控制扫描范围与输出|2.3 控制扫描范围与输出]]
 - [[#三、dnsenum — DNS 枚举全套工具|三、dnsenum — DNS 枚举全套工具]]
 - [[#四、DNS 区域传输 (AXFR) 漏洞深入|四、DNS 区域传输 (AXFR) 漏洞深入]]
 - [[#五、反向 DNS 与反向 IP 查找|五、反向 DNS 与反向 IP 查找]]
@@ -15,34 +15,34 @@
 
 ```mermaid
 flowchart TB
-    subgraph Layer1[第一层: 基础信息收集]
-        A1[whois 查询] --> OUT[基本信息]
-        A2[dig A/MX/NS/SOA/TXT] --> OUT
-    end
+ subgraph Layer1[第一层: 基础信息收集]
+ A1[whois 查询] --> OUT[基本信息]
+ A2[dig A/MX/NS/SOA/TXT] --> OUT
+ end
 
-    subgraph Layer2[第二层: DNS 枚举]
-        B1[fierce 扫描] --> SUBS[子域名列表]
-        B2[dnsenum 枚举] --> SUBS
-    end
+ subgraph Layer2[第二层: DNS 枚举]
+ B1[fierce 扫描] --> SUBS[子域名列表]
+ B2[dnsenum 枚举] --> SUBS
+ end
 
-    subgraph Layer3[第三层: 漏洞测试]
-        C1[dig AXFR 区域传输] --> VULN{是否存在漏洞?}
-        C2[nmap --script=dns-zone-transfer] --> VULN
-    end
+ subgraph Layer3[第三层: 漏洞测试]
+ C1[dig AXFR 区域传输] --> VULN{是否存在漏洞?}
+ C2[nmap --script=dns-zone-transfer] --> VULN
+ end
 
-    subgraph Layer4[第四层: 反向发现]
-        D1[dig -x 反向DNS] --> EXTRA[额外主机]
-        D2[bing-ip2hosts] --> EXTRA
-    end
+ subgraph Layer4[第四层: 反向发现]
+ D1[dig -x 反向DNS] --> EXTRA[额外主机]
+ D2[bing-ip2hosts] --> EXTRA
+ end
 
-    OUT --> Layer2
-    SUBS --> Layer3
-    VULN -->|成功| E[获取完整区域数据库]
-    VULN -->|失败| D1
-    SUBS --> D2
+ OUT --> Layer2
+ SUBS --> Layer3
+ VULN -->|成功| E[获取完整区域数据库]
+ VULN -->|失败| D1
+ SUBS --> D2
 
-    style E fill:#f56c6c,color:#fff
-    style VULN fill:#e6a23c,color:#fff
+ style E fill:#f56c6c,color:#fff
+ style VULN fill:#e6a23c,color:#fff
 ```
 
 ## 一、DNS 侦察的核心价值
@@ -122,7 +122,7 @@ fierce --domain example.com --range 192.168.1.0/24
 
 # 限制扫描的连接数
 fierce --domain example.com --threads 5
-fierce --domain example.com --delay 1000  # 每次请求间隔 1000 毫秒
+fierce --domain example.com --delay 1000 # 每次请求间隔 1000 毫秒
 
 # 输出文件
 fierce --domain example.com --file fierce_output.txt
@@ -133,12 +133,12 @@ fierce --domain example.com --xml fierce_output.xml
 
 ```bash
 fierce \
-  --domain example.com \
-  --dns-server 8.8.8.8 \
-  --subdomains www,mail,ftp,admin,dev,staging,api,portal,vpn,test \
-  --range 10.0.0.0/24 \
-  --threads 10 \
-  --file fierce_scan.txt
+ --domain example.com \
+ --dns-server 8.8.8.8 \
+ --subdomains www,mail,ftp,admin,dev,staging,api,portal,vpn,test \
+ --range 10.0.0.0/24 \
+ --threads 10 \
+ --file fierce_scan.txt
 ```
 
 ## 三、dnsenum — DNS 枚举全套工具
@@ -160,14 +160,14 @@ dnsenum example.com
 
 ```bash
 dnsenum \
-  --enum \
-  --noreverse \
-  -o dns_output.xml \
-  -f /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000 \
-  --threads 10 \
-  -r \
-  -w \
-  example.com
+ --enum \
+ --noreverse \
+ -o dns_output.xml \
+ -f /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000 \
+ --threads 10 \
+ -r \
+ -w \
+ example.com
 ```
 
 | 参数 | 说明 |
@@ -206,12 +206,12 @@ dig AXFR example.com @ns1.example.com
 
 输出成功示例:
 ```
-example.com.       3600  IN  SOA  ns1.example.com. admin.example.com.
-example.com.       3600  IN  NS   ns1.example.com.
-www.example.com.   3600  IN  A    192.168.1.10
-mail.example.com.  3600  IN  A    192.168.1.20
-dev.example.com.   3600  IN  A    192.168.1.30
-internal.example.com. 3600 IN A  10.0.0.50
+example.com. 3600 IN SOA ns1.example.com. admin.example.com.
+example.com. 3600 IN NS ns1.example.com.
+www.example.com. 3600 IN A 192.168.1.10
+mail.example.com. 3600 IN A 192.168.1.20
+dev.example.com. 3600 IN A 192.168.1.30
+internal.example.com. 3600 IN A 10.0.0.50
 ```
 
 如果看到 "Transfer failed" 或 "connection refused"，说明目标已做防护。
@@ -234,8 +234,8 @@ DOMAIN="example.com"
 NS_SERVERS=$(dig +short NS $DOMAIN)
 
 for ns in $NS_SERVERS; do
-  echo "[*] 测试区域传输: $ns"
-  dig AXFR $DOMAIN @$ns
+ echo "[*] 测试区域传输: $ns"
+ dig AXFR $DOMAIN @$ns
 done
 ```
 
@@ -266,7 +266,7 @@ nslookup 8.8.8.8
 
 ```bash
 for ip in $(seq 1 254); do
-  host 192.168.1.$ip 2>/dev/null | grep -v "not found"
+ host 192.168.1.$ip 2>/dev/null | grep -v "not found"
 done
 ```
 
@@ -282,9 +282,9 @@ fierce --domain example.com --range 10.0.0.0/24
 sudo pacman -S bing-ip2hosts
 
 bing-ip2hosts 1.2.3.4
-bing-ip2hosts -p 1.2.3.4   # 保存到文件
-bing-ip2hosts -n 1.2.3.4   # 输出主机名
-bing-ip2hosts -d example.com  # 搜索与目标域名相关的结果
+bing-ip2hosts -p 1.2.3.4 # 保存到文件
+bing-ip2hosts -n 1.2.3.4 # 输出主机名
+bing-ip2hosts -d example.com # 搜索与目标域名相关的结果
 ```
 
 注意:
@@ -326,8 +326,8 @@ dig TXT _dmarc.example.com
 
 ```bash
 dig MX example.com
-dig A mail.example.com    # 获取邮件服务器 IP
-dig NS example.com        # 了解 DNS 架构
+dig A mail.example.com # 获取邮件服务器 IP
+dig NS example.com # 了解 DNS 架构
 ```
 
 ### 6.4 获取 SOA 记录（了解管理员信息）
@@ -353,38 +353,38 @@ whois example.com > whois_info.txt
 
 # Step 2: 查询所有 DNS 记录类型
 for rtype in A AAAA MX NS TXT SOA CNAME; do
-  echo "=== $rtype ===" >> dns_records.txt
-  dig $rtype example.com +short >> dns_records.txt
+ echo "=== $rtype ===" >> dns_records.txt
+ dig $rtype example.com +short >> dns_records.txt
 done
 dig ANY example.com
 
 # Step 3: 测试 DNS 区域传输漏洞
 NS_SERVERS=$(dig +short NS example.com)
 for ns in $NS_SERVERS; do
-  echo "[*] 测试 $ns 的区域传输..."
-  dig AXFR example.com @$ns | tee -a axfr_test.txt
-  host -l example.com $ns | tee -a axfr_test.txt
+ echo "[*] 测试 $ns 的区域传输..."
+ dig AXFR example.com @$ns | tee -a axfr_test.txt
+ host -l example.com $ns | tee -a axfr_test.txt
 done
 
 # Step 4: 使用 fierce 进行 DNS 扫描
 fierce \
-  --domain example.com \
-  --dns-server $(dig +short NS example.com | head -1) \
-  --subdomain-file /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000 \
-  --threads 10 \
-  --file fierce_output.txt
+ --domain example.com \
+ --dns-server $(dig +short NS example.com | head -1) \
+ --subdomain-file /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000 \
+ --threads 10 \
+ --file fierce_output.txt
 
 # Step 5: 使用 dnsenum 进行全面枚举
 dnsenum \
-  --enum \
-  -o dnsenum_output.xml \
-  -f /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000 \
-  --threads 10 \
-  example.com
+ --enum \
+ -o dnsenum_output.xml \
+ -f /usr/share/seclists/Discovery/DNS/subdomains-top1million-20000 \
+ --threads 10 \
+ example.com
 
 # Step 6: 对发现的 IP 进行反向 DNS 查询
 for ip in $(seq 1 254); do
-  host 10.0.0.$ip 2>/dev/null | grep -v "not found" >> reverse_dns.txt &
+ host 10.0.0.$ip 2>/dev/null | grep -v "not found" >> reverse_dns.txt &
 done
 wait
 
@@ -421,8 +421,8 @@ bing-ip2hosts $(dig +short example.com) > bing_results.txt
 # dns_recon.sh - 自动化 DNS 侦察
 TARGET=$1
 if [ -z "$TARGET" ]; then
-  echo "用法: ./dns_recon.sh example.com"
-  exit 1
+ echo "用法: ./dns_recon.sh example.com"
+ exit 1
 fi
 mkdir -p dns_recon_$TARGET && cd dns_recon_$TARGET
 
@@ -431,14 +431,14 @@ whois $TARGET > whois.txt
 
 echo "[+] 获取 DNS 记录..."
 for rtype in A AAAA MX NS TXT SOA CNAME; do
-  echo "--- $rtype ---" >> dns_records.txt
-  dig $rtype $TARGET +short >> dns_records.txt
+ echo "--- $rtype ---" >> dns_records.txt
+ dig $rtype $TARGET +short >> dns_records.txt
 done
 
 echo "[+] 测试区域传输..."
 for ns in $(dig +short NS $TARGET); do
-  echo "--- AXFR @ $ns ---" >> axfr_test.txt
-  dig AXFR $TARGET @$ns >> axfr_test.txt 2>&1
+ echo "--- AXFR @ $ns ---" >> axfr_test.txt
+ dig AXFR $TARGET @$ns >> axfr_test.txt 2>&1
 done
 
 echo "[+] fierce 扫描..."
@@ -446,7 +446,7 @@ fierce --domain $TARGET --file fierce.txt 2>/dev/null
 
 echo "[+] bing-ip2hosts..."
 for ip in $(dig +short $TARGET); do
-  bing-ip2hosts $ip >> reverse_ip.txt 2>/dev/null
+ bing-ip2hosts $ip >> reverse_ip.txt 2>/dev/null
 done
 
 echo "[+] 完成! 结果在 dns_recon_$TARGET/ 目录"

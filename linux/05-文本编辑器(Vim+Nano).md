@@ -17,14 +17,14 @@
 
 ```mermaid
 graph TD
-    A["你需要编辑文本"] --> B{"环境？"}
-    B -->|"SSH 远程 / Docker / 恢复模式"| C["终端编辑器是唯一选择"]
-    B -->|"本地桌面"| D["终端编辑器或 GUI 编辑器均可"]
-    C --> E["学习 Vim 或 Nano"]
-    D --> F["仍推荐终端编辑器<br/>效率更高"]
+ A["你需要编辑文本"] --> B{"环境？"}
+ B -->|"SSH 远程 / Docker / 恢复模式"| C["终端编辑器是唯一选择"]
+ B -->|"本地桌面"| D["终端编辑器或 GUI 编辑器均可"]
+ C --> E["学习 Vim 或 Nano"]
+ D --> F["仍推荐终端编辑器<br/>效率更高"]
 
-    style C fill:#ffcdd2
-    style E fill:#e8f5e9
+ style C fill:#ffcdd2
+ style E fill:#e8f5e9
 ```
 
 ---
@@ -38,11 +38,11 @@ Nano 是 GNU 项目的一部分，设计目标是简单直观。底部始终显�
 ### 5.2.2 基本操作
 
 ```bash
-nano                      # 新建空白文件
-nano file.txt             # 打开已有文件或创建新文件
-nano -l file.txt          # 显示行号
-nano -m file.txt          # 启用鼠标支持
-nano -B file.txt          # 保存时创建备份 file.txt~
+nano # 新建空白文件
+nano file.txt # 打开已有文件或创建新文件
+nano -l file.txt # 显示行号
+nano -m file.txt # 启用鼠标支持
+nano -B file.txt # 保存时创建备份 file.txt~
 ```
 
 ### 5.2.3 Nano 快捷键
@@ -70,16 +70,16 @@ nano -B file.txt          # 保存时创建备份 file.txt~
 
 ```bash
 # ~/.nanorc
-set linenumbers           # 显示行号
-set autoindent            # 自动缩进
-set tabsize 4             # Tab 宽度为 4
-set tabstospaces          # Tab 转换为空格
-set softwrap              # 软换行
-set constantshow          # 始终显示状态栏
-set mouse                 # 启用鼠标
-set backup                # 保存时创建备份
-syntax on                 # 语法高亮
-include /usr/share/nano/*.nanorc    # 包含所有语法高亮文件
+set linenumbers # 显示行号
+set autoindent # 自动缩进
+set tabsize 4 # Tab 宽度为 4
+set tabstospaces # Tab 转换为空格
+set softwrap # 软换行
+set constantshow # 始终显示状态栏
+set mouse # 启用鼠标
+set backup # 保存时创建备份
+syntax on # 语法高亮
+include /usr/share/nano/*.nanorc # 包含所有语法高亮文件
 ```
 
 ### 5.2.5 Nano 适合谁
@@ -139,18 +139,18 @@ Vim 的模式（mode）是初学者最大的困惑来源。理解模式切换是
 
 ```mermaid
 stateDiagram-v2
-    [*] --> 普通模式
-    普通模式 --> 插入模式: i / a / o
-    普通模式 --> 可视模式: v / V / Ctrl+v
-    普通模式 --> 命令模式: :
-    插入模式 --> 普通模式: Esc / Ctrl+[
-    可视模式 --> 普通模式: Esc
-    命令模式 --> 普通模式: Esc / Enter
+ [*] --> 普通模式
+ 普通模式 --> 插入模式: i / a / o
+ 普通模式 --> 可视模式: v / V / Ctrl+v
+ 普通模式 --> 命令模式: :
+ 插入模式 --> 普通模式: Esc / Ctrl+[
+ 可视模式 --> 普通模式: Esc
+ 命令模式 --> 普通模式: Esc / Enter
 
-    note right of 普通模式: 默认模式\n导航、删除、复制
-    note right of 插入模式: 编辑文本\n打字输入
-    note right of 可视模式: 选择文本块
-    note right of 命令模式: 保存、退出、搜索
+ note right of 普通模式: 默认模式\n导航、删除、复制
+ note right of 插入模式: 编辑文本\n打字输入
+ note right of 可视模式: 选择文本块
+ note right of 命令模式: 保存、退出、搜索
 ```
 
 ### 5.4.1 普通模式（Normal Mode）
@@ -158,7 +158,7 @@ stateDiagram-v2
 启动 Vim 后默认的模式。不能输入文本，但可以导航、删除、复制等。
 
 ```bash
-vim file.txt      # 打开文件，进入普通模式
+vim file.txt # 打开文件，进入普通模式
 ```
 
 在任何模式下按 `Esc` 都可以回到普通模式。
@@ -213,9 +213,9 @@ vim file.txt      # 打开文件，进入普通模式
 ### 5.5.1 基本方向键
 
 ```
-        k （上）
-h（左）         l（右）
-        j （下）
+ k （上）
+h（左） l（右）
+ j （下）
 ```
 
 | 键 | 方向 | 记忆技巧 |
@@ -338,30 +338,30 @@ h（左）         l（右）
 ### 5.7.1 搜索
 
 ```vim
-/pattern          " 向下搜索 pattern
-?pattern          " 向上搜索 pattern
-n                 " 下一个匹配
-N                 " 上一个匹配
-*                 " 搜索光标所在的单词（向下）
-#                 " 搜索光标所在的单词（向上）
-:set hlsearch     " 高亮所有搜索结果
-:set nohlsearch   " 关闭高亮
-:noh              " 临时关闭本次高亮
+/pattern " 向下搜索 pattern
+?pattern " 向上搜索 pattern
+n " 下一个匹配
+N " 上一个匹配
+* " 搜索光标所在的单词（向下）
+# " 搜索光标所在的单词（向上）
+:set hlsearch " 高亮所有搜索结果
+:set nohlsearch " 关闭高亮
+:noh " 临时关闭本次高亮
 ```
 
 ### 5.7.2 替换
 
 ```vim
-:s/old/new/             " 替换当前行第一个匹配
-:s/old/new/g            " 替换当前行所有匹配
-:%s/old/new/g           " 替换文件中所有匹配
-:%s/old/new/gc          " 替换文件中所有匹配（每次确认）
-:10,20s/old/new/g       " 替换第 10-20 行的匹配
+:s/old/new/ " 替换当前行第一个匹配
+:s/old/new/g " 替换当前行所有匹配
+:%s/old/new/g " 替换文件中所有匹配
+:%s/old/new/gc " 替换文件中所有匹配（每次确认）
+:10,20s/old/new/g " 替换第 10-20 行的匹配
 
 " 正则表达式替换
-:%s/\s\+$//e            " 删除行尾空白
-:%s/^#\s\(.*\)/\1/      " 取消注释（移除行首 # ）
-:%s/^/\# /              " 注释所有行
+:%s/\s\+$//e " 删除行尾空白
+:%s/^#\s\(.*\)/\1/ " 取消注释（移除行首 # ）
+:%s/^/\# / " 注释所有行
 ```
 
 ---
@@ -371,31 +371,31 @@ N                 " 上一个匹配
 ### 5.8.1 缓冲区（Buffer）
 
 ```vim
-:e file2.txt            " 编辑另一个文件
-:bnext 或 :bn           " 切换到下一个缓冲区
-:bprev 或 :bp           " 切换到上一个缓冲区
-:ls                     " 列出所有缓冲区
-:b1                     " 切换到缓冲区 1
-:bd                     " 删除当前缓冲区
+:e file2.txt " 编辑另一个文件
+:bnext 或 :bn " 切换到下一个缓冲区
+:bprev 或 :bp " 切换到上一个缓冲区
+:ls " 列出所有缓冲区
+:b1 " 切换到缓冲区 1
+:bd " 删除当前缓冲区
 ```
 
 ### 5.8.2 分屏
 
 ```vim
-:split file.txt    或 :sp     " 水平分割
-:vsplit file.txt   或 :vsp    " 垂直分割
-Ctrl+w h / j / k / l           " 在分屏间移动
-Ctrl+w q                       " 关闭当前分屏
-Ctrl+w =                       " 均等分配大小
+:split file.txt 或 :sp " 水平分割
+:vsplit file.txt 或 :vsp " 垂直分割
+Ctrl+w h / j / k / l " 在分屏间移动
+Ctrl+w q " 关闭当前分屏
+Ctrl+w = " 均等分配大小
 ```
 
 ### 5.8.3 标签页
 
 ```vim
-:tabnew file.txt        " 新标签页打开文件
-gt                      " 切换到下一个标签页
-gT                      " 切换到上一个标签页
-:tabclose               " 关闭当前标签页
+:tabnew file.txt " 新标签页打开文件
+gt " 切换到下一个标签页
+gT " 切换到上一个标签页
+:tabclose " 关闭当前标签页
 ```
 
 ---
@@ -408,35 +408,35 @@ gT                      " 切换到上一个标签页
 
 ```vim
 " === 基本设置 ===
-set number              " 显示行号
-set relativenumber      " 显示相对行号（当前行除外）
-set cursorline          " 高亮当前行
-set tabstop=4           " Tab 显示宽度
-set shiftwidth=4        " 缩进宽度
-set expandtab           " Tab 转为空格
-set autoindent          " 自动缩进
-set smartindent         " 智能缩进
-set hlsearch            " 搜索结果高亮
-set incsearch           " 增量搜索（边输入边搜索）
-set ignorecase          " 搜索忽略大小写
-set smartcase           " 搜索包含大写时恢复大小写敏感
-set mouse=a             " 启用鼠标
-set encoding=utf-8      " UTF-8 编码
-set clipboard=unnamed   " 系统剪贴板
+set number " 显示行号
+set relativenumber " 显示相对行号（当前行除外）
+set cursorline " 高亮当前行
+set tabstop=4 " Tab 显示宽度
+set shiftwidth=4 " 缩进宽度
+set expandtab " Tab 转为空格
+set autoindent " 自动缩进
+set smartindent " 智能缩进
+set hlsearch " 搜索结果高亮
+set incsearch " 增量搜索（边输入边搜索）
+set ignorecase " 搜索忽略大小写
+set smartcase " 搜索包含大写时恢复大小写敏感
+set mouse=a " 启用鼠标
+set encoding=utf-8 " UTF-8 编码
+set clipboard=unnamed " 系统剪贴板
 
 " === 快捷键映射 ===
-nnoremap <C-h> <C-w>h   " Ctrl+h 到左边分屏
-nnoremap <C-j> <C-w>j   " Ctrl+j 到下边分屏
-nnoremap <C-k> <C-w>k   " Ctrl+k 到上边分屏
-nnoremap <C-l> <C-w>l   " Ctrl+l 到右边分屏
-nnoremap <leader>w :w<CR>   " ,w 快速保存
+nnoremap <C-h> <C-w>h " Ctrl+h 到左边分屏
+nnoremap <C-j> <C-w>j " Ctrl+j 到下边分屏
+nnoremap <C-k> <C-w>k " Ctrl+k 到上边分屏
+nnoremap <C-l> <C-w>l " Ctrl+l 到右边分屏
+nnoremap <leader>w :w<CR> " ,w 快速保存
 
 " === 插件管理器（vim-plug）示例 ===
 call plug#begin('~/.vim/plugged')
-Plug 'tpope/vim-sensible'         " 合理的默认设置
-Plug 'preservim/nerdtree'         " 文件树侧边栏
-Plug 'junegunn/fzf.vim'           " 模糊查找
-Plug 'morhetz/gruvbox'            " 配色方案
+Plug 'tpope/vim-sensible' " 合理的默认设置
+Plug 'preservim/nerdtree' " 文件树侧边栏
+Plug 'junegunn/fzf.vim' " 模糊查找
+Plug 'morhetz/gruvbox' " 配色方案
 call plug#end()
 
 colorscheme gruvbox

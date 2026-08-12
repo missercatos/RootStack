@@ -10,13 +10,13 @@ Shell（壳）是一个命令解释器，它接收你输入的命令，解释执
 
 ```mermaid
 graph LR
-    A[用户] -->|输入命令| B[Shell<br/>bash/zsh/fish]
-    B -->|解释执行| C[Linux 内核]
-    C -->|返回结果| B
-    B -->|显示输出| A
+ A[用户] -->|输入命令| B[Shell<br/>bash/zsh/fish]
+ B -->|解释执行| C[Linux 内核]
+ C -->|返回结果| B
+ B -->|显示输出| A
 
-    style B fill:#e8f5e9,stroke:#4caf50,stroke-width:2px
-    style C fill:#fff3e0
+ style B fill:#e8f5e9,stroke:#4caf50,stroke-width:2px
+ style C fill:#fff3e0
 ```
 
 ### 6.1.1 常见 Shell 对比
@@ -41,8 +41,8 @@ cat /etc/shells
 chsh -s /bin/zsh
 
 # 临时使用不同 Shell
-zsh       # 在 bash 中临时进入 zsh
-exit      # 退出回到原来的 Shell
+zsh # 在 bash 中临时进入 zsh
+exit # 退出回到原来的 Shell
 ```
 
 ### 6.1.2 选择建议
@@ -72,7 +72,7 @@ exit      # 退出回到原来的 Shell
 # 查看当前终端设备
 tty
 # 输出: /dev/pts/0 （伪终端，说明你在终端模拟器中）
-# 或输出: /dev/tty1  （虚拟终端，Ctrl+Alt+F1 切换的）
+# 或输出: /dev/tty1 （虚拟终端，Ctrl+Alt+F1 切换的）
 
 # 查看所有登录的终端
 who
@@ -96,13 +96,13 @@ command [选项] [参数...]
 ```bash
 # 拆解举例
 ls -l -a /home/alice
-# │  └─┬─┘ └────┬────┘
-# │   选项      参数（目标路径）
+# │ └─┬─┘ └────┬────┘
+# │ 选项 参数（目标路径）
 # 命令
 
 # 等价写法
-ls -la /home/alice       # 合并短选项
-ls --all --format=long /home/alice   # 长选项（可读性更强）
+ls -la /home/alice # 合并短选项
+ls --all --format=long /home/alice # 长选项（可读性更强）
 ```
 
 ### 6.3.2 选项的类型
@@ -116,17 +116,17 @@ ls --all --format=long /home/alice   # 长选项（可读性更强）
 
 ```bash
 # 示例：tail 命令的各种写法
-tail -n 10 file.txt       # 短选项 + 参数
-tail --lines=10 file.txt  # 长选项 + 参数
-tail -10 file.txt         # 传统 BSD 风格（不推荐）
+tail -n 10 file.txt # 短选项 + 参数
+tail --lines=10 file.txt # 长选项 + 参数
+tail -10 file.txt # 传统 BSD 风格（不推荐）
 ```
 
 ### 6.3.3 命令的类型
 
 ```bash
-type ls        # alias / file / builtin / keyword
-type cd        # shell builtin
-type if        # shell keyword
+type ls # alias / file / builtin / keyword
+type cd # shell builtin
+type if # shell keyword
 ```
 
 | 类型 | 说明 | 示例 |
@@ -155,10 +155,10 @@ type -a echo
 ### 6.4.1 `man` — 系统手册
 
 ```bash
-man ls                    # 查看 ls 的手册页
-man 5 crontab             # 查看第 5 节（配置文件格式）的 crontab
-man -k keyword            # 搜索含有关键词的手册页（同 apropos）
-man -f ls                 # 查看 ls 的简短描述（同 whatis）
+man ls # 查看 ls 的手册页
+man 5 crontab # 查看第 5 节（配置文件格式）的 crontab
+man -k keyword # 搜索含有关键词的手册页（同 apropos）
+man -f ls # 查看 ls 的简短描述（同 whatis）
 ```
 
 **手册页的节（Section）划分：**
@@ -188,7 +188,7 @@ man -f ls                 # 查看 ls 的简短描述（同 whatis）
 大多数命令支持 `--help` 选项，输出简洁的使用说明：
 
 ```bash
-ls --help                 # 简洁帮助
+ls --help # 简洁帮助
 grep --help
 man --help
 ```
@@ -203,7 +203,7 @@ man --help
 # Fedora: sudo dnf install tldr
 # Arch: sudo pacman -S tldr
 
-tldr tar                  # 显示 tar 的常用示例
+tldr tar # 显示 tar 的常用示例
 tldr find
 tldr grep
 ```
@@ -211,35 +211,35 @@ tldr grep
 tldr 的输出风格（示例）：
 
 ```text
-  tar
-  Archiving utility.
+ tar
+ Archiving utility.
 
-  - Create an archive from files:
-    tar cf target.tar file1 file2 file3
+ - Create an archive from files:
+ tar cf target.tar file1 file2 file3
 
-  - Extract an archive into the current directory:
-    tar xf source.tar
+ - Extract an archive into the current directory:
+ tar xf source.tar
 
-  - List the contents of an archive:
-    tar tvf source.tar
+ - List the contents of an archive:
+ tar tvf source.tar
 ```
 
 ### 6.4.4 `whatis` 与 `apropos`
 
 ```bash
-whatis ls                 # 一行简述命令功能
+whatis ls # 一行简述命令功能
 whatis grep
 # 输出: ls (1) - list directory contents
 
-apropos "copy files"      # 搜索与"复制文件"相关的命令
-apropos network           # 搜索网络相关命令
-man -k network            # 等价于 apropos
+apropos "copy files" # 搜索与"复制文件"相关的命令
+apropos network # 搜索网络相关命令
+man -k network # 等价于 apropos
 ```
 
 ### 6.4.5 `info` — GNU Info 文档
 
 ```bash
-info coreutils            # GNU 项目的超文本手册
+info coreutils # GNU 项目的超文本手册
 info ls
 ```
 
@@ -253,18 +253,18 @@ Tab 补全是命令行最高效的技巧之一。按 `Tab` 键让 Shell 自动�
 
 ```bash
 # 补全命令名
-syst<Tab>           → systemctl
-firef<Tab>          → firefox
+syst<Tab> → systemctl
+firef<Tab> → firefox
 
 # 补全文件名和路径
-cat /etc/hos<Tab>   → cat /etc/hosts
-ls /usr/shar<Tab>   → ls /usr/share/
+cat /etc/hos<Tab> → cat /etc/hosts
+ls /usr/shar<Tab> → ls /usr/share/
 
 # 补全变量名
-echo $HO<Tab>       → echo $HOME
+echo $HO<Tab> → echo $HOME
 
 # 按两次 Tab 查看所有可能补全项
-ls /etc/<Tab><Tab>  → 列出 /etc 下所有文件和目录
+ls /etc/<Tab><Tab> → 列出 /etc 下所有文件和目录
 ```
 
 zsh 和 fish 的 Tab 补全比 bash 更强，支持模糊匹配和历史补全。在 bash 中可以通过安装 `bash-completion` 包增强补全能力：
@@ -287,19 +287,19 @@ sudo pacman -S bash-completion
 ### 6.6.1 基本操作
 
 ```bash
-history                        # 查看命令历史列表
-history 20                     # 查看最近 20 条历史
-!42                            # 重新执行历史中第 42 条命令
-!!                             # 重新执行上一条命令
-!$                             # 引用上一条命令的最后一个参数
-!*                             # 引用上一条命令的所有参数
-!ls                            # 执行最近一条以 ls 开头的命令
+history # 查看命令历史列表
+history 20 # 查看最近 20 条历史
+!42 # 重新执行历史中第 42 条命令
+!! # 重新执行上一条命令
+!$ # 引用上一条命令的最后一个参数
+!* # 引用上一条命令的所有参数
+!ls # 执行最近一条以 ls 开头的命令
 ```
 
 ### 6.6.2 历史搜索
 
 ```bash
-Ctrl+r                         # 反向搜索历史（最常用！）
+Ctrl+r # 反向搜索历史（最常用！）
 # 输入关键词后，继续按 Ctrl+r 查找更早的匹配
 # 按 Ctrl+s 正向搜索（如果终端未占用 Ctrl+s）
 # 按 Enter 执行，按 Esc 或 Ctrl+g 取消
@@ -310,16 +310,16 @@ Ctrl+r                         # 反向搜索历史（最常用！）
 ### 6.6.3 历史相关环境变量
 
 ```bash
-echo $HISTSIZE          # 内存中保存的历史条数（默认 1000）
-echo $HISTFILESIZE      # 历史文件中保存的条数（默认 2000）
-echo $HISTFILE          # 历史文件路径（默认 ~/.bash_history）
-echo $HISTCONTROL       # 历史控制选项
+echo $HISTSIZE # 内存中保存的历史条数（默认 1000）
+echo $HISTFILESIZE # 历史文件中保存的条数（默认 2000）
+echo $HISTFILE # 历史文件路径（默认 ~/.bash_history）
+echo $HISTCONTROL # 历史控制选项
 
 # HISTCONTROL 常用值：
-# ignorespace    — 以空格开头的命令不记录
-# ignoredups     — 连续重复的命令只记录一次
-# ignoreboth     — 以上两者的组合（推荐）
-# erasedups      — 删除所有重复记录
+# ignorespace — 以空格开头的命令不记录
+# ignoredups — 连续重复的命令只记录一次
+# ignoreboth — 以上两者的组合（推荐）
+# erasedups — 删除所有重复记录
 ```
 
 ```bash
@@ -327,8 +327,8 @@ echo $HISTCONTROL       # 历史控制选项
 export HISTSIZE=10000
 export HISTFILESIZE=20000
 export HISTCONTROL=ignoreboth:erasedups
-export HISTTIMEFORMAT="%F %T "   # 显示时间戳
-shopt -s histappend              # 追加而非覆盖历史文件
+export HISTTIMEFORMAT="%F %T " # 显示时间戳
+shopt -s histappend # 追加而非覆盖历史文件
 ```
 
 ---
@@ -394,13 +394,13 @@ shopt -s histappend              # 追加而非覆盖历史文件
 ### 6.8.1 查看环境变量
 
 ```bash
-env                  # 查看所有环境变量
-printenv             # 同上
-echo $HOME           # 查看特定变量
-echo $PATH           # 查看命令搜索路径
-echo $USER           # 当前用户名
-echo $SHELL          # 当前 Shell
-echo $PWD            # 当前工作目录
+env # 查看所有环境变量
+printenv # 同上
+echo $HOME # 查看特定变量
+echo $PATH # 查看命令搜索路径
+echo $USER # 当前用户名
+echo $SHELL # 当前 Shell
+echo $PWD # 当前工作目录
 ```
 
 ### 6.8.2 最重要的环境变量：`$PATH`
@@ -413,8 +413,8 @@ echo $PATH
 
 # 各目录按顺序搜索，找到第一个匹配就执行
 # 查看命令实际位置
-which ls             # /usr/bin/ls
-which python         # /usr/bin/python
+which ls # /usr/bin/ls
+which python # /usr/bin/python
 ```
 
 ### 6.8.3 设置与导出变量
@@ -430,8 +430,8 @@ export EDITOR="vim"
 export LANG="zh_CN.UTF-8"
 
 # 临时在命令执行时设置（只在这次命令中生效）
-LANG=C ls --help          # 以英文显示帮助
-EDITOR=nano crontab -e    # 用 nano 编辑 cron
+LANG=C ls --help # 以英文显示帮助
+EDITOR=nano crontab -e # 用 nano 编辑 cron
 ```
 
 ### 6.8.4 永久设置
@@ -461,7 +461,7 @@ alias ll='ls -la'
 alias la='ls -A'
 alias l='ls -CF'
 alias grep='grep --color=auto'
-alias rm='rm -i'              # 删除前确认
+alias rm='rm -i' # 删除前确认
 alias cp='cp -i'
 alias mv='mv -i'
 alias ..='cd ..'
@@ -489,9 +489,9 @@ command ls
 
 ```bash
 # 系统操作
-alias update='sudo apt update && sudo apt upgrade'    # Debian 系列
-alias update='sudo dnf upgrade --refresh'              # Fedora
-alias update='sudo pacman -Syu'                        # Arch Linux
+alias update='sudo apt update && sudo apt upgrade' # Debian 系列
+alias update='sudo dnf upgrade --refresh' # Fedora
+alias update='sudo pacman -Syu' # Arch Linux
 
 # 文件操作
 alias df='df -h'
@@ -517,7 +517,7 @@ alias gp='git push'
 ```bash
 # ~/.bashrc
 if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
+ . ~/.bash_aliases
 fi
 
 # ~/.bash_aliases
@@ -543,7 +543,7 @@ alias update='sudo pacman -Syu'
 # 典型配置策略：
 # ~/.bash_profile （登录时加载，调用 .bashrc）
 if [ -f ~/.bashrc ]; then
-    . ~/.bashrc
+ . ~/.bashrc
 fi
 
 # ~/.bashrc （每次打开终端都加载）
@@ -553,9 +553,9 @@ fi
 ### 6.10.2 修改配置后生效
 
 ```bash
-source ~/.bashrc       # 重新加载配置（无需重新登录）
-. ~/.bashrc            # 同上，使用 . 命令
-exec bash              # 用新的 bash 替换当前进程
+source ~/.bashrc # 重新加载配置（无需重新登录）
+. ~/.bashrc # 同上，使用 . 命令
+exec bash # 用新的 bash 替换当前进程
 ```
 
 ---

@@ -53,28 +53,28 @@ m.emplace("cherry", 7)
 
 // 判断存在（避免 operator[] 的副作用）
 if m.count("apple") > 0:
-    print "apple exists"
+ print "apple exists"
 
 // 安全查找
 it = m.find("apple")
 if it != m.end():
-    print it.first + " = " + to_string(it.second)
+ print it.first + " = " + to_string(it.second)
 
 // 遍历（顺序不固定）
 for each [k, v] in m:
-    print k + ": " + to_string(v)
+ print k + ": " + to_string(v)
 
 // 删除
 m.erase("apple")
 
 // 频率统计
 for each word in words:
-    m[word] = m[word] + 1
+ m[word] = m[word] + 1
 
 // unordered_multimap：同一 key 的遍历
 range = umm.equal_range(k)
 for it = range.first; it != range.second; ++it:
-    print it.second
+ print it.second
 ```
 
 ## 相关链接

@@ -21,14 +21,14 @@
 
 ```mermaid
 graph LR
-    subgraph "C 风格 — null-terminated"
-        direction LR
-        C0["'h' 0x68"] --> C1["'e' 0x65"] --> C2["'l' 0x6C"] --> C3["'l' 0x6C"] --> C4["'o' 0x6F"] --> CN["'\0' 0x00<br/>(sentinel)"]
-    end
-    subgraph "Pascal 风格 — length-prefixed"
-        direction LR
-        PL["len=5<br/>0x05"] --> P0["'h' 0x68"] --> P1["'e' 0x65"] --> P2["'l' 0x6C"] --> P3["'l' 0x6C"] --> P4["'o' 0x6F"]
-    end
+ subgraph "C 风格 — null-terminated"
+ direction LR
+ C0["'h' 0x68"] --> C1["'e' 0x65"] --> C2["'l' 0x6C"] --> C3["'l' 0x6C"] --> C4["'o' 0x6F"] --> CN["'\0' 0x00<br/>(sentinel)"]
+ end
+ subgraph "Pascal 风格 — length-prefixed"
+ direction LR
+ PL["len=5<br/>0x05"] --> P0["'h' 0x68"] --> P1["'e' 0x65"] --> P2["'l' 0x6C"] --> P3["'l' 0x6C"] --> P4["'o' 0x6F"]
+ end
 ```
 
 C 选择 null-terminated 的原因可以追溯到 PDP-11 汇编指令：当时的字符串处理指令（如 `MOVC`）原生支持扫描到 NUL 为止。此外，每个字符串只浪费 1 字节（`\0`），对于内存只有 32KB 的机器是重要考虑。这个历史选择的影响延续至今——Linux 内核中的所有路径名、设备名、文件系统元数据全部使用 null-terminated 字符串。
@@ -42,8 +42,8 @@ Go 的 `string` 和 Rust 的 `&str` 采用第三种方案——胖指针：
 ```c
 // Go/Rust 的字符串在底层等效于：
 struct string_ref {
-    const char* ptr;   // 指向字符数据的指针
-    size_t      len;   // 字节长度（不含 \0）
+ const char* ptr; // 指向字符数据的指针
+ size_t len; // 字节长度（不含 \0）
 };
 ```
 
@@ -69,14 +69,14 @@ i=2: T[2..6]="abcab" vs P="abcab" → 匹配成功, i=2
 ```c
 // BF: O(n*m) 最坏情况
 int bf_search(const char* T, int n, const char* P, int m) {
-    for (int i = 0; i <= n - m; i++) {
-        int j;
-        for (j = 0; j < m; j++)
-            if (T[i + j] != P[j])
-                break;
-        if (j == m) return i;  // 匹配成功
-    }
-    return -1;
+ for (int i = 0; i <= n - m; i++) {
+ int j;
+ for (j = 0; j < m; j++)
+ if (T[i + j] != P[j])
+ break;
+ if (j == m) return i; // 匹配成功
+ }
+ return -1;
 }
 ```
 
@@ -128,19 +128,19 @@ $$
 
 ```mermaid
 graph LR
-    S((0)) -->|a| S1((1))
-    S -->|非 a| S
-    S1((1)) -->|b| S2((2))
-    S1 -->|a| S1
-    S1 -->|非 a,b| S
-    S2((2)) -->|c| S3((3))
-    S2 -->|a| S1
-    S2 -->|非 a,c| S
-    S3((3)) -->|a| S4((4))
-    S3 -->|非 a| S
-    S4((4)) -->|b| S5(((5)))
-    S4 -->|c| S3
-    S4 -->|非 a,b,c| S0["回溯到 π[3-1]=π[2]=0"]
+ S((0)) -->|a| S1((1))
+ S -->|非 a| S
+ S1((1)) -->|b| S2((2))
+ S1 -->|a| S1
+ S1 -->|非 a,b| S
+ S2((2)) -->|c| S3((3))
+ S2 -->|a| S1
+ S2 -->|非 a,c| S
+ S3((3)) -->|a| S4((4))
+ S3 -->|非 a| S
+ S4((4)) -->|b| S5(((5)))
+ S4 -->|c| S3
+ S4 -->|非 a,b,c| S0["回溯到 π[3-1]=π[2]=0"]
 ```
 
 状态 $j$ 表示"已匹配了 $P$ 的前 $j$ 个字符"。读入一个字符 $c$ 后，若 $c = P[j]$，转移到 $j+1$（匹配前进）；否则通过 $\pi$ 数组跳转到"次长可能的匹配位置"——这个跳转正好就是 $j \leftarrow \pi[j-1]$ 然后重新比较。
@@ -167,7 +167,7 @@ Rabin-Karp 用滚动哈希（rolling hash）将字符串比较转化为哈希值
 
 Java 和 Python 的字符串是不可变的（immutable），C 和 C++ 的字符串是可变的。这不是语法细节——它是数据结构设计的核心决策：
 
-|  | 不可变（Java `String`, Python `str`） | 可变（C `char[]`, C++ `std::string`） |
+| | 不可变（Java `String`, Python `str`） | 可变（C `char[]`, C++ `std::string`） |
 |------|---------|------|
 | 修改开销 | 每次修改产生新副本，$O(n)$ 拷贝 | 原地修改，$O(1)$ 或 $O(n)$ 均在原缓冲区 |
 | 哈希缓存 | 安全——不变，可哈希一次并永久缓存 `hashcode` | 危险——修改后哈希值改变，缓存即失效 |
@@ -186,12 +186,12 @@ Java 和 Python 的字符串是不可变的（immutable），C 和 C++ 的字符
 
 ```mermaid
 graph TD
-    subgraph "长模式: size > 15"
-        LM["struct string {<br/>  char* ptr —→ 堆上分配的字符串<br/>  size_t size = 23<br/>  size_t capacity = 32<br/>}<br/>sizeof = 24 字节<br/>堆上有额外的 32 字节"]
-    end
-    subgraph "短模式: size <= 15"
-        SM["struct string {<br/>  char* ptr —→ 指向自身内部的 local[16]<br/>  size_t size = 8<br/>  char local[16] = 'h','e','l','l','o','\0',...<br/>}<br/>sizeof = 24 字节<br/>无堆分配"]
-    end
+ subgraph "长模式: size > 15"
+ LM["struct string {<br/> char* ptr —→ 堆上分配的字符串<br/> size_t size = 23<br/> size_t capacity = 32<br/>}<br/>sizeof = 24 字节<br/>堆上有额外的 32 字节"]
+ end
+ subgraph "短模式: size <= 15"
+ SM["struct string {<br/> char* ptr —→ 指向自身内部的 local[16]<br/> size_t size = 8<br/> char local[16] = 'h','e','l','l','o','\0',...<br/>}<br/>sizeof = 24 字节<br/>无堆分配"]
+ end
 ```
 
 核心技巧是 `union`：`capacity` 字段和 `local[16]` 共享同一块内存。两者的长度恰好相同（8 字节的 `size_t capacity` 和 16 字节的 `char local[16]`），但 union 的实际大小取决于较大者——`local[16]` 占 16 字节。对于长模式，这 16 字节存 capacity；对于短模式，`local[0..14]` 存 15 个字符，`local[15]` 存 `\0`。字符串总大小 24 字节（64 位系统：指针 8 + size 8 + local/capacity 16 → 共 32，但编译器可能因对齐把 size 和 capacity 合并）。
@@ -211,12 +211,12 @@ SSO 的阈值 15 不是随意选择的——它精确权衡了 `string` 对象�
 // 不安全的字符串拼接
 char dst[10] = "hello";
 char src[] = "world!!!";
-strcat(dst, src);  // dst 只能存 10 字节，但最终需要 12 字节
+strcat(dst, src); // dst 只能存 10 字节，但最终需要 12 字节
 // 溢出覆盖了栈上的其他变量，可能重写返回地址
 
 // 不安全的字符串拷贝
 char buf[64];
-gets(buf);  // 不检查长度，输入 1000 个字符照样写入
+gets(buf); // 不检查长度，输入 1000 个字符照样写入
 // 攻击者可通过此覆盖返回地址，劫持程序控制流
 ```
 
@@ -224,10 +224,10 @@ gets(buf);  // 不检查长度，输入 1000 个字符照样写入
 
 安全使用 null-terminated 字符串的底线：
 ```c
-strncpy(dst, src, sizeof(dst) - 1);  // 永远留一个字节放 \0
-dst[sizeof(dst) - 1] = '\0';         // 确保 null-terminated
+strncpy(dst, src, sizeof(dst) - 1); // 永远留一个字节放 \0
+dst[sizeof(dst) - 1] = '\0'; // 确保 null-terminated
 
-snprintf(dst, sizeof(dst), "%s", src);  // snprintf 始终保证 \0
+snprintf(dst, sizeof(dst), "%s", src); // snprintf 始终保证 \0
 ```
 
 ### 宽字符与 Unicode 的底层
@@ -250,8 +250,8 @@ snprintf(dst, sizeof(dst), "%s", src);  // snprintf 始终保证 \0
 Java 和 Windows 内核使用 UTF-16，大多数字符占 2 字节。但对于 U+10000 以上的字符，UTF-16 用两个 16 位单元（代理对）表示。Java 的 `String.length()` 返回的是 UTF-16 单元数量而非真正的 Unicode 码点数量：
 
 ```java
-String s = "😂";              // U+1F602, 占用 2 个 UTF-16 单元
-s.length();                  // = 2, 不是 1
+String s = ""; // U+1F602, 占用 2 个 UTF-16 单元
+s.length(); // = 2, 不是 1
 s.codePointCount(0, s.length()); // = 1, 这才是真正的码点数
 ```
 
@@ -263,16 +263,16 @@ C++98 时代的 libstdc++ 使用 COW（copy-on-write）实现 `std::string`。�
 
 ```mermaid
 sequenceDiagram
-    participant s1 as s1 = "hello"
-    participant s2 as s2 = s1
-    participant Buf as 共享缓冲区<br/>(refcount=2)
+ participant s1 as s1 = "hello"
+ participant s2 as s2 = s1
+ participant Buf as 共享缓冲区<br/>(refcount=2)
 
-    s1->>Buf: 创建 "hello", refcount=1
-    s2->>Buf: s2 = s1, refcount=2 (无数据拷贝)
-    s1->>Buf: s1[0] = 'H' 触发 COW
-    Buf->>Buf: 检测 refcount > 1
-    Buf->>s1: 复制新缓冲区, refcount(new)=1
-    Buf-->>s2: 旧缓冲区 refcount 降为 1
+ s1->>Buf: 创建 "hello", refcount=1
+ s2->>Buf: s2 = s1, refcount=2 (无数据拷贝)
+ s1->>Buf: s1[0] = 'H' 触发 COW
+ Buf->>Buf: 检测 refcount > 1
+ Buf->>s1: 复制新缓冲区, refcount(new)=1
+ Buf-->>s2: 旧缓冲区 refcount 降为 1
 ```
 
 COW 在单线程下工作良好——当字符串拷贝频繁但修改稀少时，避免了大量不必要的堆分配。然而在多线程环境下，修改引用计数需要原子操作，每次拷贝（即使不修改）也需要原子地增加引用计数。在 C++11 引入移动语义后，COW 的性能优势被颠覆——`std::string` 可以"移动"而非复制，堆缓冲区所有权转移不需要引用计数。C++11 标准明确禁止了 COW 实现——`std::string` 上的 `operator[]` 不再允许共享缓冲区。
@@ -290,35 +290,35 @@ COW 在单线程下工作良好——当字符串拷贝频繁但修改稀少时�
 // 构建前缀函数 pi[0..m-1]
 // pi[k] = P[0..k] 的最长相等真前后缀长度
 void compute_pi(const char* P, int m, int* pi) {
-    pi[0] = 0;
-    int j = 0;                    // j = pi[k-1]
-    for (int k = 1; k < m; k++) {
-        while (j > 0 && P[k] != P[j])
-            j = pi[j - 1];        // 递归回退：试次长 border
-        if (P[k] == P[j])
-            j++;
-        pi[k] = j;
-    }
+ pi[0] = 0;
+ int j = 0; // j = pi[k-1]
+ for (int k = 1; k < m; k++) {
+ while (j > 0 && P[k] != P[j])
+ j = pi[j - 1]; // 递归回退：试次长 border
+ if (P[k] == P[j])
+ j++;
+ pi[k] = j;
+ }
 }
 
 // KMP 匹配：在 T 中找 P，返回匹配索引个数
 int kmp_search(const char* T, int n, const char* P, int m, int* result) {
-    int* pi = malloc(m * sizeof(int));
-    compute_pi(P, m, pi);
+ int* pi = malloc(m * sizeof(int));
+ compute_pi(P, m, pi);
 
-    int count = 0, j = 0;
-    for (int i = 0; i < n; i++) {
-        while (j > 0 && T[i] != P[j])
-            j = pi[j - 1];
-        if (T[i] == P[j])
-            j++;
-        if (j == m) {
-            result[count++] = i - m + 1;
-            j = pi[j - 1];        // 继续搜索后继匹配
-        }
-    }
-    free(pi);
-    return count;
+ int count = 0, j = 0;
+ for (int i = 0; i < n; i++) {
+ while (j > 0 && T[i] != P[j])
+ j = pi[j - 1];
+ if (T[i] == P[j])
+ j++;
+ if (j == m) {
+ result[count++] = i - m + 1;
+ j = pi[j - 1]; // 继续搜索后继匹配
+ }
+ }
+ free(pi);
+ return count;
 }
 ```
 
@@ -333,24 +333,24 @@ BM 的完整实现需要好后缀规则，但单靠坏字符规则已经展示�
 
 // 坏字符表：每个字符在模式串中最右出现的位置（-1 表示不出现）
 void build_bad_char(const char* P, int m, int bc[ALPHABET]) {
-    for (int i = 0; i < ALPHABET; i++) bc[i] = -1;
-    for (int i = 0; i < m; i++)      bc[(unsigned char)P[i]] = i;
+ for (int i = 0; i < ALPHABET; i++) bc[i] = -1;
+ for (int i = 0; i < m; i++) bc[(unsigned char)P[i]] = i;
 }
 
 int bm_search(const char* T, int n, const char* P, int m) {
-    int bc[ALPHABET];
-    build_bad_char(P, m, bc);
+ int bc[ALPHABET];
+ build_bad_char(P, m, bc);
 
-    int i = 0;
-    while (i <= n - m) {
-        int j = m - 1;
-        while (j >= 0 && T[i + j] == P[j]) j--;  // 从右向左比对
-        if (j < 0) return i;                       // 完全匹配
-        // 坏字符规则：将模式串右移，使失配字符对齐到它在 P 中最右的匹配位置
-        int shift = j - bc[(unsigned char)T[i + j]];
-        i += (shift > 0) ? shift : 1;
-    }
-    return -1;
+ int i = 0;
+ while (i <= n - m) {
+ int j = m - 1;
+ while (j >= 0 && T[i + j] == P[j]) j--; // 从右向左比对
+ if (j < 0) return i; // 完全匹配
+ // 坏字符规则：将模式串右移，使失配字符对齐到它在 P 中最右的匹配位置
+ int shift = j - bc[(unsigned char)T[i + j]];
+ i += (shift > 0) ? shift : 1;
+ }
+ return -1;
 }
 ```
 

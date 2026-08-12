@@ -29,15 +29,15 @@ C 语言自诞生以来一直是操作系统内核的"默认语言"。Linux 内�
 ```
 // C 中内存安全的典型失败模式
 char buffer[64];
-strcpy(buffer, user_input);  // 如果 user_input > 63 字节 → 栈溢出
+strcpy(buffer, user_input); // 如果 user_input > 63 字节 → 栈溢出
 
 int *ptr = malloc(sizeof(int));
 free(ptr);
-*ptr = 42;                   // use-after-free: 未定义行为
+*ptr = 42; // use-after-free: 未定义行为
 
 int *a = malloc(100);
 free(a);
-free(a);                     // double free: 破坏 malloc 内部数据结构
+free(a); // double free: 破坏 malloc 内部数据结构
 ```
 
 ## Rust 的编译期安全
@@ -49,11 +49,11 @@ Rust 在 2015 年发布 1.0 版本, 提出了一个全新方案: **所有权 (Ow
 
 // 栈溢出: Rust 的 str 操作使用切片, 编译期检查长度或运行时 panic (安全)
 let mut buffer = vec![0u8; 64];
-// buffer.copy_from_slice(&user_input);  // 长度不匹配 → 编译错
+// buffer.copy_from_slice(&user_input); // 长度不匹配 → 编译错
 
 // use-after-free: 编译器拒绝编译
 let ptr = Box::new(42);
-// let x = *ptr;   // 如果 ptr 已被 move, 编译器拒绝编译
+// let x = *ptr; // 如果 ptr 已被 move, 编译器拒绝编译
 
 // double free: Box 的 Drop 只调用一次, 编译器保证
 ```
@@ -65,21 +65,21 @@ let ptr = Box::new(42);
 ```
 mermaid
 graph TD
-    subgraph "Linux 内核架构"
-        CORE["稳定核心 (C)<br/>进程调度, 内存管理, VFS, 网络栈"]
-        RUST["新子系统 (Rust)<br/>Rust-for-Linux 项目"]
-        FFI["C ABI 接口层<br/>bindgen / cbindgen"]
-    end
+ subgraph "Linux 内核架构"
+ CORE["稳定核心 (C)<br/>进程调度, 内存管理, VFS, 网络栈"]
+ RUST["新子系统 (Rust)<br/>Rust-for-Linux 项目"]
+ FFI["C ABI 接口层<br/>bindgen / cbindgen"]
+ end
 
-    CORE <--> |"FFI 调用"| RUST
-    DRIVER1["NVMe 驱动 (Rust)"] --> RUST
-    DRIVER2["GPU DRM 驱动 (Asahi Linux)"] --> RUST
-    DRIVER3["Android Binder 驱动"] --> RUST
-    FS["新文件系统"] --> RUST
+ CORE <--> |"FFI 调用"| RUST
+ DRIVER1["NVMe 驱动 (Rust)"] --> RUST
+ DRIVER2["GPU DRM 驱动 (Asahi Linux)"] --> RUST
+ DRIVER3["Android Binder 驱动"] --> RUST
+ FS["新文件系统"] --> RUST
 
-    style CORE fill:#369,stroke:#333,color:#fff
-    style RUST fill:#963,stroke:#333,color:#fff
-    style FFI fill:#696,stroke:#333,color:#fff
+ style CORE fill:#369,stroke:#333,color:#fff
+ style RUST fill:#963,stroke:#333,color:#fff
+ style FFI fill:#696,stroke:#333,color:#fff
 ```
 
 关键里程碑:
@@ -105,19 +105,19 @@ graph TD
 ```
 C ABI 是操作系统和语言互操作的"通用语言":
 
-    C 侧 (内核核心):
-        extern "C" void register_rust_driver(void *ops);
+ C 侧 (内核核心):
+ extern "C" void register_rust_driver(void *ops);
 
-    Rust 侧 (新驱动):
-        use std::ffi::c_void;
+ Rust 侧 (新驱动):
+ use std::ffi::c_void;
 
-        extern "C" fn my_driver_init() -> *mut c_void {
-            // 驱动初始化逻辑
-            Box::into_raw(Box::new(MyDriver::new())) as *mut c_void
-        }
+ extern "C" fn my_driver_init() -> *mut c_void {
+ // 驱动初始化逻辑
+ Box::into_raw(Box::new(MyDriver::new())) as *mut c_void
+ }
 
-        // bindgen: 从 C 头文件自动生成 Rust FFI 绑定
-        // cbindgen: 从 Rust 定义自动生成 C 头文件
+ // bindgen: 从 C 头文件自动生成 Rust FFI 绑定
+ // cbindgen: 从 Rust 定义自动生成 C 头文件
 ```
 
 关键: C ABI 作为桥接层, C 和 Rust 之间不需要复杂的序列化——它们在内存布局层面直接互通。

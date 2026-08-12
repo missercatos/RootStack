@@ -10,36 +10,36 @@ Linux 内核采用单体式架构，但通过模块机制实现了灵活的功�
 
 ```mermaid
 graph TB
-    subgraph "用户空间"
-        APP[应用程序]
-        LIBC[GNU C 库 glibc]
-    end
+ subgraph "用户空间"
+ APP[应用程序]
+ LIBC[GNU C 库 glibc]
+ end
 
-    subgraph "内核空间"
-        SYSCALL[系统调用接口]
-        PROC[进程调度器]
-        MM[内存管理器]
-        VFS[虚拟文件系统]
-        NET[网络协议栈]
-        IPC[进程间通信]
-        DRIVERS[设备驱动]
-    end
+ subgraph "内核空间"
+ SYSCALL[系统调用接口]
+ PROC[进程调度器]
+ MM[内存管理器]
+ VFS[虚拟文件系统]
+ NET[网络协议栈]
+ IPC[进程间通信]
+ DRIVERS[设备驱动]
+ end
 
-    HARDWARE[硬件层 CPU/内存/磁盘/网卡]
+ HARDWARE[硬件层 CPU/内存/磁盘/网卡]
 
-    APP --> LIBC
-    LIBC --> SYSCALL
-    SYSCALL --> PROC
-    SYSCALL --> MM
-    SYSCALL --> VFS
-    SYSCALL --> NET
-    PROC --> HARDWARE
-    MM --> HARDWARE
-    VFS --> DRIVERS
-    VFS --> HARDWARE
-    NET --> DRIVERS
-    NET --> HARDWARE
-    DRIVERS --> HARDWARE
+ APP --> LIBC
+ LIBC --> SYSCALL
+ SYSCALL --> PROC
+ SYSCALL --> MM
+ SYSCALL --> VFS
+ SYSCALL --> NET
+ PROC --> HARDWARE
+ MM --> HARDWARE
+ VFS --> DRIVERS
+ VFS --> HARDWARE
+ NET --> DRIVERS
+ NET --> HARDWARE
+ DRIVERS --> HARDWARE
 ```
 
 ### 五大核心子系统
@@ -74,9 +74,9 @@ Linux 内核版本号格式：**主版本.次版本.修订号**
 
 ```
 例如：6.9.3
-       │ │ └── 修订号（patch）：bug 修复和安全更新
-       │ └──── 次版本（minor）：新功能和改进
-       └────── 主版本（major）：重大里程碑
+ │ │ └── 修订号（patch）：bug 修复和安全更新
+ │ └──── 次版本（minor）：新功能和改进
+ └────── 主版本（major）：重大里程碑
 ```
 
 ### 版本分支
@@ -95,9 +95,9 @@ Linux 内核版本号格式：**主版本.次版本.修订号**
 开发周期（约 9-10 周）：
 
 合并窗口（2 周）→ rc1 → rc2 → ... → rc7/rc8 → 正式发布
-     │                    │
-     │                    └── 只接受 bug 修复
-     └── 接受新功能合并
+ │ │
+ │ └── 只接受 bug 修复
+ └── 接受新功能合并
 ```
 
 当前 LTS 版本维护情况：
@@ -151,40 +151,40 @@ cat /proc/version
 ```bash
 # CPU 信息
 cat /proc/cpuinfo
-cat /proc/stat          # CPU 使用统计
+cat /proc/stat # CPU 使用统计
 
 # 内存信息
 cat /proc/meminfo
 cat /proc/vmstat
 
 # 磁盘信息
-cat /proc/diskstats     # 磁盘 I/O 统计
-cat /proc/partitions    # 分区信息
+cat /proc/diskstats # 磁盘 I/O 统计
+cat /proc/partitions # 分区信息
 
 # 内核信息
-cat /proc/version       # 内核版本
-cat /proc/cmdline       # 引导参数
-cat /proc/uptime        # 运行时间和空闲时间
-cat /proc/loadavg       # 系统负载
+cat /proc/version # 内核版本
+cat /proc/cmdline # 引导参数
+cat /proc/uptime # 运行时间和空闲时间
+cat /proc/loadavg # 系统负载
 
 # 进程信息（PID 号为例）
-ls /proc/1/             # PID 1（systemd/init）的信息
-cat /proc/1/status      # 进程状态
-cat /proc/1/limits      # 资源限制
-cat /proc/1/maps        # 内存映射
-ls -l /proc/1/fd/       # 打开的文件描述符
+ls /proc/1/ # PID 1（systemd/init）的信息
+cat /proc/1/status # 进程状态
+cat /proc/1/limits # 资源限制
+cat /proc/1/maps # 内存映射
+ls -l /proc/1/fd/ # 打开的文件描述符
 
 # 文件系统信息
-cat /proc/filesystems   # 内核支持的文件系统
-cat /proc/mounts        # 当前挂载点（比 /etc/mtab 更权威）
+cat /proc/filesystems # 内核支持的文件系统
+cat /proc/mounts # 当前挂载点（比 /etc/mtab 更权威）
 
 # 网络信息
-cat /proc/net/tcp       # TCP 连接原始数据
-cat /proc/net/dev       # 网络设备统计
+cat /proc/net/tcp # TCP 连接原始数据
+cat /proc/net/dev # 网络设备统计
 
 # 内核参数（可读写）
 cat /proc/sys/kernel/hostname
-ls /proc/sys/           # 可调参数入口
+ls /proc/sys/ # 可调参数入口
 ```
 
 ### /sys 文件系统
@@ -194,29 +194,29 @@ ls /proc/sys/           # 可调参数入口
 ```bash
 # 设备层次结构
 ls /sys/devices/
-ls /sys/class/          # 按设备类型分类（net, block, tty, drm...）
-ls /sys/bus/            # 按总线类型分类（pci, usb, i2c, platform...）
+ls /sys/class/ # 按设备类型分类（net, block, tty, drm...）
+ls /sys/bus/ # 按总线类型分类（pci, usb, i2c, platform...）
 
 # 块设备信息
-cat /sys/block/sda/size           # 磁盘扇区数
-cat /sys/block/sda/queue/scheduler  # I/O 调度器
-cat /sys/block/nvme0n1/queue/rotational  # 0=SSD, 1=HDD
+cat /sys/block/sda/size # 磁盘扇区数
+cat /sys/block/sda/queue/scheduler # I/O 调度器
+cat /sys/block/nvme0n1/queue/rotational # 0=SSD, 1=HDD
 
 # 网络设备信息
-cat /sys/class/net/eth0/speed     # 网卡速率
-cat /sys/class/net/eth0/address   # MAC 地址
+cat /sys/class/net/eth0/speed # 网卡速率
+cat /sys/class/net/eth0/address # MAC 地址
 
 # 电源管理
 ls /sys/power/
-cat /sys/power/state              # 支持的休眠状态
+cat /sys/power/state # 支持的休眠状态
 
 # 内核模块参数
 cat /sys/module/i915/parameters/enable_guc
 ls /sys/module/nvidia/parameters/
 
 # 内核追踪（debugfs 与 tracefs）
-ls /sys/kernel/debug/             # 调试接口
-ls /sys/kernel/tracing/           # ftrace 接口
+ls /sys/kernel/debug/ # 调试接口
+ls /sys/kernel/tracing/ # ftrace 接口
 ```
 
 `/proc` 与 `/sys` 的核心区别：
@@ -239,30 +239,30 @@ ls /sys/kernel/tracing/           # ftrace 接口
 ```bash
 # --- lsmod：列出已加载模块 ---
 lsmod
-lsmod | sort -k 3 -rn | head -20   # 按使用计数排序
+lsmod | sort -k 3 -rn | head -20 # 按使用计数排序
 
 # 输出格式：Module | Size | Used by
-# nvidia            62512128  1322 nvidia_modeset
+# nvidia 62512128 1322 nvidia_modeset
 # 表示 nvidia 模块占用约 60MB 内存，被 1322 个地方引用
 
 # --- modinfo：查看模块信息 ---
 modinfo i915
-modinfo -p i915          # 仅显示可用参数
-modinfo -n i915          # 显示模块文件路径
-modinfo -d nvidia        # 显示模块描述
+modinfo -p i915 # 仅显示可用参数
+modinfo -n i915 # 显示模块文件路径
+modinfo -d nvidia # 显示模块描述
 
 # --- modprobe：智能加载/卸载（自动处理依赖）---
-sudo modprobe i915                   # 加载模块
-sudo modprobe -r i915                # 卸载模块（含未被使用的依赖）
-modprobe --show-depends nvidia       # 展示依赖关系（不实际加载）
-sudo modprobe i915 enable_guc=2      # 带参数加载
+sudo modprobe i915 # 加载模块
+sudo modprobe -r i915 # 卸载模块（含未被使用的依赖）
+modprobe --show-depends nvidia # 展示依赖关系（不实际加载）
+sudo modprobe i915 enable_guc=2 # 带参数加载
 
 # --- insmod/rmmod：底层加载/卸载（不处理依赖）---
-sudo insmod /path/to/module.ko       # 直接加载指定文件
-sudo rmmod module_name               # 直接卸载
+sudo insmod /path/to/module.ko # 直接加载指定文件
+sudo rmmod module_name # 直接卸载
 
 # --- depmod：生成模块依赖数据库 ---
-sudo depmod -a                       # 扫描所有模块并生成依赖索引
+sudo depmod -a # 扫描所有模块并生成依赖索引
 ```
 
 ### 模块配置持久化
@@ -279,7 +279,7 @@ options nvidia_drm modeset=1 fbdev=1
 # /etc/modprobe.d/blacklist.conf
 blacklist nouveau
 blacklist pcspkr
-install nouveau /bin/false   # 彻底阻止加载
+install nouveau /bin/false # 彻底阻止加载
 ```
 
 **开机自动加载**（`/etc/modules-load.d/`）：
@@ -307,9 +307,9 @@ DKMS 方式：内核升级 → DKMS 自动重新编译模块 → 模块继续工
 
 ```bash
 # 安装 DKMS
-sudo apt install dkms         # Debian/Ubuntu
-sudo dnf install dkms         # Fedora/RHEL
-sudo pacman -S dkms           # Arch
+sudo apt install dkms # Debian/Ubuntu
+sudo dnf install dkms # Fedora/RHEL
+sudo pacman -S dkms # Arch
 
 # 查看 DKMS 模块状态
 dkms status
@@ -347,7 +347,7 @@ echo 10 | sudo tee /proc/sys/vm/swappiness
 
 # 应用配置文件（立即生效）
 sudo sysctl -p /etc/sysctl.d/99-custom.conf
-sudo sysctl --system                   # 加载所有配置文件
+sudo sysctl --system # 加载所有配置文件
 ```
 
 ### 配置文件体系
@@ -363,32 +363,32 @@ sudo sysctl --system                   # 加载所有配置文件
 
 ```ini
 # === 内存管理 ===
-vm.swappiness=10                       # 减少 swap 倾向（默认 60）
-vm.vfs_cache_pressure=50               # 保留 inode/dentry 缓存
-vm.dirty_ratio=10                      # 脏页比例上限
-vm.dirty_background_ratio=5            # 后台刷脏页阈值
-vm.overcommit_memory=0                 # 内存过量分配策略（0=启发式）
+vm.swappiness=10 # 减少 swap 倾向（默认 60）
+vm.vfs_cache_pressure=50 # 保留 inode/dentry 缓存
+vm.dirty_ratio=10 # 脏页比例上限
+vm.dirty_background_ratio=5 # 后台刷脏页阈值
+vm.overcommit_memory=0 # 内存过量分配策略（0=启发式）
 
 # === 网络优化 ===
-net.core.somaxconn=65535               # 监听队列最大长度
-net.core.netdev_max_backlog=65535      # 网卡接收队列长度
-net.core.rmem_max=16777216             # 接收缓冲区最大值
-net.core.wmem_max=16777216             # 发送缓冲区最大值
-net.ipv4.tcp_fastopen=3                # TCP Fast Open
-net.ipv4.tcp_tw_reuse=1                # 快速复用 TIME_WAIT 连接
+net.core.somaxconn=65535 # 监听队列最大长度
+net.core.netdev_max_backlog=65535 # 网卡接收队列长度
+net.core.rmem_max=16777216 # 接收缓冲区最大值
+net.core.wmem_max=16777216 # 发送缓冲区最大值
+net.ipv4.tcp_fastopen=3 # TCP Fast Open
+net.ipv4.tcp_tw_reuse=1 # 快速复用 TIME_WAIT 连接
 net.ipv4.ip_local_port_range=1024 65535
 
 # === 安全加固 ===
-net.ipv4.conf.all.rp_filter=1          # 反向路径过滤（防 IP 欺骗）
+net.ipv4.conf.all.rp_filter=1 # 反向路径过滤（防 IP 欺骗）
 net.ipv4.conf.default.accept_redirects=0
 net.ipv4.icmp_echo_ignore_broadcasts=1
-kernel.dmesg_restrict=1                # 限制非特权用户读取 dmesg
-kernel.kptr_restrict=2                 # 隐藏内核指针（地址）
-kernel.yama.ptrace_scope=2             # 限制 ptrace（仅 root 可追踪子进程）
+kernel.dmesg_restrict=1 # 限制非特权用户读取 dmesg
+kernel.kptr_restrict=2 # 隐藏内核指针（地址）
+kernel.yama.ptrace_scope=2 # 限制 ptrace（仅 root 可追踪子进程）
 
 # === 文件系统 ===
-fs.file-max=2097152                    # 系统级最大打开文件数
-fs.inotify.max_user_watches=524288     # inotify 监控数上限
+fs.file-max=2097152 # 系统级最大打开文件数
+fs.inotify.max_user_watches=524288 # inotify 监控数上限
 ```
 
 ---
@@ -412,7 +412,7 @@ gpg --verify linux-6.9.3.tar.sign linux-6.9.3.tar
 
 # 方法二：从 Git 仓库克隆
 git clone --depth 1 --branch v6.9.3 \
-  https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+ https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
 
 # Linus Torvalds 的主线仓库：
 # https://github.com/torvalds/linux
@@ -433,25 +433,25 @@ pkgctl repo clone linux
 
 ```bash
 # 获取初始配置
-zcat /proc/config.gz > .config           # 基于当前运行内核
-cp /boot/config-$(uname -r) .config      # Debian/Ubuntu 方式
+zcat /proc/config.gz > .config # 基于当前运行内核
+cp /boot/config-$(uname -r) .config # Debian/Ubuntu 方式
 
 # 更新配置到新内核版本
-make oldconfig         # 交互式逐个询问新选项
-make olddefconfig      # 新选项全部使用默认值
+make oldconfig # 交互式逐个询问新选项
+make olddefconfig # 新选项全部使用默认值
 
 # 图形化配置界面
-make menuconfig        # ncurses 界面（最常用）
-make nconfig           # 增强版 ncurses 界面
-make xconfig           # Qt 图形界面
-make gconfig           # GTK 图形界面
+make menuconfig # ncurses 界面（最常用）
+make nconfig # 增强版 ncurses 界面
+make xconfig # Qt 图形界面
+make gconfig # GTK 图形界面
 
 # 自动化配置策略
-make defconfig         # 默认配置
-make localmodconfig    # 仅保留当前已加载模块的配置
-make tinyconfig        # 最小配置（嵌入式用）
-make allnoconfig       # 全部不选
-make allyesconfig      # 全部选为编译进内核
+make defconfig # 默认配置
+make localmodconfig # 仅保留当前已加载模块的配置
+make tinyconfig # 最小配置（嵌入式用）
+make allnoconfig # 全部不选
+make allyesconfig # 全部选为编译进内核
 ```
 
 `make menuconfig` 操作方式：
@@ -469,31 +469,31 @@ make allyesconfig      # 全部选为编译进内核
 
 ```
 General setup --->
-    Preemption Model --->
-        (X) Voluntary Kernel Preemption   # 服务器推荐
-        ( ) Preemptible Kernel            # 桌面推荐（低延迟）
+ Preemption Model --->
+ (X) Voluntary Kernel Preemption # 服务器推荐
+ ( ) Preemptible Kernel # 桌面推荐（低延迟）
 
 File systems --->
-    <*> Ext4                  # 必选
-    <*> Btrfs                 # 根据需要
-    <*> XFS                   # 根据需要
-    <*> F2FS                  # SSD 优化
-    DOS/FAT/EXFAT --->
-        <*> VFAT              # EFI 分区需要
-        <*> exFAT             # 大容量 U 盘
+ <*> Ext4 # 必选
+ <*> Btrfs # 根据需要
+ <*> XFS # 根据需要
+ <*> F2FS # SSD 优化
+ DOS/FAT/EXFAT --->
+ <*> VFAT # EFI 分区需要
+ <*> exFAT # 大容量 U 盘
 
 Device Drivers --->
-    NVMe support --->
-        <*> NVM Express       # NVMe SSD
-    USB support --->
-        <*> xHCI HCD          # USB 3.0
-    Graphics support --->
-        <M> AMD GPU / Intel Graphics
+ NVMe support --->
+ <*> NVM Express # NVMe SSD
+ USB support --->
+ <*> xHCI HCD # USB 3.0
+ Graphics support --->
+ <M> AMD GPU / Intel Graphics
 
 Security options --->
-    [*] AppArmor support      # Debian/Ubuntu 默认
-    [*] SELinux support       # RHEL/Fedora 默认
-    [*] Lockdown (Kernel lockdown feature)
+ [*] AppArmor support # Debian/Ubuntu 默认
+ [*] SELinux support # RHEL/Fedora 默认
+ [*] Lockdown (Kernel lockdown feature)
 ```
 
 ### 编译与安装
@@ -555,7 +555,7 @@ scripts/config --set-str CONFIG_LOCALVERSION "-custom"
 scripts/config --set-val CONFIG_NR_CPUS 16
 scripts/config --undefine CONFIG_OLD_FEATURE_TODO_REMOVE
 
-make olddefconfig   # 让依赖选项自动调整
+make olddefconfig # 让依赖选项自动调整
 ```
 
 ### 编译优化选项
@@ -594,17 +594,17 @@ initramfs 是在内存中运行的临时根文件系统，负责加载必要驱�
 cat /proc/cmdline
 
 # 常用内核参数
-# root=UUID=xxxx           指定根分区
-# rw / ro                  根分区读写/只读挂载
-# quiet                    减少启动日志输出
-# loglevel=3               （0=紧急, 7=调试）
-# nomodeset                禁用 KMS（显卡故障时）
-# init=/bin/bash           直接进入 shell（绕过 init）
-# systemd.unit=rescue.target   救援模式
-# systemd.unit=emergency.target  紧急模式
-# mitigations=off          禁用 CPU 漏洞缓解（性能优先）
-# intel_iommu=on / amd_iommu=on  启用 IOMMU
-# nvidia-drm.modeset=1     NVIDIA DRM 模式设置
+# root=UUID=xxxx 指定根分区
+# rw / ro 根分区读写/只读挂载
+# quiet 减少启动日志输出
+# loglevel=3 （0=紧急, 7=调试）
+# nomodeset 禁用 KMS（显卡故障时）
+# init=/bin/bash 直接进入 shell（绕过 init）
+# systemd.unit=rescue.target 救援模式
+# systemd.unit=emergency.target 紧急模式
+# mitigations=off 禁用 CPU 漏洞缓解（性能优先）
+# intel_iommu=on / amd_iommu=on 启用 IOMMU
+# nvidia-drm.modeset=1 NVIDIA DRM 模式设置
 ```
 
 **GRUB 中配置**（编辑 `/etc/default/grub`）：
@@ -633,23 +633,23 @@ options root=UUID=xxxx rw quiet loglevel=3
 ```bash
 # 查看内核环形缓冲区
 dmesg
-dmesg -H                  # 人类可读格式（时间戳+颜色）
-dmesg -T                  # 显示可读时间戳
-dmesg -w                  # 实时跟踪（类似 tail -f）
-dmesg -l err,warn         # 按级别过滤（emerg,alert,crit,err,warn,notice,info,debug）
+dmesg -H # 人类可读格式（时间戳+颜色）
+dmesg -T # 显示可读时间戳
+dmesg -w # 实时跟踪（类似 tail -f）
+dmesg -l err,warn # 按级别过滤（emerg,alert,crit,err,warn,notice,info,debug）
 
 # printk 日志级别
-# 0 KERN_EMERG    系统不可用
-# 1 KERN_ALERT    必须立即处理
-# 2 KERN_CRIT     严重错误
-# 3 KERN_ERR      错误
-# 4 KERN_WARNING  警告
-# 5 KERN_NOTICE   一般通知
-# 6 KERN_INFO     信息（默认）
-# 7 KERN_DEBUG    调试
+# 0 KERN_EMERG 系统不可用
+# 1 KERN_ALERT 必须立即处理
+# 2 KERN_CRIT 严重错误
+# 3 KERN_ERR 错误
+# 4 KERN_WARNING 警告
+# 5 KERN_NOTICE 一般通知
+# 6 KERN_INFO 信息（默认）
+# 7 KERN_DEBUG 调试
 
 # 控制终端显示的日志级别
-cat /proc/sys/kernel/printk   # 四个值：console_loglevel, default_level, minimum_console_level, default_console_level
+cat /proc/sys/kernel/printk # 四个值：console_loglevel, default_level, minimum_console_level, default_console_level
 echo "3 4 1 7" | sudo tee /proc/sys/kernel/printk
 ```
 
@@ -681,9 +681,9 @@ echo nop > /sys/kernel/tracing/current_tracer
 
 ```bash
 # 安装
-sudo apt install trace-cmd   # Debian/Ubuntu
-sudo dnf install trace-cmd   # Fedora
-sudo pacman -S trace-cmd     # Arch
+sudo apt install trace-cmd # Debian/Ubuntu
+sudo dnf install trace-cmd # Fedora
+sudo pacman -S trace-cmd # Arch
 
 # 记录调度器活动
 trace-cmd record -p function_graph -g schedule
@@ -697,7 +697,7 @@ trace-cmd report
 ```bash
 # 在 do_sys_open 函数入口设置探针
 echo 'p:myprobe do_sys_openat2 dfd=%di filename=%si' \
-  > /sys/kernel/tracing/kprobe_events
+ > /sys/kernel/tracing/kprobe_events
 
 # 启用探针
 echo 1 > /sys/kernel/tracing/events/kprobes/myprobe/enable
@@ -714,8 +714,8 @@ echo '-:myprobe' > /sys/kernel/tracing/kprobe_events
 
 ```bash
 # 安装 bpftrace
-sudo apt install bpftrace     # Debian/Ubuntu
-sudo dnf install bpftrace     # Fedora
+sudo apt install bpftrace # Debian/Ubuntu
+sudo dnf install bpftrace # Fedora
 
 # 追踪所有 open 系统调用
 sudo bpftrace -e 'tracepoint:syscalls:sys_enter_openat { printf("%s %s\n", comm, str(args->filename)); }'
@@ -761,13 +761,13 @@ zcat /proc/config.gz | grep -E "_HARDEN|_RANDOM|LOCKDOWN|_STRONG|CFI"
 常用的安全内核参数：
 
 ```
-mitigations=auto|off           CPU 漏洞缓解策略
-lockdown=integrity|confidentiality  内核锁定模式
-init_on_alloc=1               分配时初始化内存
-init_on_free=1                释放时初始化内存
-slab_nomerge                  禁止 slab 合并
-page_alloc.shuffle=1          页面分配随机化
-randomize_kstack_offset=on    内核栈偏移随机化
+mitigations=auto|off CPU 漏洞缓解策略
+lockdown=integrity|confidentiality 内核锁定模式
+init_on_alloc=1 分配时初始化内存
+init_on_free=1 释放时初始化内存
+slab_nomerge 禁止 slab 合并
+page_alloc.shuffle=1 页面分配随机化
+randomize_kstack_offset=on 内核栈偏移随机化
 ```
 
 ---
@@ -787,13 +787,13 @@ MODULE_VERSION("1.0");
 
 static int __init hello_init(void)
 {
-    pr_info("Hello, kernel!\n");
-    return 0;
+ pr_info("Hello, kernel!\n");
+ return 0;
 }
 
 static void __exit hello_exit(void)
 {
-    pr_info("Goodbye, kernel!\n");
+ pr_info("Goodbye, kernel!\n");
 }
 
 module_init(hello_init);
@@ -815,8 +815,8 @@ clean:
 
 ```bash
 # 确保已安装内核头文件
-sudo apt install linux-headers-$(uname -r)   # Debian/Ubuntu
-sudo dnf install kernel-devel                # Fedora/RHEL
+sudo apt install linux-headers-$(uname -r) # Debian/Ubuntu
+sudo dnf install kernel-devel # Fedora/RHEL
 
 # 编译
 make

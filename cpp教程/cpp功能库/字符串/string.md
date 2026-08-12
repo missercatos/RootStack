@@ -33,33 +33,33 @@ title: "C++ 功能库 — string"
 
 ```
 FUNCTION demo_string:
-    s1 = STRING("hello")
-    s2 = STRING(5, 'x')              // "xxxxx"
-    s3 = s1 + " world"               // "hello world"
+ s1 = STRING("hello")
+ s2 = STRING(5, 'x') // "xxxxx"
+ s3 = s1 + " world" // "hello world"
 
-    FOR ch IN s3:                    // 范围 for 遍历
-        PRINT ch
-    END FOR
+ FOR ch IN s3: // 范围 for 遍历
+ PRINT ch
+ END FOR
 
-    pos = s3.FIND("world")           // 6
-    sub = s3.SUBSTR(0, 5)            // "hello"
+ pos = s3.FIND("world") // 6
+ sub = s3.SUBSTR(0, 5) // "hello"
 
-    sv = s3.SUBSTR_VIEW(6)           // STRING_VIEW 不拷贝，"world"
+ sv = s3.SUBSTR_VIEW(6) // STRING_VIEW 不拷贝，"world"
 
-    PRINT s3.SIZE()                  // 11
-    PRINT s3[0]                      // 'h'
+ PRINT s3.SIZE() // 11
+ PRINT s3[0] // 'h'
 ```
 
 ### 数值转换
 
 ```
 FUNCTION demo_convert:
-    num_str = TO_STRING(42)          // "42"
-    pi_str  = TO_STRING(3.14159)     // "3.141590"
+ num_str = TO_STRING(42) // "42"
+ pi_str = TO_STRING(3.14159) // "3.141590"
 
-    n = STRING_TO_INT("123")         // 123
-    d = STRING_TO_DOUBLE("3.14")     // 3.14
-    x = STRING_TO_INT("42abc")       // 42，忽略尾部非数字
+ n = STRING_TO_INT("123") // 123
+ d = STRING_TO_DOUBLE("3.14") // 3.14
+ x = STRING_TO_INT("42abc") // 42，忽略尾部非数字
 ```
 
 ---

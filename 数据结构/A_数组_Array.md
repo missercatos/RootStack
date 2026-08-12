@@ -16,7 +16,7 @@
 ```nasm
 ; C: int x = arr[3];
 ; 假设 arr -> rdi, 3 -> rsi
-mov  eax, DWORD PTR [rdi + rsi*4]    ; 基址 + 偏移*元素字节数
+mov eax, DWORD PTR [rdi + rsi*4] ; 基址 + 偏移*元素字节数
 ```
 
 ### 内存模型与寻址公式
@@ -32,29 +32,29 @@ $$
 
 ```c
 int arr[5] = {10, 20, 30, 40, 50};
-int x = arr[3];    // 等价于 *(arr + 3)
-int y = 3[arr];    // C 语言允许的古怪写法，等价于 *(3 + arr)
+int x = arr[3]; // 等价于 *(arr + 3)
+int y = 3[arr]; // C 语言允许的古怪写法，等价于 *(3 + arr)
 ```
 
 `arr[3]` 和 `3[arr]` 在 C 标准中完全等价，因为 `a[b]` 被定义为 `*(a + b)`，加法交换律使得两者计算结果相同。编译后生成的汇编指令毫无区别。这揭示了 C 语言的一个核心事实：数组下标在语义层面就是指针算术的语法糖。
 
 ```mermaid
 graph LR
-    subgraph "物理内存 (地址递增 →)"
-        A0["arr[0]<br/>addr=0x1000"] --- A1["arr[1]<br/>addr=0x1004"] --- A2["arr[2]<br/>addr=0x1008"] --- A3["arr[3]<br/>addr=0x100C"] --- A4["arr[4]<br/>addr=0x1010"]
-    end
-    subgraph "寻址过程"
-        BASE["base = 0x1000"] --> MUL["i × sizeof(int) = 3 × 4 = 12"]
-        MUL --> ADD["base + 12 = 0x100C"]
-        ADD --> RESULT["加载 0x100C 处的值 = 40"]
-    end
+ subgraph "物理内存 (地址递增 →)"
+ A0["arr[0]<br/>addr=0x1000"] --- A1["arr[1]<br/>addr=0x1004"] --- A2["arr[2]<br/>addr=0x1008"] --- A3["arr[3]<br/>addr=0x100C"] --- A4["arr[4]<br/>addr=0x1010"]
+ end
+ subgraph "寻址过程"
+ BASE["base = 0x1000"] --> MUL["i × sizeof(int) = 3 × 4 = 12"]
+ MUL --> ADD["base + 12 = 0x100C"]
+ ADD --> RESULT["加载 0x100C 处的值 = 40"]
+ end
 ```
 
 ### 静态数组 vs 动态数组
 
 数组的生命周期和存储位置取决于其声明方式。这个区别不仅影响语法，更决定性能特征和安全边界。
 
-|  | 静态数组 | 动态数组 |
+| | 静态数组 | 动态数组 |
 |------|---------|---------|
 | 大小 | 编译期常量，不可变 | 运行时可变 |
 | 内存来源 | 栈或全局数据段（.data/.bss） | 堆（通过 malloc/realloc） |
@@ -69,17 +69,17 @@ graph LR
 
 ```mermaid
 graph TD
-    subgraph "进程虚拟地址空间 (Linux x86-64)"
-        STACK["栈 (Stack)<br/>默认 8MB<br/>高地址 → 低地址增长"]
-        GAP1["⬇ 随机偏移 (ASLR)<br/>约 128MB 间隙"]
-        MMAP["mmap 区域<br/>动态库 / 大块 malloc"]
-        HEAP["堆 (Heap)<br/>sbrk 增长<br/>低地址 → 高地址增长"]
-        GAP2["⬆"]
-        BSS[".bss 段<br/>未初始化全局变量"]
-        DATA[".data 段<br/>已初始化全局变量"]
-        TEXT[".text 段<br/>代码 / 只读数据"]
-    end
-    STACK --> GAP1 --> MMAP --> HEAP --> GAP2 --> BSS --> DATA --> TEXT
+ subgraph "进程虚拟地址空间 (Linux x86-64)"
+ STACK["栈 (Stack)<br/>默认 8MB<br/>高地址 → 低地址增长"]
+ GAP1["⬇ 随机偏移 (ASLR)<br/>约 128MB 间隙"]
+ MMAP["mmap 区域<br/>动态库 / 大块 malloc"]
+ HEAP["堆 (Heap)<br/>sbrk 增长<br/>低地址 → 高地址增长"]
+ GAP2["⬆"]
+ BSS[".bss 段<br/>未初始化全局变量"]
+ DATA[".data 段<br/>已初始化全局变量"]
+ TEXT[".text 段<br/>代码 / 只读数据"]
+ end
+ STACK --> GAP1 --> MMAP --> HEAP --> GAP2 --> BSS --> DATA --> TEXT
 ```
 
 静态数组声明在栈上时，若数组大小超过栈剩余空间，会触发栈溢出（stack overflow），在 Linux 下通常表现为段错误（SIGSEGV）。编译器无法完全检测这种运行时越界——这就是为什么大数组必须在堆上分配。
@@ -137,16 +137,16 @@ $$
 
 ```mermaid
 graph TD
-    subgraph "行优先 (C/C++)"
-        direction LR
-        RM0["[0,0]"] --> RM1["[0,1]"] --> RM2["[0,2]"] --> RM3["[0,3]"]
-        RM3 --> RM4["[1,0]"] --> RM5["[1,1]"] --> RM6["[1,2]"] --> RM7["[1,3]"]
-    end
-    subgraph "列优先 (Fortran/MATLAB)"
-        direction LR
-        CM0["[0,0]"] --> CM1["[1,0]"] --> CM2["[2,0]"] --> CM3["[0,1]"]
-        CM3 --> CM4["[1,1]"] --> CM5["[2,1]"] --> CM6["[0,2]"] --> CM7["[2,3]"]
-    end
+ subgraph "行优先 (C/C++)"
+ direction LR
+ RM0["[0,0]"] --> RM1["[0,1]"] --> RM2["[0,2]"] --> RM3["[0,3]"]
+ RM3 --> RM4["[1,0]"] --> RM5["[1,1]"] --> RM6["[1,2]"] --> RM7["[1,3]"]
+ end
+ subgraph "列优先 (Fortran/MATLAB)"
+ direction LR
+ CM0["[0,0]"] --> CM1["[1,0]"] --> CM2["[2,0]"] --> CM3["[0,1]"]
+ CM3 --> CM4["[1,1]"] --> CM5["[2,1]"] --> CM6["[0,2]"] --> CM7["[2,3]"]
+ end
 ```
 
 #### C 语言中的多维数组：真正的二维 vs 指针数组
@@ -155,27 +155,27 @@ graph TD
 
 ```c
 // 方式 1：真正的连续二维数组（栈上分配，编译时确定列数）
-int arr1[3][4];  // 一块连续的 3×4×4 = 48 字节内存
+int arr1[3][4]; // 一块连续的 3×4×4 = 48 字节内存
 
 // 方式 2：指针数组模拟的二维数组（堆上分配）
 int** arr2 = malloc(3 * sizeof(int*));
 for (int i = 0; i < 3; i++)
-    arr2[i] = malloc(4 * sizeof(int));
+ arr2[i] = malloc(4 * sizeof(int));
 ```
 
 ```mermaid
 graph TD
-    subgraph "int arr[3][4] — 连续内存"
-        direction LR
-        C0["[0,0]"] --- C1["[0,1]"] --- C2["[0,2]"] --- C3["[0,3]"]
-        C3 --- C4["[1,0]"] --- C5["[1,1]"] --- C6["[1,2]"] --- C7["[1,3]"]
-        C7 --- C8["[2,0]"] --- C9["[2,1]"] --- C10["[2,2]"] --- C11["[2,3]"]
-    end
-    subgraph "int** arr2 — 指针数组，各行散列"
-        PTR["arr2[0] →"] --> R0["row0: [0,0] [0,1] [0,2] [0,3]"]
-        PTR2["arr2[1] →"] --> R1["row1: [1,0] [1,1] [1,2] [1,3]<br/>(可能在完全不同的堆地址)"]
-        PTR3["arr2[2] →"] --> R2["row2: [2,0] [2,1] [2,2] [2,3]"]
-    end
+ subgraph "int arr[3][4] — 连续内存"
+ direction LR
+ C0["[0,0]"] --- C1["[0,1]"] --- C2["[0,2]"] --- C3["[0,3]"]
+ C3 --- C4["[1,0]"] --- C5["[1,1]"] --- C6["[1,2]"] --- C7["[1,3]"]
+ C7 --- C8["[2,0]"] --- C9["[2,1]"] --- C10["[2,2]"] --- C11["[2,3]"]
+ end
+ subgraph "int** arr2 — 指针数组，各行散列"
+ PTR["arr2[0] →"] --> R0["row0: [0,0] [0,1] [0,2] [0,3]"]
+ PTR2["arr2[1] →"] --> R1["row1: [1,0] [1,1] [1,2] [1,3]<br/>(可能在完全不同的堆地址)"]
+ PTR3["arr2[2] →"] --> R2["row2: [2,0] [2,1] [2,2] [2,3]"]
+ end
 ```
 
 **连续二维数组的性能优势**：
@@ -223,8 +223,8 @@ CPU 不是按字节而是以 **cache line**（64 字节）为单位与主存交�
 **行优先遍历**（循环外 i，内 j）—— 内存访问顺序与存储顺序一致：
 ```c
 for (int i = 0; i < m; i++)
-    for (int j = 0; j < n; j++)
-        sum += arr[i][j];  // 连续的 16 次访问几乎在一条 cache line 内
+ for (int j = 0; j < n; j++)
+ sum += arr[i][j]; // 连续的 16 次访问几乎在一条 cache line 内
 ```
 
 每 16 次访问中约 1 次 cache miss，其余 15 次命中。L1 命中率 $\approx 93.75\%$。
@@ -232,25 +232,25 @@ for (int i = 0; i < m; i++)
 **列优先遍历**（循环外 j，内 i）—— 内存访问与存储顺序垂直：
 ```c
 for (int j = 0; j < n; j++)
-    for (int i = 0; i < m; i++)
-        sum += arr[i][j];  // arr[i][j] 与 arr[i+1][j] 相距 n × 4 字节
+ for (int i = 0; i < m; i++)
+ sum += arr[i][j]; // arr[i][j] 与 arr[i+1][j] 相距 n × 4 字节
 ```
 
 相邻两次访问相距 $n \times 4$ 字节。若 $n = 1000$，间距为 4000 字节（62.5 条 cache line）。每次访问几乎一定是 cache miss。
 
 ```mermaid
 graph TD
-    subgraph "行优先遍历 — 缓存友好"
-        R1["读 arr[0][0] → miss<br/>加载 cache line (arr[0][0..15])"] --> R2["读 arr[0][1] → HIT"]
-        R2 --> R3["读 arr[0][2] → HIT"]
-        R3 --> R4["...连续 13 次全 HIT..."]
-        R4 --> R5["读 arr[0][16] → miss<br/>加载下一条 cache line"]
-    end
-    subgraph "列优先遍历 — 缓存不友好"
-        C1["读 arr[0][0] → miss<br/>加载 cache line (arr[0][0..15])"] --> C2["读 arr[1][0] → miss<br/>间距 n×4B，belongs to 另一条 cache line"]
-        C2 --> C3["读 arr[2][0] → miss"]
-        C3 --> C4["读 arr[3][0] → miss<br/>每条 cache line 只被访问了一个 4B 元素"]
-    end
+ subgraph "行优先遍历 — 缓存友好"
+ R1["读 arr[0][0] → miss<br/>加载 cache line (arr[0][0..15])"] --> R2["读 arr[0][1] → HIT"]
+ R2 --> R3["读 arr[0][2] → HIT"]
+ R3 --> R4["...连续 13 次全 HIT..."]
+ R4 --> R5["读 arr[0][16] → miss<br/>加载下一条 cache line"]
+ end
+ subgraph "列优先遍历 — 缓存不友好"
+ C1["读 arr[0][0] → miss<br/>加载 cache line (arr[0][0..15])"] --> C2["读 arr[1][0] → miss<br/>间距 n×4B，belongs to 另一条 cache line"]
+ C2 --> C3["读 arr[2][0] → miss"]
+ C3 --> C4["读 arr[3][0] → miss<br/>每条 cache line 只被访问了一个 4B 元素"]
+ end
 ```
 
 实验数据参考（$10000 \times 10000$ 的 int 数组，即约 400MB）：
@@ -289,17 +289,17 @@ for (int i = 0; i < N; i += 64) sum += a[i];
 int arr[10];
 
 // sizeof 是少数不退化的场景之一
-sizeof(arr);        // 40 (= 10 × 4)，数组总字节数
-&arr;               // int(*)[10]，指向整个数组的指针
+sizeof(arr); // 40 (= 10 × 4)，数组总字节数
+&arr; // int(*)[10]，指向整个数组的指针
 
 // 大多数场景下 arr 退化为 int*
-int* p = arr;       // 退化：arr → &arr[0]
-sizeof(p);          // 8 (64位系统上指针大小)，长度信息丢失
+int* p = arr; // 退化：arr → &arr[0]
+sizeof(p); // 8 (64位系统上指针大小)，长度信息丢失
 
 // 函数传参时必然退化
 void foo(int arr[10]) {
-    // arr 在这里是 int*，不是 int[10]
-    sizeof(arr);    // 8，不是 40！长度信息完全丢失
+ // arr 在这里是 int*，不是 int[10]
+ sizeof(arr); // 8，不是 40！长度信息完全丢失
 }
 ```
 
@@ -308,9 +308,9 @@ void foo(int arr[10]) {
 ```c
 // 典型的缓冲区溢出 —— 函数内无法获知数组大小
 void read_data(int* buf) {
-    // buf 的大小是多少？函数签名没有提供信息
-    // 只能依赖调用者传入的 size 参数
-    // 如果没有 size 参数，只能猜测——这是 heartbleed 等漏洞的根源
+ // buf 的大小是多少？函数签名没有提供信息
+ // 只能依赖调用者传入的 size 参数
+ // 如果没有 size 参数，只能猜测——这是 heartbleed 等漏洞的根源
 }
 ```
 
@@ -319,8 +319,8 @@ void read_data(int* buf) {
 ```c
 // 明确传递大小信息
 void read_data(int* buf, size_t len) {
-    for (size_t i = 0; i < len; i++)  // 有明确边界
-        buf[i] = ...;
+ for (size_t i = 0; i < len; i++) // 有明确边界
+ buf[i] = ...;
 }
 ```
 
@@ -332,27 +332,27 @@ void read_data(int* buf, size_t len) {
 
 ```mermaid
 sequenceDiagram
-    participant App as 应用程序
-    participant Malloc as malloc (glibc)
-    participant Kernel as OS 内核
-    participant MMU as 内存管理单元 (MMU)
+ participant App as 应用程序
+ participant Malloc as malloc (glibc)
+ participant Kernel as OS 内核
+ participant MMU as 内存管理单元 (MMU)
 
-    App->>Malloc: malloc(1GB)
-    Malloc->>Kernel: mmap(NULL, 1GB, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0)
-    Kernel->>MMU: 在页表中创建虚拟地址→没有物理页框的映射 (demand-zero mapping)
-    Kernel-->>Malloc: 返回虚拟地址
-    Malloc-->>App: 返回指针 (瞬间完成，仅分配虚拟地址)
-    
-    App->>MMU: 写入 arr[0..4095] (第 0 页)
-    MMU->>Kernel: 页表项为空，触发 page fault
-    Kernel->>Kernel: 分配物理页框 (4KB)，清零，建立页表映射
-    Kernel-->>MMU: 返回，重新执行写入指令
-    MMU-->>App: 写入成功
-    
-    note over App,MMU: arr[0] 到 arr[1023] 在此页内，不再缺页
-    
-    App->>MMU: 写入 arr[1024] (第 1 页的起始)
-    MMU->>Kernel: 再次 page fault...
+ App->>Malloc: malloc(1GB)
+ Malloc->>Kernel: mmap(NULL, 1GB, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0)
+ Kernel->>MMU: 在页表中创建虚拟地址→没有物理页框的映射 (demand-zero mapping)
+ Kernel-->>Malloc: 返回虚拟地址
+ Malloc-->>App: 返回指针 (瞬间完成，仅分配虚拟地址)
+ 
+ App->>MMU: 写入 arr[0..4095] (第 0 页)
+ MMU->>Kernel: 页表项为空，触发 page fault
+ Kernel->>Kernel: 分配物理页框 (4KB)，清零，建立页表映射
+ Kernel-->>MMU: 返回，重新执行写入指令
+ MMU-->>App: 写入成功
+ 
+ note over App,MMU: arr[0] 到 arr[1023] 在此页内，不再缺页
+ 
+ App->>MMU: 写入 arr[1024] (第 1 页的起始)
+ MMU->>Kernel: 再次 page fault...
 ```
 
 **缺页中断的三阶段开销**：
@@ -368,7 +368,7 @@ sequenceDiagram
 ```c
 // 使用 madvise 预加载大数组的物理页
 int* big = malloc(1GB);
-madvise(big, 1GB, MADV_WILLNEED);  // 提示内核：这些页即将被访问
+madvise(big, 1GB, MADV_WILLNEED); // 提示内核：这些页即将被访问
 // 内核可能在后台预先完成缺页处理，减少后续首次访问的停顿
 ```
 
@@ -380,8 +380,8 @@ madvise(big, 1GB, MADV_WILLNEED);  // 提示内核：这些页即将被访问
 
 ```c
 void add_arrays(const int* a, const int* b, int* c, int n) {
-    for (int i = 0; i < n; i++)
-        c[i] = a[i] + b[i];
+ for (int i = 0; i < n; i++)
+ c[i] = a[i] + b[i];
 }
 ```
 
@@ -389,12 +389,12 @@ void add_arrays(const int* a, const int* b, int* c, int n) {
 
 ```nasm
 ; 简化的向量化版本 (AVX2, 一次处理 8 个 int)
-vpmovsxdq  ymm0, [rdi + rax]      ; 加载 a[i..i+7] 的 8 个 int
-vpaddd     ymm0, ymm0, [rsi + rax] ; 与 b[i..i+7] 对应相加
-vmovdqu    [rdx + rax], ymm0       ; 存储结果到 c[i..i+7]
-add        rax, 32                 ; 前移 8 × 4 = 32 字节
-cmp        rax, rcx
-jl         .loop
+vpmovsxdq ymm0, [rdi + rax] ; 加载 a[i..i+7] 的 8 个 int
+vpaddd ymm0, ymm0, [rsi + rax] ; 与 b[i..i+7] 对应相加
+vmovdqu [rdx + rax], ymm0 ; 存储结果到 c[i..i+7]
+add rax, 32 ; 前移 8 × 4 = 32 字节
+cmp rax, rcx
+jl .loop
 ```
 
 向量化要求：
@@ -413,32 +413,32 @@ void add_arrays(int* restrict a, int* restrict b, int* restrict c, int n);
 
 ```c
 struct BadAlign {
-    char flag;   // 1 字节
-    double val;  // 8 字节 — 编译器在 flag 后插入 7 字节 padding
-};  // sizeof = 16 字节，而非 1+8=9 字节
+ char flag; // 1 字节
+ double val; // 8 字节 — 编译器在 flag 后插入 7 字节 padding
+}; // sizeof = 16 字节，而非 1+8=9 字节
 
-struct BadAlign arr[1000];  // 占用 16000 字节，浪费 7000 字节
+struct BadAlign arr[1000]; // 占用 16000 字节，浪费 7000 字节
 ```
 
 将大字段排在前面可以减少 padding：
 
 ```c
 struct GoodAlign {
-    double val;   // 8 字节
-    char flag;    // 1 字节 — padding 仅在末尾（对齐到 8 的倍数）
-};  // sizeof = 16 字节（但 val 在最前，对缓存预取更友好）
+ double val; // 8 字节
+ char flag; // 1 字节 — padding 仅在末尾（对齐到 8 的倍数）
+}; // sizeof = 16 字节（但 val 在最前，对缓存预取更友好）
 ```
 
 ```mermaid
 graph TD
-    subgraph "BadAlign — flag 在前"
-        B0["flag(1) + pad(7)"] --- B1["val[0..7]"]
-        B1 --- B2["flag(1) + pad(7)"] --- B3["val[0..7]"]
-    end
-    subgraph "GoodAlign — val 在前"
-        G0["val[0..7]"] --- G1["flag(1) + pad(7)"]
-        G1 --- G2["val[0..7]"] --- G3["flag(1) + pad(7)"]
-    end
+ subgraph "BadAlign — flag 在前"
+ B0["flag(1) + pad(7)"] --- B1["val[0..7]"]
+ B1 --- B2["flag(1) + pad(7)"] --- B3["val[0..7]"]
+ end
+ subgraph "GoodAlign — val 在前"
+ G0["val[0..7]"] --- G1["flag(1) + pad(7)"]
+ G1 --- G2["val[0..7]"] --- G3["flag(1) + pad(7)"]
+ end
 ```
 
 对于遍历 `val` 字段的场景，GoodAlign 布局使得连续的 `val` 字段尽可能靠近，cache line 利用率更高。详细对齐原理见 [[../计算机原理/A_数据表示#内存对齐|计算机原理 — 内存对齐]]。
@@ -469,31 +469,31 @@ graph TD
 #include <stdlib.h>
 
 typedef struct {
-    int* data;
-    size_t length;
+ int* data;
+ size_t length;
 } StaticArray;
 
 void sa_init(StaticArray* a, size_t n) {
-    a->data = malloc(n * sizeof(int));
-    a->length = n;
+ a->data = malloc(n * sizeof(int));
+ a->length = n;
 }
 
 void sa_destroy(StaticArray* a) {
-    free(a->data);
-    a->data = NULL;
-    a->length = 0;
+ free(a->data);
+ a->data = NULL;
+ a->length = 0;
 }
 
 int sa_get(const StaticArray* a, size_t index, int* out) {
-    if (index >= a->length) return -1;  // 拒绝越界
-    *out = a->data[index];              // 寻址: data + index * sizeof(int)
-    return 0;
+ if (index >= a->length) return -1; // 拒绝越界
+ *out = a->data[index]; // 寻址: data + index * sizeof(int)
+ return 0;
 }
 
 int sa_set(StaticArray* a, size_t index, int value) {
-    if (index >= a->length) return -1;
-    a->data[index] = value;
-    return 0;
+ if (index >= a->length) return -1;
+ a->data[index] = value;
+ return 0;
 }
 ```
 
@@ -504,33 +504,33 @@ int sa_set(StaticArray* a, size_t index, int value) {
 #include <stdlib.h>
 
 typedef struct {
-    int* data;       // 平坦数组，大小为 rows * cols
-    size_t rows;
-    size_t cols;
+ int* data; // 平坦数组，大小为 rows * cols
+ size_t rows;
+ size_t cols;
 } Matrix2D;
 
 void mat_init(Matrix2D* m, size_t rows, size_t cols) {
-    m->data = malloc(rows * cols * sizeof(int));
-    m->rows = rows;
-    m->cols = cols;
+ m->data = malloc(rows * cols * sizeof(int));
+ m->rows = rows;
+ m->cols = cols;
 }
 
 void mat_destroy(Matrix2D* m) {
-    free(m->data);
-    m->data = NULL;
+ free(m->data);
+ m->data = NULL;
 }
 
 // 下标映射: addr(i, j) = base + (i * cols + j) * sizeof(int)
 int mat_get(const Matrix2D* m, size_t i, size_t j, int* out) {
-    if (i >= m->rows || j >= m->cols) return -1;
-    *out = m->data[i * m->cols + j];
-    return 0;
+ if (i >= m->rows || j >= m->cols) return -1;
+ *out = m->data[i * m->cols + j];
+ return 0;
 }
 
 int mat_set(Matrix2D* m, size_t i, size_t j, int value) {
-    if (i >= m->rows || j >= m->cols) return -1;
-    m->data[i * m->cols + j] = value;
-    return 0;
+ if (i >= m->rows || j >= m->cols) return -1;
+ m->data[i * m->cols + j] = value;
+ return 0;
 }
 ```
 
@@ -565,12 +565,12 @@ int mat_set(Matrix2D* m, size_t i, size_t j, int value) {
 
 ## 练习
 
-| 题号                                                                      | 题目          | 难度  | 知识点        |
+| 题号 | 题目 | 难度 | 知识点 |
 | ----------------------------------------------------------------------- | ----------- | :-: | ---------- |
-| [26](https://leetcode.cn/problems/remove-duplicates-from-sorted-array/) | 删除有序数组中的重复项 | 入门  | 原地修改、双指针   |
-| [27](https://leetcode.cn/problems/remove-element/)                      | 移除元素        | 入门  | 原地修改       |
-| [283](https://leetcode.cn/problems/move-zeroes/)                        | 移动零         | 入门  | 双指针 + 原地修改 |
-| [88](https://leetcode.cn/problems/merge-sorted-array/)                  | 合并两个有序数组    | 入门  | 逆向双指针      |
+| [26](https://leetcode.cn/problems/remove-duplicates-from-sorted-array/) | 删除有序数组中的重复项 | 入门 | 原地修改、双指针 |
+| [27](https://leetcode.cn/problems/remove-element/) | 移除元素 | 入门 | 原地修改 |
+| [283](https://leetcode.cn/problems/move-zeroes/) | 移动零 | 入门 | 双指针 + 原地修改 |
+| [88](https://leetcode.cn/problems/merge-sorted-array/) | 合并两个有序数组 | 入门 | 逆向双指针 |
 
 
 ---

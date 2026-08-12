@@ -29,11 +29,11 @@
 | 发行版 | 类型 | 包管理 | 免费 | 说明 |
 |--------|------|--------|------|------|
 | RHEL | 企业付费 | dnf | 16台免费（开发者订阅） | Red Hat 官方企业版 |
-| CentOS Stream | 滚动预览 | dnf | ✓ | RHEL 上游开发分支 |
-| Rocky Linux | 社区稳定 | dnf | ✓ | RHEL 兼容克隆（CentOS 继任者） |
-| AlmaLinux | 社区稳定 | dnf | ✓ | RHEL 兼容克隆 |
-| Fedora | 社区创新 | dnf | ✓ | 新技术试验场 |
-| Oracle Linux | 企业 | dnf | ✓ | Oracle 发行的 RHEL 兼容版 |
+| CentOS Stream | 滚动预览 | dnf | | RHEL 上游开发分支 |
+| Rocky Linux | 社区稳定 | dnf | | RHEL 兼容克隆（CentOS 继任者） |
+| AlmaLinux | 社区稳定 | dnf | | RHEL 兼容克隆 |
+| Fedora | 社区创新 | dnf | | 新技术试验场 |
+| Oracle Linux | 企业 | dnf | | Oracle 发行的 RHEL 兼容版 |
 
 ---
 
@@ -164,11 +164,11 @@ dnf history info last
 ```ini
 # /etc/dnf/dnf.conf
 [main]
-gpgcheck=1                       # 启用 GPG 检查
-installonly_limit=3              # 保留的内核版本数
+gpgcheck=1 # 启用 GPG 检查
+installonly_limit=3 # 保留的内核版本数
 clean_requirements_on_remove=True # 删除时清理依赖
-best=True                        # 尽量安装最新版本
-skip_if_unavailable=True         # 遇到不可用仓库跳过
+best=True # 尽量安装最新版本
+skip_if_unavailable=True # 遇到不可用仓库跳过
 
 # 加速下载（并行下载）
 max_parallel_downloads=10
@@ -183,7 +183,7 @@ exclude=kernel* nvidia*
 proxy=http://proxy.example.com:8080
 
 # 缓存设置
-keepcache=True                   # 保留下载的包
+keepcache=True # 保留下载的包
 cachedir=/var/cache/dnf
 ```
 
@@ -273,10 +273,10 @@ sudo dnf install epel-rpm-macros
 ```bash
 # EPEL 中常用的企业级服务器软件
 sudo dnf --enablerepo=epel install \
-    htop btop neofetch \
-    tmux jq ripgrep fd-find \
-    certbot python3-certbot-nginx \
-    fail2ban wireguard-tools
+ htop btop neofetch \
+ tmux jq ripgrep fd-find \
+ certbot python3-certbot-nginx \
+ fail2ban wireguard-tools
 ```
 
 ---
@@ -288,14 +288,14 @@ sudo dnf --enablerepo=epel install \
 ```bash
 # Fedora
 sudo dnf install \
-    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
-    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+ https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+ https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 
 # RHEL 9 / Rocky 9 / AlmaLinux 9（需先安装 EPEL）
 sudo dnf install epel-release
 sudo dnf install \
-    https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-9.noarch.rpm \
-    https://mirrors.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-9.noarch.rpm
+ https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-9.noarch.rpm \
+ https://mirrors.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-9.noarch.rpm
 
 # 验证
 dnf repolist | grep rpmfusion
@@ -367,10 +367,10 @@ sudo dnf module remove nodejs
 dnf module info nodejs:20
 
 # Profile 常见类型：
-# common/default  — 通用安装
-# minimal         — 最小安装
-# development     — 开发工具
-# server          — 服务器组件
+# common/default — 通用安装
+# minimal — 最小安装
+# development — 开发工具
+# server — 服务器组件
 
 # 安装特定 profile
 sudo dnf module install nodejs:20/development
@@ -544,7 +544,7 @@ sudo dnf clean all
 # keepcache=True
 
 # 从缓存安装
-sudo dnf -C install pkgname      # 仅使用缓存
+sudo dnf -C install pkgname # 仅使用缓存
 ```
 
 ---
@@ -576,7 +576,7 @@ dnf download --source pkgname
 
 # needs-restarting — 需要重启的服务
 dnf needs-restarting
-dnf needs-restarting -s      # 列出需要重启的服务
+dnf needs-restarting -s # 列出需要重启的服务
 ```
 
 ---

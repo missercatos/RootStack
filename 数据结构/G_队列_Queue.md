@@ -34,11 +34,11 @@
 
 ```
 物理数组: [s0] [s1] [s2] [s3] [s4] [s5] [s6] [s7]
-           ┌─────────────────────────────────────┐
-           │    (7) ──→ (0) ──→ (1) ──→ (2)     │
-           │     ↑                     ↓          │
-           │    (6) ←── (5) ←── (4) ←── (3)     │
-           └─────────────────────────────────────┘
+ ┌─────────────────────────────────────┐
+ │ (7) ──→ (0) ──→ (1) ──→ (2) │
+ │ ↑ ↓ │
+ │ (6) ←── (5) ←── (4) ←── (3) │
+ └─────────────────────────────────────┘
 tail=5 → 指向下一个插入位
 head=2 → 指向队首元素
 当前元素: [2], [3], [4]
@@ -47,7 +47,7 @@ head=2 → 指向队首元素
 核心操作：
 ```
 push: data[tail] = x; tail = (tail + 1) % capacity;
-pop:  head = (head + 1) % capacity;
+pop: head = (head + 1) % capacity;
 ```
 
 #### 取模的硬件代价
@@ -56,7 +56,7 @@ pop:  head = (head + 1) % capacity;
 
 ```c
 // 如果 capacity = 256 (2^8 = 0x100)
-// tail % 256   → 等效于  tail & 0xFF
+// tail % 256 → 等效于 tail & 0xFF
 // 编译器在 -O2 下会自动优化，但需 capacity 是编译时常量
 ```
 
@@ -80,22 +80,22 @@ Deque 支持 $O(1)$ 两端插入/删除和 $O(1)$ 随机访问。它既不是 ve
 
 ```mermaid
 graph TD
-    subgraph "map: 中控指针数组"
-        M0["map[0]: → b0"] 
-        M1["map[1]: → b1"]
-        M2["map[2]: → b2"]
-        M3["map[3]: → b3"]
-    end
-    subgraph "b0: 定长 block (B=8)"
-        B00["[0]"] --- B01["[1]"] --- B02["[2]"] --- B03["[...]"] --- B07["[7]"]
-    end
-    subgraph "b1: 定长 block"
-        B10["[0]"] --- B11["[1]"] --- B12["[2]"] --- B17["[7]"]
-    end
-    M0 --> B00
-    M1 --> B10
-    M2 --> B20["b2..."]
-    M3 --> B30["b3..."]
+ subgraph "map: 中控指针数组"
+ M0["map[0]: → b0"] 
+ M1["map[1]: → b1"]
+ M2["map[2]: → b2"]
+ M3["map[3]: → b3"]
+ end
+ subgraph "b0: 定长 block (B=8)"
+ B00["[0]"] --- B01["[1]"] --- B02["[2]"] --- B03["[...]"] --- B07["[7]"]
+ end
+ subgraph "b1: 定长 block"
+ B10["[0]"] --- B11["[1]"] --- B12["[2]"] --- B17["[7]"]
+ end
+ M0 --> B00
+ M1 --> B10
+ M2 --> B20["b2..."]
+ M3 --> B30["b3..."]
 ```
 
 - **map**：动态指针数组，每个元素指向一个 block
@@ -105,9 +105,9 @@ graph TD
 **Deque 的 map 扩容**：当 head 或 tail 侧的 map 已无空闲 slot 时，分配 2 倍大的新 map，将旧 map 拷贝到新 map 的**中央区域**，预留两侧空间：
 
 ```
-旧 map (4 slots, 满):   [b0][b1][b2][b3]
-新 map (8 slots):       [  ][  ][b0][b1][b2][b3][  ][  ]
-                              ↑ 中央对齐，两侧各 2 个空闲 slot
+旧 map (4 slots, 满): [b0][b1][b2][b3]
+新 map (8 slots): [ ][ ][b0][b1][b2][b3][ ][ ]
+ ↑ 中央对齐，两侧各 2 个空闲 slot
 ```
 
 这个"中央对齐"技巧保证了后续 `push_front` 和 `push_back` 都有足够的两侧扩展空间，避免了频繁的 map 重分配。
@@ -118,20 +118,20 @@ graph TD
 #define BLOCK_SIZE 8
 
 typedef struct {
-    int** map;
-    int   map_cap;       // map 总 slot 数
-    int   map_start;     // map 中第一个有效 block 的索引
-    int   block_count;   // 已用 block 数
-    int   head_off;      // 第一个 block 内的偏移
-    int   tail_off;      // 最后一个 block 内的偏移
-    int   total;
+ int** map;
+ int map_cap; // map 总 slot 数
+ int map_start; // map 中第一个有效 block 的索引
+ int block_count; // 已用 block 数
+ int head_off; // 第一个 block 内的偏移
+ int tail_off; // 最后一个 block 内的偏移
+ int total;
 } SimpleDeque;
 
 // 随机访问: arr[i]
 int sd_at(SimpleDeque* dq, int i) {
-    int global_idx = dq->head_off + i;
-    int blk = (dq->map_start + global_idx / BLOCK_SIZE) % dq->map_cap;
-    return dq->map[blk][global_idx % BLOCK_SIZE];
+ int global_idx = dq->head_off + i;
+ int blk = (dq->map_start + global_idx / BLOCK_SIZE) % dq->map_cap;
+ return dq->map[blk][global_idx % BLOCK_SIZE];
 }
 ```
 
@@ -146,35 +146,35 @@ int sd_at(SimpleDeque* dq, int i) {
 
 ```mermaid
 graph TD
-    A["新元素 x = A[i]"] --> B{"队首过期?<br/>i - k >= dq[head]"}
-    B -->|是| C["弹出队首"]
-    C --> B
-    B -->|否| D{"队尾值 <= x?"}
-    D -->|是| E["弹出队尾"]
-    E --> D
-    D -->|否| F["x 入队尾"]
-    F --> G["dq[head] 是当前窗口最大值"]
+ A["新元素 x = A[i]"] --> B{"队首过期?<br/>i - k >= dq[head]"}
+ B -->|是| C["弹出队首"]
+ C --> B
+ B -->|否| D{"队尾值 <= x?"}
+ D -->|是| E["弹出队尾"]
+ E --> D
+ D -->|否| F["x 入队尾"]
+ F --> G["dq[head] 是当前窗口最大值"]
 ```
 
 单调队列的时间复杂度 $O(n)$——每个下标入队一次、出队至多一次。这是一个典型的均摊线性算法：表面上每个新元素都可能"踢掉"多个元素，但每个元素被踢最多一次，总操作数不超过 $2n$。
 
 ```c
 int* max_sliding_window(const int* nums, int n, int k, int* result_size) {
-    int* result = malloc((n - k + 1) * sizeof(int));
-    int* dq = malloc(n * sizeof(int));
-    int head = 0, tail = 0, ri = 0;
-    for (int i = 0; i < n; i++) {
-        while (tail > head && dq[head] <= i - k)   // 淘汰过期
-            head++;
-        while (tail > head && nums[dq[tail-1]] <= nums[i])  // 保持递减
-            tail--;
-        dq[tail++] = i;
-        if (i >= k - 1)
-            result[ri++] = nums[dq[head]];
-    }
-    *result_size = ri;
-    free(dq);
-    return result;
+ int* result = malloc((n - k + 1) * sizeof(int));
+ int* dq = malloc(n * sizeof(int));
+ int head = 0, tail = 0, ri = 0;
+ for (int i = 0; i < n; i++) {
+ while (tail > head && dq[head] <= i - k) // 淘汰过期
+ head++;
+ while (tail > head && nums[dq[tail-1]] <= nums[i]) // 保持递减
+ tail--;
+ dq[tail++] = i;
+ if (i >= k - 1)
+ result[ri++] = nums[dq[head]];
+ }
+ *result_size = ri;
+ free(dq);
+ return result;
 }
 ```
 
@@ -188,17 +188,17 @@ int* max_sliding_window(const int* nums, int n, int k, int* result_size) {
 
 ```mermaid
 graph TD
-    subgraph "BFS 层序遍历树"
-        ROOT["root (深度 0)"] --> L1A["A (深度 1)"] --> L1B["B (深度 1)"]
-        L1A --> L2A["C (深度 2)"] --> L2B["D (深度 2)"]
-        L1B --> L2C["E (深度 2)"]
-    end
-    subgraph "队列状态变化"
-        Q0["初始: [root]"] --> Q1["处理 root: [A, B]"]
-        Q1 --> Q2["处理 A: [B, C, D]"]
-        Q2 --> Q3["处理 B: [C, D, E]"]
-        Q3 --> Q4["处理 C: [D, E] → ..."]
-    end
+ subgraph "BFS 层序遍历树"
+ ROOT["root (深度 0)"] --> L1A["A (深度 1)"] --> L1B["B (深度 1)"]
+ L1A --> L2A["C (深度 2)"] --> L2B["D (深度 2)"]
+ L1B --> L2C["E (深度 2)"]
+ end
+ subgraph "队列状态变化"
+ Q0["初始: [root]"] --> Q1["处理 root: [A, B]"]
+ Q1 --> Q2["处理 A: [B, C, D]"]
+ Q2 --> Q3["处理 B: [C, D, E]"]
+ Q3 --> Q4["处理 C: [D, E] → ..."]
+ end
 ```
 
 BFS 用队列的 FIFO 顺序保证了"先发现先处理"。在无权重图中，节点在 BFS 树中的深度 = 从起点到该节点的最短路径长度。Dijkstra 算法是 BFS 的加权推广——将队列替换为优先队列（堆）。详见 [[S_图_Graph|图的 BFS]]。
@@ -209,12 +209,12 @@ BFS 用队列的 FIFO 顺序保证了"先发现先处理"。在无权重图中�
 
 ```mermaid
 graph LR
-    subgraph "SPSC Ring Buffer (单生产者-单消费者)"
-        direction LR
-        R0["[0]"] --> R1["[1]"] --> R2["[2]"] --> R3["[3]"] --> R4["[...]"] --> RN["[N-1]"] --> R0
-    end
-    W["write_idx (原子)"] --> R0
-    R["read_idx (原子)"] --> R2
+ subgraph "SPSC Ring Buffer (单生产者-单消费者)"
+ direction LR
+ R0["[0]"] --> R1["[1]"] --> R2["[2]"] --> R3["[3]"] --> R4["[...]"] --> RN["[N-1]"] --> R0
+ end
+ W["write_idx (原子)"] --> R0
+ R["read_idx (原子)"] --> R2
 ```
 
 Linux 内核的 `kfifo`（kernel FIFO buffer）和 DPDK 的 `rte_ring` 是典型的无锁环形队列实现。它们使用 `power-of-two` 容量和内存屏障（memory barrier）确保多核环境下的正确性。关键设计：write_idx 仅由生产者更新，read_idx 仅由消费者更新——避免了需要 CAS 的复杂争用。但在多生产者/多消费者（MPMC）场景，仍然需要原子比较交换。
@@ -239,56 +239,56 @@ Linux 内核的 `kfifo`（kernel FIFO buffer）和 DPDK 的 `rte_ring` 是典型
 #include <stdlib.h>
 
 typedef struct {
-    int* data;
-    size_t head, tail;
-    size_t capacity;
-    size_t count;
+ int* data;
+ size_t head, tail;
+ size_t capacity;
+ size_t count;
 } CircularQueue;
 
 void cq_init(CircularQueue* q, size_t cap) {
-    q->data = malloc(cap * sizeof(int));
-    q->head = q->tail = 0;
-    q->capacity = cap;
-    q->count = 0;
+ q->data = malloc(cap * sizeof(int));
+ q->head = q->tail = 0;
+ q->capacity = cap;
+ q->count = 0;
 }
 
 void cq_destroy(CircularQueue* q) { free(q->data); }
 
 static int cq_resize(CircularQueue* q) {
-    size_t new_cap = q->capacity * 2;
-    int* new_data = malloc(new_cap * sizeof(int));
-    if (!new_data) return -1;
-    // 按逻辑顺序拷贝: [head .. tail) wrap-around 后平坦化
-    for (size_t i = 0; i < q->count; i++)
-        new_data[i] = q->data[(q->head + i) % q->capacity];
-    free(q->data);
-    q->data = new_data;
-    q->head = 0;
-    q->tail = q->count;
-    q->capacity = new_cap;
-    return 0;
+ size_t new_cap = q->capacity * 2;
+ int* new_data = malloc(new_cap * sizeof(int));
+ if (!new_data) return -1;
+ // 按逻辑顺序拷贝: [head .. tail) wrap-around 后平坦化
+ for (size_t i = 0; i < q->count; i++)
+ new_data[i] = q->data[(q->head + i) % q->capacity];
+ free(q->data);
+ q->data = new_data;
+ q->head = 0;
+ q->tail = q->count;
+ q->capacity = new_cap;
+ return 0;
 }
 
 int cq_push(CircularQueue* q, int value) {
-    if (q->count >= q->capacity)
-        if (cq_resize(q) != 0) return -1;
-    q->data[q->tail] = value;
-    q->tail = (q->tail + 1) % q->capacity;
-    q->count++;
-    return 0;
+ if (q->count >= q->capacity)
+ if (cq_resize(q) != 0) return -1;
+ q->data[q->tail] = value;
+ q->tail = (q->tail + 1) % q->capacity;
+ q->count++;
+ return 0;
 }
 
 int cq_pop(CircularQueue* q) {
-    if (q->count == 0) return -1;
-    q->head = (q->head + 1) % q->capacity;
-    q->count--;
-    return 0;
+ if (q->count == 0) return -1;
+ q->head = (q->head + 1) % q->capacity;
+ q->count--;
+ return 0;
 }
 
 int cq_front(const CircularQueue* q, int* out) {
-    if (q->count == 0) return -1;
-    *out = q->data[q->head];
-    return 0;
+ if (q->count == 0) return -1;
+ *out = q->data[q->head];
+ return 0;
 }
 ```
 
@@ -298,47 +298,47 @@ int cq_front(const CircularQueue* q, int* out) {
 #include <stdlib.h>
 
 typedef struct QNode {
-    int data;
-    struct QNode* next;
+ int data;
+ struct QNode* next;
 } QNode;
 
 typedef struct {
-    QNode* head;
-    QNode* tail;
-    size_t count;
+ QNode* head;
+ QNode* tail;
+ size_t count;
 } LinkedQueue;
 
 void lq_init(LinkedQueue* q) { q->head = q->tail = NULL; q->count = 0; }
 
 void lq_destroy(LinkedQueue* q) {
-    while (q->head) {
-        QNode* tmp = q->head;
-        q->head = q->head->next;
-        free(tmp);
-    }
-    q->tail = NULL; q->count = 0;
+ while (q->head) {
+ QNode* tmp = q->head;
+ q->head = q->head->next;
+ free(tmp);
+ }
+ q->tail = NULL; q->count = 0;
 }
 
 int lq_push(LinkedQueue* q, int value) {
-    QNode* node = malloc(sizeof(QNode));
-    if (!node) return -1;
-    node->data = value;
-    node->next = NULL;
-    if (q->tail) q->tail->next = node;
-    else         q->head = node;
-    q->tail = node;
-    q->count++;
-    return 0;
+ QNode* node = malloc(sizeof(QNode));
+ if (!node) return -1;
+ node->data = value;
+ node->next = NULL;
+ if (q->tail) q->tail->next = node;
+ else q->head = node;
+ q->tail = node;
+ q->count++;
+ return 0;
 }
 
 int lq_pop(LinkedQueue* q) {
-    if (!q->head) return -1;
-    QNode* tmp = q->head;
-    q->head = q->head->next;
-    if (!q->head) q->tail = NULL;
-    free(tmp);
-    q->count--;
-    return 0;
+ if (!q->head) return -1;
+ QNode* tmp = q->head;
+ q->head = q->head->next;
+ if (!q->head) q->tail = NULL;
+ free(tmp);
+ q->count--;
+ return 0;
 }
 ```
 

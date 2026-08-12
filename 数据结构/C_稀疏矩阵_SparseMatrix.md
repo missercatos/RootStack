@@ -74,12 +74,12 @@ COO 表示为三个等长数组：
 
 ```mermaid
 graph LR
-    subgraph "COO 内存布局 (k=3)"
-        direction LR
-        R0["row[0]=0"] --> C0["col[0]=0"] --> V0["val[0]=1"]
-        V0 --> R1["row[1]=0"] --> C1["col[1]=3"] --> V1["val[1]=2"]
-        V1 --> R2["row[2]=2"] --> C2["col[2]=1"] --> V2["val[2]=3"]
-    end
+ subgraph "COO 内存布局 (k=3)"
+ direction LR
+ R0["row[0]=0"] --> C0["col[0]=0"] --> V0["val[0]=1"]
+ V0 --> R1["row[1]=0"] --> C1["col[1]=3"] --> V1["val[1]=2"]
+ V1 --> R2["row[2]=2"] --> C2["col[2]=1"] --> V2["val[2]=3"]
+ end
 ```
 
 **COO 的优点与陷阱**：
@@ -98,9 +98,9 @@ CSR 是工业界默认的稀疏矩阵计算格式。它将 COO 中的 `row` 数�
 同一示例矩阵的 CSR：
 
 ```
-row_ptr    = [0, 2, 2, 3]     // 长度 m+1 = 4
-col_index  = [0, 3, 1]         // 长度 k = 3
-values     = [1, 2, 3]         // 长度 k = 3
+row_ptr = [0, 2, 2, 3] // 长度 m+1 = 4
+col_index = [0, 3, 1] // 长度 k = 3
+values = [1, 2, 3] // 长度 k = 3
 ```
 
 解读：
@@ -110,27 +110,27 @@ values     = [1, 2, 3]         // 长度 k = 3
 
 ```mermaid
 graph TD
-    subgraph "CSR 三数组结构"
-        direction LR
-        RP["row_ptr<br/>[0, 2, 2, 3]"]
-        CI["col_index<br/>[0, 3, 1]"]
-        V["values<br/>[1, 2, 3]"]
-    end
-    subgraph "row_ptr 指向区间"
-        RP -->|"row 0: [0,2)"| V0["values[0]=1"]
-        RP -->|"row 1: [2,2) = 空"| EMPTY["(无元素)"]
-        RP -->|"row 2: [2,3)"| V2["values[2]=3"]
-    end
+ subgraph "CSR 三数组结构"
+ direction LR
+ RP["row_ptr<br/>[0, 2, 2, 3]"]
+ CI["col_index<br/>[0, 3, 1]"]
+ V["values<br/>[1, 2, 3]"]
+ end
+ subgraph "row_ptr 指向区间"
+ RP -->|"row 0: [0,2)"| V0["values[0]=1"]
+ RP -->|"row 1: [2,2) = 空"| EMPTY["(无元素)"]
+ RP -->|"row 2: [2,3)"| V2["values[2]=3"]
+ end
 ```
 
 **CSR 的行遍历**——最能体现 CSR 设计优势的操作模式：
 ```c
 // 稀疏矩阵-向量乘法 y = A * x (CSR 实现)
 for (int i = 0; i < m; i++) {
-    double sum = 0.0;
-    for (int p = row_ptr[i]; p < row_ptr[i + 1]; p++)
-        sum += values[p] * x[col_index[p]];
-    y[i] = sum;
+ double sum = 0.0;
+ for (int p = row_ptr[i]; p < row_ptr[i + 1]; p++)
+ sum += values[p] * x[col_index[p]];
+ y[i] = sum;
 }
 ```
 
@@ -144,31 +144,31 @@ for (int i = 0; i < m; i++) {
 
 ```c
 typedef struct OLNode {
-    int row, col;
-    double value;
-    struct OLNode *right;  // 同行下一个非零元素
-    struct OLNode *down;   // 同列下一个非零元素
+ int row, col;
+ double value;
+ struct OLNode *right; // 同行下一个非零元素
+ struct OLNode *down; // 同列下一个非零元素
 } OLNode;
 ```
 
 ```mermaid
 graph TD
-    subgraph "行头指针数组 row_heads[0..m-1]"
-        RH0["row_heads[0] → "] --> N00["(0,0)=1"]
-        RH1["row_heads[1] → "] --> NONE1["NULL (全零行)"]
-        RH2["row_heads[2] → "] --> N20["(2,1)=3"]
-    end
-    subgraph "列头指针数组 col_heads[0..n-1]"
-        CH0["col_heads[0] → "] --> N00
-        CH1["col_heads[1] → "] --> N20
-        CH2["col_heads[2] → "] --> NONE2["NULL"]
-        CH3["col_heads[3] → "] --> N03["(0,3)=2"]
-    end
-    N00 -->|".right"| N03
-    N00 -->|".down"| N20
-    N03 -->|".right"| NONE3["NULL"]
-    N20 -->|".right"| NONE4["NULL"]
-    N20 -->|".down"| NONE5["NULL"]
+ subgraph "行头指针数组 row_heads[0..m-1]"
+ RH0["row_heads[0] → "] --> N00["(0,0)=1"]
+ RH1["row_heads[1] → "] --> NONE1["NULL (全零行)"]
+ RH2["row_heads[2] → "] --> N20["(2,1)=3"]
+ end
+ subgraph "列头指针数组 col_heads[0..n-1]"
+ CH0["col_heads[0] → "] --> N00
+ CH1["col_heads[1] → "] --> N20
+ CH2["col_heads[2] → "] --> NONE2["NULL"]
+ CH3["col_heads[3] → "] --> N03["(0,3)=2"]
+ end
+ N00 -->|".right"| N03
+ N00 -->|".down"| N20
+ N03 -->|".right"| NONE3["NULL"]
+ N20 -->|".right"| NONE4["NULL"]
+ N20 -->|".down"| NONE5["NULL"]
 ```
 
 **十字链表的独特优势**——当矩阵需要频繁的行/列插入/删除时，链表操作是 O(1)（已知前驱节点）。矩阵转置只需交换 `row_heads` 和 `col_heads` 指针数组——不需要移动任何数据。代价是每个非零元素的内存开销约为 CSR 的 3 倍（4 个指针 + row + col + value）。
@@ -195,16 +195,16 @@ CSC（Compressed Sparse Column）是 CSR 的列优先镜像——将 `row_ptr` �
 ```c
 // C = A * B (CSR 实现, A 和 B 均采用 CSR 格式)
 // 对于 A 的每个非零元素，需要知道它在 B 中对应的行
-for (int i = 0; i < A_m; i++) {            // A 的每一行
-    for (int pa = A_row_ptr[i]; pa < A_row_ptr[i+1]; pa++) {
-        int k_col = A_col_index[pa];        // A(i, k_col) 非零
-        double a_val = A_values[pa];
-        // 遍历 B 的第 k_col 行：B(k_col, :)
-        for (int pb = B_row_ptr[k_col]; pb < B_row_ptr[k_col+1]; pb++) {
-            int j_col = B_col_index[pb];    // B(k_col, j_col) 非零
-            C[i][j_col] += a_val * B_values[pb];
-        }
-    }
+for (int i = 0; i < A_m; i++) { // A 的每一行
+ for (int pa = A_row_ptr[i]; pa < A_row_ptr[i+1]; pa++) {
+ int k_col = A_col_index[pa]; // A(i, k_col) 非零
+ double a_val = A_values[pa];
+ // 遍历 B 的第 k_col 行：B(k_col, :)
+ for (int pb = B_row_ptr[k_col]; pb < B_row_ptr[k_col+1]; pb++) {
+ int j_col = B_col_index[pb]; // B(k_col, j_col) 非零
+ C[i][j_col] += a_val * B_values[pb];
+ }
+ }
 }
 ```
 
@@ -224,14 +224,14 @@ CSR 的 $y = A \cdot x$（稀疏矩阵-向量乘法，SpMV）被公认为数值�
 
 ```mermaid
 flowchart TD
-    subgraph "有序流 (缓存友好)"
-        A["values[0]"] --> B["values[1]"] --> C["values[2]"] --> D["values[3]"]
-        A2["col_index[0]"] --> B2["col_index[1]"] --> C2["col_index[2]"]
-    end
-    subgraph "随机流 (Gather 模式)"
-        X0["x[col_index[0]] = x[5]"] --> X1["x[col_index[1]] = x[128]"]
-        X1 --> X2["x[col_index[2]] = x[3]"] --> X3["x[col_index[3]] = x[1024]"]
-    end
+ subgraph "有序流 (缓存友好)"
+ A["values[0]"] --> B["values[1]"] --> C["values[2]"] --> D["values[3]"]
+ A2["col_index[0]"] --> B2["col_index[1]"] --> C2["col_index[2]"]
+ end
+ subgraph "随机流 (Gather 模式)"
+ X0["x[col_index[0]] = x[5]"] --> X1["x[col_index[1]] = x[128]"]
+ X1 --> X2["x[col_index[2]] = x[3]"] --> X3["x[col_index[3]] = x[1024]"]
+ end
 ```
 
 **SpMV 的 roofline 模型**：每次内循环做 2 次浮点操作（一次乘 + 一次加），但需要加载至少 12 字节（val 4B + col_idx 4B + x[col] 4B），加上遍历 row_ptr。内存带宽成为瓶颈，而非计算能力。这就是为什么各种稀疏矩阵格式的创新（ELLPACK、Sell-C-σ、CSR5、SELL）都聚焦于减少间接访存或提升 SIMD 利用率。
@@ -269,52 +269,52 @@ COO 转 CSR 的核心是计数排序重排三元组。算法分三步：
 #include <string.h>
 
 typedef struct {
-    int row, col, value;
+ int row, col, value;
 } Triplet;
 
 typedef struct {
-    int m, n, nnz;
-    Triplet* elements;
+ int m, n, nnz;
+ Triplet* elements;
 } COOMatrix;
 
 void coo_init(COOMatrix* mat, int m, int n, int nnz) {
-    mat->m = m;  mat->n = n;  mat->nnz = nnz;
-    mat->elements = calloc(nnz, sizeof(Triplet));
+ mat->m = m; mat->n = n; mat->nnz = nnz;
+ mat->elements = calloc(nnz, sizeof(Triplet));
 }
 
 void coo_destroy(COOMatrix* mat) {
-    free(mat->elements);
-    mat->elements = NULL;
+ free(mat->elements);
+ mat->elements = NULL;
 }
 
 // 稀疏矩阵转置: O(k) — 使用计数排序按列号重新分组
 COOMatrix coo_transpose(const COOMatrix* src) {
-    COOMatrix dst;
-    coo_init(&dst, src->n, src->m, src->nnz);
+ COOMatrix dst;
+ coo_init(&dst, src->n, src->m, src->nnz);
 
-    // ① 统计目标矩阵每行的非零元素个数
-    //    转置后 src 的"列"成为 dst 的"行"
-    int* row_counts = calloc(dst.m, sizeof(int));
-    for (int p = 0; p < src->nnz; p++)
-        row_counts[src->elements[p].col]++;
+ // ① 统计目标矩阵每行的非零元素个数
+ // 转置后 src 的"列"成为 dst 的"行"
+ int* row_counts = calloc(dst.m, sizeof(int));
+ for (int p = 0; p < src->nnz; p++)
+ row_counts[src->elements[p].col]++;
 
-    // ② 前缀和 → 每行在 CSR/目标 COO 中的起始写入偏移
-    int* row_start = calloc(dst.m + 1, sizeof(int));
-    for (int i = 1; i <= dst.m; i++)
-        row_start[i] = row_start[i-1] + row_counts[i-1];
+ // ② 前缀和 → 每行在 CSR/目标 COO 中的起始写入偏移
+ int* row_start = calloc(dst.m + 1, sizeof(int));
+ for (int i = 1; i <= dst.m; i++)
+ row_start[i] = row_start[i-1] + row_counts[i-1];
 
-    // ③ 分发：按原列号写入目标矩阵
-    int* cur = calloc(dst.m, sizeof(int));  // 当前已写入的偏移
-    for (int p = 0; p < src->nnz; p++) {
-        int col = src->elements[p].col;       // 转置后变为行
-        int dest = row_start[col] + cur[col]++;
-        dst.elements[dest].row  = src->elements[p].col;
-        dst.elements[dest].col  = src->elements[p].row;
-        dst.elements[dest].value = src->elements[p].value;
-    }
+ // ③ 分发：按原列号写入目标矩阵
+ int* cur = calloc(dst.m, sizeof(int)); // 当前已写入的偏移
+ for (int p = 0; p < src->nnz; p++) {
+ int col = src->elements[p].col; // 转置后变为行
+ int dest = row_start[col] + cur[col]++;
+ dst.elements[dest].row = src->elements[p].col;
+ dst.elements[dest].col = src->elements[p].row;
+ dst.elements[dest].value = src->elements[p].value;
+ }
 
-    free(row_counts); free(row_start); free(cur);
-    return dst;
+ free(row_counts); free(row_start); free(cur);
+ return dst;
 }
 ```
 
@@ -325,25 +325,25 @@ COOMatrix coo_transpose(const COOMatrix* src) {
 ```c
 // 假设 COO 的三元组已按行号排序（或按行计数排序处理过）
 void coo_to_csr(const COOMatrix* coo,
-                 int* values, int* col_index, int* row_ptr) {
-    // ① 统计每行非零元素数
-    memset(row_ptr, 0, (coo->m + 1) * sizeof(int));
-    for (int p = 0; p < coo->nnz; p++)
-        row_ptr[coo->elements[p].row + 1]++;
+ int* values, int* col_index, int* row_ptr) {
+ // ① 统计每行非零元素数
+ memset(row_ptr, 0, (coo->m + 1) * sizeof(int));
+ for (int p = 0; p < coo->nnz; p++)
+ row_ptr[coo->elements[p].row + 1]++;
 
-    // ② 前缀和 → 每行的起始偏移
-    for (int i = 1; i <= coo->m; i++)
-        row_ptr[i] += row_ptr[i - 1];
+ // ② 前缀和 → 每行的起始偏移
+ for (int i = 1; i <= coo->m; i++)
+ row_ptr[i] += row_ptr[i - 1];
 
-    // ③ 按行分发到 values/col_index
-    int* cur = calloc(coo->m, sizeof(int));
-    for (int p = 0; p < coo->nnz; p++) {
-        int r = coo->elements[p].row;
-        int dest = row_ptr[r] + cur[r]++;
-        values[dest]    = coo->elements[p].value;
-        col_index[dest] = coo->elements[p].col;
-    }
-    free(cur);
+ // ③ 按行分发到 values/col_index
+ int* cur = calloc(coo->m, sizeof(int));
+ for (int p = 0; p < coo->nnz; p++) {
+ int r = coo->elements[p].row;
+ int dest = row_ptr[r] + cur[r]++;
+ values[dest] = coo->elements[p].value;
+ col_index[dest] = coo->elements[p].col;
+ }
+ free(cur);
 }
 ```
 

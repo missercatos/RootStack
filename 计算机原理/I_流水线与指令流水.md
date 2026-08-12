@@ -12,18 +12,18 @@
 
 ```mermaid
 graph TD
-    subgraph "无流水线 (每桶串行, 4桶)"
-        N1["桶1: W-D-F-P"]
-        N2["桶2: ----------W-D-F-P"]
-        N3["桶3: -------------------W-D-F-P"]
-        N4["桶4: ---------------------------W-D-F-P"]
-    end
-    subgraph "有流水线 (阶段重叠, 4桶)"
-        P1["桶1: W - D - F - P"]
-        P2["桶2:     W - D - F - P"]
-        P3["桶3:         W - D - F - P"]
-        P4["桶4:             W - D - F - P"]
-    end
+ subgraph "无流水线 (每桶串行, 4桶)"
+ N1["桶1: W-D-F-P"]
+ N2["桶2: ----------W-D-F-P"]
+ N3["桶3: -------------------W-D-F-P"]
+ N4["桶4: ---------------------------W-D-F-P"]
+ end
+ subgraph "有流水线 (阶段重叠, 4桶)"
+ P1["桶1: W - D - F - P"]
+ P2["桶2: W - D - F - P"]
+ P3["桶3: W - D - F - P"]
+ P4["桶4: W - D - F - P"]
+ end
 ```
 
 流水线性能的核心量化参数：
@@ -47,7 +47,7 @@ graph TD
 T_seq = 100 x 5 = 500 周期
 T_pipe = 5 + 100 - 1 = 104 周期
 加速比 S = 500 / 104 = 4.81
-效率 E   = 100 / 104 = 96.2%
+效率 E = 100 / 104 = 96.2%
 含 10 次 stall 的总时间 = 104 + 10 = 114, CPI = 114/100 = 1.14
 ```
 
@@ -55,42 +55,42 @@ T_pipe = 5 + 100 - 1 = 104 周期
 
 ```mermaid
 sequenceDiagram
-    participant IF as IF (取指)
-    participant ID as ID (译码)
-    participant EX as EX (执行)
-    participant MEM as MEM (访存)
-    participant WB as WB (写回)
+ participant IF as IF (取指)
+ participant ID as ID (译码)
+ participant EX as EX (执行)
+ participant MEM as MEM (访存)
+ participant WB as WB (写回)
 
-    Note over IF,WB: 周期 1 (流水线填充阶段)
-    IF->>ID: 指令 i: 取指 (PC->IMem->IR, PC+4)
+ Note over IF,WB: 周期 1 (流水线填充阶段)
+ IF->>ID: 指令 i: 取指 (PC->IMem->IR, PC+4)
 
-    Note over IF,WB: 周期 2
-    IF->>ID: 指令 i+1: 取指
-    ID->>EX: 指令 i: 译码, 读寄存器
+ Note over IF,WB: 周期 2
+ IF->>ID: 指令 i+1: 取指
+ ID->>EX: 指令 i: 译码, 读寄存器
 
-    Note over IF,WB: 周期 3
-    IF->>ID: 指令 i+2: 取指
-    ID->>EX: 指令 i+1: 译码
-    EX->>MEM: 指令 i: ALU 执行
+ Note over IF,WB: 周期 3
+ IF->>ID: 指令 i+2: 取指
+ ID->>EX: 指令 i+1: 译码
+ EX->>MEM: 指令 i: ALU 执行
 
-    Note over IF,WB: 周期 4
-    IF->>ID: 指令 i+3: 取指
-    ID->>EX: 指令 i+2: 译码
-    EX->>MEM: 指令 i+1: 执行
-    MEM->>WB: 指令 i: 访存
+ Note over IF,WB: 周期 4
+ IF->>ID: 指令 i+3: 取指
+ ID->>EX: 指令 i+2: 译码
+ EX->>MEM: 指令 i+1: 执行
+ MEM->>WB: 指令 i: 访存
 
-    Note over IF,WB: 周期 5 (流水线满: 5条指令同时在不同阶段)
-    IF->>ID: 指令 i+4: 取指
-    ID->>EX: 指令 i+3: 译码
-    EX->>MEM: 指令 i+2: 执行
-    MEM->>WB: 指令 i+1: 访存
+ Note over IF,WB: 周期 5 (流水线满: 5条指令同时在不同阶段)
+ IF->>ID: 指令 i+4: 取指
+ ID->>EX: 指令 i+3: 译码
+ EX->>MEM: 指令 i+2: 执行
+ MEM->>WB: 指令 i+1: 访存
 
-    Note over IF,WB: 周期 6 (稳态: 每周期完成 1 条 + 取 1 条)
-    IF->>ID: 指令 i+5
-    ID->>EX: 指令 i+4
-    EX->>MEM: 指令 i+3
-    MEM->>WB: 指令 i+2
-    Note over WB: 指令 i+1: 写回完成
+ Note over IF,WB: 周期 6 (稳态: 每周期完成 1 条 + 取 1 条)
+ IF->>ID: 指令 i+5
+ ID->>EX: 指令 i+4
+ EX->>MEM: 指令 i+3
+ MEM->>WB: 指令 i+2
+ Note over WB: 指令 i+1: 写回完成
 ```
 
 #### 流水线寄存器 (Pipeline Latches / Pipeline Registers)
@@ -134,49 +134,49 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    subgraph ID_EX["ID/EX 流水线寄存器"]
-        IDEX_RS1["rs1 寄存器号 (5 bits)"]
-        IDEX_RS2["rs2 寄存器号 (5 bits)"]
-    end
-    subgraph EX_MEM["EX/MEM 流水线寄存器"]
-        EXMEM_RD["rd 寄存器号"]
-        EXMEM_RES["ALU 结果"]
-        EXMEM_RW["RegWrite"]
-    end
-    subgraph MEM_WB["MEM/WB 流水线寄存器"]
-        MEMWB_RD["rd 寄存器号"]
-        MEMWB_RES["MDR / ALUOut 结果"]
-        MEMWB_RW["RegWrite"]
-    end
+ subgraph ID_EX["ID/EX 流水线寄存器"]
+ IDEX_RS1["rs1 寄存器号 (5 bits)"]
+ IDEX_RS2["rs2 寄存器号 (5 bits)"]
+ end
+ subgraph EX_MEM["EX/MEM 流水线寄存器"]
+ EXMEM_RD["rd 寄存器号"]
+ EXMEM_RES["ALU 结果"]
+ EXMEM_RW["RegWrite"]
+ end
+ subgraph MEM_WB["MEM/WB 流水线寄存器"]
+ MEMWB_RD["rd 寄存器号"]
+ MEMWB_RES["MDR / ALUOut 结果"]
+ MEMWB_RW["RegWrite"]
+ end
 
-    IDEX_RS1 --> FWD["转发检测单元 (Forwarding Unit)"]
-    IDEX_RS2 --> FWD
-    EXMEM_RD --> FWD
-    EXMEM_RW --> FWD
-    MEMWB_RD --> FWD
-    MEMWB_RW --> FWD
+ IDEX_RS1 --> FWD["转发检测单元 (Forwarding Unit)"]
+ IDEX_RS2 --> FWD
+ EXMEM_RD --> FWD
+ EXMEM_RW --> FWD
+ MEMWB_RD --> FWD
+ MEMWB_RW --> FWD
 
-    EXMEM_RES -->|"ForwardA[1]"| MUX_A["ALU-A MUX (3:1)"]
-    MEMWB_RES -->|"ForwardA[0]"| MUX_A
-    EXMEM_RES -->|"ForwardB[1]"| MUX_B["ALU-B MUX (3:1)"]
-    MEMWB_RES -->|"ForwardB[0]"| MUX_B
+ EXMEM_RES -->|"ForwardA[1]"| MUX_A["ALU-A MUX (3:1)"]
+ MEMWB_RES -->|"ForwardA[0]"| MUX_A
+ EXMEM_RES -->|"ForwardB[1]"| MUX_B["ALU-B MUX (3:1)"]
+ MEMWB_RES -->|"ForwardB[0]"| MUX_B
 
-    FWD -->|"ForwardA[1:0]"| MUX_A
-    FWD -->|"ForwardB[1:0]"| MUX_B
+ FWD -->|"ForwardA[1:0]"| MUX_A
+ FWD -->|"ForwardB[1:0]"| MUX_B
 
-    RF["RegFile 读数据"] -->|"00"| MUX_A
-    RF -->|"00"| MUX_B
+ RF["RegFile 读数据"] -->|"00"| MUX_A
+ RF -->|"00"| MUX_B
 ```
 
 转发条件的逻辑 (对 rs1)：
 
 ```
 if (EX/MEM.RegWrite && EX/MEM.rd != 0 && EX/MEM.rd == ID/EX.rs1)
-    ForwardA = 10    // 选 EX/MEM 的结果 (最新)
+ ForwardA = 10 // 选 EX/MEM 的结果 (最新)
 else if (MEM/WB.RegWrite && MEM/WB.rd != 0 && MEM/WB.rd == ID/EX.rs1)
-    ForwardA = 01    // 选 MEM/WB 的结果
+ ForwardA = 01 // 选 MEM/WB 的结果
 else
-    ForwardA = 00    // 选寄存器正常读出值
+ ForwardA = 00 // 选寄存器正常读出值
 ```
 
 大多数 RAW 冒险都能通过转发在 0 周期额外开销下解决。
@@ -184,8 +184,8 @@ else
 #### Load-Use 冒险：必须停顿 (Pipeline Stall / Bubble)
 
 ```
-LD  R1, 0(R2)     ; R1 的值在 MEM 阶段才从 D-Cache 读出
-ADD R3, R1, R4    ; R1 在 LD 的 MEM 之前 (EX 阶段) 就需要
+LD R1, 0(R2) ; R1 的值在 MEM 阶段才从 D-Cache 读出
+ADD R3, R1, R4 ; R1 在 LD 的 MEM 之前 (EX 阶段) 就需要
 ```
 
 即使转发也无法解决：因为 ADD 的 EX 阶段在 LD 的 MEM 阶段之前，LD 的数据尚未出现。必须由硬件插入一个气泡 (bubble)：
@@ -220,19 +220,19 @@ ADD R3, R1, R4    ; R1 在 LD 的 MEM 之前 (EX 阶段) 就需要
 
 ```mermaid
 stateDiagram-v2
-    SNT: 强不跳转 (00)
-    WNT: 弱不跳转 (01)
-    WT:  弱跳转   (10)
-    ST:  强跳转   (11)
+ SNT: 强不跳转 (00)
+ WNT: 弱不跳转 (01)
+ WT: 弱跳转 (10)
+ ST: 强跳转 (11)
 
-    SNT --> SNT: 实际不跳转 (正确)
-    SNT --> WNT: 实际跳转   (错误)
-    WNT --> WT:  实际跳转   (错误)
-    WT --> ST:   实际跳转   (正确)
-    ST --> ST:   实际跳转   (正确)
-    ST --> WT:   实际不跳转 (错误)
-    WT --> WNT:  实际不跳转 (错误)
-    WNT --> SNT: 实际不跳转 (正确)
+ SNT --> SNT: 实际不跳转 (正确)
+ SNT --> WNT: 实际跳转 (错误)
+ WNT --> WT: 实际跳转 (错误)
+ WT --> ST: 实际跳转 (正确)
+ ST --> ST: 实际跳转 (正确)
+ ST --> WT: 实际不跳转 (错误)
+ WT --> WNT: 实际不跳转 (错误)
+ WNT --> SNT: 实际不跳转 (正确)
 ```
 
 需要连续两次预测错误才改变预测方向，提供 "惯性"，避免在交替跳转/不跳转的模式下频繁翻转。典型循环 (`jmp back` -> 跳转 n-1 次，不跳转 1 次) 的预测准确率 = (n-1)/n，n 很大时趋近 100%。
@@ -255,13 +255,13 @@ stateDiagram-v2
 
 ```
 ; 未调度
-    ADD R3, R4, R5
-    BEQ R1, R2, target
-    NOP                    // 浪费一个周期
+ ADD R3, R4, R5
+ BEQ R1, R2, target
+ NOP // 浪费一个周期
 
 ; 调度后
-    BEQ R1, R2, target
-    ADD R3, R4, R5         // 无论跳转与否都执行
+ BEQ R1, R2, target
+ ADD R3, R4, R5 // 无论跳转与否都执行
 ```
 
 现代深流水线 (14+ 级) 已不使用延迟槽，因为误预测惩罚远超单条指令。依赖精确分支预测 + 投机执行。
@@ -287,20 +287,20 @@ stateDiagram-v2
 
 ```mermaid
 flowchart TD
-    FETCH["取指 (16~32 Bytes/cycle)"] --> PREDEC["预译码 (指令边界识别)"]
-    PREDEC --> DECODE["译码 (x86->uops: 4~6 ops/cycle)"]
-    DECODE --> RENAME["寄存器重命名 (消除 WAW/WAR)"]
-    RENAME --> DISPATCH["分派/调度"]
-    DISPATCH --> RS_INT["整数 RS (保留站)"]
-    DISPATCH --> RS_FP["浮点 RS"]
-    DISPATCH --> RS_LS["访存 RS"]
-    RS_INT --> INT_ALUS["整数 ALU x 4"]
-    RS_FP --> FP_ADD["浮点加法器"]
-    RS_FP --> FP_MUL["浮点乘法器 x 2"]
-    RS_LS --> AGUS["地址生成单元 x 2"]
-    AGUS --> DCACHE["L1 D-Cache (多端口)"]
-    INT_ALUS & FP_ADD & FP_MUL & DCACHE --> ROB["重排序缓冲 ROB (按序提交)"]
-    ROB --> RETIRE["指令引退 (4~8 ops/cycle)"]
+ FETCH["取指 (16~32 Bytes/cycle)"] --> PREDEC["预译码 (指令边界识别)"]
+ PREDEC --> DECODE["译码 (x86->uops: 4~6 ops/cycle)"]
+ DECODE --> RENAME["寄存器重命名 (消除 WAW/WAR)"]
+ RENAME --> DISPATCH["分派/调度"]
+ DISPATCH --> RS_INT["整数 RS (保留站)"]
+ DISPATCH --> RS_FP["浮点 RS"]
+ DISPATCH --> RS_LS["访存 RS"]
+ RS_INT --> INT_ALUS["整数 ALU x 4"]
+ RS_FP --> FP_ADD["浮点加法器"]
+ RS_FP --> FP_MUL["浮点乘法器 x 2"]
+ RS_LS --> AGUS["地址生成单元 x 2"]
+ AGUS --> DCACHE["L1 D-Cache (多端口)"]
+ INT_ALUS & FP_ADD & FP_MUL & DCACHE --> ROB["重排序缓冲 ROB (按序提交)"]
+ ROB --> RETIRE["指令引退 (4~8 ops/cycle)"]
 ```
 
 #### 静态多发射 (VLIW) vs 动态多发射 (超标量)
@@ -320,22 +320,22 @@ Tomasulo 算法 (1966, IBM System/360 Model 91) 是硬件动态调度的基石�
 
 ```mermaid
 flowchart TD
-    subgraph "按序发射"
-        IQ["指令队列 (In-Order Issue)"]
-    end
-    IQ --> RS["保留站 (Reservation Stations)"]
-    subgraph "乱序执行"
-        RS --> INT_EX["整数执行单元"]
-        RS --> FP_ADD_EX["浮点加法器 (4 周期)"]
-        RS --> FP_MUL_EX["浮点乘法器 (7 周期)"]
-        RS --> LS_EX["Load/Store 单元"]
-    end
-    INT_EX & FP_ADD_EX & FP_MUL_EX & LS_EX --> CDB["公共数据总线 CDB (广播结果)"]
-    CDB --> RS
-    CDB --> ROB["重排序缓冲 ROB"]
-    subgraph "按序提交"
-        ROB --> ARCH_RF["架构寄存器组 (In-Order Commit)"]
-    end
+ subgraph "按序发射"
+ IQ["指令队列 (In-Order Issue)"]
+ end
+ IQ --> RS["保留站 (Reservation Stations)"]
+ subgraph "乱序执行"
+ RS --> INT_EX["整数执行单元"]
+ RS --> FP_ADD_EX["浮点加法器 (4 周期)"]
+ RS --> FP_MUL_EX["浮点乘法器 (7 周期)"]
+ RS --> LS_EX["Load/Store 单元"]
+ end
+ INT_EX & FP_ADD_EX & FP_MUL_EX & LS_EX --> CDB["公共数据总线 CDB (广播结果)"]
+ CDB --> RS
+ CDB --> ROB["重排序缓冲 ROB"]
+ subgraph "按序提交"
+ ROB --> ARCH_RF["架构寄存器组 (In-Order Commit)"]
+ end
 ```
 
 四步流程：
@@ -351,16 +351,16 @@ flowchart TD
 
 ```
 ; 原始代码 (存在 WAW 假依赖):
-FADD.D  F0, F2, F4       ; F0 <- F2+F4
-FSUB.D  F6, F8, F0       ; F6 <- F8-F0  (RAW, 真依赖)
-FADD.D  F0, F10, F12     ; F0 <- F10+F12  (WAW 假依赖: 与第一条写同一目标)
+FADD.D F0, F2, F4 ; F0 <- F2+F4
+FSUB.D F6, F8, F0 ; F6 <- F8-F0 (RAW, 真依赖)
+FADD.D F0, F10, F12 ; F0 <- F10+F12 (WAW 假依赖: 与第一条写同一目标)
 
 ; 重命名后 (F0 被映射到不同的物理寄存器):
-FADD.D  T0, T2, T4       ; 第一次 F0 -> T0 (物理寄存器)
-FSUB.D  T6, T8, T0       ; F6 -> T6, 依赖 T0
-FADD.D  T1, T10, T12     ; 第二次 F0 -> T1 (不同的物理寄存器!)
-                          ; T1 与 T0 无任何依赖，T0 写完即可与 T6 并行执行
-                          ; 提交时：先 T0 提交为 F0，后 T1 覆盖 F0 (最终结果正确)
+FADD.D T0, T2, T4 ; 第一次 F0 -> T0 (物理寄存器)
+FSUB.D T6, T8, T0 ; F6 -> T6, 依赖 T0
+FADD.D T1, T10, T12 ; 第二次 F0 -> T1 (不同的物理寄存器!)
+ ; T1 与 T0 无任何依赖，T0 写完即可与 T6 并行执行
+ ; 提交时：先 T0 提交为 F0，后 T1 覆盖 F0 (最终结果正确)
 ```
 
 重命名消除了 WAW 和 WAR 假依赖，大幅提升了指令级并行度 (ILP)。

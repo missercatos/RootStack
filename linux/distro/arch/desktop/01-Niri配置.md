@@ -10,24 +10,24 @@ Niri 从 25.11 版本开始支持配置拆分，推荐按模块组织：
 
 ```
 ~/.config/niri/
-├── config.kdl              # 主配置（环境变量、输入、启动项、include）
-├── layout.kdl              # 布局/间距/阴影/焦点环/边框
-├── animations.kdl          # 全部动画参数
-├── blur.kdl                # 模糊效果
-├── scripts/                # 自定义脚本目录
-│   ├── screenshot-sound.sh
-│   ├── niri-force-kill-window
-│   ├── niri-pick           # 窗口信息提取 / 屏幕取色器
-│   └── niri-binds          # 快捷键教程生成器
-└── dms/                    # DMS 集成配置（自动生成 + 可手写）
-    ├── binds.kdl           # 所有快捷键
-    ├── windowrules.kdl     # 窗口规则
-    ├── supertab.kdl        # Super+Tab 带缩略图切换
-    ├── alttab.kdl          # Alt+Tab 样式
-    ├── colors.kdl          # DMS 主题色
-    ├── cursor.kdl          # 光标设置
-    ├── outputs.kdl         # 显示器配置
-    └── wpblur.kdl          # 壁纸模糊层
+├── config.kdl # 主配置（环境变量、输入、启动项、include）
+├── layout.kdl # 布局/间距/阴影/焦点环/边框
+├── animations.kdl # 全部动画参数
+├── blur.kdl # 模糊效果
+├── scripts/ # 自定义脚本目录
+│ ├── screenshot-sound.sh
+│ ├── niri-force-kill-window
+│ ├── niri-pick # 窗口信息提取 / 屏幕取色器
+│ └── niri-binds # 快捷键教程生成器
+└── dms/ # DMS 集成配置（自动生成 + 可手写）
+ ├── binds.kdl # 所有快捷键
+ ├── windowrules.kdl # 窗口规则
+ ├── supertab.kdl # Super+Tab 带缩略图切换
+ ├── alttab.kdl # Alt+Tab 样式
+ ├── colors.kdl # DMS 主题色
+ ├── cursor.kdl # 光标设置
+ ├── outputs.kdl # 显示器配置
+ └── wpblur.kdl # 壁纸模糊层
 ```
 
 **主 config.kdl 入口：**
@@ -35,19 +35,19 @@ Niri 从 25.11 版本开始支持配置拆分，推荐按模块组织：
 ```kdl
 include "layout.kdl"
 include "animations.kdl"
-// include "blur.kdl"            ← 按需打开
+// include "blur.kdl" ← 按需打开
 screenshot-path "~/Pictures/Screenshots/Niri-screenshots/%Y-%m-%d_%H-%M-%S.png"
 
 environment {
-    LANG "zh_CN.UTF-8"
-    LC_CTYPE "en_US.UTF-8"      // 修复输入法漏字
-    XMODIFIERS "@im=fcitx"
-    QT_QPA_PLATFORMTHEME "gtk3"
-    EDITOR "vim"
+ LANG "zh_CN.UTF-8"
+ LC_CTYPE "en_US.UTF-8" // 修复输入法漏字
+ XMODIFIERS "@im=fcitx"
+ QT_QPA_PLATFORMTHEME "gtk3"
+ EDITOR "vim"
 }
 
 input { /* 键盘/触摸板/鼠标 */ }
-spawn-at-startup "dms" "run"     // 面板/启动器/通知等
+spawn-at-startup "dms" "run" // 面板/启动器/通知等
 spawn-at-startup "fcitx5"
 
 include "dms/binds.kdl"
@@ -64,47 +64,47 @@ include "dms/colors.kdl"
 
 ```kdl
 layout {
-    gaps 12                      // 窗间距
-    center-focused-column "never" // 不自动居中聚焦的列（手动居中用 Mod+C）
-    default-column-width { proportion 0.5; }
+ gaps 12 // 窗间距
+ center-focused-column "never" // 不自动居中聚焦的列（手动居中用 Mod+C）
+ default-column-width { proportion 0.5; }
 
-    // Mod+R 循环切换的三档宽度
-    preset-column-widths {
-        proportion 0.33333
-        proportion 0.5
-        proportion 0.66667
-    }
+ // Mod+R 循环切换的三档宽度
+ preset-column-widths {
+ proportion 0.33333
+ proportion 0.5
+ proportion 0.66667
+ }
 
-    // 聚焦环（高亮当前窗口的描边）
-    focus-ring {
-        width 3                    // 环宽（px）
-        // 颜色在 dms/colors.kdl 里统一管理
-    }
+ // 聚焦环（高亮当前窗口的描边）
+ focus-ring {
+ width 3 // 环宽（px）
+ // 颜色在 dms/colors.kdl 里统一管理
+ }
 
-    // 边框（始终可见，与 focus-ring 二选一）
-    border {
-        off                       // 关闭边框（用 focus-ring 代替）
-        width 4
-        active-color "#ffc87f"
-        inactive-color "#505050"
-        // 也可用渐变：active-gradient from="#80c8ff" to="#c7ff7f" angle=45
-    }
+ // 边框（始终可见，与 focus-ring 二选一）
+ border {
+ off // 关闭边框（用 focus-ring 代替）
+ width 4
+ active-color "#ffc87f"
+ inactive-color "#505050"
+ // 也可用渐变：active-gradient from="#80c8ff" to="#c7ff7f" angle=45
+ }
 
-    // 阴影（CSS box-shadow 语义）
-    shadow {
-        on
-        softness 20              // 模糊半径
-        spread 2                 // 扩展
-        offset x=-4 y=-4         // 偏移（负值=左上方向）
-        color "rgba(0, 0, 0, 0.7)"
-        // draw-behind-window true  ← 如果窗口自绘 CSD 阴影则开启此选项
-    }
+ // 阴影（CSS box-shadow 语义）
+ shadow {
+ on
+ softness 20 // 模糊半径
+ spread 2 // 扩展
+ offset x=-4 y=-4 // 偏移（负值=左上方向）
+ color "rgba(0, 0, 0, 0.7)"
+ // draw-behind-window true ← 如果窗口自绘 CSD 阴影则开启此选项
+ }
 
-    // Struts（类似 waybar 的预留空间）
-    struts {
-        // left 64
-        // right 64
-    }
+ // Struts（类似 waybar 的预留空间）
+ struts {
+ // left 64
+ // right 64
+ }
 }
 ```
 
@@ -116,62 +116,62 @@ Niri 的动画系统支持 **CSS 缓动曲线** 和 **弹簧物理** 两种模�
 
 ```kdl
 animations {
-    // 全局减速因子：<1 加速，>1 减速（微调手感用）
-    slowdown 0.98114514
+ // 全局减速因子：<1 加速，>1 减速（微调手感用）
+ slowdown 0.98114514
 
-    // ===== 工作区切换动画 =====
-    workspace-switch {
-        // 弹簧参数：
-        //   damping-ratio: 0.8 = 回弹明显，1.0 = 刚好不弹，>1.0 = 过阻尼(bug倾向)
-        //   stiffness: 值越大越"硬/生涩"，越小越"软/回弹大"
-        //   epsilon: 动画速度<此值判定为停止
-        spring damping-ratio=0.82 stiffness=400 epsilon=0.0001
-    }
+ // ===== 工作区切换动画 =====
+ workspace-switch {
+ // 弹簧参数：
+ // damping-ratio: 0.8 = 回弹明显，1.0 = 刚好不弹，>1.0 = 过阻尼(bug倾向)
+ // stiffness: 值越大越"硬/生涩"，越小越"软/回弹大"
+ // epsilon: 动画速度<此值判定为停止
+ spring damping-ratio=0.82 stiffness=400 epsilon=0.0001
+ }
 
-    // 水平视图移动（列间切换焦点）
-    horizontal-view-movement {
-        spring damping-ratio=0.84 stiffness=400 epsilon=0.0001
-    }
+ // 水平视图移动（列间切换焦点）
+ horizontal-view-movement {
+ spring damping-ratio=0.84 stiffness=400 epsilon=0.0001
+ }
 
-    // 打开/关闭窗口 — 可组合弹簧和缓动曲线
-    window-open {
-        spring damping-ratio=1.0 stiffness=1000 epsilon=0.0001
-    }
-    window-close {
-        spring damping-ratio=0.8 stiffness=400 epsilon=0.0001
-    }
+ // 打开/关闭窗口 — 可组合弹簧和缓动曲线
+ window-open {
+ spring damping-ratio=1.0 stiffness=1000 epsilon=0.0001
+ }
+ window-close {
+ spring damping-ratio=0.8 stiffness=400 epsilon=0.0001
+ }
 
-    // 窗口移动（合并列、跨列移动）
-    window-movement {
-        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
-    }
+ // 窗口移动（合并列、跨列移动）
+ window-movement {
+ spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+ }
 
-    // 大小调整（Mod+R 切换预设宽度时）
-    window-resize {
-        spring damping-ratio=0.9 stiffness=500 epsilon=0.0001
-    }
+ // 大小调整（Mod+R 切换预设宽度时）
+ window-resize {
+ spring damping-ratio=0.9 stiffness=500 epsilon=0.0001
+ }
 
-    // 截图 UI 打开
-    screenshot-ui-open {
-        duration-ms 300
-        curve "ease-out-quad"
-    }
+ // 截图 UI 打开
+ screenshot-ui-open {
+ duration-ms 300
+ curve "ease-out-quad"
+ }
 
-    // Overview 打开/关闭
-    overview-open-close {
-        spring damping-ratio=1.0 stiffness=900 epsilon=0.0001
-    }
+ // Overview 打开/关闭
+ overview-open-close {
+ spring damping-ratio=1.0 stiffness=900 epsilon=0.0001
+ }
 }
 ```
 
 ### Niri 可用的动画曲线
 
 ```
-ease-out-quad      → 平缓加速后略减速（接近线性，最不突兀）
-ease-out-cubic     → 较快加速后明显减速
-ease-out-expo      → 极快加速后立刻减速（最生动）
-linear             → 纯匀速
-cubic-bezier       → 自定义：curve "cubic-bezier" 0.05 0.7 0.1 1
+ease-out-quad → 平缓加速后略减速（接近线性，最不突兀）
+ease-out-cubic → 较快加速后明显减速
+ease-out-expo → 极快加速后立刻减速（最生动）
+linear → 纯匀速
+cubic-bezier → 自定义：curve "cubic-bezier" 0.05 0.7 0.1 1
 ```
 
 在线设计工具：[easings.co](https://easings.co) / 预览：[easings.net](https://easings.net)
@@ -200,37 +200,37 @@ Niri 的模糊效果有两种模式：
 
 // 全局模糊参数
 blur {
-    passes 3           // 渲染次数（次数越多越模糊，但性能越差）
-    offset 3           // 采样偏移（越大边缘越雾化）
-    noise 0.02         // 噪点纹理（防止色带伪影）
-    saturation 1.5     // 饱和增强（>1 更鲜艳，<1 去色）
+ passes 3 // 渲染次数（次数越多越模糊，但性能越差）
+ offset 3 // 采样偏移（越大边缘越雾化）
+ noise 0.02 // 噪点纹理（防止色带伪影）
+ saturation 1.5 // 饱和增强（>1 更鲜艳，<1 去色）
 }
 
 // 所有普通窗口 → Xray 模式（零性能消耗）
 window-rule {
-    background-effect {
-        xray true
-        blur true
-    }
+ background-effect {
+ xray true
+ blur true
+ }
 }
 
 // 浮动窗口 → 同样 Xray 模式（实时 blur 太吃性能）
 window-rule {
-    match is-floating=true
-    background-effect {
-        xray true
-        blur true
-    }
+ match is-floating=true
+ background-effect {
+ xray true
+ blur true
+ }
 }
 
 // Fuzzel 启动器 → 实时模糊（因为背后内容需要实时变化）
 layer-rule {
-    match namespace="^launcher$"
-    geometry-corner-radius 8
-    background-effect {
-        xray false          // 实时 blur
-        blur true
-    }
+ match namespace="^launcher$"
+ geometry-corner-radius 8
+ background-effect {
+ xray false // 实时 blur
+ blur true
+ }
 }
 ```
 
@@ -242,20 +242,20 @@ layer-rule {
 
 ```kdl
 binds {
-    // 内置动作（快，无延迟）：
-    Mod+Q    { close-window; }
-    Mod+F    { maximize-column; }
-    Mod+Left { focus-column-left; }
+ // 内置动作（快，无延迟）：
+ Mod+Q { close-window; }
+ Mod+F { maximize-column; }
+ Mod+Left { focus-column-left; }
 
-    // spawn（启动程序）：
-    Mod+T { spawn "kitty" "--single-instance"; }
+ // spawn（启动程序）：
+ Mod+T { spawn "kitty" "--single-instance"; }
 
-    // spawn-sh（运行 shell 命令，支持 && / || / $() 等）：
-    Mod+F1 { spawn-sh "pkill fcitx5 || fcitx5"; }
+ // spawn-sh（运行 shell 命令，支持 && / || / $() 等）：
+ Mod+F1 { spawn-sh "pkill fcitx5 || fcitx5"; }
 
-    // DMS IPC 调用（面板/通知/锁屏/壁纸等）：
-    Mod+X   { spawn "dms" "ipc" "call" "powermenu" "toggle"; }
-    Mod+Z   { spawn-sh "dms ipc call spotlight toggle || fuzzel"; }
+ // DMS IPC 调用（面板/通知/锁屏/壁纸等）：
+ Mod+X { spawn "dms" "ipc" "call" "powermenu" "toggle"; }
+ Mod+Z { spawn-sh "dms ipc call spotlight toggle || fuzzel"; }
 }
 ```
 
@@ -264,8 +264,8 @@ binds {
 ```
 Super = Mod（默认的 Win 键）
 Shift = Shift
-Ctrl  = Ctrl
-Alt   = Alt
+Ctrl = Ctrl
+Alt = Alt
 
 组合：Mod+Shift+Q、Mod+Ctrl+Left、Mod+Shift+Ctrl+Right
 特殊：MouseMiddle、MouseForward、MouseBack、WheelScrollDown
@@ -312,10 +312,10 @@ XF86MonBrightnessUp allow-when-locked=true { spawn "dms" "ipc" "call" "brightnes
 
 ```kdl
 window-rule {
-    geometry-corner-radius 8       // 圆角（niri 知道的，非 CSD）
-    clip-to-geometry true          // 裁剪溢出圆角的内容
-    opacity 0.99                   // 全局轻微透明（0.99 让 niri 知道此窗口透明从而启用混合模式）
-    draw-border-with-background false  // 边框不画到背景里（配合 prefer-no-csd）
+ geometry-corner-radius 8 // 圆角（niri 知道的，非 CSD）
+ clip-to-geometry true // 裁剪溢出圆角的内容
+ opacity 0.99 // 全局轻微透明（0.99 让 niri 知道此窗口透明从而启用混合模式）
+ draw-border-with-background false // 边框不画到背景里（配合 prefer-no-csd）
 }
 ```
 
@@ -324,18 +324,18 @@ window-rule {
 ```kdl
 // Steam 好友列表：固定窄列
 window-rule {
-    match app-id="steam" title="Friends List"
-    match app-id="steam" title="好友列表"
-    default-column-width { proportion 0.20; }
+ match app-id="steam" title="Friends List"
+ match app-id="steam" title="好友列表"
+ default-column-width { proportion 0.20; }
 }
 
 // 某 TUI 应用：浮动 + 固定宽高
 window-rule {
-    match app-id="shorinclip"
-    default-column-width { fixed 625; }
-    default-window-height { fixed 700; }
-    open-floating true
-    default-floating-position x=0 y=18 relative-to="top"
+ match app-id="shorinclip"
+ default-column-width { fixed 625; }
+ default-window-height { fixed 700; }
+ open-floating true
+ default-floating-position x=0 y=18 relative-to="top"
 }
 ```
 
@@ -344,18 +344,18 @@ window-rule {
 ```kdl
 // 集中管理所有需要浮动的窗口
 window-rule {
-    match app-id="com.gabm.satty"      // 截图编辑
-    match app-id="nm-connection-editor" // 网络连接
-    match app-id="pavucontrol"          // 音量控制
-    match app-id="blueman-manager"      // 蓝牙
-    match app-id="flameshot"            // 截图
-    match app-id="btrfs-assistant"      // Btrfs 管理
-    match app-id="thunar" title="文件操作进度"
-    match title="重命名"
-    match title="另存为"
-    match title="日历"
-    // ...更多...
-    open-floating true
+ match app-id="com.gabm.satty" // 截图编辑
+ match app-id="nm-connection-editor" // 网络连接
+ match app-id="pavucontrol" // 音量控制
+ match app-id="blueman-manager" // 蓝牙
+ match app-id="flameshot" // 截图
+ match app-id="btrfs-assistant" // Btrfs 管理
+ match app-id="thunar" title="文件操作进度"
+ match title="重命名"
+ match title="另存为"
+ match title="日历"
+ // ...更多...
+ open-floating true
 }
 ```
 
@@ -363,16 +363,16 @@ window-rule {
 
 ```kdl
 window-rule {
-    match app-id="QQ" title="资料卡"
-    match app-id="QQ" title="天气"
-    open-focused false
+ match app-id="QQ" title="资料卡"
+ match app-id="QQ" title="天气"
+ open-focused false
 }
 
 // Steam 通知弹窗：右下角，不抢焦点
 window-rule {
-    match app-id="steam" title=r#"^notificationtoasts_\d+_desktop$"#
-    default-floating-position x=10 y=10 relative-to="bottom-right"
-    open-focused false
+ match app-id="steam" title=r#"^notificationtoasts_\d+_desktop$"#
+ default-floating-position x=10 y=10 relative-to="bottom-right"
+ open-focused false
 }
 ```
 
@@ -381,21 +381,21 @@ window-rule {
 ```kdl
 // Waydroid（Android 模拟器）：全屏 + 无装饰
 window-rule {
-    match app-id="waydroid"
-    open-fullscreen true
-    open-floating true
-    focus-ring { off }
-    shadow { off }
+ match app-id="waydroid"
+ open-fullscreen true
+ open-floating true
+ focus-ring { off }
+ shadow { off }
 }
 
 // 图片/视频播放器：不透明（避免透明导致性能问题）
 window-rule {
-    match app-id="mpv"
-    match app-id="celluloid"
-    match title="图片查看器"
-    match title="画中画"
-    opacity 1.0
-    open-floating true
+ match app-id="mpv"
+ match app-id="celluloid"
+ match title="图片查看器"
+ match title="画中画"
+ opacity 1.0
+ open-floating true
 }
 ```
 
@@ -405,27 +405,27 @@ window-rule {
 
 ```kdl
 recent-windows {
-    debounce-ms 750         // 松开后 750ms 自动消失
-    open-delay-ms 150       // 按下后 150ms 弹出（防轻触误弹）
+ debounce-ms 750 // 松开后 750ms 自动消失
+ open-delay-ms 150 // 按下后 150ms 弹出（防轻触误弹）
 
-    highlight {
-        padding 30            // 缩略图背景内间距
-        corner-radius 12      // 缩略图背景圆角
-    }
+ highlight {
+ padding 30 // 缩略图背景内间距
+ corner-radius 12 // 缩略图背景圆角
+ }
 
-    previews {
-        max-height 480        // 缩略图最大高度
-        max-scale 0.2         // 缩略图最大缩放比
-    }
+ previews {
+ max-height 480 // 缩略图最大高度
+ max-scale 0.2 // 缩略图最大缩放比
+ }
 
-    binds {
-        // 当前工作区的窗口
-        Mod+Tab         { next-window scope="workspace"; }
-        Mod+Shift+Tab   { previous-window scope="workspace"; }
-        // 仅当前 app 的所有窗口（如多窗口 firefox）
-        Mod+grave       { next-window filter="app-id"; }
-        Mod+Shift+grave { previous-window filter="app-id"; }
-    }
+ binds {
+ // 当前工作区的窗口
+ Mod+Tab { next-window scope="workspace"; }
+ Mod+Shift+Tab { previous-window scope="workspace"; }
+ // 仅当前 app 的所有窗口（如多窗口 firefox）
+ Mod+grave { next-window filter="app-id"; }
+ Mod+Shift+grave { previous-window filter="app-id"; }
+ }
 }
 ```
 
@@ -459,11 +459,11 @@ mkdir -p "$SAVE_DIR"
 
 # 异步下载 + 超时心跳通知（大文件下载时告知用户"还在下载"）
 (
-    sleep 8
-    while true; do
-        notify-send "Wallpaper" "Downloading is still in progress..." --expire-time=5000 || true
-        sleep 8
-    done
+ sleep 8
+ while true; do
+ notify-send "Wallpaper" "Downloading is still in progress..." --expire-time=5000 || true
+ sleep 8
+ done
 ) &
 NOTIFY_PID=$!
 
@@ -472,8 +472,8 @@ kill "$NOTIFY_PID" 2>/dev/null || true
 
 # 校验文件有效性
 if [ ! -f "$RAW_PATH" ] || [ "$(wc -c < "$RAW_PATH")" -lt 20480 ]; then
-    notify-send "Error" "Wallpaper download failed (too small)" -u critical
-    exit 1
+ notify-send "Error" "Wallpaper download failed (too small)" -u critical
+ exit 1
 fi
 
 # 格式转换 → PNG (dms 需要 PNG)
@@ -485,16 +485,16 @@ dms ipc call wallpaper set "$FINAL_PATH"
 
 # 异步钩子：更新 matugen 主题色、niri overview 背景等
 (
-    [ -x "$HOME/.config/scripts/matugen-update.sh" ] && \
-        "$HOME/.config/scripts/matugen-update.sh" "$FINAL_PATH" || true
+ [ -x "$HOME/.config/scripts/matugen-update.sh" ] && \
+ "$HOME/.config/scripts/matugen-update.sh" "$FINAL_PATH" || true
 
-    sleep 0.5
+ sleep 0.5
 
-    [ -x "$HOME/.config/scripts/niri_set_overview_blur_dark_bg.sh" ] && \
-        "$HOME/.config/scripts/niri_set_overview_blur_dark_bg.sh" || true
+ [ -x "$HOME/.config/scripts/niri_set_overview_blur_dark_bg.sh" ] && \
+ "$HOME/.config/scripts/niri_set_overview_blur_dark_bg.sh" || true
 
-    # 保留最新 40 张，清理旧的
-    cd "$SAVE_DIR" && ls -t | tail -n +$((KEEP_COUNT + 1)) | xargs -I {} rm -- {} 2>/dev/null || true
+ # 保留最新 40 张，清理旧的
+ cd "$SAVE_DIR" && ls -t | tail -n +$((KEEP_COUNT + 1)) | xargs -I {} rm -- {} 2>/dev/null || true
 ) &
 ```
 
@@ -507,27 +507,27 @@ dms ipc call wallpaper set "$FINAL_PATH"
 # ~/.config/niri/scripts/screenshot-sound.sh
 
 SOUND="/usr/share/sounds/freedesktop/stereo/camera-shutter.oga"
-TRIGGER_FILE="/dev/shm/niri_screenshot_armed"  # 内存文件系统，超快读写
+TRIGGER_FILE="/dev/shm/niri_screenshot_armed" # 内存文件系统，超快读写
 TIMEOUT_SEC=15
 
 # 收到 SIGUSR1 信号 → 创建扳机文件
 arm_trigger() {
-    touch "$TRIGGER_FILE"
+ touch "$TRIGGER_FILE"
 }
 trap arm_trigger SIGUSR1
 
 # 后台监听剪贴板变化
 wl-paste --watch bash -c "
-    if wl-paste --list-types 2>/dev/null | grep -q 'image/'; then
-        if [ -f \"$TRIGGER_FILE\" ]; then
-            NOW=\$(date +%s)
-            FILE_TIME=\$(stat -c %Y \"$TRIGGER_FILE\")
-            if [ \$((NOW - FILE_TIME)) -lt $TIMEOUT_SEC ]; then
-                pw-play \"$SOUND\" &
-                rm -f \"$TRIGGER_FILE\"
-            fi
-        fi
-    fi
+ if wl-paste --list-types 2>/dev/null | grep -q 'image/'; then
+ if [ -f \"$TRIGGER_FILE\" ]; then
+ NOW=\$(date +%s)
+ FILE_TIME=\$(stat -c %Y \"$TRIGGER_FILE\")
+ if [ \$((NOW - FILE_TIME)) -lt $TIMEOUT_SEC ]; then
+ pw-play \"$SOUND\" &
+ rm -f \"$TRIGGER_FILE\"
+ fi
+ fi
+ fi
 " &
 WATCHER_PID=$!
 
@@ -541,7 +541,7 @@ while true; do sleep infinity & wait $!; done
 
 ```kdl
 // 截图 + 发信号通知音效守护
-Mod+Alt+A  { spawn-sh "niri msg action screenshot --show-pointer false && pkill -f -USR1 screenshot-sound.sh"; }
+Mod+Alt+A { spawn-sh "niri msg action screenshot --show-pointer false && pkill -f -USR1 screenshot-sound.sh"; }
 ```
 
 ### 10.8.3 鼠标点击强制杀死窗口
@@ -560,26 +560,26 @@ pid=$(grep -oP 'PID:\s*\K\d+' <<< "$output")
 process_name=$(<"/proc/$pid/comm")
 
 if [[ "$process_name" == *"xwayland"* ]]; then
-    # XWayland 窗口
-    active_wid=$(xprop -root -notype _NET_ACTIVE_WINDOW | grep -o '0x[0-9a-fA-F]\+')
-    real_pid=$(xprop -id "$active_wid" -notype _NET_WM_PID | grep -oP '\d+')
+ # XWayland 窗口
+ active_wid=$(xprop -root -notype _NET_ACTIVE_WINDOW | grep -o '0x[0-9a-fA-F]\+')
+ real_pid=$(xprop -id "$active_wid" -notype _NET_WM_PID | grep -oP '\d+')
 else
-    real_pid="$pid"
+ real_pid="$pid"
 fi
 
 if [[ "$1" == "-f" ]]; then
-    # 向上溯源找到应用根进程，再向下递归杀整棵树
-    # ... 见原始脚本完整实现
-    kill -9 $family_pids
+ # 向上溯源找到应用根进程，再向下递归杀整棵树
+ # ... 见原始脚本完整实现
+ kill -9 $family_pids
 else
-    kill -9 "$real_pid"
+ kill -9 "$real_pid"
 fi
 ```
 
 **按键绑定：**
 
 ```kdl
-Alt+F4       { spawn "~/.config/niri/scripts/niri-force-kill-window"; }
+Alt+F4 { spawn "~/.config/niri/scripts/niri-force-kill-window"; }
 Alt+Shift+F4 { spawn "~/.config/niri/scripts/niri-force-kill-window" "-f"; }
 ```
 
@@ -589,19 +589,19 @@ Alt+Shift+F4 { spawn "~/.config/niri/scripts/niri-force-kill-window" "-f"; }
 # 多功能工具：点选/聚焦窗口，提取信息并复制到剪贴板
 
 # 提取当前焦点窗口的所有信息
-niri-pick focus       → 弹出菜单选择要复制的属性(完整信息/标题/AppID/PID)
+niri-pick focus → 弹出菜单选择要复制的属性(完整信息/标题/AppID/PID)
 
 # 直接复制特定信息
-niri-pick title         # 点选窗口 → 复制标题
-niri-pick appid         # 点选窗口 → 复制 App ID（写窗口规则时用）
-niri-pick pid           # 点选窗口 → 复制 PID
+niri-pick title # 点选窗口 → 复制标题
+niri-pick appid # 点选窗口 → 复制 App ID（写窗口规则时用）
+niri-pick pid # 点选窗口 → 复制 PID
 
 # 屏幕取色
-niri-pick hex           # 吸取屏幕颜色 → 复制 HEX (#ff6bcb)
-niri-pick rgb           # 吸取屏幕颜色 → 复制 RGB (rgb(255, 107, 203))
+niri-pick hex # 吸取屏幕颜色 → 复制 HEX (#ff6bcb)
+niri-pick rgb # 吸取屏幕颜色 → 复制 RGB (rgb(255, 107, 203))
 
 # 完整菜单
-niri-pick menu          # 显示：完整信息 | 标题 | AppID | PID | HEX | RGB
+niri-pick menu # 显示：完整信息 | 标题 | AppID | PID | HEX | RGB
 ```
 
 ### 10.8.5 niri-binds — 快捷键教程生成器
@@ -612,9 +612,9 @@ niri-pick menu          # 显示：完整信息 | 标题 | AppID | PID | HEX | R
 # 用 fzf 展示可搜索的快捷键列表
 
 find ~/.config/niri -name "*.kdl" -exec grep -H "hotkey-overlay-title" {} \; \
-  | sed 's/.*hotkey-overlay-title="//; s/".*//' \
-  | sort -u \
-  | fzf --reverse --header="Niri Keybinds (Ctrl+C to exit)"
+ | sed 's/.*hotkey-overlay-title="//; s/".*//' \
+ | sort -u \
+ | fzf --reverse --header="Niri Keybinds (Ctrl+C to exit)"
 ```
 
 ---
@@ -632,10 +632,10 @@ Mod+O / Mod+G → 打开 Overview（所有工作区窗口全景）
 ```
 
 ```kdl
-Mod+Alt+S  { spawn "niri-sidebar" "toggle-window"; }       // 收起/展开当前窗口到侧边栏
-Mod+Alt+Z  { spawn "niri-sidebar" "toggle-visibility"; }    // 显示/隐藏侧边栏
-Mod+Alt+X  { spawn "niri-sidebar" "flip"; }                 // 反向排序
-Mod+Alt+R  { spawn "niri-sidebar" "reorder"; }              // 重新排列
+Mod+Alt+S { spawn "niri-sidebar" "toggle-window"; } // 收起/展开当前窗口到侧边栏
+Mod+Alt+Z { spawn "niri-sidebar" "toggle-visibility"; } // 显示/隐藏侧边栏
+Mod+Alt+X { spawn "niri-sidebar" "flip"; } // 反向排序
+Mod+Alt+R { spawn "niri-sidebar" "reorder"; } // 重新排列
 ```
 
 ### 列标签页模式
@@ -657,7 +657,7 @@ Mod+Ctrl+Shift+WheelScrollUp cooldown-ms=150 { move-column-to-workspace-up; }
 ### 跨显示器操作
 ```kdl
 // 焦点切换
-Mod+Shift+Right { focus-monitor-right; }     // 或 Mod+Shift+L
+Mod+Shift+Right { focus-monitor-right; } // 或 Mod+Shift+L
 
 // 跨显示器移动列
 Mod+Shift+Ctrl+Right { move-column-to-monitor-right; }
@@ -672,24 +672,24 @@ Mod+Shift+Alt+Right { move-workspace-to-monitor-right; }
 
 ```kdl
 environment {
-    // 区域/语言
-    LANG "zh_CN.UTF-8"
-    LC_CTYPE "en_US.UTF-8"      // LC_CTYPE 和 LANG 分开设：中文界面 + 输入法修复
+ // 区域/语言
+ LANG "zh_CN.UTF-8"
+ LC_CTYPE "en_US.UTF-8" // LC_CTYPE 和 LANG 分开设：中文界面 + 输入法修复
 
-    // 输入法
-    XMODIFIERS "@im=fcitx"
+ // 输入法
+ XMODIFIERS "@im=fcitx"
 
-    // Qt 主题
-    QT_QPA_PLATFORMTHEME "gtk3"
+ // Qt 主题
+ QT_QPA_PLATFORMTHEME "gtk3"
 
-    // QuickShell 图标
-    QS_ICON_THEME "Adwaita"
+ // QuickShell 图标
+ QS_ICON_THEME "Adwaita"
 
-    // 默认编辑器
-    EDITOR "vim"
+ // 默认编辑器
+ EDITOR "vim"
 
-    // NVIDIA 双显卡（AMD/Intel 单显卡不需要）
-    // GSK_RENDERER "gl"         // 修复 GTK 应用启动慢
+ // NVIDIA 双显卡（AMD/Intel 单显卡不需要）
+ // GSK_RENDERER "gl" // 修复 GTK 应用启动慢
 }
 ```
 
@@ -699,27 +699,27 @@ environment {
 
 ```kdl
 input {
-    keyboard {
-        xkb {}                   // 键盘布局
-        repeat-delay 250         // 开始重复前等待 ms
-        repeat-rate 35          // 重复率（字符/秒）
-    }
+ keyboard {
+ xkb {} // 键盘布局
+ repeat-delay 250 // 开始重复前等待 ms
+ repeat-rate 35 // 重复率（字符/秒）
+ }
 
-    touchpad {
-        tap                     // 轻触=点击
-        natural-scroll          // 自然滚动（Mac 风格）
-        // dwt                   // 打字时禁用触摸板
-    }
+ touchpad {
+ tap // 轻触=点击
+ natural-scroll // 自然滚动（Mac 风格）
+ // dwt // 打字时禁用触摸板
+ }
 
-    mouse {
-        accel-speed -0.15       // 负值=减速
-        accel-profile "flat"    // 无加速度（精准控制）
-    }
+ mouse {
+ accel-speed -0.15 // 负值=减速
+ accel-profile "flat" // 无加速度（精准控制）
+ }
 
-    trackpoint {
-        // off
-        // natural-scroll
-    }
+ trackpoint {
+ // off
+ // natural-scroll
+ }
 }
 ```
 
@@ -729,9 +729,9 @@ input {
 
 ```kdl
 cursor {
-    xcursor-theme "breeze_cursors"
-    xcursor-size 30
-    hide-after-inactive-ms 15000   // 15 秒不动自动隐藏
+ xcursor-theme "breeze_cursors"
+ xcursor-size 30
+ hide-after-inactive-ms 15000 // 15 秒不动自动隐藏
 }
 ```
 
@@ -747,10 +747,10 @@ niri msg action screenshot
 niri msg action toggle-overview
 
 # 查看信息
-niri msg outputs               # 显示器信息 (JSON)
-niri msg windows               # 所有窗口 (JSON，含 app_id/title/pid)
-niri msg focused-window        # 焦点窗口信息
-niri msg keyboard-layouts      # 当前键盘布局
+niri msg outputs # 显示器信息 (JSON)
+niri msg windows # 所有窗口 (JSON，含 app_id/title/pid)
+niri msg focused-window # 焦点窗口信息
+niri msg keyboard-layouts # 当前键盘布局
 
 # 实时事件流（脚本自动化用）
 niri msg event-stream
@@ -760,7 +760,7 @@ niri msg event-stream
 # WindowClosed { id: 8 }
 
 # 获取截图
-niri msg screenshot            # 交互式选区截图 → 保存到 screenshot-path
+niri msg screenshot # 交互式选区截图 → 保存到 screenshot-path
 ```
 
 ---
@@ -769,10 +769,10 @@ niri msg screenshot            # 交互式选区截图 → 保存到 screenshot-
 
 ```bash
 # 配置语法检查
-niri validate    # 会报告语法错误和具体行号
+niri validate # 会报告语法错误和具体行号
 
 # 日志
-journalctl -u niri -f --user    # 用户服务
+journalctl -u niri -f --user # 用户服务
 # 或直接运行看 stderr
 niri-session 2>&1 | tee niri-debug.log
 
@@ -788,14 +788,14 @@ niri msg focused-window
 # 输出：Title: "Firefox"
 
 # 性能统计
-niri msg debug-stats   # FPS、渲染耗时等
+niri msg debug-stats # FPS、渲染耗时等
 ```
 
 ---
 
 ## 10.15 本章测验
 
-> [!example] 📝 自测题目
+> [!example] 自测题目
 
 > [!question]- 选择题 1：Niri 的配置文件使用什么格式？
 > - A. TOML
@@ -828,11 +828,11 @@ niri msg debug-stats   # FPS、渲染耗时等
 > > damping-ratio=1.0 表示临界阻尼，即刚好不弹。小于 1.0 会有回弹效果，大于 1.0 是过阻尼。
 
 > [!question]- 判断题 4：在 Niri 中，spawn-sh 和 spawn 的区别是 spawn-sh 支持 shell 语法如 && / || / $() 等
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > spawn 直接启动程序，spawn-sh 运行 shell 命令，支持 && / || / $() 等 shell 语法。
 
 > [!question]- 选择题 5：Niri 中 cooldown-ms=150 的作用是什么？
@@ -846,11 +846,11 @@ niri msg debug-stats   # FPS、渲染耗时等
 > > cooldown-ms=150 用于防止 150ms 内连续触发，常用于滚轮切换工作区等防误触场景。
 
 > [!question]- 判断题 6：Niri 的 window-rule 中 opacity 0.99 是为了让 niri 知道此窗口透明从而启用混合模式
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > 设置 opacity 0.99 虽然视觉上几乎不透明，但让 niri 知道此窗口需要透明处理从而启用混合渲染模式。
 
 > [!question]- 选择题 7：Niri 中用什么命令进行配置语法检查？
@@ -874,11 +874,11 @@ niri msg debug-stats   # FPS、渲染耗时等
 > > scope="workspace" 表示仅在当前工作区范围内切换窗口。scope="monitor" 是当前显示器所有工作区，不写则是全部窗口。
 
 > [!question]- 判断题 9：Niri 的截图音效系统使用 SIGUSR1 信号驱动，通过监听剪贴板变化来检测截图完成
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > 截图音效守护进程收到 SIGUSR1 信号后创建扳机文件，wl-paste --watch 监听剪贴板变化，检测到图片类型时播放快门声。
 
 > [!question]- 选择题 10：Niri 中 repeat=false 的作用是什么？

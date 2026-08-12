@@ -14,19 +14,19 @@
 
 ```mermaid
 graph TD
-    ROOT["(root)"] --> C["c"]
-    C --> CA["a"]
-    CA --> CAT["t (cat) ✓"]
-    CA --> CAR["r"]
-    CAR --> CARD["d (card) ✓"]
-    C --> CO["o"]
-    CO --> COD["d (cod) ✓"]
-    CO --> COW["w (cow) ✓"]
-    
-    style CAT fill:#e8f5e9
-    style CARD fill:#e8f5e9
-    style COD fill:#e8f5e9
-    style COW fill:#e8f5e9
+ ROOT["(root)"] --> C["c"]
+ C --> CA["a"]
+ CA --> CAT["t (cat) "]
+ CA --> CAR["r"]
+ CAR --> CARD["d (card) "]
+ C --> CO["o"]
+ CO --> COD["d (cod) "]
+ CO --> COW["w (cow) "]
+ 
+ style CAT fill:#e8f5e9
+ style CARD fill:#e8f5e9
+ style COD fill:#e8f5e9
+ style COW fill:#e8f5e9
 ```
 
 四个单词 `cat`, `card`, `cod`, `cow` 共享了公共前缀 `c`。`cat` 和 `card` 又共享了 `ca`。如果没有共享前缀，这 14 个字符独立存放需要约 56 字节（含元数据）；Trie 中共享后只需约 20 字节。
@@ -75,17 +75,17 @@ $$
 
 ```mermaid
 graph TD
-    subgraph "标准 Trie"
-        RT0["(root)"] --> RT1["r"]
-        RT1 --> RT2["o"]
-        RT2 --> RT3["m"]
-        RT3 --> RT4["a (roma) ✓"]
-        RT3 --> RT5["u (romu) ✓"]
-    end
-    subgraph "压缩 Trie"
-        CR0["(root)"] -->|"rom"| CR1["a (roma) ✓"]
-        CR0 -->|"rom"| CR2["u (romu) ✓"]
-    end
+ subgraph "标准 Trie"
+ RT0["(root)"] --> RT1["r"]
+ RT1 --> RT2["o"]
+ RT2 --> RT3["m"]
+ RT3 --> RT4["a (roma) "]
+ RT3 --> RT5["u (romu) "]
+ end
+ subgraph "压缩 Trie"
+ CR0["(root)"] -->|"rom"| CR1["a (roma) "]
+ CR0 -->|"rom"| CR2["u (romu) "]
+ end
 ```
 
 Linux 内核的 **radix tree**（`lib/radix-tree.c`）就是压缩 Trie 的生产级实现——用于页缓存（page cache）、inode 缓存等场景。每个节点可以持有多个 slot（通常 64），对应地址 index 中的连续 6 bit。在 64 位系统上，一个 64-bit 的 index 被拆分为约 11 层（$64 / 6 \approx 11$）进行查找。从逻辑上说，Linux 的 radix tree 就是把 key 按 $2^6 = 64$ 进行基数分割的压缩 Trie。
@@ -96,14 +96,14 @@ Aho-Corasick（AC 自动机）是 KMP 前缀函数思想在 Trie 上的多模式
 
 ```mermaid
 graph LR
-    subgraph "Trie + fail links"
-        R["(root)"] --> A["a"] --> B["ab"] --> C["abc (模式: abc)"]
-        R --> H["h"] --> HE["he"] --> HER["her (模式: her)"]
-        HE --> HE2["he"]
-        B -->|fail| HE2
-        C -->|fail| HE2
-        HER -->|fail| HE2
-    end
+ subgraph "Trie + fail links"
+ R["(root)"] --> A["a"] --> B["ab"] --> C["abc (模式: abc)"]
+ R --> H["h"] --> HE["he"] --> HER["her (模式: her)"]
+ HE --> HE2["he"]
+ B -->|fail| HE2
+ C -->|fail| HE2
+ HER -->|fail| HE2
+ end
 ```
 
 当在文本中搜索模式时，沿 Trie 匹配。若在某个节点失配，通过 fail link 跳转到能继续匹配的另一个状态，而不回到根节点重新开始。AC 自动机对 $k$ 个模式串的匹配总时间复杂度为 $O(n + m)$，其中 $n$ 是文本长度，$m$ 是所有模式串的总长度。
@@ -122,56 +122,56 @@ AC 自动机是多模式匹配的标准算法——网络入侵检测系统（Sn
 #define ALPHABET 26
 
 typedef struct TrieNode {
-    struct TrieNode* children[ALPHABET];
-    int is_end;         // 是否是完整单词的结尾
-    int prefix_count;   // 有多少单词经过此节点
+ struct TrieNode* children[ALPHABET];
+ int is_end; // 是否是完整单词的结尾
+ int prefix_count; // 有多少单词经过此节点
 } TrieNode;
 
 typedef struct { TrieNode* root; } Trie;
 
 TrieNode* trie_new_node(void) {
-    return calloc(1, sizeof(TrieNode));  // calloc 将 children 全置 NULL
+ return calloc(1, sizeof(TrieNode)); // calloc 将 children 全置 NULL
 }
 
 void trie_init(Trie* t) { t->root = trie_new_node(); }
 
 void trie_insert(Trie* t, const char* word) {
-    TrieNode* cur = t->root;
-    for (int i = 0; word[i]; i++) {
-        int idx = word[i] - 'a';
-        if (!cur->children[idx])
-            cur->children[idx] = trie_new_node();
-        cur = cur->children[idx];
-        cur->prefix_count++;
-    }
-    cur->is_end = 1;
+ TrieNode* cur = t->root;
+ for (int i = 0; word[i]; i++) {
+ int idx = word[i] - 'a';
+ if (!cur->children[idx])
+ cur->children[idx] = trie_new_node();
+ cur = cur->children[idx];
+ cur->prefix_count++;
+ }
+ cur->is_end = 1;
 }
 
 int trie_search(Trie* t, const char* word) {
-    TrieNode* cur = t->root;
-    for (int i = 0; word[i]; i++) {
-        int idx = word[i] - 'a';
-        if (!cur->children[idx]) return 0;
-        cur = cur->children[idx];
-    }
-    return cur->is_end;
+ TrieNode* cur = t->root;
+ for (int i = 0; word[i]; i++) {
+ int idx = word[i] - 'a';
+ if (!cur->children[idx]) return 0;
+ cur = cur->children[idx];
+ }
+ return cur->is_end;
 }
 
 int trie_starts_with(Trie* t, const char* prefix) {
-    TrieNode* cur = t->root;
-    for (int i = 0; prefix[i]; i++) {
-        int idx = prefix[i] - 'a';
-        if (!cur->children[idx]) return 0;
-        cur = cur->children[idx];
-    }
-    return 1;  // 前缀存在
+ TrieNode* cur = t->root;
+ for (int i = 0; prefix[i]; i++) {
+ int idx = prefix[i] - 'a';
+ if (!cur->children[idx]) return 0;
+ cur = cur->children[idx];
+ }
+ return 1; // 前缀存在
 }
 
 static void trie_free_node(TrieNode* node) {
-    if (!node) return;
-    for (int i = 0; i < ALPHABET; i++)
-        trie_free_node(node->children[i]);
-    free(node);
+ if (!node) return;
+ for (int i = 0; i < ALPHABET; i++)
+ trie_free_node(node->children[i]);
+ free(node);
 }
 
 void trie_destroy(Trie* t) { trie_free_node(t->root); }
@@ -183,33 +183,33 @@ void trie_destroy(Trie* t) { trie_free_node(t->root); }
 #include <stdlib.h>
 
 typedef struct BinNode {
-    struct BinNode* child[2];  // child[0] = bit 0, child[1] = bit 1
+ struct BinNode* child[2]; // child[0] = bit 0, child[1] = bit 1
 } BinNode;
 
 BinNode* bin_new(void) { return calloc(1, sizeof(BinNode)); }
 
 void bin_insert(BinNode* root, int num) {
-    BinNode* cur = root;
-    for (int bit = 31; bit >= 0; bit--) {
-        int b = (num >> bit) & 1;
-        if (!cur->child[b]) cur->child[b] = bin_new();
-        cur = cur->child[b];
-    }
+ BinNode* cur = root;
+ for (int bit = 31; bit >= 0; bit--) {
+ int b = (num >> bit) & 1;
+ if (!cur->child[b]) cur->child[b] = bin_new();
+ cur = cur->child[b];
+ }
 }
 
 int bin_max_xor(BinNode* root, int num) {
-    BinNode* cur = root;
-    int result = 0;
-    for (int bit = 31; bit >= 0; bit--) {
-        int b = (num >> bit) & 1;
-        if (cur->child[1 - b]) {       // 反方向存在 → 该位异或贡献 1
-            result |= (1 << bit);
-            cur = cur->child[1 - b];
-        } else {
-            cur = cur->child[b];
-        }
-    }
-    return result;
+ BinNode* cur = root;
+ int result = 0;
+ for (int bit = 31; bit >= 0; bit--) {
+ int b = (num >> bit) & 1;
+ if (cur->child[1 - b]) { // 反方向存在 → 该位异或贡献 1
+ result |= (1 << bit);
+ cur = cur->child[1 - b];
+ } else {
+ cur = cur->child[b];
+ }
+ }
+ return result;
 }
 ```
 

@@ -31,30 +31,30 @@ wayland-server = "0.31"
 ```rust
 // Wayland compositor 概念代码（简化）
 struct NiriCompositor {
-    outputs: Vec<Output>,
-    workspaces: HashMap<OutputId, Workspace>,
+ outputs: Vec<Output>,
+ workspaces: HashMap<OutputId, Workspace>,
 }
 
 struct Workspace {
-    columns: Vec<Column>,
-    active_column: usize,
+ columns: Vec<Column>,
+ active_column: usize,
 }
 
 struct Column {
-    windows: Vec<Window>,
-    scroll_offset: f64,
+ windows: Vec<Window>,
+ scroll_offset: f64,
 }
 
 impl Column {
-    fn add_window(&mut self, window: Window) {
-        self.windows.push(window);
-        self.layout();
-    }
+ fn add_window(&mut self, window: Window) {
+ self.windows.push(window);
+ self.layout();
+ }
 
-    fn layout(&mut self) {
-        let y = self.windows.iter().map(|w| w.height).sum::<f64>();
-        self.scroll_offset = y;
-    }
+ fn layout(&mut self) {
+ let y = self.windows.iter().map(|w| w.height).sum::<f64>();
+ self.scroll_offset = y;
+ }
 }
 ```
 

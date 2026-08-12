@@ -55,14 +55,14 @@ Anthropic 推出的终端原生编码 Agent。接受自然语言任务描述后�
 
 **定价：** 免费
 
-| 对比维度 | Claude Code     | opencode              |
+| 对比维度 | Claude Code | opencode |
 | ---- | --------------- | --------------------- |
-| 开源   | 闭源              | Apache 2.0            |
-| 数据可控 | 经 Anthropic 服务器 | 可本地/自托管               |
-| 中国可用 | 需科学上网           | 无限制                   |
-| 推理质量 | 5               | 4                     |
-| 社区生态 | 商业支持            | 160K+ Stars, 900+ 贡献者 |
-| 价格   | $20/月 或 API 按量  | 免费                    |
+| 开源 | 闭源 | Apache 2.0 |
+| 数据可控 | 经 Anthropic 服务器 | 可本地/自托管 |
+| 中国可用 | 需科学上网 | 无限制 |
+| 推理质量 | 5 | 4 |
+| 社区生态 | 商业支持 | 160K+ Stars, 900+ 贡献者 |
+| 价格 | $20/月 或 API 按量 | 免费 |
 
 ---
 
@@ -176,10 +176,10 @@ Skill 是 Agent 工具的个性化配置单元，用于定义 Agent 的行为、
 
 ```jsonc
 {
-  "customInstructions": "你是一个严谨的系统编程导师。回答时：\n1. 优先用 C 语言举例\n2. 必须指出内存布局和性能影响\n3. 如果不确定，直接说不知道",
-  "allowedTools": ["read", "edit", "grep", "glob", "bash"],
-  "model": "claude-sonnet-4-20250514",
-  "tabAutocomplete": false
+ "customInstructions": "你是一个严谨的系统编程导师。回答时：\n1. 优先用 C 语言举例\n2. 必须指出内存布局和性能影响\n3. 如果不确定，直接说不知道",
+ "allowedTools": ["read", "edit", "grep", "glob", "bash"],
+ "model": "claude-sonnet-4-20250514",
+ "tabAutocomplete": false
 }
 ```
 
@@ -187,9 +187,9 @@ Skill 是 Agent 工具的个性化配置单元，用于定义 Agent 的行为、
 
 ```json
 {
-  "allowReadOnly": false,
-  "skipConfirmation": false,
-  "theme": "dark"
+ "allowReadOnly": false,
+ "skipConfirmation": false,
+ "theme": "dark"
 }
 ```
 

@@ -33,45 +33,45 @@ C++ 标准库的排序和搜索算法通过迭代器解耦容器和算法——�
 
 ```
 FUNCTION demo_sort:
-    v = [5, 2, 8, 1, 9, 3]
+ v = [5, 2, 8, 1, 9, 3]
 
-    SORT(v)                                  // [1, 2, 3, 5, 8, 9]
-    SORT(v, GREATER())                       // 降序: [9, 8, 5, 3, 2, 1]
+ SORT(v) // [1, 2, 3, 5, 8, 9]
+ SORT(v, GREATER()) // 降序: [9, 8, 5, 3, 2, 1]
 
-    SORT(v, LAMBDA(a, b): RETURN a > b)      // 自定义比较器
+ SORT(v, LAMBDA(a, b): RETURN a > b) // 自定义比较器
 
-    SORT(people, LAMBDA(p, q):               // 按结构体字段排序
-        RETURN p.age < q.age
-    )
+ SORT(people, LAMBDA(p, q): // 按结构体字段排序
+ RETURN p.age < q.age
+ )
 ```
 
 ### 二分搜索
 
 ```
 FUNCTION demo_binary_search:
-    v = [1, 2, 3, 3, 3, 5, 8]              // 必须已排序
+ v = [1, 2, 3, 3, 3, 5, 8] // 必须已排序
 
-    IF BINARY_SEARCH(v, 3) THEN
-        lb = LOWER_BOUND(v, 3)              // 下标 2（第一个 3）
-        ub = UPPER_BOUND(v, 3)              // 下标 5（第一个 > 3 的位置）
-        count = ub - lb                     // 3 的个数: 3
-    END IF
+ IF BINARY_SEARCH(v, 3) THEN
+ lb = LOWER_BOUND(v, 3) // 下标 2（第一个 3）
+ ub = UPPER_BOUND(v, 3) // 下标 5（第一个 > 3 的位置）
+ count = ub - lb // 3 的个数: 3
+ END IF
 
-    [lo, hi] = EQUAL_RANGE(v, 3)             // 返回 pair<迭代器>
-    PRINT hi - lo                            // 3
+ [lo, hi] = EQUAL_RANGE(v, 3) // 返回 pair<迭代器>
+ PRINT hi - lo // 3
 ```
 
 ### nth_element —— 部分排序
 
 ```
 FUNCTION demo_nth:
-    v = [7, 1, 3, 9, 5, 2, 8, 4, 6]
+ v = [7, 1, 3, 9, 5, 2, 8, 4, 6]
 
-    NTH_ELEMENT(v, v.BEGIN() + 4)           // 第 5 小的元素到位
+ NTH_ELEMENT(v, v.BEGIN() + 4) // 第 5 小的元素到位
 
-    // v 变为: [2, 1, 3, 4, 5, 7, 8, 9, 6]
-    //      left ≤ 5 ≤ right（左右内部无序）
-    PRINT v[4]                              // 5
+ // v 变为: [2, 1, 3, 4, 5, 7, 8, 9, 6]
+ // left ≤ 5 ≤ right（左右内部无序）
+ PRINT v[4] // 5
 ```
 
 ---

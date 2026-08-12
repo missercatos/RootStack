@@ -8,11 +8,11 @@
 
 ```mermaid
 flowchart LR
-    S[信源] -->|信息| E[发送器/编码器]
-    E -->|信号| C[信道]
-    C -->|受噪信号| D[接收器/解码器]
-    D -->|信息| R[信宿]
-    N[噪声源] -.->|干扰| C
+ S[信源] -->|信息| E[发送器/编码器]
+ E -->|信号| C[信道]
+ C -->|受噪信号| D[接收器/解码器]
+ D -->|信息| R[信宿]
+ N[噪声源] -.->|干扰| C
 ```
 
 - **信源 (Source)**: 产生数据的实体
@@ -123,22 +123,22 @@ $$
 
 ```mermaid
 graph LR
-    subgraph NRZ
-        direction TB
-        A0["0: 高电平<br/>1: 低电平<br/>(或无跳变)"]
-    end
-    subgraph NRZI
-        direction TB
-        B0["0: 无跳变<br/>1: 有跳变<br/>(差分编码)"]
-    end
-    subgraph Manchester
-        direction TB
-        C0["0: 高→低<br/>1: 低→高<br/>(时钟同步内置)"]
-    end
-    subgraph Diff_Man
-        direction TB
-        D0["0: 起始有跳变<br/>1: 起始无跳变<br/>(差分+时钟)"]
-    end
+ subgraph NRZ
+ direction TB
+ A0["0: 高电平<br/>1: 低电平<br/>(或无跳变)"]
+ end
+ subgraph NRZI
+ direction TB
+ B0["0: 无跳变<br/>1: 有跳变<br/>(差分编码)"]
+ end
+ subgraph Manchester
+ direction TB
+ C0["0: 高→低<br/>1: 低→高<br/>(时钟同步内置)"]
+ end
+ subgraph Diff_Man
+ direction TB
+ D0["0: 起始有跳变<br/>1: 起始无跳变<br/>(差分+时钟)"]
+ end
 ```
 
 | 编码方式 | 同步方式 | 效率 | 典型应用 | 优缺点 |
@@ -152,44 +152,44 @@ graph LR
 
 ```mermaid
 sequenceDiagram
-    autonumber
-    participant Clock
-    participant Data as 数据流
-    participant Manchester as 曼彻斯特输出
-    Note over Clock: 每位中间跳变
-    Data->>Manchester: bit=0 → 中间上升沿 (低→高)
-    Data->>Manchester: bit=1 → 中间下降沿 (高→低)
+ autonumber
+ participant Clock
+ participant Data as 数据流
+ participant Manchester as 曼彻斯特输出
+ Note over Clock: 每位中间跳变
+ Data->>Manchester: bit=0 → 中间上升沿 (低→高)
+ Data->>Manchester: bit=1 → 中间下降沿 (高→低)
 ```
 
 #### 数字 → 模拟 (Digital Modulation)
 
 ```mermaid
 graph TD
-    subgraph ASK["ASK (幅移键控)"]
-        A1["0: 无载波<br/>1: 有载波<br/>抗噪差"]
-    end
-    subgraph FSK["FSK (频移键控)"]
-        B1["0: f1<br/>1: f2<br/>抗噪较好"]
-    end
-    subgraph PSK["PSK (相移键控)"]
-        C1["0: 相位0°<br/>1: 相位180°<br/>抗噪好"]
-    end
-    subgraph QAM["QAM (正交振幅调制)"]
-        D1["幅度+相位联合<br/>16-QAM/64-QAM/256-QAM<br/>星座图"]
-    end
+ subgraph ASK["ASK (幅移键控)"]
+ A1["0: 无载波<br/>1: 有载波<br/>抗噪差"]
+ end
+ subgraph FSK["FSK (频移键控)"]
+ B1["0: f1<br/>1: f2<br/>抗噪较好"]
+ end
+ subgraph PSK["PSK (相移键控)"]
+ C1["0: 相位0°<br/>1: 相位180°<br/>抗噪好"]
+ end
+ subgraph QAM["QAM (正交振幅调制)"]
+ D1["幅度+相位联合<br/>16-QAM/64-QAM/256-QAM<br/>星座图"]
+ end
 ```
 
 #### QPSK 星座图 (Mermaid)
 
 ```mermaid
 quadrantChart
-    title QPSK 星座图 (2 bit per symbol)
-    x-axis I (同相)
-    y-axis Q (正交)
-    quadrant-1 "00 (45°)"
-    quadrant-2 "01 (135°)"
-    quadrant-3 "10 (225°)"
-    quadrant-4 "11 (315°)"
+ title QPSK 星座图 (2 bit per symbol)
+ x-axis I (同相)
+ y-axis Q (正交)
+ quadrant-1 "00 (45°)"
+ quadrant-2 "01 (135°)"
+ quadrant-3 "10 (225°)"
+ quadrant-4 "11 (315°)"
 ```
 
 > 每个符号携带 `log2(M)` 位；16-QAM = 4 bit/symbol, 64-QAM = 6 bit/symbol。
@@ -200,11 +200,11 @@ quadrantChart
 
 ```mermaid
 flowchart LR
-    A[模拟信号] --> B[采样<br/>Sampling]
-    B --> C[量化<br/>Quantization]
-    C --> D[编码<br/>Coding]
-    D --> E[数字比特流]
-    F[低通滤波器] --> A
+ A[模拟信号] --> B[采样<br/>Sampling]
+ B --> C[量化<br/>Quantization]
+ C --> D[编码<br/>Coding]
+ D --> E[数字比特流]
+ F[低通滤波器] --> A
 ```
 
 **采样定理 (Nyquist Sampling Theorem)**:
@@ -250,14 +250,14 @@ $$
 
 ```mermaid
 flowchart TD
-    S1[信源1] --> M[调制器 f1]
-    S2[信源2] -->|调制器 f2| COMB[合路器]
-    S3[信源3] -->|调制器 f3| COMB
-    COMB --> C[共享信道]
-    C --> SEP[分路器]
-    SEP --> D1[解调器 f1] --> R1[信宿1]
-    SEP --> D2[解调器 f2] --> R2[信宿2]
-    SEP --> D3[解调器 f3] --> R3[信宿3]
+ S1[信源1] --> M[调制器 f1]
+ S2[信源2] -->|调制器 f2| COMB[合路器]
+ S3[信源3] -->|调制器 f3| COMB
+ COMB --> C[共享信道]
+ C --> SEP[分路器]
+ SEP --> D1[解调器 f1] --> R1[信宿1]
+ SEP --> D2[解调器 f2] --> R2[信宿2]
+ SEP --> D3[解调器 f3] --> R3[信宿3]
 ```
 
 每个用户独占一段频率子带，信道总带宽 = 各子带带宽之和 + 保护间隔。典型应用: AM/FM 广播、ADSL、有线电视。
@@ -266,21 +266,21 @@ flowchart TD
 
 ```mermaid
 gantt
-    title TDM 时分复用 (3个用户, 4轮)
-    dateFormat  HH:mm
-    axisFormat %H:%M
-    section 用户1
-    Slot1 :a1, 00:00, 1min
-    Slot1 :a4, 00:03, 1min
-    Slot1 :a7, 00:06, 1min
-    Slot1 :a9, 00:09, 1min
-    section 用户2
-    Slot2 :b2, 00:01, 1min
-    Slot2 :b5, 00:04, 1min
-    Slot2 :b8, 00:07, 1min
-    section 用户3
-    Slot3 :c3, 00:02, 1min
-    Slot3 :c6, 00:05, 1min
+ title TDM 时分复用 (3个用户, 4轮)
+ dateFormat HH:mm
+ axisFormat %H:%M
+ section 用户1
+ Slot1 :a1, 00:00, 1min
+ Slot1 :a4, 00:03, 1min
+ Slot1 :a7, 00:06, 1min
+ Slot1 :a9, 00:09, 1min
+ section 用户2
+ Slot2 :b2, 00:01, 1min
+ Slot2 :b5, 00:04, 1min
+ Slot2 :b8, 00:07, 1min
+ section 用户3
+ Slot3 :c3, 00:02, 1min
+ Slot3 :c6, 00:05, 1min
 ```
 
 **同步 TDM**: 固定分配时隙，无数据也占用 — 带宽浪费
@@ -308,8 +308,8 @@ gantt
 
 ```
 A_send = (–1 –1 –1 +1 +1 –1 +1 +1)
-B_send = (+1 +1 –1 +1 –1 –1 –1 +1)   ← B send 0 → 取反码片
-S_sum  = ( 0  0 –2 +2  0 –2  0 +2)
+B_send = (+1 +1 –1 +1 –1 –1 –1 +1) ← B send 0 → 取反码片
+S_sum = ( 0 0 –2 +2 0 –2 0 +2)
 ```
 
 接收方解码 A: `S_sum · A = (0×–1 + 0×–1 + –2×–1 + 2×1 + 0×1 + –2×–1 + 0×1 + 2×1)/8 = (0+0+2+2+0+2+0+2)/8 = 8/8 = 1` → 位 `1`
@@ -356,60 +356,60 @@ S_sum  = ( 0  0 –2 +2  0 –2  0 +2)
 #include <linux/ethtool.h>
 
 struct ethtool_cmd {
-    unsigned int cmd;
-    unsigned int supported;
-    unsigned int advertising;
-    unsigned short speed;       /* Mbps */
-    unsigned char  duplex;      /* DUPLEX_HALF=1, DUPLEX_FULL=2 */
-    unsigned char  port;
-    unsigned char  phy_address;
-    unsigned char  transceiver;
-    unsigned char  autoneg;
-    unsigned int   maxtxpkt;
-    unsigned int   maxrxpkt;
-    unsigned int   reserved[4];
+ unsigned int cmd;
+ unsigned int supported;
+ unsigned int advertising;
+ unsigned short speed; /* Mbps */
+ unsigned char duplex; /* DUPLEX_HALF=1, DUPLEX_FULL=2 */
+ unsigned char port;
+ unsigned char phy_address;
+ unsigned char transceiver;
+ unsigned char autoneg;
+ unsigned int maxtxpkt;
+ unsigned int maxrxpkt;
+ unsigned int reserved[4];
 };
 
 #define ETHTOOL_GSET 0x00000001
 
 static int ethtool_get(const char *ifname, struct ethtool_cmd *ecmd) {
-    int fd = socket(AF_INET, SOCK_DGRAM, 0);
-    if (fd < 0) return -1;
+ int fd = socket(AF_INET, SOCK_DGRAM, 0);
+ if (fd < 0) return -1;
 
-    struct ifreq ifr;
-    memset(&ifr, 0, sizeof(ifr));
-    strncpy(ifr.ifr_name, ifname, IFNAMSIZ - 1);
+ struct ifreq ifr;
+ memset(&ifr, 0, sizeof(ifr));
+ strncpy(ifr.ifr_name, ifname, IFNAMSIZ - 1);
 
-    ecmd->cmd = ETHTOOL_GSET;
-    ifr.ifr_data = (void *)ecmd;
+ ecmd->cmd = ETHTOOL_GSET;
+ ifr.ifr_data = (void *)ecmd;
 
-    if (ioctl(fd, SIOCETHTOOL, &ifr) < 0) {
-        close(fd);
-        return -1;
-    }
-    close(fd);
-    return 0;
+ if (ioctl(fd, SIOCETHTOOL, &ifr) < 0) {
+ close(fd);
+ return -1;
+ }
+ close(fd);
+ return 0;
 }
 
 int main(int argc, char **argv) {
-    const char *ifname = (argc > 1) ? argv[1] : "eth0";
-    struct ethtool_cmd ecmd;
+ const char *ifname = (argc > 1) ? argv[1] : "eth0";
+ struct ethtool_cmd ecmd;
 
-    if (ethtool_get(ifname, &ecmd) < 0) {
-        perror("ethtool_get");
-        return 1;
-    }
+ if (ethtool_get(ifname, &ecmd) < 0) {
+ perror("ethtool_get");
+ return 1;
+ }
 
-    /* Speed and Duplex belong to physical layer */
-    printf("Interface: %s\n", ifname);
-    printf("  Speed   : %u Mbps\n", ecmd.speed);
-    printf("  Duplex  : %s\n",
-           ecmd.duplex == 2 ? "Full" : "Half");
-    printf("  Auto-Neg: %s\n",
-           ecmd.autoneg ? "On" : "Off");
-    printf("  Port    : %u\n", ecmd.port);
+ /* Speed and Duplex belong to physical layer */
+ printf("Interface: %s\n", ifname);
+ printf(" Speed : %u Mbps\n", ecmd.speed);
+ printf(" Duplex : %s\n",
+ ecmd.duplex == 2 ? "Full" : "Half");
+ printf(" Auto-Neg: %s\n",
+ ecmd.autoneg ? "On" : "Off");
+ printf(" Port : %u\n", ecmd.port);
 
-    return 0;
+ return 0;
 }
 ```
 

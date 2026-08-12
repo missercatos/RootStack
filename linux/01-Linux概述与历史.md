@@ -124,19 +124,19 @@ GPL 的核心理念：
 
 ```mermaid
 graph TD
-    A["GNU 工具链<br/>(bash, coreutils, gcc, glibc...)"] --> C
-    B["Linux 内核<br/>(进程调度、内存管理、驱动...)"] --> C
-    C["Linux 发行版<br/>(内核 + GNU工具 + 包管理器 + 桌面环境)"]
-    D["包管理器<br/>(apt/dnf/pacman/zypper)"] --> C
-    E["桌面环境<br/>(GNOME, KDE, XFCE...)"] --> C
-    F["发行版配置<br/>(默认设置、主题、预装软件)"] --> C
+ A["GNU 工具链<br/>(bash, coreutils, gcc, glibc...)"] --> C
+ B["Linux 内核<br/>(进程调度、内存管理、驱动...)"] --> C
+ C["Linux 发行版<br/>(内核 + GNU工具 + 包管理器 + 桌面环境)"]
+ D["包管理器<br/>(apt/dnf/pacman/zypper)"] --> C
+ E["桌面环境<br/>(GNOME, KDE, XFCE...)"] --> C
+ F["发行版配置<br/>(默认设置、主题、预装软件)"] --> C
 
-    style A fill:#fff3e0
-    style B fill:#e8f5e9
-    style C fill:#e1f5fe
-    style D fill:#fce4ec
-    style E fill:#f3e5f5
-    style F fill:#e0f2f1
+ style A fill:#fff3e0
+ style B fill:#e8f5e9
+ style C fill:#e1f5fe
+ style D fill:#fce4ec
+ style E fill:#f3e5f5
+ style F fill:#e0f2f1
 ```
 
 | 组件 | 说明 | 由谁提供 |
@@ -197,17 +197,17 @@ Linux 能够被深度定制和优化是其在 HPC（高性能计算）领域无�
 
 ```text
 Android 架构：
-  ┌──────────────────────┐
-  │    Android 应用层    │  ← Java/Kotlin 编写
-  ├──────────────────────┤
-  │    Android Framework │
-  ├──────────────────────┤
-  │    Android Runtime   │  ← ART (Android Runtime)
-  ├──────────────────────┤
-  │    HAL (硬件抽象层)  │
-  ├──────────────────────┤
-  │    Linux 内核        │  ← 修改版的 Linux 内核
-  └──────────────────────┘
+ ┌──────────────────────┐
+ │ Android 应用层 │ ← Java/Kotlin 编写
+ ├──────────────────────┤
+ │ Android Framework │
+ ├──────────────────────┤
+ │ Android Runtime │ ← ART (Android Runtime)
+ ├──────────────────────┤
+ │ HAL (硬件抽象层) │
+ ├──────────────────────┤
+ │ Linux 内核 │ ← 修改版的 Linux 内核
+ └──────────────────────┘
 ```
 
 全球数十亿台 Android 设备运行着 Linux 内核，这使 Linux 成为地球上部署最广泛的操作系统内核。
@@ -248,14 +248,14 @@ Android 架构：
 
 ```mermaid
 graph LR
-    A["01 Linux 概述与历史<br/>← 你在这里"] --> B["02 多发行版安装指南"]
-    B --> C["03 FHS 文件系统层次标准"]
-    C --> D["04 文件与目录管理"]
-    D --> E["05 文本编辑器"]
-    E --> F["06 命令行基础与 Shell 入门"]
-    F --> G["16 Bash 编程基础"]
+ A["01 Linux 概述与历史<br/>← 你在这里"] --> B["02 多发行版安装指南"]
+ B --> C["03 FHS 文件系统层次标准"]
+ C --> D["04 文件与目录管理"]
+ D --> E["05 文本编辑器"]
+ E --> F["06 命令行基础与 Shell 入门"]
+ F --> G["16 Bash 编程基础"]
 
-    style A fill:#e8f5e9,stroke:#4caf50
+ style A fill:#e8f5e9,stroke:#4caf50
 ```
 
 建议按照编号顺序阅读基础章节，然后再根据兴趣深入特定主题。Linux 学习是一个螺旋上升的过程——初学时理解基本操作，进阶后理解底层原理，最终形成完整的系统观。

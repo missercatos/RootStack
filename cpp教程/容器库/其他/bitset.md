@@ -42,42 +42,42 @@ class bitset"
 bitset<8> bs
 
 // 置位（最低位是第 0 位）
-bs.set(0)                // bit 0 = 1
-bs.set(3, 1)             // bit 3 = 1
-bs[5] = 1                // bit 5 = 1
-print bs                 // 00101001（高位在前）
+bs.set(0) // bit 0 = 1
+bs.set(3, 1) // bit 3 = 1
+bs[5] = 1 // bit 5 = 1
+print bs // 00101001（高位在前）
 
 // 统计
-print bs.count()         // 3
-print bs.size()          // 8
+print bs.count() // 3
+print bs.size() // 8
 
 // 位运算
-bs2 = bs << 1            // 左移一位
-result = bs & bs2        // 按位与
+bs2 = bs << 1 // 左移一位
+result = bs & bs2 // 按位与
 
 // 翻转
-bs.flip()                // 所有位取反
+bs.flip() // 所有位取反
 
 // 重置
-bs.reset()               // 全部清零
+bs.reset() // 全部清零
 
 // 状态压缩 DP（砝码称重）
 bitset<MAX_W+1> dp
 dp[0] = 1
 for each weight w:
-    for each count c:
-        dp = dp | (dp << w)
+ for each count c:
+ dp = dp | (dp << w)
 
 // 可达性：dp[x] = 1 表示能称出重量 x
 
 // 传递闭包（bitset 优化 Floyd）
 bitset<N> reach[N]
 for each edge u -> v:
-    reach[u][v] = 1
+ reach[u][v] = 1
 for each k in 0..N-1:
-    for each i in 0..N-1:
-        if reach[i][k]:
-            reach[i] = reach[i] | reach[k]
+ for each i in 0..N-1:
+ if reach[i][k]:
+ reach[i] = reach[i] | reach[k]
 ```
 
 ## 相关链接

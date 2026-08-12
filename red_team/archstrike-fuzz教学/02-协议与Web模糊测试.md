@@ -25,7 +25,7 @@ BED支持的协议多达20+种：FTP, SMTP, POP3, IMAP, HTTP, IRC, DNS, TFTP, NT
 ### 1.2 安装与基本使用
 
 ```bash
-sudo pacman -S bed    # ArchStrike安装
+sudo pacman -S bed # ArchStrike安装
 
 # 列出所有支持的协议模块
 bed -l
@@ -58,25 +58,25 @@ bed -s FTP -t 10.0.0.50 -p 2121
 
 ```mermaid
 flowchart LR
-    subgraph FTP["FTP协议测试"]
-        F1["超长USER/PASS命令"]
-        F2["超长CWD命令"]
-        F3["畸形PORT命令"]
-        F4["格式字符串 %s%s%s"]
-        F5["NULL字节注入"]
-    end
-    subgraph SMTP["SMTP协议测试"]
-        S1["超长HELO/EHLO"]
-        S2["超长MAIL FROM"]
-        S3["超长RCPT TO"]
-        S4["畸形地址格式"]
-    end
-    subgraph HTTP["HTTP协议测试"]
-        H1["超长URL请求"]
-        H2["超长Host头"]
-        H3["畸形HTTP方法"]
-        H4["特殊字符注入"]
-    end
+ subgraph FTP["FTP协议测试"]
+ F1["超长USER/PASS命令"]
+ F2["超长CWD命令"]
+ F3["畸形PORT命令"]
+ F4["格式字符串 %s%s%s"]
+ F5["NULL字节注入"]
+ end
+ subgraph SMTP["SMTP协议测试"]
+ S1["超长HELO/EHLO"]
+ S2["超长MAIL FROM"]
+ S3["超长RCPT TO"]
+ S4["畸形地址格式"]
+ end
+ subgraph HTTP["HTTP协议测试"]
+ H1["超长URL请求"]
+ H2["超长Host头"]
+ H3["畸形HTTP方法"]
+ H4["特殊字符注入"]
+ end
 ```
 
 ### 1.5 实战操作
@@ -118,14 +118,14 @@ bfbtester(Brute Force Binary Tester)针对可执行程序的安全测试工具�
 ### 2.2 基本使用
 
 ```bash
-sudo pacman -S bfbtester    # ArchStrike安装
+sudo pacman -S bfbtester # ArchStrike安装
 
 # 基本语法
 bfbtester /usr/bin/program
 bfbtester -v /usr/local/bin/target_binary
 
 # 常用参数
-# -v        详细输出模式
+# -v 详细输出模式
 # -s <size> 指定最大字符串长度(默认10000)
 # -f <file> 从文件读取输入数据
 # -t <time> 超时时间设置
@@ -150,8 +150,8 @@ bfbtester创建包含超长内容的临时文件作为输入。
 ```bash
 # 搜索所有setuid程序并逐一测试
 find / -type f -perm -4000 2>/dev/null | while read bin; do
-  echo "Testing $bin ..."
-  bfbtester "$bin" 2>&1 | grep -E "CRASH|SIGSEGV|SIGABRT"
+ echo "Testing $bin ..."
+ bfbtester "$bin" 2>&1 | grep -E "CRASH|SIGSEGV|SIGABRT"
 done
 ```
 
@@ -181,18 +181,18 @@ zzuf通过LD_PRELOAD机制拦截程序的open/fopen/read等系统调用，实时
 
 ```mermaid
 flowchart LR
-    A["原始文件"] --> B["zzuf LD_PRELOAD拦截"]
-    B --> C["实时修改读取数据"]
-    C --> D["目标程序"]
-    D --> E{程序行为}
-    E -->|正常| F["继续变异"]
-    E -->|崩溃| G["记录crash"]
+ A["原始文件"] --> B["zzuf LD_PRELOAD拦截"]
+ B --> C["实时修改读取数据"]
+ C --> D["目标程序"]
+ D --> E{程序行为}
+ E -->|正常| F["继续变异"]
+ E -->|崩溃| G["记录crash"]
 ```
 
 ### 3.2 安装与基本使用
 
 ```bash
-sudo pacman -S zzuf    # ArchStrike安装
+sudo pacman -S zzuf # ArchStrike安装
 
 # 基本语法
 zzuf [选项] <程序> [程序参数]
@@ -239,14 +239,14 @@ zzuf -r 0.01 -b 0 -e 100 program input.bin
 ```bash
 #!/bin/bash
 for seed in $(seq 1 500); do
-  echo -n "Testing seed $seed ... "
-  zzuf -s $seed -r 0.001 program input.bin > /dev/null 2>&1
-  exit_code=$?
-  if [ $exit_code -gt 128 ] || [ $exit_code -eq 139 ]; then
-    echo "CRASH! (seed=$seed, exit=$exit_code)"
-  else
-    echo "OK"
-  fi
+ echo -n "Testing seed $seed ... "
+ zzuf -s $seed -r 0.001 program input.bin > /dev/null 2>&1
+ exit_code=$?
+ if [ $exit_code -gt 128 ] || [ $exit_code -eq 139 ]; then
+ echo "CRASH! (seed=$seed, exit=$exit_code)"
+ else
+ echo "OK"
+ fi
 done
 ```
 
@@ -277,7 +277,7 @@ done
 ### 4.2 ffuf — 快速Web模糊测试
 
 ```bash
-sudo pacman -S ffuf    # ArchStrike安装
+sudo pacman -S ffuf # ArchStrike安装
 ```
 
 **(1) 目录扫描**：
@@ -293,29 +293,29 @@ ffuf -w subdomains.txt -u http://FUZZ.target.com -H "Host: FUZZ.target.com"
 **(3) POST参数模糊测试**：
 ```bash
 ffuf -w params.txt -u http://target.com/login \
-  -X POST -d "FUZZ=test" \
-  -H "Content-Type: application/x-www-form-urlencoded"
+ -X POST -d "FUZZ=test" \
+ -H "Content-Type: application/x-www-form-urlencoded"
 ```
 
 **(4) 过滤响应结果**：
 ```bash
 ffuf -w wordlist.txt -u http://target.com/FUZZ \
-  -fc 404 \    # 过滤404
-  -fs 0 \      # 过滤空响应体
-  -fw 10       # 过滤响应体包含10个单词的
+ -fc 404 \ # 过滤404
+ -fs 0 \ # 过滤空响应体
+ -fw 10 # 过滤响应体包含10个单词的
 ```
 
 **(5) 递归扫描**：
 ```bash
 ffuf -w wordlist.txt -u http://target.com/FUZZ \
-  -recursion -recursion-depth 3 -e .php,.html,.txt
+ -recursion -recursion-depth 3 -e .php,.html,.txt
 ```
 
 **(6) 多占位符(用户+密码爆破)**：
 ```bash
 ffuf -w users.txt:USER -w passwords.txt:PASS \
-  -u http://target.com/login.php \
-  -d "username=USER&password=PASS" -X POST -fc 401
+ -u http://target.com/login.php \
+ -d "username=USER&password=PASS" -X POST -fc 401
 ```
 
 **(7) 频率控制(避免触发WAF)**：
@@ -326,7 +326,7 @@ ffuf -w wordlist.txt -u http://target.com/FUZZ -p 2 -t 3
 ### 4.3 wfuzz — Web应用Fuzzing框架
 
 ```bash
-sudo pacman -S wfuzz    # ArchStrike安装
+sudo pacman -S wfuzz # ArchStrike安装
 
 # 基本语法
 wfuzz -c -z file,wordlist.txt --hc 404 http://target.com/FUZZ
@@ -341,7 +341,7 @@ wfuzz -c -z file,wordlist.txt --hc 404 http://target.com/FUZZ
 ```bash
 # 组合参数Fuzz
 wfuzz -c -z file,users.txt -z file,passwords.txt \
-  -d "user=FUZZ&pass=FUZ2Z" http://target.com/login.php
+ -d "user=FUZZ&pass=FUZ2Z" http://target.com/login.php
 
 # Cookie模糊测试
 wfuzz -c -z file,wordlist.txt -b "session=FUZZ" http://target.com/admin/
@@ -392,9 +392,9 @@ bed -s FTP -t 192.168.1.100
 
 # Step 4: 监控服务(另一终端)
 while true; do
-  echo "QUIT" | timeout 2 nc 192.168.1.100 21 > /dev/null 2>&1
-  if [ $? -ne 0 ]; then echo "[!] Service is DOWN at $(date)"; fi
-  sleep 5
+ echo "QUIT" | timeout 2 nc 192.168.1.100 21 > /dev/null 2>&1
+ if [ $? -ne 0 ]; then echo "[!] Service is DOWN at $(date)"; fi
+ sleep 5
 done
 
 # Step 5: 分析抓包
@@ -409,10 +409,10 @@ mkdir samples && cp /path/to/normal/files/* samples/
 
 # Step 2: zzuf快速验证
 for f in samples/*; do
-  for s in $(seq 1 100); do
-    zzuf -s $s -r 0.001 program "$f" > /dev/null 2>&1
-    [ $? -gt 128 ] && echo "Crash: $f seed=$s"
-  done
+ for s in $(seq 1 100); do
+ zzuf -s $s -r 0.001 program "$f" > /dev/null 2>&1
+ [ $? -gt 128 ] && echo "Crash: $f seed=$s"
+ done
 done
 
 # Step 3: AFL语料库最小化
@@ -434,14 +434,14 @@ ffuf -w /usr/share/wordlists/dirb/common -u http://target.com/FUZZ -fc 403,404
 
 # Step 2: 参数发现
 ffuf -w /usr/share/seclists/Discovery/Web-Content/burp-parameter-names.txt \
-  -u http://target.com/page.php?FUZZ=1 -fs 0
+ -u http://target.com/page.php?FUZZ=1 -fs 0
 
 # Step 3: 文件扩展名枚举
 ffuf -w extensions.txt -u http://target.com/index.FUZZ -fc 404
 
 # Step 4: POST参数爆破
 ffuf -w common_params.txt -u http://target.com/search \
-  -X POST -d "FUZZ=test" -fc 400
+ -X POST -d "FUZZ=test" -fc 400
 ```
 
 ---

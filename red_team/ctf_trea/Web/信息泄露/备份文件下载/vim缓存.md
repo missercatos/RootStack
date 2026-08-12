@@ -10,15 +10,15 @@ vim 编辑文件时，会在**同目录**生成一个临时交换文件（swap f
 
 ```mermaid
 flowchart LR
-    A[vim 编辑 index.php] --> B[同目录生成 .index.php.swp]
-    B --> C[定期写入未保存内容]
-    B --> D[标记文件被占用]
-    C --> E[崩溃/断线时用 vim -r 恢复]
-    D --> F[其他 vim 会话提示冲突]
-    E --> G[正常退出 → vim 删除 .swp]
-    F --> G
-    G -->|异常退出: 进程被杀/SSH 断线| H[.swp 残留服务器]
-    H --> I[攻击者下载 → strings / vim -r 恢复源码]
+ A[vim 编辑 index.php] --> B[同目录生成 .index.php.swp]
+ B --> C[定期写入未保存内容]
+ B --> D[标记文件被占用]
+ C --> E[崩溃/断线时用 vim -r 恢复]
+ D --> F[其他 vim 会话提示冲突]
+ E --> G[正常退出 → vim 删除 .swp]
+ F --> G
+ G -->|异常退出: 进程被杀/SSH 断线| H[.swp 残留服务器]
+ H --> I[攻击者下载 → strings / vim -r 恢复源码]
 ```
 
 | 机制 | 说明 |

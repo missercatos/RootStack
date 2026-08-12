@@ -22,30 +22,30 @@ C Runtime (CRT) 是 C 程序执行的最小运行时环境。与 JVM 或 CPython
 ## 启动流程
 
 ```
-KERNEL                        CRT                             USER
-  |                             |                                |
-  |--execve("a.out")---------->|                                |
-  |                             |                                |
-  |                    _start (crt0.S)                           |
-  |                       设定栈指针                               |
-  |                       收集 argc, argv, envp                   |
-  |                       调用 __libc_start_main                  |
-  |                             |                                |
-  |                 __libc_start_main                            |
-  |                   注册 atexit 回调                             |
-  |                   __libc_init (TLS, 环境变量)                  |
-  |                   调用 main(argc, argv, envp)                 |
-  |                             |------------------------------->|
-  |                             |              int main(...)     |
-  |                             |                  ...           |
-  |                             |<-------------------------------|
-  |                             |            return 0            |
-  |                   收集返回值                                   |
-  |                   调用 exit(retval)                           |
-  |                   遍历 atexit 回调链                           |
-  |                   刷新 stdio 缓冲区                            |
-  |                   调用 _exit(retval)                          |
-  |<--_exit(retval)--------------|                               |
+KERNEL CRT USER
+ | | |
+ |--execve("a.out")---------->| |
+ | | |
+ | _start (crt0.S) |
+ | 设定栈指针 |
+ | 收集 argc, argv, envp |
+ | 调用 __libc_start_main |
+ | | |
+ | __libc_start_main |
+ | 注册 atexit 回调 |
+ | __libc_init (TLS, 环境变量) |
+ | 调用 main(argc, argv, envp) |
+ | |------------------------------->|
+ | | int main(...) |
+ | | ... |
+ | |<-------------------------------|
+ | | return 0 |
+ | 收集返回值 |
+ | 调用 exit(retval) |
+ | 遍历 atexit 回调链 |
+ | 刷新 stdio 缓冲区 |
+ | 调用 _exit(retval) |
+ |<--_exit(retval)--------------| |
 ```
 
 ## 堆管理
@@ -53,17 +53,17 @@ KERNEL                        CRT                             USER
 ```c
 // 简化版的 malloc 策略 (glibc ptmalloc)
 void* malloc(size_t size) {
-    if (size <= 64KB) {
-        // 从线程本地 arena 分配
-        // 使用 bins (fastbins, smallbins, largebins) 管理空闲块
-        chunk = find_free_chunk_in_bins(size);
-    }
-    if (chunk == NULL) {
-        // 通过 brk 扩展 data segment (小块)
-        // 或通过 mmap 映射匿名页 (大块)
-        chunk = request_from_kernel(size);
-    }
-    return chunk_to_mem(chunk);
+ if (size <= 64KB) {
+ // 从线程本地 arena 分配
+ // 使用 bins (fastbins, smallbins, largebins) 管理空闲块
+ chunk = find_free_chunk_in_bins(size);
+ }
+ if (chunk == NULL) {
+ // 通过 brk 扩展 data segment (小块)
+ // 或通过 mmap 映射匿名页 (大块)
+ chunk = request_from_kernel(size);
+ }
+ return chunk_to_mem(chunk);
 }
 ```
 
@@ -72,9 +72,9 @@ void* malloc(size_t size) {
 ```c
 // 信号处理的用户态模型
 struct sigaction {
-    void (*sa_handler)(int);     // 处理函数指针
-    sigset_t sa_mask;             // 信号处理期间屏蔽的信号
-    int sa_flags;                 // SA_RESTART, SA_NODEFER 等
+ void (*sa_handler)(int); // 处理函数指针
+ sigset_t sa_mask; // 信号处理期间屏蔽的信号
+ int sa_flags; // SA_RESTART, SA_NODEFER 等
 };
 
 // 信号递送时内核在用户栈上构造一个栈帧

@@ -74,41 +74,41 @@ packet-beta
 输入: 16-bit 字数组 (word[0], word[1], ..., word[N-1])
 1. sum = 0
 2. for each word w:
-      sum = sum + w
-      if sum > 0xFFFF: sum = (sum & 0xFFFF) + 1   // 回卷进位
-3. checksum = ~sum & 0xFFFF                         // 取反码
+ sum = sum + w
+ if sum > 0xFFFF: sum = (sum & 0xFFFF) + 1 // 回卷进位
+3. checksum = ~sum & 0xFFFF // 取反码
 ```
 
 **完整示例** -- 计算 UDP 包 (src=10.0.0.1:1234, dst=10.0.0.2:53, data="TEST") 的校验和：
 
 ```
 伪头部 (12 bytes):
-  源IP 10.0.0.1     = 0x0A00 0x0001
-  目的IP 10.0.0.2    = 0x0A00 0x0002
-  Zeros + Proto=17   = 0x0011
-  UDP长度 = 8+4=12   = 0x000C
+ 源IP 10.0.0.1 = 0x0A00 0x0001
+ 目的IP 10.0.0.2 = 0x0A00 0x0002
+ Zeros + Proto=17 = 0x0011
+ UDP长度 = 8+4=12 = 0x000C
 
 UDP头部 (8 bytes):
-  源端口 1234         = 0x04D2
-  目的端口 53          = 0x0035
-  长度 12             = 0x000C
-  校验和 (先置0)      = 0x0000
+ 源端口 1234 = 0x04D2
+ 目的端口 53 = 0x0035
+ 长度 12 = 0x000C
+ 校验和 (先置0) = 0x0000
 
 数据 (4 bytes):
-  "TEST"             = 0x5445 0x5354
+ "TEST" = 0x5445 0x5354
 
 16-bit 求和:
-  0x0A00 + 0x0001 = 0x0A01
-  0x0A01 + 0x0A00 = 0x1401
-  0x1401 + 0x0002 = 0x1403
-  0x1403 + 0x0011 = 0x1414
-  0x1414 + 0x000C = 0x1420
-  0x1420 + 0x04D2 = 0x18F2
-  0x18F2 + 0x0035 = 0x1927
-  0x1927 + 0x000C = 0x1933
-  0x1933 + 0x0000 = 0x1933
-  0x1933 + 0x5445 = 0x6D78
-  0x6D78 + 0x5354 = 0xC0CC
+ 0x0A00 + 0x0001 = 0x0A01
+ 0x0A01 + 0x0A00 = 0x1401
+ 0x1401 + 0x0002 = 0x1403
+ 0x1403 + 0x0011 = 0x1414
+ 0x1414 + 0x000C = 0x1420
+ 0x1420 + 0x04D2 = 0x18F2
+ 0x18F2 + 0x0035 = 0x1927
+ 0x1927 + 0x000C = 0x1933
+ 0x1933 + 0x0000 = 0x1933
+ 0x1933 + 0x5445 = 0x6D78
+ 0x6D78 + 0x5354 = 0xC0CC
 
 校验和 = ~0xC0CC & 0xFFFF = 0x3F33
 ```
@@ -205,7 +205,7 @@ flag = 1;
 setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &flag, sizeof(flag));
 
 // TCP 快速打开 (TFO): 减少握手 RTT
-flag = 5;  // max pending TFO cookies
+flag = 5; // max pending TFO cookies
 setsockopt(fd, IPPROTO_TCP, TCP_FASTOPEN, &flag, sizeof(flag));
 
 // Linux 特有: TCP_CORK 合并小包
@@ -219,15 +219,15 @@ setsockopt(fd, IPPROTO_TCP, TCP_CORK, &flag, sizeof(flag));
 
 ```mermaid
 sequenceDiagram
-    participant C as 客户端 (主动打开)
-    participant S as 服务端 (被动打开)
-    Note over S: LISTEN
-    C->>S: SYN=1, seq=x (随机 ISN)
-    Note over C: SYN_SENT
-    S-->>C: SYN=1, ACK=1, seq=y, ack=x+1
-    Note over S: SYN_RCVD
-    C->>S: ACK=1, seq=x+1, ack=y+1
-    Note over C,S: ESTABLISHED
+ participant C as 客户端 (主动打开)
+ participant S as 服务端 (被动打开)
+ Note over S: LISTEN
+ C->>S: SYN=1, seq=x (随机 ISN)
+ Note over C: SYN_SENT
+ S-->>C: SYN=1, ACK=1, seq=y, ack=x+1
+ Note over S: SYN_RCVD
+ C->>S: ACK=1, seq=x+1, ack=y+1
+ Note over C,S: ESTABLISHED
 ```
 
 **握手细节**：
@@ -244,20 +244,20 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant A as 主动关闭方
-    participant B as 被动关闭方
-    Note over A,B: ESTABLISHED
-    A->>B: FIN=1, seq=u
-    Note over A: FIN_WAIT_1
-    B-->>A: ACK=1, seq=v, ack=u+1
-    Note over A: FIN_WAIT_2
-    Note over B: CLOSE_WAIT (半关闭，B 仍可发数据)
-    B-->>A: FIN=1, ACK=1, seq=w, ack=u+1
-    Note over B: LAST_ACK
-    A->>B: ACK=1, seq=u+1, ack=w+1
-    Note over A: TIME_WAIT (等待 2MSL)
-    Note over B: CLOSED
-    Note over A: ~60s 后 → CLOSED
+ participant A as 主动关闭方
+ participant B as 被动关闭方
+ Note over A,B: ESTABLISHED
+ A->>B: FIN=1, seq=u
+ Note over A: FIN_WAIT_1
+ B-->>A: ACK=1, seq=v, ack=u+1
+ Note over A: FIN_WAIT_2
+ Note over B: CLOSE_WAIT (半关闭，B 仍可发数据)
+ B-->>A: FIN=1, ACK=1, seq=w, ack=u+1
+ Note over B: LAST_ACK
+ A->>B: ACK=1, seq=u+1, ack=w+1
+ Note over A: TIME_WAIT (等待 2MSL)
+ Note over B: CLOSED
+ Note over A: ~60s 后 → CLOSED
 ```
 
 **为什么是四次？** TCP 是全双工的，每个方向需独立关闭。收到 FIN 意味着"对方没有数据要发了"，但己方可能仍有数据在发送队列中。因此先回 ACK，数据发完后再发 FIN。
@@ -276,38 +276,38 @@ TIME_WAIT 持续 **2MSL**（Maximum Segment Lifetime，典型值 60s）。
 ss -tan state time-wait | wc -l
 
 # 内核参数调整
-# /proc/sys/net/ipv4/tcp_tw_reuse = 1      允许复用 TIME_WAIT socket
-# /proc/sys/net/ipv4/tcp_fin_timeout = 30  FIN_WAIT_2 超时
+# /proc/sys/net/ipv4/tcp_tw_reuse = 1 允许复用 TIME_WAIT socket
+# /proc/sys/net/ipv4/tcp_fin_timeout = 30 FIN_WAIT_2 超时
 ```
 
 #### TCP 状态机 (完整)
 
 ```mermaid
 stateDiagram-v2
-    [*] --> CLOSED
-    CLOSED --> LISTEN : passive open
+ [*] --> CLOSED
+ CLOSED --> LISTEN : passive open
 
-    LISTEN --> SYN_RCVD : recv SYN, send SYN+ACK
-    SYN_RCVD --> ESTABLISHED : recv ACK
+ LISTEN --> SYN_RCVD : recv SYN, send SYN+ACK
+ SYN_RCVD --> ESTABLISHED : recv ACK
 
-    CLOSED --> SYN_SENT : active open (connect)
-    SYN_SENT --> ESTABLISHED : recv SYN+ACK, send ACK
-    SYN_SENT --> SYN_RCVD : simultaneous open
+ CLOSED --> SYN_SENT : active open (connect)
+ SYN_SENT --> ESTABLISHED : recv SYN+ACK, send ACK
+ SYN_SENT --> SYN_RCVD : simultaneous open
 
-    ESTABLISHED --> FIN_WAIT_1 : close / send FIN
-    ESTABLISHED --> CLOSE_WAIT : recv FIN, send ACK
+ ESTABLISHED --> FIN_WAIT_1 : close / send FIN
+ ESTABLISHED --> CLOSE_WAIT : recv FIN, send ACK
 
-    FIN_WAIT_1 --> FIN_WAIT_2 : recv ACK
-    FIN_WAIT_1 --> CLOSING : recv FIN, send ACK
-    FIN_WAIT_1 --> TIME_WAIT : recv FIN+ACK, send ACK
+ FIN_WAIT_1 --> FIN_WAIT_2 : recv ACK
+ FIN_WAIT_1 --> CLOSING : recv FIN, send ACK
+ FIN_WAIT_1 --> TIME_WAIT : recv FIN+ACK, send ACK
 
-    FIN_WAIT_2 --> TIME_WAIT : recv FIN, send ACK
-    CLOSING --> TIME_WAIT : recv ACK
+ FIN_WAIT_2 --> TIME_WAIT : recv FIN, send ACK
+ CLOSING --> TIME_WAIT : recv ACK
 
-    CLOSE_WAIT --> LAST_ACK : close / send FIN
-    LAST_ACK --> CLOSED : recv ACK
+ CLOSE_WAIT --> LAST_ACK : close / send FIN
+ LAST_ACK --> CLOSED : recv ACK
 
-    TIME_WAIT --> CLOSED : timeout 2MSL
+ TIME_WAIT --> CLOSED : timeout 2MSL
 ```
 
 ### TCP 可靠传输
@@ -318,16 +318,16 @@ stateDiagram-v2
 
 ```mermaid
 sequenceDiagram
-    participant S as 发送方
-    participant R as 接收方
-    S->>R: Seq=100, 100B data
-    Note over S: 启动定时器
-    R-->>S: ACK=200
-    Note over S: 取消定时器，发送下一个
-    S->>R: Seq=200, 100B data
-    Note over S: 启动定时器，超时！
-    S->>R: Seq=200, 100B data (重传)
-    R-->>S: ACK=300
+ participant S as 发送方
+ participant R as 接收方
+ S->>R: Seq=100, 100B data
+ Note over S: 启动定时器
+ R-->>S: ACK=200
+ Note over S: 取消定时器，发送下一个
+ S->>R: Seq=200, 100B data
+ Note over S: 启动定时器，超时！
+ S->>R: Seq=200, 100B data (重传)
+ R-->>S: ACK=300
 ```
 
 #### 累积确认 (Cumulative ACK) vs 选择性确认 (SACK)
@@ -339,17 +339,17 @@ sequenceDiagram
 
 ```
 累积 ACK 示例:
-  发送: 1, 2, 3, 4, 5
-  接收: 1, 3, 4, 5 (2 丢失)
-  回复: ACK=2 (每次均 ACK=2)
-  重传: 2
-  收到 2 后: ACK=6 (一次性确认 1-5)
+ 发送: 1, 2, 3, 4, 5
+ 接收: 1, 3, 4, 5 (2 丢失)
+ 回复: ACK=2 (每次均 ACK=2)
+ 重传: 2
+ 收到 2 后: ACK=6 (一次性确认 1-5)
 
 SACK 示例:
-  发送: 1, 2, 3, 4, 5
-  接收: 1, 3, 4, 5 (2 丢失)
-  回复: ACK=2, SACK=3-6 (告知已收到 3-5)
-  重传: 仅重传 2
+ 发送: 1, 2, 3, 4, 5
+ 接收: 1, 3, 4, 5 (2 丢失)
+ 回复: ACK=2, SACK=3-6 (告知已收到 3-5)
+ 重传: 仅重传 2
 ```
 
 #### 重传超时 (RTO) 计算 -- Jacobson/Karels 算法
@@ -360,21 +360,21 @@ TCP 必须根据网络状况动态计算 RTO。固定定时器要么太短导致
 测量: 每次收到新 ACK (非重传 ACK) 时，测量 SampleRTT
 
 SRTT (平滑 RTT):
-  SRTT = (1 - α) * SRTT + α * SampleRTT
-  (RFC 6298: α = 1/8, 即 SRTT = 0.875*SRTT + 0.125*SampleRTT)
+ SRTT = (1 - α) * SRTT + α * SampleRTT
+ (RFC 6298: α = 1/8, 即 SRTT = 0.875*SRTT + 0.125*SampleRTT)
 
 RTTVAR (RTT 偏差):
-  RTTVAR = (1 - β) * RTTVAR + β * |SampleRTT - SRTT|
-  (RFC 6298: β = 1/4)
+ RTTVAR = (1 - β) * RTTVAR + β * |SampleRTT - SRTT|
+ (RFC 6298: β = 1/4)
 
 RTO:
-  RTO = SRTT + max(G, K * RTTVAR)
-  (K = 4, G = clock granularity)
+ RTO = SRTT + max(G, K * RTTVAR)
+ (K = 4, G = clock granularity)
 
 初始值: RTO = 1 秒；首次测量后使用公式。
 
 Karn 算法: 对重传的报文段不做 RTT 采样 (因为无法区分 ACK 是确认原报文还是重传报文)。
-           每次重传后 RTO 翻倍 (指数退避)，直到收到非重传 ACK 后重新使用公式计算。
+ 每次重传后 RTO 翻倍 (指数退避)，直到收到非重传 ACK 后重新使用公式计算。
 ```
 
 #### 快速重传 (Fast Retransmit)
@@ -383,20 +383,20 @@ Karn 算法: 对重传的报文段不做 RTT 采样 (因为无法区分 ACK 是�
 
 ```mermaid
 sequenceDiagram
-    participant S as 发送方
-    participant R as 接收方
-    S->>R: Seg 1 (seq=100)
-    R-->>S: ACK=200
-    S->>R: Seg 2 (seq=200) ❌ 丢失
-    S->>R: Seg 3 (seq=300)
-    R-->>S: ACK=200 (dup #1)
-    S->>R: Seg 4 (seq=400)
-    R-->>S: ACK=200 (dup #2)
-    S->>R: Seg 5 (seq=500)
-    R-->>S: ACK=200 (dup #3)
-    Note over S: 3 dup ACK → 立即重传 Seg 2!
-    S->>R: Seg 2 (seq=200) 重传
-    R-->>S: ACK=600 (确认所有)
+ participant S as 发送方
+ participant R as 接收方
+ S->>R: Seg 1 (seq=100)
+ R-->>S: ACK=200
+ S->>R: Seg 2 (seq=200) 丢失
+ S->>R: Seg 3 (seq=300)
+ R-->>S: ACK=200 (dup #1)
+ S->>R: Seg 4 (seq=400)
+ R-->>S: ACK=200 (dup #2)
+ S->>R: Seg 5 (seq=500)
+ R-->>S: ACK=200 (dup #3)
+ Note over S: 3 dup ACK → 立即重传 Seg 2!
+ S->>R: Seg 2 (seq=200) 重传
+ R-->>S: ACK=600 (确认所有)
 ```
 
 ### TCP 流量控制
@@ -407,19 +407,19 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant S as 发送方
-    participant R as 接收方 (rwnd=4096)
-    S->>R: Seq=1, 1024B
-    Note over S: 可发送: 3072B
-    S->>R: Seq=1025, 1024B
-    Note over S: 可发送: 2048B
-    R-->>S: ACK=2049, win=2048 (处理了 1024B)
-    Note over S: 可发送: 3072B
-    S->>R: Seq=2049, 1024B
-    S->>R: Seq=3073, 1024B
-    Note over S: 窗口满，停止发送
-    R-->>S: ACK=4097, win=4096 (全部处理)
-    Note over S: 窗口打开，继续发送
+ participant S as 发送方
+ participant R as 接收方 (rwnd=4096)
+ S->>R: Seq=1, 1024B
+ Note over S: 可发送: 3072B
+ S->>R: Seq=1025, 1024B
+ Note over S: 可发送: 2048B
+ R-->>S: ACK=2049, win=2048 (处理了 1024B)
+ Note over S: 可发送: 3072B
+ S->>R: Seq=2049, 1024B
+ S->>R: Seq=3073, 1024B
+ Note over S: 窗口满，停止发送
+ R-->>S: ACK=4097, win=4096 (全部处理)
+ Note over S: 窗口打开，继续发送
 ```
 
 #### 关键机制
@@ -433,8 +433,8 @@ sequenceDiagram
 ```c
 // Nagle 算法本质上聚合小写操作
 // 以下两行在 Nagle 开启时可能合并为一个包：
-write(fd, buf, 1);   // 第 1 字节：立即发送（窗口允许时）
-write(fd, buf, 1);   // 第 2 字节：延迟等待 ACK 或积累到 MSS
+write(fd, buf, 1); // 第 1 字节：立即发送（窗口允许时）
+write(fd, buf, 1); // 第 2 字节：延迟等待 ACK 或积累到 MSS
 
 // TCP_NODELAY 禁用 Nagle：
 setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &(int){1}, sizeof(int));
@@ -458,24 +458,24 @@ setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &(int){1}, sizeof(int));
 cwnd 每经过一个 RTT 翻倍（指数增长）。**每收到一个 ACK，cwnd += 1 MSS**。
 
 ```
-RTT 0: cwnd = 1 MSS,  发送 1 段
-RTT 1: cwnd = 2 MSS,  发送 2 段 (收到 2 个 ACK，每个 +1)
-RTT 2: cwnd = 4 MSS,  发送 4 段
-RTT 3: cwnd = 8 MSS,  发送 8 段
+RTT 0: cwnd = 1 MSS, 发送 1 段
+RTT 1: cwnd = 2 MSS, 发送 2 段 (收到 2 个 ACK，每个 +1)
+RTT 2: cwnd = 4 MSS, 发送 4 段
+RTT 3: cwnd = 8 MSS, 发送 8 段
 ...
 ```
 
 ```mermaid
 flowchart LR
-    subgraph 慢开始
-        direction LR
-        S1["cwnd=1"] --> S2["cwnd=2"] --> S4["cwnd=4"] --> S8["cwnd=8"] --> S16["cwnd=16"]
-        S16 -->|"触达 ssthresh"| CA1
-    end
-    subgraph 拥塞避免
-        direction LR
-        CA1["cwnd=16"] --> CA2["cwnd=17"] --> CA3["cwnd=18"] --> CA4["cwnd=19"]
-    end
+ subgraph 慢开始
+ direction LR
+ S1["cwnd=1"] --> S2["cwnd=2"] --> S4["cwnd=4"] --> S8["cwnd=8"] --> S16["cwnd=16"]
+ S16 -->|"触达 ssthresh"| CA1
+ end
+ subgraph 拥塞避免
+ direction LR
+ CA1["cwnd=16"] --> CA2["cwnd=17"] --> CA3["cwnd=18"] --> CA4["cwnd=19"]
+ end
 ```
 
 #### 拥塞避免 (Congestion Avoidance)
@@ -503,61 +503,61 @@ cwnd 每经过一个 RTT 线性增加 1 MSS。**每收到一个 ACK，cwnd += (1
 ```
 场景: MSS=1KB, ssthresh 初始=64KB, RTT 恒定=1 单位
 
-RTT | 事件                 | cwnd (KB) | ssthresh | 状态
+RTT | 事件 | cwnd (KB) | ssthresh | 状态
 ----|----------------------|-----------|----------|----------
- 0  | 连接建立              |     1     |    64    | 慢开始
- 1  | 收 1 ACK             |     2     |    64    | 慢开始
- 2  | 收 2 ACK             |     4     |    64    | 慢开始
- 3  | 收 4 ACK             |     8     |    64    | 慢开始
- 4  | 收 8 ACK             |    16     |    64    | 慢开始
- 5  | 收 16 ACK            |    32     |    64    | 慢开始
- 6  | 收 32 ACK            |    64     |    64    | 拥塞避免 (cwnd >= ssthresh)
- 7  | 收 64 ACK            |    65     |    64    | 拥塞避免
- 8  | 收 65 ACK            |    66     |    64    | 拥塞避免
- 9  | 超时!                |     1     |    33    | 慢开始 (ssthresh=66/2=33)
-10  | 收 1 ACK             |     2     |    33    | 慢开始
-11  | 收 2 ACK             |     4     |    33    | 慢开始
-12  | 收 4 ACK             |     8     |    33    | 慢开始
-13  | 收 8 ACK             |    16     |    33    | 慢开始
-14  | 收 16 ACK            |    32     |    33    | 慢开始
-15  | 3 dup ACK (快速重传) |    17     |    16    | 快速恢复 (cwnd=32/2+3=19→收到新ACK后=16)
-16  | 收到新 ACK, 退出恢复  |    16     |    16    | 拥塞避免
-17  | 收 16 ACK            |    17     |    16    | 拥塞避免
+ 0 | 连接建立 | 1 | 64 | 慢开始
+ 1 | 收 1 ACK | 2 | 64 | 慢开始
+ 2 | 收 2 ACK | 4 | 64 | 慢开始
+ 3 | 收 4 ACK | 8 | 64 | 慢开始
+ 4 | 收 8 ACK | 16 | 64 | 慢开始
+ 5 | 收 16 ACK | 32 | 64 | 慢开始
+ 6 | 收 32 ACK | 64 | 64 | 拥塞避免 (cwnd >= ssthresh)
+ 7 | 收 64 ACK | 65 | 64 | 拥塞避免
+ 8 | 收 65 ACK | 66 | 64 | 拥塞避免
+ 9 | 超时! | 1 | 33 | 慢开始 (ssthresh=66/2=33)
+10 | 收 1 ACK | 2 | 33 | 慢开始
+11 | 收 2 ACK | 4 | 33 | 慢开始
+12 | 收 4 ACK | 8 | 33 | 慢开始
+13 | 收 8 ACK | 16 | 33 | 慢开始
+14 | 收 16 ACK | 32 | 33 | 慢开始
+15 | 3 dup ACK (快速重传) | 17 | 16 | 快速恢复 (cwnd=32/2+3=19→收到新ACK后=16)
+16 | 收到新 ACK, 退出恢复 | 16 | 16 | 拥塞避免
+17 | 收 16 ACK | 17 | 16 | 拥塞避免
 ```
 
 ```mermaid
 ---
 config:
-  theme: default
+ theme: default
 ---
 flowchart LR
-    subgraph init["初始 → ssthresh=∞"]
-        START["cwnd=1 MSS"]
-    end
-    subgraph SS["慢开始"]
-        EXP["指数增长: cwnd += 1 每 ACK"]
-    end
-    subgraph CA["拥塞避免"]
-        LINEAR["线性增长: cwnd += 1/cwnd 每 ACK"]
-    end
-    subgraph TIMEOUT["超时"]
-        TO1["ssthresh = cwnd/2"]
-        TO2["cwnd = 1 MSS"]
-        TO3["重回慢开始"]
-    end
-    subgraph FR["3 dup ACK (快速重传)"]
-        FR1["ssthresh = cwnd/2"]
-        FR2["cwnd = ssthresh + 3"]
-        FR3["快速恢复 → 拥塞避免"]
-    end
+ subgraph init["初始 → ssthresh=∞"]
+ START["cwnd=1 MSS"]
+ end
+ subgraph SS["慢开始"]
+ EXP["指数增长: cwnd += 1 每 ACK"]
+ end
+ subgraph CA["拥塞避免"]
+ LINEAR["线性增长: cwnd += 1/cwnd 每 ACK"]
+ end
+ subgraph TIMEOUT["超时"]
+ TO1["ssthresh = cwnd/2"]
+ TO2["cwnd = 1 MSS"]
+ TO3["重回慢开始"]
+ end
+ subgraph FR["3 dup ACK (快速重传)"]
+ FR1["ssthresh = cwnd/2"]
+ FR2["cwnd = ssthresh + 3"]
+ FR3["快速恢复 → 拥塞避免"]
+ end
 
-    START --> SS
-    SS -->|"cwnd >= ssthresh"| CA
-    CA -->|"超时"| TIMEOUT
-    CA -->|"3 dup ACK"| FR
-    SS -->|"超时"| TIMEOUT
-    SS -->|"3 dup ACK"| FR
-    TIMEOUT --> SS
+ START --> SS
+ SS -->|"cwnd >= ssthresh"| CA
+ CA -->|"超时"| TIMEOUT
+ CA -->|"3 dup ACK"| FR
+ SS -->|"超时"| TIMEOUT
+ SS -->|"3 dup ACK"| FR
+ TIMEOUT --> SS
 ```
 
 #### TCP Tahoe vs Reno vs NewReno vs CUBIC
@@ -585,11 +585,11 @@ sysctl net.ipv4.tcp_ecn=1
 
 ```
 假设两流在同一瓶颈:
-  流 A: cwnd=20, 流 B: cwnd=10
-  总 cwnd 超过链路容量时丢包
-  A 减半→10, B 减半→5
-  A 增长速率: 1/RTT, B 增长速率: 1/RTT
-  经过足够 RTT 后: A≈B
+ 流 A: cwnd=20, 流 B: cwnd=10
+ 总 cwnd 超过链路容量时丢包
+ A 减半→10, B 减半→5
+ A 增长速率: 1/RTT, B 增长速率: 1/RTT
+ 经过足够 RTT 后: A≈B
 ```
 
 ### 对容器的意义
@@ -605,11 +605,11 @@ iptables -t nat -A DOCKER -p tcp --dport 8080 -j DNAT --to 172.17.0.2:80
 conntrack -L -p tcp --dport 80
 
 # TCP 内核参数调优 (容器场景)
-sysctl net.ipv4.tcp_tw_reuse=1           # 复用 TIME_WAIT (高并发反向代理)
-sysctl net.ipv4.tcp_max_syn_backlog=8192  # 增大半连接队列
-sysctl net.core.somaxconn=4096           # listen backlog
-sysctl net.ipv4.tcp_congestion_control=bbr  # 切换拥塞算法
-sysctl net.ipv4.tcp_keepalive_time=600    # TCP keepalive (容器空闲连接探测)
+sysctl net.ipv4.tcp_tw_reuse=1 # 复用 TIME_WAIT (高并发反向代理)
+sysctl net.ipv4.tcp_max_syn_backlog=8192 # 增大半连接队列
+sysctl net.core.somaxconn=4096 # listen backlog
+sysctl net.ipv4.tcp_congestion_control=bbr # 切换拥塞算法
+sysctl net.ipv4.tcp_keepalive_time=600 # TCP keepalive (容器空闲连接探测)
 ```
 
 ### 交叉链接

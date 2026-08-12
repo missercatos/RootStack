@@ -58,9 +58,9 @@ pacman -Ql pkgname
 
 # 统计各包占用空间排序（前20）
 pacman -Qi | awk '/^Name/{name=$3} /^Installed Size/{size=$4; unit=$5; \
-    if(unit=="KiB"){s=size/1024} else if(unit=="MiB"){s=size} \
-    else if(unit=="GiB"){s=size*1024} else{s=0}; \
-    printf "%.2f MiB\t%s\n", s, name}' | sort -rh | head -20
+ if(unit=="KiB"){s=size/1024} else if(unit=="MiB"){s=size} \
+ else if(unit=="GiB"){s=size*1024} else{s=0}; \
+ printf "%.2f MiB\t%s\n", s, name}' | sort -rh | head -20
 
 # 列出所有未被任何包需要的可选依赖
 pacman -Qdtq | pacman -Qi - | grep "Optional Deps"
@@ -103,7 +103,7 @@ VerbosePkgLists
 # UseSyslog
 
 # 签名级别
-SigLevel    = Required DatabaseOptional
+SigLevel = Required DatabaseOptional
 LocalFileSigLevel = Optional
 
 # 测试仓库（取消注释以启用）
@@ -144,18 +144,18 @@ sudo pacman -S reflector
 
 # 手动刷新镜像列表（按速度排序中国镜像）
 sudo reflector --country China \
-    --age 12 \
-    --protocol https \
-    --sort rate \
-    --save /etc/pacman.d/mirrorlist
+ --age 12 \
+ --protocol https \
+ --sort rate \
+ --save /etc/pacman.d/mirrorlist
 
 # 添加多个国家/地区
 sudo reflector --country China,Japan,Singapore,Korea \
-    --age 12 \
-    --protocol https \
-    --sort rate \
-    --latest 20 \
-    --save /etc/pacman.d/mirrorlist
+ --age 12 \
+ --protocol https \
+ --sort rate \
+ --latest 20 \
+ --save /etc/pacman.d/mirrorlist
 ```
 
 ### 2.2 reflector 常用参数
@@ -221,10 +221,10 @@ ls /etc/pacman.d/hooks/
 ls /usr/share/libalpm/hooks/
 
 # Hook 触发时机：
-# PreTransaction   — 事务开始前
-# PostTransaction  — 事务完成后（最常用）
+# PreTransaction — 事务开始前
+# PostTransaction — 事务完成后（最常用）
 # Hook 触发类型：
-# File  — 监控文件路径变化
+# File — 监控文件路径变化
 # Package — 监控具体包的变化
 ```
 
@@ -296,11 +296,11 @@ Target = *
 Description = 检查 .pacnew 配置文件...
 When = PostTransaction
 Exec = /usr/bin/env bash -c 'pacnews=$(find /etc -name "*.pacnew" 2>/dev/null); \
-    if [ -n "$pacnews" ]; then \
-        echo "⚠ 发现 .pacnew 配置变更文件：" >&2; \
-        echo "$pacnews" >&2; \
-        echo "请用 diff 对比后合并或删除 .pacnew 文件" >&2; \
-    fi'
+ if [ -n "$pacnews" ]; then \
+ echo " 发现 .pacnew 配置变更文件：" >&2; \
+ echo "$pacnews" >&2; \
+ echo "请用 diff 对比后合并或删除 .pacnew 文件" >&2; \
+ fi'
 ```
 
 #### 更新 fontconfig 缓存
@@ -378,9 +378,9 @@ Operation = Remove
 
 # 触发类型：Package（包名匹配）或 File（路径通配符匹配）
 Type = Package
-Target = glibc       # 精确匹配包名
-Target = linux-*     # 通配符匹配
-Target = *           # 所有包
+Target = glibc # 精确匹配包名
+Target = linux-* # 通配符匹配
+Target = * # 所有包
 
 # 或
 Type = File
@@ -432,8 +432,8 @@ sudo pacman -U linux-6.8.1.arch1-1-x86_64.pkg.tar.zst
 
 # 方法 2：downgrade 工具（AUR）
 paru -S downgrade
-downgrade linux             # 交互式选择版本
-downgrade linux-lts         # 支持多包
+downgrade linux # 交互式选择版本
+downgrade linux-lts # 支持多包
 ```
 
 ### 4.3 使用 IgnorePkg 阻止升级
@@ -657,7 +657,7 @@ grep "removed" /var/log/pacman.log | tail -20
 
 # 重新安装它们
 grep "removed" /var/log/pacman.log | awk -F'removed ' '{print $2}' | \
-    awk '{print $1}' | xargs sudo pacman -S --noconfirm
+ awk '{print $1}' | xargs sudo pacman -S --noconfirm
 ```
 
 ---
@@ -699,8 +699,8 @@ pacman -Qqe > pkglist.txt
 sudo pacman -S --needed - < pkglist.txt
 
 # 导出所有已安装的包（用于备份）
-pacman -Qqen > native-pkgs.txt    # 官方仓库包
-pacman -Qqem > foreign-pkgs.txt   # AUR/第三方包
+pacman -Qqen > native-pkgs.txt # 官方仓库包
+pacman -Qqem > foreign-pkgs.txt # AUR/第三方包
 
 # 批量删除孤立的包
 sudo pacman -Rns $(pacman -Qdtq)
@@ -752,9 +752,9 @@ pacman -Qqn | sudo pacman -S -
 
 ```bash
 # 调试级别
-pacman -Syu --debug          # 详细输出
-pacman -Syu --print          # 只打印将执行的操作，不实际执行
-pacman -Syu --print-format "%n %v"  # 自定义输出格式
+pacman -Syu --debug # 详细输出
+pacman -Syu --print # 只打印将执行的操作，不实际执行
+pacman -Syu --print-format "%n %v" # 自定义输出格式
 
 # 查看数据库中的包信息
 pacman -Qi | head -100

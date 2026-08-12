@@ -13,7 +13,7 @@ Linux 内核是世界上最广泛使用的操作系统内核，运行在数十�
 
 "Rust for Linux 是那种你可以在历史上留下印记的项目。它很小，你可以产生巨大的影响。" -- Wedson Almeida Filho（前 Google Rust for Linux 核心开发者）
 
-> 📌 **C语言是内核的基础**：参与Rust内核开发同样需要理解C语言内核代码。请参阅 [[../../内核/系统内核/07_Linux内核源码导读|C语言教程: Linux内核源码导读]] 了解内核源码结构、编码规范和核心数据结构（如list.h、container_of等）。
+> **C语言是内核的基础**：参与Rust内核开发同样需要理解C语言内核代码。请参阅 [[../../内核/系统内核/07_Linux内核源码导读|C语言教程: Linux内核源码导读]] 了解内核源码结构、编码规范和核心数据结构（如list.h、container_of等）。
 
 ## 2. 前提知识
 
@@ -105,28 +105,28 @@ grep -rn "TODO" rust/kernel/ | head -20
 ### 4.1 完整流程概览
 
 ```
-[1]  订阅邮件列表
-      |
-[2]  克隆开发仓库
-      |
-[3]  寻找/选择任务
-      |
-[4]  在邮件列表声明意图 （大任务建议做）
-      |
-[5]  编写代码 & 测试
-      |
-[6]  格式化 & 检查
-      |
-[7]  编写提交信息
-      |
-[8]  生成补丁
-      |
-[9]  发送到邮件列表
-      |
+[1] 订阅邮件列表
+ |
+[2] 克隆开发仓库
+ |
+[3] 寻找/选择任务
+ |
+[4] 在邮件列表声明意图 （大任务建议做）
+ |
+[5] 编写代码 & 测试
+ |
+[6] 格式化 & 检查
+ |
+[7] 编写提交信息
+ |
+[8] 生成补丁
+ |
+[9] 发送到邮件列表
+ |
 [10] 处理审查反馈
-      |   （重复 5-10 直到接受）
+ | （重复 5-10 直到接受）
 [11] 补丁被合并
-      |
+ |
 [12] 庆祝
 ```
 
@@ -144,14 +144,14 @@ cd rust-dev
 
 # 3. 添加官方主线作为上游
 git remote add torvalds \
-  https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+ https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
 
 # 4. 基于最新主线创建特性分支
 git fetch torvalds
 git checkout -b my-rust-contribution torvalds/master
 
 # 5. 配置内核编译环境
-make LLVM=1 rustavailable  # 确认 Rust 工具链就绪
+make LLVM=1 rustavailable # 确认 Rust 工具链就绪
 make LLVM=1 defconfig
 scripts/config --enable CONFIG_RUST
 scripts/config --enable CONFIG_SAMPLE_RUST_MINIMAL
@@ -177,7 +177,7 @@ make LLVM=1 rustfmt
 // 1. 使用内核错误码，不是自定义错误
 // 正确:
 fn my_func() -> Result<u32> {
-    Err(Error::EINVAL)
+ Err(Error::EINVAL)
 }
 // 错误:
 // fn my_func() -> Result<u32, MyError> { Err(MyError::Invalid) }
@@ -186,7 +186,7 @@ fn my_func() -> Result<u32> {
 // 正确:
 let val = option.ok_or(Error::EINVAL)?;
 // 错误:
-// let val = option.unwrap();  // panic in kernel!
+// let val = option.unwrap(); // panic in kernel!
 
 // 3. SAFETY 注释必须解释为什么不安全代码是安全的
 // SAFETY: ptr is valid because the Arc reference ensures
@@ -263,11 +263,11 @@ scripts/checkpatch.pl 0001-*.patch
 
 # 发送补丁（需要配置 msmtp 或 git send-email）
 git send-email \
-    --to="rust-for-linux@vger.kernel.org" \
-    --cc="linux-kernel@vger.kernel.org" \
-    --cc="Miguel Ojeda <ojeda@kernel.org>" \
-    --cc="Alex Gaynor <alex.gaynor@gmail.com>" \
-    0001-*.patch
+ --to="rust-for-linux@vger.kernel.org" \
+ --cc="linux-kernel@vger.kernel.org" \
+ --cc="Miguel Ojeda <ojeda@kernel.org>" \
+ --cc="Alex Gaynor <alex.gaynor@gmail.com>" \
+ 0001-*.patch
 ```
 
 **补丁系列（多个相关补丁）**：
@@ -281,9 +281,9 @@ vim 0000-cover-letter.patch
 
 # 发送补丁系列
 git send-email \
-    --to="rust-for-linux@vger.kernel.org" \
-    --cc="linux-kernel@vger.kernel.org" \
-    0000-*.patch
+ --to="rust-for-linux@vger.kernel.org" \
+ --cc="linux-kernel@vger.kernel.org" \
+ 0000-*.patch
 ```
 
 **发送前的检查清单**：
@@ -357,23 +357,23 @@ Rust for Linux 的维护者（截至 2025 初）：
 
 ```
 [邮件到达邮件列表]
-       |
+ |
 [维护者或审查者阅读补丁]
-       |
+ |
 [评论发送到邮件列表]
-       |
+ |
 [你回应评论并修改代码]
-       |   （可能重复 1-10 次）
+ | （可能重复 1-10 次）
 [审查者满意]
-       |
+ |
 ["Reviewed-by" 或 "Acked-by" 标签]
-       |
+ |
 [维护者将补丁合并到 rust-next 分支]
-       |
+ |
 [linux-next 集成测试]
-       |
+ |
 [合并窗口开启时发送给 Linus]
-       |
+ |
 [Linus 合并入主线]
 ```
 
@@ -404,10 +404,10 @@ Rust for Linux 的维护者（截至 2025 初）：
 // errno value (e.g., EINVAL = 22).
 
 impl Error {
-    /// Creates an Error from a kernel error code (positive errno).
-    pub fn from_kernel_errno(errno: core::ffi::c_int) -> Error {
-        Error(-errno)
-    }
+ /// Creates an Error from a kernel error code (positive errno).
+ pub fn from_kernel_errno(errno: core::ffi::c_int) -> Error {
+ Error(-errno)
+ }
 }
 ```
 
@@ -433,23 +433,23 @@ impl Error {
 // - Fixed doc comment line length
 
 impl Error {
-    /// Creates an [`Error`] from a kernel error code.
-    ///
-    /// This is typically used when wrapping a C function that
-    /// returns a positive `errno` value.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// # use kernel::error::Error;
-    /// let err = Error::from_kernel_errno(bindings::EINVAL);
-    /// assert_eq!(err.to_errno(), bindings::EINVAL);
-    /// ```
-    pub fn from_kernel_errno(errno: core::ffi::c_int) -> Error {
-        // SAFETY: The caller ensures that errno is a valid
-        // positive kernel error code.
-        Error(-errno)
-    }
+ /// Creates an [`Error`] from a kernel error code.
+ ///
+ /// This is typically used when wrapping a C function that
+ /// returns a positive `errno` value.
+ ///
+ /// # Example
+ ///
+ /// ```
+ /// # use kernel::error::Error;
+ /// let err = Error::from_kernel_errno(bindings::EINVAL);
+ /// assert_eq!(err.to_errno(), bindings::EINVAL);
+ /// ```
+ pub fn from_kernel_errno(errno: core::ffi::c_int) -> Error {
+ // SAFETY: The caller ensures that errno is a valid
+ // positive kernel error code.
+ Error(-errno)
+ }
 }
 ```
 
@@ -537,25 +537,25 @@ Acked-by: Another Reviewer <another@example.com>
 
 ```
 初级贡献者：
-  Rust            --------------- 80%
-  C 阅读理解      ---------- 60%
-  内核基础        ------ 40%
-  社区流程        -- 20%
+ Rust --------------- 80%
+ C 阅读理解 ---------- 60%
+ 内核基础 ------ 40%
+ 社区流程 -- 20%
 
 中级贡献者：
-  Rust            --------------- 90%
-  C 阅读理解      -------------- 80%
-  内核基础        -------------- 80%
-  社区流程        ---------- 60%
-  子系统知识      -------------- 80%
+ Rust --------------- 90%
+ C 阅读理解 -------------- 80%
+ 内核基础 -------------- 80%
+ 社区流程 ---------- 60%
+ 子系统知识 -------------- 80%
 
 高级贡献者：
-  Rust            ---------------- 100%
-  C 阅读理解      ---------------- 100%
-  内核基础        --------------- 90%
-  社区流程        ---------------- 100%
-  子系统知识      ---------------- 100%
-   审查能力        --------------- 90%
+ Rust ---------------- 100%
+ C 阅读理解 ---------------- 100%
+ 内核基础 --------------- 90%
+ 社区流程 ---------------- 100%
+ 子系统知识 ---------------- 100%
+ 审查能力 --------------- 90%
 ```
 
 ---
@@ -634,18 +634,18 @@ let val = some_option.unwrap_or(default_value);
 
 // 方案 3：使用 if let 处理
 if let Some(val) = some_option {
-    // 使用 val
+ // 使用 val
 } else {
-    return Err(Error::EINVAL);
+ return Err(Error::EINVAL);
 }
 
 // 方案 4：对于确实不可能失败的情况
 match some_option {
-    Some(val) => { /* 使用 */ }
-    None => {
-        // SAFETY: 这里不可达，因为[具体原因]
-        unsafe { core::hint::unreachable_unchecked() }
-    }
+ Some(val) => { /* 使用 */ }
+ None => {
+ // SAFETY: 这里不可达，因为[具体原因]
+ unsafe { core::hint::unreachable_unchecked() }
+ }
 }
 ```
 

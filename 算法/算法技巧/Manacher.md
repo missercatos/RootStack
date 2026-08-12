@@ -21,43 +21,43 @@
 
 1. **字符串预处理**: 在字符间插入分隔符 `#`，将奇偶长度的回文统一处理
 
-   ```
-   原始:    a  b  a  b  c
-   预处理:  # a # b # a # b # c #
-   ```
+ ```
+ 原始: a b a b c
+ 预处理: # a # b # a # b # c #
+ ```
 
-   预处理后，所有回文串的长度都是奇数，$d[i]$ 表示以 $i$ 为中心的回文半径。
+ 预处理后，所有回文串的长度都是奇数，$d[i]$ 表示以 $i$ 为中心的回文半径。
 
 2. **递推计算 $d[i]$**:
 
-   - 如果 $i$ 在已知最右回文边界 $r$ 内，利用对称点 $i' = 2c - i$ 的 $d[i']$ 初始化 $d[i]$
-   - 否则 $d[i] = 1$
-   - 向两边扩展，直到不匹配
-   - 如果 $i + d[i] > r$，更新 $c = i, r = i + d[i]$
+ - 如果 $i$ 在已知最右回文边界 $r$ 内，利用对称点 $i' = 2c - i$ 的 $d[i']$ 初始化 $d[i]$
+ - 否则 $d[i] = 1$
+ - 向两边扩展，直到不匹配
+ - 如果 $i + d[i] > r$，更新 $c = i, r = i + d[i]$
 
 ```cpp
 vector<int> manacher(const string &s) {
-    // 预处理
-    string t = "#";
-    for (char c : s) {
-        t += c; t += '#';
-    }
-    int n = t.size();
-    vector<int> d(n);
-    int c = 0, r = 0;
-    for (int i = 0; i < n; i++) {
-        int mir = 2 * c - i;  // 对称点
-        if (i < r)
-            d[i] = min(d[mir], r - i);
-        while (i - d[i] >= 0 && i + d[i] < n
-               && t[i - d[i]] == t[i + d[i]])
-            d[i]++;
-        if (i + d[i] > r) {
-            c = i;
-            r = i + d[i];
-        }
-    }
-    return d;
+ // 预处理
+ string t = "#";
+ for (char c : s) {
+ t += c; t += '#';
+ }
+ int n = t.size();
+ vector<int> d(n);
+ int c = 0, r = 0;
+ for (int i = 0; i < n; i++) {
+ int mir = 2 * c - i; // 对称点
+ if (i < r)
+ d[i] = min(d[mir], r - i);
+ while (i - d[i] >= 0 && i + d[i] < n
+ && t[i - d[i]] == t[i + d[i]])
+ d[i]++;
+ if (i + d[i] > r) {
+ c = i;
+ r = i + d[i];
+ }
+ }
+ return d;
 }
 ```
 

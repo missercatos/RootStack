@@ -9,19 +9,19 @@
 ### 架构对比
 
 ```
-Nginx（事件驱动）                    Apache（进程/线程驱动）
+Nginx（事件驱动） Apache（进程/线程驱动）
 
-     Master Process                       Master Process
-          │                                    │
-    ┌─────┼─────┐                        ┌────┼────┐
-    │     │     │                        │    │    │
-  Worker Worker Worker                Child  Child Child
-    │     │     │                   (prefork/worker/event MPM)
-  Event  Event  Event                    │    │    │
-  Loop   Loop   Loop                  Thread/Process per Connection
+ Master Process Master Process
+ │ │
+ ┌─────┼─────┐ ┌────┼────┐
+ │ │ │ │ │ │
+ Worker Worker Worker Child Child Child
+ │ │ │ (prefork/worker/event MPM)
+ Event Event Event │ │ │
+ Loop Loop Loop Thread/Process per Connection
 
-非阻塞 I/O，单线程处理多连接        每个连接占用一个线程/进程
-内存占用低，并发能力强               内存消耗随连接数线性增长
+非阻塞 I/O，单线程处理多连接 每个连接占用一个线程/进程
+内存占用低，并发能力强 内存消耗随连接数线性增长
 ```
 
 | 特性 | Nginx | Apache |
@@ -78,15 +78,15 @@ apk add apache2
 ```bash
 # Nginx
 sudo systemctl enable --now nginx
-sudo nginx -t                      # 测试配置
-sudo nginx -s reload               # 重载配置（不停机）
-sudo nginx -s stop                 # 停止
+sudo nginx -t # 测试配置
+sudo nginx -s reload # 重载配置（不停机）
+sudo nginx -s stop # 停止
 
 # Apache
-sudo systemctl enable --now httpd    # RHEL/Fedora/Arch
-sudo systemctl enable --now apache2  # Debian/Ubuntu
-sudo apachectl configtest            # 测试配置
-sudo apachectl graceful              # 优雅重载
+sudo systemctl enable --now httpd # RHEL/Fedora/Arch
+sudo systemctl enable --now apache2 # Debian/Ubuntu
+sudo apachectl configtest # 测试配置
+sudo apachectl graceful # 优雅重载
 ```
 
 ---
@@ -97,20 +97,20 @@ sudo apachectl graceful              # 优雅重载
 
 ```bash
 # Nginx 配置目录（因发行版而异）
-# Debian/Ubuntu:  /etc/nginx/
-# RHEL/Fedora:    /etc/nginx/
-# Arch:           /etc/nginx/
-# Alpine:         /etc/nginx/
+# Debian/Ubuntu: /etc/nginx/
+# RHEL/Fedora: /etc/nginx/
+# Arch: /etc/nginx/
+# Alpine: /etc/nginx/
 
 # 典型结构
 /etc/nginx/
-├── nginx.conf              # 主配置文件
-├── mime.types              # MIME 类型定义
-├── conf.d/                 # 通用配置片段
-├── sites-available/        # 可用站点（Debian/Ubuntu 习惯）
-├── sites-enabled/          # 已启用站点（符号链接）
-├── modules/                # 模块配置
-└── snippets/               # 可复用配置片段
+├── nginx.conf # 主配置文件
+├── mime.types # MIME 类型定义
+├── conf.d/ # 通用配置片段
+├── sites-available/ # 可用站点（Debian/Ubuntu 习惯）
+├── sites-enabled/ # 已启用站点（符号链接）
+├── modules/ # 模块配置
+└── snippets/ # 可复用配置片段
 ```
 
 ### 主配置文件 nginx.conf
@@ -118,43 +118,43 @@ sudo apachectl graceful              # 优雅重载
 ```nginx
 # /etc/nginx/nginx.conf（精简版）
 
-user www-data;                      # worker 进程运行用户
-worker_processes auto;              # 自动匹配 CPU 核心数
+user www-data; # worker 进程运行用户
+worker_processes auto; # 自动匹配 CPU 核心数
 pid /run/nginx.pid;
 error_log /var/log/nginx/error.log warn;
 
 events {
-    worker_connections 1024;        # 每个 worker 最大连接数
-    use epoll;                      # Linux 上推荐
-    multi_accept on;                # 同时接受多个新连接
+ worker_connections 1024; # 每个 worker 最大连接数
+ use epoll; # Linux 上推荐
+ multi_accept on; # 同时接受多个新连接
 }
 
 http {
-    # 基础设置
-    sendfile on;
-    tcp_nopush on;
-    tcp_nodelay on;
-    keepalive_timeout 65;
-    types_hash_max_size 2048;
-    server_tokens off;              # 隐藏版本号
+ # 基础设置
+ sendfile on;
+ tcp_nopush on;
+ tcp_nodelay on;
+ keepalive_timeout 65;
+ types_hash_max_size 2048;
+ server_tokens off; # 隐藏版本号
 
-    include /etc/nginx/mime.types;
-    default_type application/octet-stream;
+ include /etc/nginx/mime.types;
+ default_type application/octet-stream;
 
-    # 日志格式
-    log_format main '$remote_addr - $remote_user [$time_local] '
-                    '"$request" $status $body_bytes_sent '
-                    '"$http_referer" "$http_user_agent"';
-    access_log /var/log/nginx/access.log main;
+ # 日志格式
+ log_format main '$remote_addr - $remote_user [$time_local] '
+ '"$request" $status $body_bytes_sent '
+ '"$http_referer" "$http_user_agent"';
+ access_log /var/log/nginx/access.log main;
 
-    # Gzip 压缩
-    gzip on;
-    gzip_types text/plain text/css application/json application/javascript text/xml;
-    gzip_min_length 1024;
+ # Gzip 压缩
+ gzip on;
+ gzip_types text/plain text/css application/json application/javascript text/xml;
+ gzip_min_length 1024;
 
-    # 包含站点配置
-    include /etc/nginx/conf.d/*.conf;
-    include /etc/nginx/sites-enabled/*;    # Debian/Ubuntu
+ # 包含站点配置
+ include /etc/nginx/conf.d/*.conf;
+ include /etc/nginx/sites-enabled/*; # Debian/Ubuntu
 }
 ```
 
@@ -168,63 +168,63 @@ Nginx 的虚拟主机配置（类似 Apache 的 VirtualHost）：
 
 # === HTTP → HTTPS 重定向 ===
 server {
-    listen 80;
-    listen [::]:80;
-    server_name example.com www.example.com;
+ listen 80;
+ listen [::]:80;
+ server_name example.com www.example.com;
 
-    # 将 HTTP 请求重定向到 HTTPS
-    return 301 https://$host$request_uri;
+ # 将 HTTP 请求重定向到 HTTPS
+ return 301 https://$host$request_uri;
 }
 
 # === HTTPS 站点 ===
 server {
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
-    server_name example.com www.example.com;
+ listen 443 ssl http2;
+ listen [::]:443 ssl http2;
+ server_name example.com www.example.com;
 
-    # SSL 证书
-    ssl_certificate     /etc/letsencrypt/live/example.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+ # SSL 证书
+ ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;
+ ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
 
-    # SSL 优化
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256;
-    ssl_prefer_server_ciphers off;
-    ssl_session_cache shared:SSL:10m;
-    ssl_session_timeout 1d;
+ # SSL 优化
+ ssl_protocols TLSv1.2 TLSv1.3;
+ ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256;
+ ssl_prefer_server_ciphers off;
+ ssl_session_cache shared:SSL:10m;
+ ssl_session_timeout 1d;
 
-    # 网站根目录
-    root /var/www/example.com/html;
-    index index.html index.htm index.php;
+ # 网站根目录
+ root /var/www/example.com/html;
+ index index.html index.htm index.php;
 
-    # 日志
-    access_log /var/log/nginx/example.com.access.log;
-    error_log  /var/log/nginx/example.com.error.log;
+ # 日志
+ access_log /var/log/nginx/example.com.access.log;
+ error_log /var/log/nginx/example.com.error.log;
 
-    # Location 规则
-    location / {
-        try_files $uri $uri/ =404;
-    }
+ # Location 规则
+ location / {
+ try_files $uri $uri/ =404;
+ }
 
-    # 静态文件缓存
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
-        expires 30d;
-        add_header Cache-Control "public, immutable";
-    }
+ # 静态文件缓存
+ location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
+ expires 30d;
+ add_header Cache-Control "public, immutable";
+ }
 
-    # 拒绝隐藏文件
-    location ~ /\. {
-        deny all;
-    }
+ # 拒绝隐藏文件
+ location ~ /\. {
+ deny all;
+ }
 
-    # 代理 API 请求到后端
-    location /api/ {
-        proxy_pass http://127.0.0.1:3000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
+ # 代理 API 请求到后端
+ location /api/ {
+ proxy_pass http://127.0.0.1:3000;
+ proxy_set_header Host $host;
+ proxy_set_header X-Real-IP $remote_addr;
+ proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+ proxy_set_header X-Forwarded-Proto $scheme;
+ }
 }
 ```
 
@@ -248,26 +248,26 @@ sudo nginx -t && sudo systemctl reload nginx
 
 ```bash
 # Apache 配置目录
-# Debian/Ubuntu:  /etc/apache2/
-# RHEL/Fedora:    /etc/httpd/
-# Arch:           /etc/httpd/
+# Debian/Ubuntu: /etc/apache2/
+# RHEL/Fedora: /etc/httpd/
+# Arch: /etc/httpd/
 
 # Debian/Ubuntu 结构
 /etc/apache2/
-├── apache2.conf            # 主配置
-├── ports.conf              # 监听端口
-├── mods-available/         # 可用模块
-├── mods-enabled/           # 已启用模块
-├── sites-available/        # 可用站点
-├── sites-enabled/          # 已启用站点
-└── conf-available/         # 可用配置片段
+├── apache2.conf # 主配置
+├── ports.conf # 监听端口
+├── mods-available/ # 可用模块
+├── mods-enabled/ # 已启用模块
+├── sites-available/ # 可用站点
+├── sites-enabled/ # 已启用站点
+└── conf-available/ # 可用配置片段
 
 # RHEL/Fedora 结构
 /etc/httpd/
-├── conf/httpd.conf         # 主配置
-├── conf.d/                 # 额外配置
-├── conf.modules.d/         # 模块配置
-└── logs -> /var/log/httpd  # 日志
+├── conf/httpd.conf # 主配置
+├── conf.d/ # 额外配置
+├── conf.modules.d/ # 模块配置
+└── logs -> /var/log/httpd # 日志
 ```
 
 ### VirtualHost 配置
@@ -280,49 +280,49 @@ sudo nginx -t && sudo systemctl reload nginx
 
 # === HTTP 站点（重定向到 HTTPS）===
 <VirtualHost *:80>
-    ServerName example.com
-    ServerAlias www.example.com
-    Redirect permanent / https://example.com/
+ ServerName example.com
+ ServerAlias www.example.com
+ Redirect permanent / https://example.com/
 </VirtualHost>
 
 # === HTTPS 站点 ===
 <VirtualHost *:443>
-    ServerName example.com
-    ServerAlias www.example.com
+ ServerName example.com
+ ServerAlias www.example.com
 
-    # 网站根目录
-    DocumentRoot /var/www/example.com/html
+ # 网站根目录
+ DocumentRoot /var/www/example.com/html
 
-    # SSL
-    SSLEngine on
-    SSLCertificateFile /etc/letsencrypt/live/example.com/fullchain.pem
-    SSLCertificateKeyFile /etc/letsencrypt/live/example.com/privkey.pem
+ # SSL
+ SSLEngine on
+ SSLCertificateFile /etc/letsencrypt/live/example.com/fullchain.pem
+ SSLCertificateKeyFile /etc/letsencrypt/live/example.com/privkey.pem
 
-    # 目录权限
-    <Directory /var/www/example.com/html>
-        Options -Indexes +FollowSymLinks
-        AllowOverride All           # 允许 .htaccess
-        Require all granted
-    </Directory>
+ # 目录权限
+ <Directory /var/www/example.com/html>
+ Options -Indexes +FollowSymLinks
+ AllowOverride All # 允许 .htaccess
+ Require all granted
+ </Directory>
 
-    # 日志
-    ErrorLog ${APACHE_LOG_DIR}/example.com.error.log
-    CustomLog ${APACHE_LOG_DIR}/example.com.access.log combined
+ # 日志
+ ErrorLog ${APACHE_LOG_DIR}/example.com.error.log
+ CustomLog ${APACHE_LOG_DIR}/example.com.access.log combined
 
-    # 拒绝 .ht 文件
-    <FilesMatch "^\.ht">
-        Require all denied
-    </FilesMatch>
+ # 拒绝 .ht 文件
+ <FilesMatch "^\.ht">
+ Require all denied
+ </FilesMatch>
 
-    # 缓存静态资源
-    <FilesMatch "\.(ico|pdf|jpg|jpeg|png|gif|js|css|svg)$">
-        Header set Cache-Control "max-age=2592000, public, immutable"
-    </FilesMatch>
+ # 缓存静态资源
+ <FilesMatch "\.(ico|pdf|jpg|jpeg|png|gif|js|css|svg)$">
+ Header set Cache-Control "max-age=2592000, public, immutable"
+ </FilesMatch>
 
-    # 反向代理到后端应用
-    ProxyPreserveHost On
-    ProxyPass /api/ http://127.0.0.1:3000/
-    ProxyPassReverse /api/ http://127.0.0.1:3000/
+ # 反向代理到后端应用
+ ProxyPreserveHost On
+ ProxyPass /api/ http://127.0.0.1:3000/
+ ProxyPassReverse /api/ http://127.0.0.1:3000/
 </VirtualHost>
 ```
 
@@ -330,11 +330,11 @@ sudo nginx -t && sudo systemctl reload nginx
 
 ```bash
 # Debian/Ubuntu
-sudo a2ensite example.com.conf            # 启用站点
-sudo a2dissite 000-default.conf           # 禁用默认站点
+sudo a2ensite example.com.conf # 启用站点
+sudo a2dissite 000-default.conf # 禁用默认站点
 sudo a2enmod ssl rewrite proxy proxy_http # 启用模块
-sudo a2dismod autoindex                   # 禁用模块
-sudo apachectl configtest                 # 测试配置
+sudo a2dismod autoindex # 禁用模块
+sudo apachectl configtest # 测试配置
 sudo systemctl reload apache2
 
 # RHEL/Fedora（直接放入 conf.d/ 即生效）
@@ -351,7 +351,7 @@ sudo systemctl reload httpd
 ```bash
 # 安装 Certbot
 # Debian/Ubuntu
-sudo apt install certbot python3-certbot-nginx  # Nginx 插件
+sudo apt install certbot python3-certbot-nginx # Nginx 插件
 sudo apt install certbot python3-certbot-apache # Apache 插件
 
 # RHEL/Fedora
@@ -372,11 +372,11 @@ sudo certbot --apache -d example.com -d www.example.com
 
 # === 仅获取证书（手动配置 Web 服务器）===
 sudo certbot certonly --webroot -w /var/www/example.com/html \
-    -d example.com -d www.example.com
+ -d example.com -d www.example.com
 
 # === 通配符证书（需要 DNS 验证）===
 sudo certbot certonly --manual --preferred-challenges dns \
-    -d "*.example.com" -d example.com
+ -d "*.example.com" -d example.com
 ```
 
 ### 证书自动续期
@@ -403,15 +403,15 @@ systemctl list-timers | grep certbot
 # 推荐的 SSL 设置（/etc/nginx/snippets/ssl-params.conf）
 ssl_protocols TLSv1.2 TLSv1.3;
 ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:
-            ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:
-            ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305;
+ ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:
+ ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305;
 ssl_prefer_server_ciphers off;
 
 ssl_session_cache shared:SSL:50m;
 ssl_session_timeout 1d;
 ssl_session_tickets off;
 
-ssl_dhparam /etc/nginx/dhparam.pem;           # 需要生成
+ssl_dhparam /etc/nginx/dhparam.pem; # 需要生成
 # openssl dhparam -out /etc/nginx/dhparam.pem 4096
 
 # HSTS（强制 HTTPS，谨慎使用）
@@ -445,29 +445,29 @@ git clone https://github.com/drwetter/testssl.sh.git
 
 ```nginx
 server {
-    listen 80;
-    server_name static.example.com;
-    root /var/www/static;
+ listen 80;
+ server_name static.example.com;
+ root /var/www/static;
 
-    location / {
-        index index.html;
-        try_files $uri $uri/ =404;
-    }
+ location / {
+ index index.html;
+ try_files $uri $uri/ =404;
+ }
 
-    # Gzip 预压缩文件
-    location ~ \.js\.gz$ {
-        add_header Content-Encoding gzip;
-        gzip off;
-        types { application/javascript gz; }
-    }
+ # Gzip 预压缩文件
+ location ~ \.js\.gz$ {
+ add_header Content-Encoding gzip;
+ gzip off;
+ types { application/javascript gz; }
+ }
 
-    # 大文件支持
-    location /downloads/ {
-        alias /var/www/downloads/;
-        autoindex on;                       # 目录列表
-        autoindex_exact_size off;           # 显示人类可读大小
-        autoindex_localtime on;             # 本地时间
-    }
+ # 大文件支持
+ location /downloads/ {
+ alias /var/www/downloads/;
+ autoindex on; # 目录列表
+ autoindex_exact_size off; # 显示人类可读大小
+ autoindex_localtime on; # 本地时间
+ }
 }
 ```
 
@@ -475,20 +475,20 @@ server {
 
 ```apache
 <VirtualHost *:80>
-    ServerName static.example.com
-    DocumentRoot /var/www/static
+ ServerName static.example.com
+ DocumentRoot /var/www/static
 
-    <Directory /var/www/static>
-        Options -Indexes +FollowSymLinks
-        AllowOverride None
-        Require all granted
-    </Directory>
+ <Directory /var/www/static>
+ Options -Indexes +FollowSymLinks
+ AllowOverride None
+ Require all granted
+ </Directory>
 
-    # 启用 mod_expires 和 mod_headers 进行缓存
-    ExpiresActive On
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-    ExpiresByType image/jpeg "access plus 1 year"
+ # 启用 mod_expires 和 mod_headers 进行缓存
+ ExpiresActive On
+ ExpiresByType text/css "access plus 1 month"
+ ExpiresByType application/javascript "access plus 1 month"
+ ExpiresByType image/jpeg "access plus 1 year"
 </VirtualHost>
 ```
 
@@ -501,21 +501,21 @@ server {
 ```nginx
 # Nginx 反向代理基础示例
 location /app/ {
-    proxy_pass http://127.0.0.1:3000/;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_connect_timeout 60s;
-    proxy_read_timeout 60s;
+ proxy_pass http://127.0.0.1:3000/;
+ proxy_set_header Host $host;
+ proxy_set_header X-Real-IP $remote_addr;
+ proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+ proxy_set_header X-Forwarded-Proto $scheme;
+ proxy_connect_timeout 60s;
+ proxy_read_timeout 60s;
 }
 
 # WebSocket 代理
 location /ws/ {
-    proxy_pass http://127.0.0.1:3001;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
+ proxy_pass http://127.0.0.1:3001;
+ proxy_http_version 1.1;
+ proxy_set_header Upgrade $http_upgrade;
+ proxy_set_header Connection "upgrade";
 }
 ```
 
@@ -525,8 +525,8 @@ ProxyRequests Off
 ProxyPreserveHost On
 
 <Location "/app/">
-    ProxyPass http://127.0.0.1:3000/
-    ProxyPassReverse http://127.0.0.1:3000/
+ ProxyPass http://127.0.0.1:3000/
+ ProxyPassReverse http://127.0.0.1:3000/
 </Location>
 ```
 
@@ -553,22 +553,22 @@ ProxyPreserveHost On
 
 ```
 客户端 → Nginx (:443) → [静态文件直接返回]
-                       → [动态请求代理到] → Apache (:8080)
+ → [动态请求代理到] → Apache (:8080)
 ```
 
 ```nginx
 # Nginx 作为前端
 server {
-    listen 443 ssl;
-    server_name example.com;
+ listen 443 ssl;
+ server_name example.com;
 
-    location /static/ {
-        root /var/www/example.com;
-    }
+ location /static/ {
+ root /var/www/example.com;
+ }
 
-    location / {
-        proxy_pass http://127.0.0.1:8080;
-    }
+ location / {
+ proxy_pass http://127.0.0.1:8080;
+ }
 }
 ```
 

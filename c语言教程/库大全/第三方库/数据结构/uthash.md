@@ -23,17 +23,17 @@
 
 ```c
 struct my_struct {
-    int id;
-    char name[64];
-    UT_hash_handle hh;   // 使该结构可哈希
+ int id;
+ char name[64];
+ UT_hash_handle hh; // 使该结构可哈希
 };
 
-struct my_struct *users = NULL;  // 哈希表头指针
+struct my_struct *users = NULL; // 哈希表头指针
 struct my_struct *user = malloc(sizeof *user);
 user->id = 1;
-HASH_ADD_INT(users, id, user);   // 以 id 为键添加
-HASH_FIND_INT(users, &search_id, user);  // 查找
-HASH_DEL(users, user);  // 删除
+HASH_ADD_INT(users, id, user); // 以 id 为键添加
+HASH_FIND_INT(users, &search_id, user); // 查找
+HASH_DEL(users, user); // 删除
 ```
 
 **跨语言参考**: [[../../../../cpp教程/cpp深化教程/04_动态内存|C++动态内存]]
