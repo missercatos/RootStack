@@ -16,7 +16,7 @@
   <img src="https://img.shields.io/badge/算法-FF6F00?style=flat-square" alt="算法"/>
   <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"/>
   <img src="https://img.shields.io/badge/网络安全-E34F26?style=flat-square" alt="网络安全"/>
-  <img src="https://img.shields.io/badge/版本-0.9.0-blue?style=flat-square" alt="version"/>
+  <img src="https://img.shields.io/badge/版本-0.10.0-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
@@ -118,7 +118,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/                          ├ v0.9.0
+RootStack/                          ├ v0.10.0
 ├── README.md                    ← 你在这里
 │
 ├── 路径A-C主线.md               C 主线: 从零到内核
@@ -174,7 +174,9 @@ RootStack/                          ├ v0.9.0
 │   ├── Rust内核/ (6篇)         Rust 在内核中的实践
 │   └── 内核索引.md              C与Rust的内核新时代.md
 │
-├── 汇编基础/ (3篇)              x86/ARM 汇编教程
+├── 汇编基础/ (~16篇)             x86/ARM 汇编教程 + 硬件直接操作
+│   ├── 汇编目录.md
+│   ├── 1基础/ (4篇)               2硬件操作/ (11篇: Port I/O/MMIO/中断/UART/VGA/PIT/键盘/引导/ARM)
 │
 ├── red_team/ (~125篇)          网络安全红队职业路径 (ArchStrike体系)
 │   ├── 网安基础知识/ (10篇)      渗透测试方法论
@@ -185,7 +187,7 @@ RootStack/                          ├ v0.9.0
 │
 ├── git.md                       Git 与 GitHub 终端操作指南 (14节)
 ├── github-settings.md           GitHub 网页端设置指南（新增）
-├── VERSION                      项目版本号: 0.9.0
+├── VERSION                      项目版本号: 0.10.0
 └── ISSUES.md                   问题讨论与贡献指南
 ```
 
@@ -316,7 +318,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | 数据结构 | [[ISSUES|DSA 学习路线]] | 18个主题, Phase 1→6, 力扣题目 |
 | 算法技巧 | [[ISSUES|动态规划]] | 24个算法专题, 语言无关 |
 | 内核 | [[ISSUES|内核总索引]] | 四种内核 + C与Rust新时代 |
-| 汇编 | [[ISSUES|寄存器与指令基础]] | x86/ARM 汇编入门 |
+| 汇编 | [[汇编基础/汇编目录|汇编基础教程]] | 基础入门 → 硬件直接操作 (16篇) |
 | 红队 | [[ISSUES|红队知识库总目录]] | ArchStrike渗透体系, ~125篇, 职业路径 |
 | AI Agent | [[AI_Agent工具使用教程]] | 编码 Agent 工具推荐、安装、使用哲学 |
 
@@ -414,6 +416,7 @@ git push origin my-feature
 | 7.22 | 内容更新       | Linux 推荐改为 Mint，新增网安发行版说明，增加求 Star 链接，版本升至 0.5.0
 | 7.31 | 新增Lua教程     | 新增 lua-tutorial/ (7篇: 简介+安装+基础+进阶+C/C++集成+Neovim+Love2D)，双链接接入 README/index，版本升至 0.8.0
 | 8.11 | 新增Python教程    | 新增 python/ (~60篇: 入门7+精通8+实战5+库索引+工程化6+量化分析6+科学计算5+可视化5+图形4+Web5+AI6)，定位为C程序员的Python工具手册，双链接接入 README/index，版本升至 0.9.0
+| 8.12 | 汇编重构+硬件操作 | 汇编基础/ 重构为分目录体系 (1基础/4篇 + 2硬件操作/11篇: Port I/O/MMIO/特权级/内联汇编精通/中断IDT/UART/VGA/PIT/键盘/引导/ARM)，以"直接操作硬件"为核心，全部示例 QEMU 可跑，版本升至 0.10.0
 
 
 ## 加入交流群

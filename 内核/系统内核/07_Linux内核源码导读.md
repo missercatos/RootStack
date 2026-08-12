@@ -1484,6 +1484,6 @@ make scripts/mod/modpost  # 重新生成 modpost (模块依赖分析)
 - **上一章**: [[06_并发与同步|并发与同步]]
 - **返回**: [[../内核索引|返回总目录]]
 - **相关**: [[../../c语言教程/2深化/07_面向对象C编程|面向对象C编程]] | [[../../c语言教程/2深化/06_编译链接与ELF|编译链接与ELF]] | [[../../c语言教程/3数据结构/02_链表|链表]]
-- **汇编参考**: [[../../汇编基础/ASM_03_C++在汇编层的体现|ASM: 编译原理]]
+- **汇编参考**: [[../../汇编基础/1基础/03_C++在汇编层的体现|ASM: 编译原理]]
 - **内核源码**: `include/linux/list.h` (链表) | `include/linux/container_of.h` | `include/linux/rbtree.h` | `include/linux/hashtable.h` | `Documentation/process/coding-style.rst`
 - **在线工具**: [elixir.bootlin.com](https://elixir.bootlin.com/linux/latest/source) | [kernel.org](https://www.kernel.org/) | [LWN.net](https://lwn.net/)

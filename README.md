@@ -16,7 +16,7 @@
   <img src="https://img.shields.io/badge/算法-FF6F00?style=flat-square" alt="算法"/>
   <img src="https://img.shields.io/badge/网络安全-E34F26?style=flat-square" alt="网络安全"/>
   <img src="https://img.shields.io/badge/408考研-全覆盖-9cf?style=flat-square" alt="408"/>
-  <img src="https://img.shields.io/badge/版本-0.9.0-blue?style=flat-square" alt="version"/>
+  <img src="https://img.shields.io/badge/版本-0.10.0-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
@@ -201,7 +201,9 @@ RootStack/                          ├ v0.8.0
 │   ├── Rust内核/ (6篇)         Rust 在内核中的实践
 │   └── 内核索引.md              C与Rust的内核新时代.md
 │
-├── 汇编基础/ (3篇)              x86/ARM 汇编教程
+├── 汇编基础/ (~16篇)             x86/ARM 汇编教程 + 硬件直接操作
+│   ├── 汇编目录.md
+│   ├── 1基础/ (4篇)               2硬件操作/ (11篇)
 │
 ├── red_team/ (~151篇)          网络安全红队职业路径 (ArchStrike体系)
 │   ├── 网安基础知识/ (10篇)      渗透测试方法论
@@ -351,7 +353,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | 计算机网络 | [[计算机网络/计算机网络_索引\|计算机网络教程]] | 大学本科课标 + 深入底层 (7篇, 408全覆盖) |
 | 考研408统一入口 | [[路径-考研408方向]] | 四科阅读方向 + 章节索引整合
 | 内核 | [[内核/内核索引|内核总索引]] | 四种内核 + C与Rust新时代 |
-| 汇编 | [[汇编基础/ASM_01_寄存器与指令基础|寄存器与指令基础]] | x86/ARM 汇编入门 |
+| 汇编 | [[汇编基础/汇编目录|汇编基础教程]] | 基础入门 → 硬件直接操作 (16篇) |
 | Linux 教程 | [[linux/README\|Linux 百科全书式教程]] | 62章 + 4发行版指南 + Shell编程 + 服务器运维 |
 | Lua | [[lua-tutorial/00-lua简介\|Lua 教程]] | 基础→进阶→C/C++集成→Neovim/Love2D (7篇) |
 | 红队 | [[red_team/总目录与快速查询|红队知识库总目录]] | ArchStrike渗透体系, ~148篇, 职业路径 |

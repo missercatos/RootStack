@@ -5,7 +5,7 @@
 > 进入路径 E 之前，请确保已完成以下通识基础（根据红队方向选择性补齐）：
 > - **C 语言基础**（路径 A Phase 1-4）：逆向工程、二进制漏洞利用的基础
 > - **Python 编程**（[[red_team/补充-Python黑客脚本基础]] + [[数据结构/DSA学习路线]] Phase 1-2）：脚本自动化、payload 编写
-> - **汇编基础**（[[汇编基础/ASM_01_寄存器与指令基础]]）：逆向分析、shellcode 编写
+> - **汇编基础**（[[汇编基础/1基础/01_寄存器与指令基础]]）：逆向分析、shellcode 编写
 > - **Rust 基础**（路径 B Rust 章节）：高性能红队工具开发
 
 ---
@@ -32,7 +32,7 @@
 
 | 优先级 | 文件 | 核心内容 | 关联RootStack模块 |
 |--------|------|---------|------------------|
-| 1 | [[red_team/网安基础知识/01-计算机网络基础]] | OSI/TCP-IP/DNS/ARP | [[汇编基础/ASM_01_寄存器与指令基础]] (网络协议底层视角); 408级别深度见 [[计算机网络/计算机网络_索引\|计算机网络教程]] |
+| 1 | [[red_team/网安基础知识/01-计算机网络基础]] | OSI/TCP-IP/DNS/ARP | [[汇编基础/1基础/01_寄存器与指令基础]] (网络协议底层视角); 408级别深度见 [[计算机网络/计算机网络_索引\|计算机网络教程]] |
 | 2 | [[red_team/网安基础知识/02-Web技术基础]] | HTTP/HTTPS/Cookie/SOP | - |
 | 3 | [[red_team/网安基础知识/05-编程基础]] | Bash + Python 基础 | [[ISSUES|Python黑客脚本]] |
 | 4 | [[red_team/网安基础知识/03-操作系统基础]] | Linux/Windows系统管理 | [[ISSUES|C语言教程]] (系统编程理解) |
@@ -58,7 +58,7 @@ ArchStrike base 工具组教程，覆盖红队基本操作流程：信息收集 
 | 03 | [[red_team/archstrike-base教学/03-网络扫描与枚举技术]] | nmap/masscan | - |
 | 04 | [[red_team/archstrike-base教学/04-漏洞评估与利用基础]] | Metasploit/searchsploit | - |
 | 05 | [[red_team/archstrike-base教学/05-密码攻击与破解技术]] | hydra/john | [[|]] (哈希与数论) |
-| 06 | [[red_team/archstrike-base教学/06-网络嗅探与中间人攻击]] | Wireshark/bettercap | [[汇编基础/ASM_01_寄存器与指令基础]] (网络协议底层) |
+| 06 | [[red_team/archstrike-base教学/06-网络嗅探与中间人攻击]] | Wireshark/bettercap | [[汇编基础/1基础/01_寄存器与指令基础]] (网络协议底层) |
 | 07 | [[red_team/archstrike-base教学/07-后渗透与权限维持]] | Meterpreter | [[|]] (权限模型) |
 | 08 | [[red_team/archstrike-base教学/08-痕迹清除与渗透报告]] | shred/logs | - |
 
