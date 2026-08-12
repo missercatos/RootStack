@@ -1,7 +1,7 @@
 # Port I/O 与 MMIO：两大硬件访问路径 (Port I/O & MMIO)
 ---
 
-## 📖 章节概述
+## 章节概述
 
 硬件操作的实质就是对"某个地址"读或写。但"地址"有两种——I/O 端口（独立的编号空间）和内存映射地址（共享物理内存空间）。本章深入解析这两条路径：`in`/`out` 指令如何操作 x86 专有的 64K 端口空间，`mov` 指令如何把设备寄存器当作内存来读写，以及在 CPU 层面这两种访问走的完全不同的总线周期。学完本章，你将能够读取键盘端口、写入 VGA 显存、以及通过 PCI 配置空间枚举设备。
 
@@ -9,23 +9,28 @@
 
 ---
 
-### 📚 第一节：Port I/O —— x86 的专属通道
+### 第一节：Port I/O —— x86 的专属通道
 
 #### 1.1 独立的 64K 地址空间
 
 x86 从 8086 时代就设计了独立的 I/O 地址空间，与内存地址空间物理隔离。这不是"内存的前 64K"——它是另一组物理导线、另一个总线协议：
 
-```
-内存地址空间                    I/O 端口空间
-┌─────────────────┐           ┌─────────────────┐
-│ 0x00000000      │           │ 0x0000          │
-│    ...          │           │   键盘 0x60     │
-│    ...          │           │   PIC  0x20     │
-│ 0xFFFFFFFF      │           │   串口 0x3F8    │
-│                 │           │   ...           │
-│                 │           │ 0xFFFF          │
-└─────────────────┘           └─────────────────┘
-  mov 指令访问                  in/out 指令访问
+```mermaid
+graph LR
+    subgraph "内存地址空间"
+        M0["0x00000000"]
+        M1["...<br/>RAM/MMIO 设备"]
+        M2["0xFFFFFFFF"]
+    end
+    subgraph "I/O 端口空间"
+        P0["0x0000"]
+        P1["键盘 0x60<br/>PIC 0x20<br/>串口 0x3F8<br/>..."]
+        P2["0xFFFF"]
+    end
+    M0 --> M1 --> M2
+    P0 --> P1 --> P2
+    MM["mov 指令访问"] -.-> M0
+    IO["in/out 指令访问"] -.-> P0
 ```
 
 #### 1.2 in / out 指令族
@@ -44,9 +49,9 @@ x86 从 8086 时代就设计了独立的 I/O 地址空间，与内存地址空�
 | `out dx, al` | 1 字节 | 向端口写 1 字节 | DX 寄存器 |
 | `out dx, ax` | 2 字节 | 向端口写 2 字节 | DX 寄存器 |
 | `out dx, eax` | 4 字节 | 向端口写 4 字节 | DX 寄存器 |
-; AT&T 语法: inb $0x60, %al  |  outb %al, $0x60
-;              inw $0x60, %ax  |  outw %ax, $0x60
-;              inl $0x60, %eax |  outl %eax, $0x60
+; AT&T 语法: inb $0x60, %al | outb %al, $0x60
+; inw $0x60, %ax | outw %ax, $0x60
+; inl $0x60, %eax | outl %eax, $0x60
 ; 注意 AT&T 的操作数顺序与 Intel 相反 (源 ↔ 目标互换)
 ```
 
@@ -80,26 +85,26 @@ Linux 将 IOPL 设为 0——意味着**用户态程序无法执行 `in`/`out` �
 [ORG 0x7C00]
 
 start:
-    ; 等待键盘控制器输出缓冲区有数据
-    in al, 0x64          ; 读键盘状态端口
-    test al, 1           ; bit 0 = 输出缓冲区满
-    jz start             ; 如果为空则继续轮询
+ ; 等待键盘控制器输出缓冲区有数据
+ in al, 0x64 ; 读键盘状态端口
+ test al, 1 ; bit 0 = 输出缓冲区满
+ jz start ; 如果为空则继续轮询
 
-    in al, 0x60          ; 读扫描码
-    ; al 现在包含按键的扫描码（make code）
-    ; 例如: 'A' 键按下 → 0x1E, 释放 → 0x9E
+ in al, 0x60 ; 读扫描码
+ ; al 现在包含按键的扫描码（make code）
+ ; 例如: 'A' 键按下 → 0x1E, 释放 → 0x9E
 
-    ; 向串口输出（可选，用于 QEMU -serial stdio）
-    mov dx, 0x3F8        ; COM1 数据端口
-    out dx, al
+ ; 向串口输出（可选，用于 QEMU -serial stdio）
+ mov dx, 0x3F8 ; COM1 数据端口
+ out dx, al
 
-    jmp start
+ jmp start
 
 times 510-($-$$) db 0
-dw 0xAA55               ; 引导扇区签名
+dw 0xAA55 ; 引导扇区签名
 ```
 
-> 这段代码无法在 Linux 用户态运行——`in al, 0x64` 会被 CPU 拦截。你必须在 QEMU 裸机中测试。详细环境配置见 [[../1基础/04_工具链与调试环境#📚 第五节：QEMU 虚拟裸机环境|QEMU 环境搭建]]。
+> 这段代码无法在 Linux 用户态运行——`in al, 0x64` 会被 CPU 拦截。你必须在 QEMU 裸机中测试。详细环境配置见 [[../1基础/04_工具链与调试环境# 第五节：QEMU 虚拟裸机环境|QEMU 环境搭建]]。
 
 #### 1.5 PCI 配置空间：Port I/O 的高级应用
 
@@ -107,7 +112,7 @@ PCI 设备通过两个 32 位端口暴露配置空间：
 
 ```
 端口 0xCF8 — CONFIG_ADDRESS（配置地址寄存器）
-端口 0xCFC — CONFIG_DATA   （配置数据寄存器）
+端口 0xCFC — CONFIG_DATA （配置数据寄存器）
 
 访问流程:
 1. 向 0xCF8 写入目标地址（总线号+设备号+功能号+寄存器偏移）
@@ -119,48 +124,41 @@ PCI 设备通过两个 32 位端口暴露配置空间：
 ; 读取总线0、设备0、功能0、偏移0 = Vendor ID + Device ID
 
 ; Step 1: 构造 CONFIG_ADDRESS
-mov eax, 0x80000000     ; bit 31 (Enable) = 1
-                        ; bits 23:16 = Bus   (0)
-                        ; bits 15:11 = Device (0)
-                        ; bits 10:8  = Function (0)
-                        ; bits 7:0   = Register offset (0)
+mov eax, 0x80000000 ; bit 31 (Enable) = 1
+ ; bits 23:16 = Bus (0)
+ ; bits 15:11 = Device (0)
+ ; bits 10:8 = Function (0)
+ ; bits 7:0 = Register offset (0)
 mov dx, 0xCF8
 out dx, eax
 
 ; Step 2: 读取 CONFIG_DATA
 mov dx, 0xCFC
-in eax, dx              ; eax = Device ID << 16 | Vendor ID
+in eax, dx ; eax = Device ID << 16 | Vendor ID
 ; 低 16 位 = Vendor ID (例如 Intel = 0x8086)
 ; 高 16 位 = Device ID
 ```
 
 ---
 
-### 📚 第二节：MMIO —— 一切皆内存
+### 第二节：MMIO —— 一切皆内存
 
 #### 2.1 工作原理
 
 MMIO（Memory-Mapped I/O）的核心思想极其简单：**把设备寄存器映射到物理地址空间的某个区域**。CPU 不知道（也不需要知道）某个地址对应的是 RAM 还是设备寄存器——它只负责执行 `mov` 指令，芯片组负责将总线周期路由到正确的目标。
 
-```
-物理地址空间布局（x86 典型）:
-
-0x00000000 ┌────────────┐
-           │   RAM      │ ← 普通内存
-0x000A0000 ├────────────┤
-           │   VGA 显存  │ ← 0xB8000 (文本模式), 0xA0000 (图形模式)
-0x000C0000 ├────────────┤
-           │  BIOS ROM  │ ← 固件（不可写）
-0x000FFFFF ├────────────┤
-           │   RAM      │ ← 扩展内存...
-  ...      │            │
-0xFEE00000 ├────────────┤
-           │  LAPIC     │ ← Local APIC 寄存器 (MMIO)
-0xFEC00000 ├────────────┤
-           │  I/O APIC  │ ← I/O APIC 寄存器
-0xFED00000 ├────────────┤
-           │  HPET      │ ← 高精度定时器
-...        │            │
+```mermaid
+graph TD
+    subgraph "物理地址空间布局（x86 典型）"
+        RAM1["0x00000000 — RAM<br/>普通内存"]
+        VGA["0x000A0000 — VGA 显存<br/>0xB8000 (文本), 0xA0000 (图形)"]
+        BIOS["0x000C0000 — BIOS ROM<br/>固件（不可写）"]
+        RAM2["0x000FFFFF — RAM<br/>扩展内存..."]
+        LAPIC["0xFEE00000 — LAPIC<br/>Local APIC 寄存器"]
+        IOAPIC["0xFEC00000 — I/O APIC<br/>I/O APIC 寄存器"]
+        HPET["0xFED00000 — HPET<br/>高精度定时器"]
+    end
+    RAM1 --> VGA --> BIOS --> RAM2 -.-> LAPIC --> IOAPIC --> HPET
 ```
 
 #### 2.2 写 VGA 显存：最直观的 MMIO
@@ -174,36 +172,36 @@ MMIO（Memory-Mapped I/O）的核心思想极其简单：**把设备寄存器映
 [ORG 0x7C00]
 
 start:
-    mov ax, 0xB800
-    mov es, ax           ; ES:DI = 0xB800:0000 → 物理 0xB8000
+ mov ax, 0xB800
+ mov es, ax ; ES:DI = 0xB800:0000 → 物理 0xB8000
 
-    ; 清屏（80列×25行）
-    mov cx, 80 * 25
-    xor di, di
-    mov ax, 0x0F20       ; 属性0x0F(白底黑字) + 空格0x20
-    rep stosw
+ ; 清屏（80列×25行）
+ mov cx, 80 * 25
+ xor di, di
+ mov ax, 0x0F20 ; 属性0x0F(白底黑字) + 空格0x20
+ rep stosw
 
-    ; 第 0 行: 输出红色 'H' (属性 0x04 = 红字黑底)
-    mov word [es:0], 0x0448     ; 'H', 红字
+ ; 第 0 行: 输出红色 'H' (属性 0x04 = 红字黑底)
+ mov word [es:0], 0x0448 ; 'H', 红字
 
-    ; 第 0 行第1列: 绿色 'i' (属性 0x02)
-    mov word [es:2], 0x0269     ; 'i', 绿字
+ ; 第 0 行第1列: 绿色 'i' (属性 0x02)
+ mov word [es:2], 0x0269 ; 'i', 绿字
 
-    ; 第 12 行居中: 输出一条消息
-    mov di, (12 * 80 + 30) * 2  ; 第12行, 第30列, 每字符2字节
-    mov si, message
-    mov ah, 0x0E                ; 黄字黑底
+ ; 第 12 行居中: 输出一条消息
+ mov di, (12 * 80 + 30) * 2 ; 第12行, 第30列, 每字符2字节
+ mov si, message
+ mov ah, 0x0E ; 黄字黑底
 .loop:
-    lodsb
-    test al, al
-    jz .halt
-    mov [es:di], ax
-    add di, 2
-    jmp .loop
+ lodsb
+ test al, al
+ jz .halt
+ mov [es:di], ax
+ add di, 2
+ jmp .loop
 
 .halt:
-    hlt
-    jmp .halt
+ hlt
+ jmp .halt
 
 message db 'Hello from MMIO!', 0
 
@@ -216,13 +214,13 @@ dw 0xAA55
 同样是 `mov` 指令，CPU 内部对 MMIO 访问和 RAM 访问有微妙但关键的区别：
 
 ```
-mov eax, [普通RAM地址]    →  Cache hit → 快速返回
-                           →  Cache miss → 从 RAM 读取 → 填入 cache → 返回
+mov eax, [普通RAM地址] → Cache hit → 快速返回
+ → Cache miss → 从 RAM 读取 → 填入 cache → 返回
 
-mov eax, [MMIO设备寄存器]  →  不可缓存 (Uncacheable)
-                           →  直接发出内存总线周期
-                           →  芯片组识别地址范围，路由到 PCIe/设备总线
-                           →  设备解码地址，返回寄存器值
+mov eax, [MMIO设备寄存器] → 不可缓存 (Uncacheable)
+ → 直接发出内存总线周期
+ → 芯片组识别地址范围，路由到 PCIe/设备总线
+ → 设备解码地址，返回寄存器值
 ```
 
 > 这就是为什么设备驱动中常用 `volatile` 修饰 MMIO 指针——告诉编译器"每次必须真实读写，不要优化成寄存器缓存"。
@@ -239,22 +237,22 @@ MMIO 的异步特性带来了顺序问题——CPU 和编译器可能重排内�
 
 ```asm
 ; 典型的设备驱动写序列
-mov dword [dev_cmd_reg], 0x01    ; 向设备发送"开始DMA"命令
-sfence                           ; 确保命令写入完成
-mov dword [dev_status_reg], 0    ; 然后才能清除状态寄存器
+mov dword [dev_cmd_reg], 0x01 ; 向设备发送"开始DMA"命令
+sfence ; 确保命令写入完成
+mov dword [dev_status_reg], 0 ; 然后才能清除状态寄存器
 ```
 
 > C 代码中对应 `asm volatile("sfence":::"memory")` — 此 C 代码无法表达 → 你必须使用内联汇编。详见 [[./03_内联汇编精通|内联汇编精通]]。
 
 ---
 
-### 📚 第三节：Port I/O vs MMIO —— 全面对比
+### 第三节：Port I/O vs MMIO —— 全面对比
 
 | 维度 | Port I/O | MMIO |
 |------|---------|------|
 | **地址空间** | 独立 64K（65,536 端口） | 共享物理地址空间（可达 2^52 字节） |
 | **访问指令** | `in` / `out` / `ins` / `outs` | `mov`（和所有其他内存指令） |
-| **C 语言支持** | ❌ 无 C 语法 → 必须内联汇编 | ✅ 用 `volatile` 指针访问（需内核映射） |
+| **C 语言支持** | 无 C 语法 → 必须内联汇编 | 用 `volatile` 指针访问（需内核映射） |
 | **架构支持** | x86 专有 | 所有现代架构（x86, ARM, RISC-V, MIPS） |
 | **缓存行为** | 不经过缓存（in/out 自带序列化） | 可配置（通常 UC: Uncacheable） |
 | **排序保证** | 强保证（in/out 像序列化指令） | 无保证 → 需 `mfence`/`sfence`/`lfence` |
@@ -267,7 +265,7 @@ mov dword [dev_status_reg], 0    ; 然后才能清除状态寄存器
 
 ---
 
-### 📚 第四节：在 C 语言中揭开的"遮羞布"
+### 第四节：在 C 语言中揭开的"遮羞布"
 
 C 语言不能直接执行 `in`/`out` 指令，但可以通过两种方式间接使用：
 
@@ -278,16 +276,16 @@ C 语言不能直接执行 `in`/`out` 指令，但可以通过两种方式间接
 #include <stdio.h>
 
 int main() {
-    // 请求端口 0x60 的访问权限（需要 root）
-    if (ioperm(0x60, 1, 1) != 0) {
-        perror("ioperm");
-        return 1;
-    }
+ // 请求端口 0x60 的访问权限（需要 root）
+ if (ioperm(0x60, 1, 1) != 0) {
+ perror("ioperm");
+ return 1;
+ }
 
-    unsigned char scancode = inb(0x60);  // 实际是一个函数调用
-    // 在 glibc 中，inb() 封装了内联汇编的 in 指令
-    printf("Scancode: 0x%02X\n", scancode);
-    return 0;
+ unsigned char scancode = inb(0x60); // 实际是一个函数调用
+ // 在 glibc 中，inb() 封装了内联汇编的 in 指令
+ printf("Scancode: 0x%02X\n", scancode);
+ return 0;
 }
 ```
 
@@ -298,16 +296,16 @@ int main() {
 ```c
 // 用 GCC 内联汇编直接操作端口
 unsigned char read_port(unsigned short port) {
-    unsigned char value;
-    asm volatile("inb %1, %0"
-                 : "=a"(value)      // value 放入 al
-                 : "Nd"(port));     // port 作为立即数或 DX
-    return value;
+ unsigned char value;
+ asm volatile("inb %1, %0"
+ : "=a"(value) // value 放入 al
+ : "Nd"(port)); // port 作为立即数或 DX
+ return value;
 }
 
 void write_port(unsigned short port, unsigned char value) {
-    asm volatile("outb %0, %1"
-                 :: "a"(value), "Nd"(port));
+ asm volatile("outb %0, %1"
+ :: "a"(value), "Nd"(port));
 }
 ```
 
@@ -315,49 +313,18 @@ void write_port(unsigned short port, unsigned char value) {
 
 ---
 
-### 📝 小节练习
-
-> [!question] 选择题 1
-> `in al, dx` 与 `in al, 0x60` 的操作数区别是什么？
-> - [ ] A. 没有区别
-> - [ ] B. `dx` 方式可访问 0~65535 端口，立即数方式仅限 0~255
-> - [ ] C. `in al, dx` 快一倍
-> - [ ] D. `in al, 0x60` 是 32 位传输
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: 立即数寻址的 `in al, imm8` 只支持 8 位（0~255）端口号。使用 DX 寄存器间接寻址可以访问完整的 0~65535 端口范围。
-
-> [!question] 选择题 2
-> PCI 配置空间访问使用了哪两个 I/O 端口？
-> - [ ] A. 0x60 和 0x64
-> - [ ] B. 0x3F8 和 0x3F9
-> - [ ] C. 0xCF8 和 0xCFC
-> - [ ] D. 0x20 和 0x21
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: `0xCF8` 是 PCI CONFIG_ADDRESS 寄存器（写入目标地址），`0xCFC` 是 PCI CONFIG_DATA 寄存器（读写数据）。
-
-> [!question] 判断题 1
-> ARM 架构的 CPU 同样支持 `in`/`out` 端口 I/O 指令。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `in`/`out` 是 x86 专有指令。ARM 和 RISC-V 没有独立的 I/O 地址空间概念，所有设备访问都通过 MMIO（用 `ldr`/`str` 指令操作映射后的设备寄存器地址）。
+### 小节练习
 
 ---
 
-## 📋 章节测试
+## 章节测试
 
 ### 一、判断题
 
 > [!question] 判断题 1
 > `out 0x60, al` 与 `mov [0x60], al` 在 x86 CPU 上执行的总线周期完全相同。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -365,8 +332,8 @@ void write_port(unsigned short port, unsigned char value) {
 
 > [!question] 判断题 2
 > VGA 文本模式的显存物理地址是 0xB8000，可通过 MMIO 方式用 `mov` 指令直接写入。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -374,8 +341,8 @@ void write_port(unsigned short port, unsigned char value) {
 
 > [!question] 判断题 3
 > `sfence` 指令保证在其之前的所有 store 操作在之后的 store 操作之前完成，但不影响 load 操作的顺序。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -383,8 +350,8 @@ void write_port(unsigned short port, unsigned char value) {
 
 > [!question] 判断题 4
 > Linux 用户态程序可以通过 `ioperm()` 获取端口 I/O 权限后直接在 C 代码中使用 `in`/`out` 汇编指令而无需内联汇编。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -392,76 +359,19 @@ void write_port(unsigned short port, unsigned char value) {
 
 > [!question] 判断题 5
 > MMIO 设备寄存器通常被映射为 Uncacheable（UC）内存类型，因为设备寄存器的值可能随时被硬件改变。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
 > > **解析**: 如果缓存设备寄存器，CPU 可能读到的是缓存中的旧值而非设备最新状态。MTRR（Memory Type Range Register）或 PAT（Page Attribute Table）用于将 MMIO 区域标记为 UC。
 
-### 二、选择题
-
-> [!question] 选择题 1
-> 以下哪条指令是合法的 x86 Port I/O 写操作？
-> - [ ] A. `out al, 0x60`
-> - [ ] B. `out 0x60, al`
-> - [ ] C. `mov [0x60], al`
-> - [ ] D. `write 0x60, al`
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: Intel 语法中 `out` 的格式是 `out 端口, 数据`。端口在前，数据（al/ax/eax）在后。AT&T 语法相反：`outb %al, $0x60`。
-
-> [!question] 选择题 2
-> 以下哪个端口是键盘控制器的数据端口？
-> - [ ] A. 0x3F8
-> - [ ] B. 0x20
-> - [ ] C. 0x60
-> - [ ] D. 0xCF8
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: 0x60 = 键盘数据寄存器（读 = 扫描码，写 = 键盘命令响应）。0x64 = 键盘状态/命令寄存器。0x3F8 = COM1 串口，0x20 = 主 PIC，0xCF8 = PCI 配置地址。
-
-> [!question] 选择题 3
-> MMIO 访问中，`volatile` 关键字在 C 语言中的作用是？
-> - [ ] A. 防止编译器将该变量放到寄存器中
-> - [ ] B. 使变量变为常量
-> - [ ] C. 加速内存访问
-> - [ ] D. 将变量存储在 ROM 中
->
-> > [!success]- 点击查看答案
-> > 正确答案: A
-> > **解析**: `volatile` 告诉编译器"每次访问必须从内存读写，禁止优化为寄存器缓存"。对于 MMIO 设备寄存器，这是必须的——因为硬件可以随时改变这些值。
-
-> [!question] 选择题 4
-> IOPL（I/O Privilege Level）存储在哪个寄存器中？
-> - [ ] A. CR0
-> - [ ] B. EAX
-> - [ ] C. EFLAGS (bits 12-13)
-> - [ ] D. CS
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: IOPL 存储在 EFLAGS 寄存器的第 12 和第 13 位。它指定了可以执行 `in`/`out`/`cli`/`sti` 指令所需的最低特权级。
-
-> [!question] 选择题 5
-> 下列关于 PCI 配置空间访问流程的描述，正确的是？
-> - [ ] A. 直接向 0xCFC 读即可，无需设置 0xCF8
-> - [ ] B. 先向 0xCF8 写入目标地址（含 Enable 位），再从 0xCFC 读写数据
-> - [ ] C. 只能通过 MMIO 访问
-> - [ ] D. 0xCF8 和 0xCFC 是两个独立的端口，不需要配合使用
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: 先向 CONFIG_ADDRESS（0xCF8）写入 32 位目标地址（需设置 bit 31 Enable 位），然后对 CONFIG_DATA（0xCFC）进行读/写操作。这是标准的"地址-数据"寄存器对模式。
-
 ---
 
-### 🛠️ 动手练习题
+### 动手练习题
 
 > [!example] 练习题 1：键盘扫描码读取器
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 编写一个 QEMU 裸机程序（`-f bin`），持续轮询键盘端口（0x64 状态 + 0x60 数据），当有按键时打印扫描码到 VGA 显存（0xB8000）。要求：
 > - 区分按键按下（make code）和释放（break code = make code | 0x80）
@@ -471,7 +381,7 @@ void write_port(unsigned short port, unsigned char value) {
 > 提示：键盘状态端口 0x64 的 bit 0 为 1 表示输出缓冲区有数据可读。
 
 > [!example] 练习题 2：VGA 彩虹屏幕
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 在 QEMU 裸机中，用 `rep stosw` 指令填充 VGA 显存，将屏幕的每一行（80 列）设为不同的颜色属性。要求：
 > - 行 0：黑底红字 (0x04)
@@ -482,12 +392,16 @@ void write_port(unsigned short port, unsigned char value) {
 > 这题让你体会到"汇编操作显存"等同于"C 操作数组"——但汇编不做类型检查，直接写物理地址。
 
 > [!example] 练习题 3：PCI 设备枚举
-> **难度**: ⭐⭐⭐
+> **难度**: 简单
 >
 > 在 QEMU 裸机中，编写代码扫描 PCI 总线 0 上的前 8 个设备（设备 0~7，功能 0），读取每个设备的 Vendor ID（偏移 0x00，16 位）和 Device ID（偏移 0x02，16 位）。在 VGA 屏幕上以表格形式显示：
 > ```
-> Dev:0 Vend:0x8086 DevID:0x1237  ← Intel 440FX 或 QEMU 模拟设备
-> Dev:1 Vend:0x8086 DevID:0x7000  ← PIIX3 ISA Bridge
+> Dev:0 Vend:0x8086 DevID:0x1237 ← Intel 440FX 或 QEMU 模拟设备
+> Dev:1 Vend:0x8086 DevID:0x7000 ← PIIX3 ISA Bridge
 > ...
 > ```
 > 这题综合了 Port I/O（PCI 配置访问）、MMIO（VGA 输出）和循环结构。
+
+## 力扣练习
+
+本章实践性强，请用动手练习题自检（键盘扫描码读取、VGA显存写入、PCI设备枚举）。
