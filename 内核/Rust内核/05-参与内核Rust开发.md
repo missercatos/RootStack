@@ -66,7 +66,7 @@ cd rust-dev
 git remote add torvalds https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
 git fetch torvalds
 git checkout -b my-rust-contribution torvalds/master
-make LLVM=1 rustavailable   # 确认工具链就绪
+make LLVM=1 rustavailable # 确认工具链就绪
 make LLVM=1 defconfig
 scripts/config --enable CONFIG_RUST
 make LLVM=1 olddefconfig
@@ -76,10 +76,10 @@ make LLVM=1 olddefconfig
 
 ```rust
 // 1. 使用内核错误码
-fn my_func() -> Result<u32> { Err(Error::EINVAL) }  // 正确
+fn my_func() -> Result<u32> { Err(Error::EINVAL) } // 正确
 
 // 2. 避免 unwrap/expect
-let val = option.ok_or(Error::EINVAL)?;              // 正确
+let val = option.ok_or(Error::EINVAL)?; // 正确
 
 // 3. SAFETY 注释解释安全前提
 // SAFETY: ptr is valid because the Arc reference ensures
@@ -99,10 +99,10 @@ fn read32(&self, offset: usize) -> Result<u32>;
 
 编译和检查：
 ```bash
-make LLVM=1 -j$(nproc)                    # 构建内核
-make LLVM=1 -j$(nproc) modules            # 构建模块
-make LLVM=1 CLIPPY=1                      # clippy 检查
-make LLVM=1 rustfmt                        # 格式化
+make LLVM=1 -j$(nproc) # 构建内核
+make LLVM=1 -j$(nproc) modules # 构建模块
+make LLVM=1 CLIPPY=1 # clippy 检查
+make LLVM=1 rustfmt # 格式化
 ```
 
 ## 5. 提交信息格式
@@ -141,15 +141,15 @@ scripts/checkpatch.pl 0001-*.patch
 
 # 发送
 git send-email \
-    --to="rust-for-linux@vger.kernel.org" \
-    --cc="linux-kernel@vger.kernel.org" \
-    --cc="Miguel Ojeda <ojeda@kernel.org>" \
-    0001-*.patch
+ --to="rust-for-linux@vger.kernel.org" \
+ --cc="linux-kernel@vger.kernel.org" \
+ --cc="Miguel Ojeda <ojeda@kernel.org>" \
+ 0001-*.patch
 ```
 
 补丁系列（多个相关提交）：
 ```bash
-git format-patch -3 --cover-letter    # 生成封面信
+git format-patch -3 --cover-letter # 生成封面信
 vim 0000-cover-letter.patch
 git send-email --to="..." 0000-*.patch
 ```

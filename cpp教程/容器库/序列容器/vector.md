@@ -48,14 +48,14 @@ vector<int> v
 
 // 在尾部逐一添加元素
 loop i from 1 to 5:
-    v.push_back(i)
+ v.push_back(i)
 
 // 预分配容量
 v.reserve(100)
 
 // 遍历与输出
 for i from 0 to v.size() - 1:
-    print v[i]
+ print v[i]
 
 // 排序与去重
 sort(v.begin(), v.end())

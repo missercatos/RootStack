@@ -5,11 +5,11 @@
 ### TCP/IP 四层模型
 
 ```
-应用层    ← HTTP, HTTPS, FTP, DNS
-传输层    ← TCP (可靠), UDP (不可靠), 端口号标识应用
-网络层    ← IP (路由转发), ICMP, ARP
+应用层 ← HTTP, HTTPS, FTP, DNS
+传输层 ← TCP (可靠), UDP (不可靠), 端口号标识应用
+网络层 ← IP (路由转发), ICMP, ARP
 数据链路层 ← Ethernet, Wi-Fi, MAC 地址标识设备
-物理层    ← 传输介质（双绞线/光纤/电磁波）
+物理层 ← 传输介质（双绞线/光纤/电磁波）
 ```
 
 数据发送时自上而下封装——每层添加自己的头部。接收时自下而上解封装。
@@ -17,9 +17,9 @@
 ### TCP 三次握手
 
 ```
-Client → Server: SYN (seq=x)       "我要连接"
-Server → Client: SYN+ACK (seq=y, ack=x+1)  "我收到了，可以连接"
-Client → Server: ACK (ack=y+1)     "我收到了你的确认"
+Client → Server: SYN (seq=x) "我要连接"
+Server → Client: SYN+ACK (seq=y, ack=x+1) "我收到了，可以连接"
+Client → Server: ACK (ack=y+1) "我收到了你的确认"
 ```
 
 为什么是三次而不是两次？假设只有两次握手——Client 发送 SYN 后因网络延迟被重传，旧 SYN 稍后才到 Server。Server 分配资源建立连接，但 Client 已经不需要这个连接了。三次握手让 Client 可以不回复 ACK，Server 就知道该连接请求是无效的。
@@ -27,10 +27,10 @@ Client → Server: ACK (ack=y+1)     "我收到了你的确认"
 ### TCP 四次挥手
 
 ```
-Client → Server: FIN          "我不发数据了"
-Server → Client: ACK          "收到"
-Server → Client: FIN          "我也不发了"（可能间隔一段时间，期间 Server 仍可发数据）
-Client → Server: ACK          "收到"
+Client → Server: FIN "我不发数据了"
+Server → Client: ACK "收到"
+Server → Client: FIN "我也不发了"（可能间隔一段时间，期间 Server 仍可发数据）
+Client → Server: ACK "收到"
 （Client 进入 TIME_WAIT，等待 2MSL 约 1-4 分钟）
 ```
 
@@ -64,9 +64,9 @@ epoll 的两种触发模式：
 ```
 请求行：GET /path HTTP/1.1\r\n
 请求头：Host: www.example.com\r\n
-       Content-Type: application/json\r\n
-       Content-Length: 27\r\n
-空行：  \r\n
+ Content-Type: application/json\r\n
+ Content-Length: 27\r\n
+空行： \r\n
 请求体：{"key": "value"}
 ```
 
@@ -85,7 +85,7 @@ epoll 的两种触发模式：
 ### Socket API（POSIX）
 
 ```cpp
-int sock = socket(AF_INET, SOCK_STREAM, 0);  // TCP
+int sock = socket(AF_INET, SOCK_STREAM, 0); // TCP
 // AF_INET: IPv4; SOCK_STREAM: TCP; SOCK_DGRAM: UDP
 
 struct sockaddr_in addr;
@@ -114,14 +114,14 @@ int client = accept(server, (struct sockaddr*)&client_addr, &len);
 ```cpp
 int opt = 1;
 setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)); // 端口重用
-setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &opt, sizeof(opt));  // 禁用 Nagle
+setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &opt, sizeof(opt)); // 禁用 Nagle
 ```
 
 ### getaddrinfo 协议无关解析
 
 ```cpp
 struct addrinfo hints = {};
-hints.ai_family = AF_UNSPEC;   // IPv4 + IPv6
+hints.ai_family = AF_UNSPEC; // IPv4 + IPv6
 hints.ai_socktype = SOCK_STREAM;
 struct addrinfo* result;
 getaddrinfo("example.com", "80", &hints, &result);
@@ -133,12 +133,12 @@ freeaddrinfo(result);
 
 ```cpp
 class Socket {
-    int fd;
+ int fd;
 public:
-    Socket(int domain, int type) : fd(socket(domain, type, 0)) {}
-    ~Socket() { if (fd >= 0) close(fd); }
-    Socket(Socket&& other) noexcept : fd(other.fd) { other.fd = -1; }
-    Socket(const Socket&) = delete;
+ Socket(int domain, int type) : fd(socket(domain, type, 0)) {}
+ ~Socket() { if (fd >= 0) close(fd); }
+ Socket(Socket&& other) noexcept : fd(other.fd) { other.fd = -1; }
+ Socket(const Socket&) = delete;
 };
 ```
 

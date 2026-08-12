@@ -25,15 +25,15 @@
 ```c
 #include "raylib.h"
 int main(void) {
-    InitWindow(800, 600, "Raylib Window");
-    while (!WindowShouldClose()) {
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
-        DrawText("Hello, Raylib!", 200, 250, 30, DARKGREEN);
-        EndDrawing();
-    }
-    CloseWindow();
-    return 0;
+ InitWindow(800, 600, "Raylib Window");
+ while (!WindowShouldClose()) {
+ BeginDrawing();
+ ClearBackground(RAYWHITE);
+ DrawText("Hello, Raylib!", 200, 250, 30, DARKGREEN);
+ EndDrawing();
+ }
+ CloseWindow();
+ return 0;
 }
 ```
 

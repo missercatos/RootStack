@@ -10,23 +10,23 @@
 
 ```mermaid
 graph TD
-    APP["应用程序<br/>write(fd, buf, size)"]
-    VFS["VFS 虚拟文件系统<br/>vfs_write() → __generic_file_write_iter()"]
-    FS["文件系统<br/>ext4 / XFS / Btrfs<br/>决定逻辑块映射"]
-    PC["Page Cache<br/>页缓存<br/>缓冲写入，标记脏页"]
-    BL["Block Layer (通用块层)<br/>bio 结构体<br/>I/O 调度器合并/排序请求"]
-    DM["Device Mapper<br/>重映射块请求<br/>加密 / 缓存 / 精简 / RAID"]
-    DRV["块设备驱动<br/>NVMe / SCSI / SATA / virtio-blk"]
-    DISK["物理磁盘 / SSD / NVMe 设备"]
-    APP --> VFS --> FS --> PC --> BL --> DM --> DRV --> DISK
-    style APP fill:#e1f5fe,stroke:#333
-    style VFS fill:#f3e5f5,stroke:#333
-    style FS fill:#c8e6c9,stroke:#333
-    style PC fill:#fff9c4,stroke:#333
-    style BL fill:#ffe0b2,stroke:#333
-    style DM fill:#ffcdd2,stroke:#333,stroke-width:2px
-    style DRV fill:#b2dfdb,stroke:#333
-    style DISK fill:#cfd8dc,stroke:#333
+ APP["应用程序<br/>write(fd, buf, size)"]
+ VFS["VFS 虚拟文件系统<br/>vfs_write() → __generic_file_write_iter()"]
+ FS["文件系统<br/>ext4 / XFS / Btrfs<br/>决定逻辑块映射"]
+ PC["Page Cache<br/>页缓存<br/>缓冲写入，标记脏页"]
+ BL["Block Layer (通用块层)<br/>bio 结构体<br/>I/O 调度器合并/排序请求"]
+ DM["Device Mapper<br/>重映射块请求<br/>加密 / 缓存 / 精简 / RAID"]
+ DRV["块设备驱动<br/>NVMe / SCSI / SATA / virtio-blk"]
+ DISK["物理磁盘 / SSD / NVMe 设备"]
+ APP --> VFS --> FS --> PC --> BL --> DM --> DRV --> DISK
+ style APP fill:#e1f5fe,stroke:#333
+ style VFS fill:#f3e5f5,stroke:#333
+ style FS fill:#c8e6c9,stroke:#333
+ style PC fill:#fff9c4,stroke:#333
+ style BL fill:#ffe0b2,stroke:#333
+ style DM fill:#ffcdd2,stroke:#333,stroke-width:2px
+ style DRV fill:#b2dfdb,stroke:#333
+ style DISK fill:#cfd8dc,stroke:#333
 ```
 
 ### 52.1.2 各层职责
@@ -45,21 +45,21 @@ graph TD
 ```bash
 # lsblk：文件系统无关的块设备树，直观展示 Device Mapper 的层次结构
 lsblk
-# NAME        MAJ:MIN RM   SIZE RO TYPE  MOUNTPOINTS
-# nvme0n1     259:0    0 953.9G  0 disk
-# ├─nvme0n1p1 259:1    0   512M  0 part  /boot
-# ├─nvme0n1p2 259:2    0 953.4G  0 part
-# │ └─luks    254:0    0 953.4G  0 crypt  ← dm-crypt 设备
-# │   └─vg0-root 254:1  0   100G  0 lvm   /    ← LVM 逻辑卷
-# └─nvme0n1p3 259:3    0     8G  0 part  [SWAP]
+# NAME MAJ:MIN RM SIZE RO TYPE MOUNTPOINTS
+# nvme0n1 259:0 0 953.9G 0 disk
+# ├─nvme0n1p1 259:1 0 512M 0 part /boot
+# ├─nvme0n1p2 259:2 0 953.4G 0 part
+# │ └─luks 254:0 0 953.4G 0 crypt ← dm-crypt 设备
+# │ └─vg0-root 254:1 0 100G 0 lvm / ← LVM 逻辑卷
+# └─nvme0n1p3 259:3 0 8G 0 part [SWAP]
 
 # 查看设备映射关系
 lsblk -o NAME,TYPE,FSTYPE,MOUNTPOINTS,SIZE,MAJ:MIN
 
 # dmsetup：Device Mapper 专用工具
-sudo dmsetup ls           # 列出所有 DM 设备
-sudo dmsetup table        # 列出每个 DM 设备的映射表
-sudo dmsetup info luks    # 查看特定 DM 设备的信息
+sudo dmsetup ls # 列出所有 DM 设备
+sudo dmsetup table # 列出每个 DM 设备的映射表
+sudo dmsetup info luks # 查看特定 DM 设备的信息
 
 # 查看块设备和 DM 设备的主次编号
 ls -la /dev/mapper/
@@ -67,7 +67,7 @@ ls -la /dev/mapper/
 # lrwxrwxrwx 1 root root 7 Jul 24 12:00 vg0-root -> ../dm-1
 
 # 查看 I/O 统计
-cat /sys/block/dm-0/stat  # DM 设备的 I/O 统计
+cat /sys/block/dm-0/stat # DM 设备的 I/O 统计
 ```
 
 ---
@@ -80,17 +80,17 @@ Device Mapper（DM）是 Linux 内核中一个通用的块设备映射框架。�
 
 ```mermaid
 graph LR
-    subgraph vdev["DM 虚拟设备 (/dev/dm-0)"]
-        MAP["mapping table<br/>target: linear<br/>start=0, len=1000000<br/>device=/dev/sda1, offset=2048"]
-    end
-    subgraph real["底层设备"]
-        SDA["/dev/sda1"]
-    end
-    IO["I/O 请求<br/>偏移 4096 扇区"] --> vdev
-    vdev -->|"重映射：+2048 偏移"| SDA
-    style vdev fill:#e1f5fe,stroke:#333,stroke-width:2px
-    style MAP fill:#ffcdd2,stroke:#333
-    style SDA fill:#c8e6c9,stroke:#333
+ subgraph vdev["DM 虚拟设备 (/dev/dm-0)"]
+ MAP["mapping table<br/>target: linear<br/>start=0, len=1000000<br/>device=/dev/sda1, offset=2048"]
+ end
+ subgraph real["底层设备"]
+ SDA["/dev/sda1"]
+ end
+ IO["I/O 请求<br/>偏移 4096 扇区"] --> vdev
+ vdev -->|"重映射：+2048 偏移"| SDA
+ style vdev fill:#e1f5fe,stroke:#333,stroke-width:2px
+ style MAP fill:#ffcdd2,stroke:#333
+ style SDA fill:#c8e6c9,stroke:#333
 ```
 
 ### 52.2.2 映射目标（Target Types）
@@ -98,26 +98,26 @@ graph LR
 每个 DM 设备由一个或多个 target 定义。每个 target 代表一种转换类型：
 
 ```
-Target 类型            用途                         对应工具
+Target 类型 用途 对应工具
 ────────────────────────────────────────────────────────────
-linear                  线性映射（1:1 偏移映射）          LVM
-stripe                  条带化（RAID 0）                  LVM
-mirror                  镜像（RAID 1）                    LVM
-snapshot                快照                          LVM, dmsetup
-snapshot-origin         快照源                        LVM
-snapshot-merge          快照合并                        LVM
-thin-pool               精简池                        LVM, dmsetup
-thin                    精简卷                        LVM, dmsetup
-crypt                   块加密 (dm-crypt)              cryptsetup
-cache                   SSD 缓存 (dm-cache)           lvmcache
-writecache              写回缓存 (dm-writecache)       lvmcache
-verity                  只读完整性验证 (dm-verity)       veritysetup
-integrity               读写完整性保护 (dm-integrity)    integritysetup
-delay                   延迟注入（测试用）               dmsetup
-error                   错误注入（测试用）               dmsetup
-zero                    零块设备返回全零                 dmsetup
-multipath               多路径 I/O                     multipathd
-raid                    软件 RAID (dm-raid)            mdadm, lvm
+linear 线性映射（1:1 偏移映射） LVM
+stripe 条带化（RAID 0） LVM
+mirror 镜像（RAID 1） LVM
+snapshot 快照 LVM, dmsetup
+snapshot-origin 快照源 LVM
+snapshot-merge 快照合并 LVM
+thin-pool 精简池 LVM, dmsetup
+thin 精简卷 LVM, dmsetup
+crypt 块加密 (dm-crypt) cryptsetup
+cache SSD 缓存 (dm-cache) lvmcache
+writecache 写回缓存 (dm-writecache) lvmcache
+verity 只读完整性验证 (dm-verity) veritysetup
+integrity 读写完整性保护 (dm-integrity) integritysetup
+delay 延迟注入（测试用） dmsetup
+error 错误注入（测试用） dmsetup
+zero 零块设备返回全零 dmsetup
+multipath 多路径 I/O multipathd
+raid 软件 RAID (dm-raid) mdadm, lvm
 ```
 
 ### 52.2.3 dmsetup 底层操作
@@ -133,12 +133,12 @@ LOOP=$(sudo losetup -f --show /tmp/dm_test_backing)
 # 2. 创建 DM 设备（手动指定映射表）
 # 映射表格式：<start_sector> <num_sectors> <target_type> <target_params>
 # 示例：0 204800 linear /dev/loopX 0
-#       从扇区 0 开始，204800 个扇区（100MB），linear 映射到 loop 设备的扇区 0
+# 从扇区 0 开始，204800 个扇区（100MB），linear 映射到 loop 设备的扇区 0
 echo "0 204800 linear $LOOP 0" | sudo dmsetup create dm_test
 
 # 3. 查看创建的设备
-sudo dmsetup ls            # dm_test 会出现在列表中
-sudo dmsetup table dm_test  # 查看映射表
+sudo dmsetup ls # dm_test 会出现在列表中
+sudo dmsetup table dm_test # 查看映射表
 ls -la /dev/mapper/dm_test
 sudo lsblk /dev/mapper/dm_test
 
@@ -164,17 +164,17 @@ LUKS（Linux Unified Key Setup）是建立在 dm-crypt 之上的加密规范，�
 
 ```mermaid
 graph TD
-    subgraph luks["LUKS 分层架构"]
-        FS["文件系统 (ext4/xfs/btrfs)"]
-        DMCRYPT["dm-crypt (加密层)<br/>AES-XTS / AES-CBC"]
-        LUKSH["LUKS Header (头)<br/>8 个密钥槽<br/>PBKDF2/Argon2 密钥派生"]
-        PART["底层分区 /dev/sda1"]
-        FS --> DMCRYPT --> LUKSH --> PART
-    end
-    style FS fill:#c8e6c9,stroke:#333
-    style DMCRYPT fill:#ffcdd2,stroke:#333
-    style LUKSH fill:#fff9c4,stroke:#333
-    style PART fill:#cfd8dc,stroke:#333
+ subgraph luks["LUKS 分层架构"]
+ FS["文件系统 (ext4/xfs/btrfs)"]
+ DMCRYPT["dm-crypt (加密层)<br/>AES-XTS / AES-CBC"]
+ LUKSH["LUKS Header (头)<br/>8 个密钥槽<br/>PBKDF2/Argon2 密钥派生"]
+ PART["底层分区 /dev/sda1"]
+ FS --> DMCRYPT --> LUKSH --> PART
+ end
+ style FS fill:#c8e6c9,stroke:#333
+ style DMCRYPT fill:#ffcdd2,stroke:#333
+ style LUKSH fill:#fff9c4,stroke:#333
+ style PART fill:#cfd8dc,stroke:#333
 ```
 
 ### 52.3.2 实战：创建 LUKS 加密卷
@@ -189,12 +189,12 @@ sudo cryptsetup luksFormat --type luks2 /dev/sdb1
 
 # 指定加密算法和密钥派生函数
 sudo cryptsetup luksFormat --type luks2 \
-  --cipher aes-xts-plain64 \
-  --key-size 512 \
-  --hash sha512 \
-  --pbkdf argon2id \
-  --iter-time 5000 \
-  /dev/sdb1
+ --cipher aes-xts-plain64 \
+ --key-size 512 \
+ --hash sha512 \
+ --pbkdf argon2id \
+ --iter-time 5000 \
+ /dev/sdb1
 
 # === 步骤 2：打开加密卷 ===
 sudo cryptsetup open /dev/sdb1 my_encrypted_volume
@@ -214,10 +214,10 @@ sudo mount /dev/mapper/my_encrypted_volume /mnt/secure
 sudo cryptsetup status my_encrypted_volume
 # 输出：
 # /dev/mapper/my_encrypted_volume is active.
-#   type:    LUKS2
-#   cipher:  aes-xts-plain64
-#   keysize: 512 bits
-#   device:  /dev/sdb1
+# type: LUKS2
+# cipher: aes-xts-plain64
+# keysize: 512 bits
+# device: /dev/sdb1
 ```
 
 ### 52.3.3 LUKS 密钥管理
@@ -238,11 +238,11 @@ sudo dd if=/dev/urandom of=/etc/cryptkey bs=32 count=1
 sudo cryptsetup luksAddKey /dev/sdb1 /etc/cryptkey
 
 # === 删除密钥 ===
-sudo cryptsetup luksRemoveKey /dev/sdb1     # 交互式删除
-sudo cryptsetup luksKillSlot /dev/sdb1 2   # 删除指定密钥槽
+sudo cryptsetup luksRemoveKey /dev/sdb1 # 交互式删除
+sudo cryptsetup luksKillSlot /dev/sdb1 2 # 删除指定密钥槽
 
 # === 修改密码 ===
-sudo cryptsetup luksChangeKey /dev/sdb1    # 交互式修改
+sudo cryptsetup luksChangeKey /dev/sdb1 # 交互式修改
 
 # === 安全擦除 LUKS 头（紧急销毁数据） ===
 # 极端危险操作！擦除后数据将无法恢复
@@ -254,13 +254,13 @@ sudo cryptsetup luksErase /dev/sdb1
 ```bash
 # /etc/crypttab 配置：系统启动时自动解锁加密卷
 sudo tee -a /etc/crypttab <<'EOF'
-# <映射名>  <设备>        <密钥文件>  <选项>
-my_crypt    /dev/sdb1      /etc/cryptkey    luks,discard
+# <映射名> <设备> <密钥文件> <选项>
+my_crypt /dev/sdb1 /etc/cryptkey luks,discard
 EOF
 
 # /etc/fstab 配置：解锁后自动挂载
 sudo tee -a /etc/fstab <<'EOF'
-/dev/mapper/my_crypt  /mnt/secure  ext4  defaults,noatime  0  2
+/dev/mapper/my_crypt /mnt/secure ext4 defaults,noatime 0 2
 EOF
 
 # 重新加载 systemd cryptsetup 服务
@@ -279,8 +279,8 @@ sudo cryptsetup benchmark
 # 输出各密码算法和模式的吞吐量
 
 # 示例输出：
-# aes-xts  256b  1500.0 MiB/s
-# aes-xts  512b  1200.0 MiB/s
+# aes-xts 256b 1500.0 MiB/s
+# aes-xts 512b 1200.0 MiB/s
 
 # 对已打开的加密卷进行性能测试
 sudo dd if=/dev/zero of=/dev/mapper/my_crypt bs=1M count=1024 oflag=direct
@@ -297,29 +297,29 @@ sudo dd if=/dev/zero of=/dev/mapper/my_crypt bs=1M count=1024 oflag=direct
 dm-cache 将快速设备（SSD/NVMe）作为慢速设备（HDD）的缓存层，提供三种缓存策略：
 
 ```
-策略          写入行为                         适用场景
+策略 写入行为 适用场景
 ──────────────────────────────────────────────────────────
-writeback     先写 SSD，异步回写 HDD             写入密集型
-writethrough  同时写入 SSD 和 HDD                数据安全性优先
-writearound   绕过 SSD 直写 HDD，仅缓存读          大文件流式写入
-passthrough   绕过缓存（维护/降级模式）            故障时临时用
+writeback 先写 SSD，异步回写 HDD 写入密集型
+writethrough 同时写入 SSD 和 HDD 数据安全性优先
+writearound 绕过 SSD 直写 HDD，仅缓存读 大文件流式写入
+passthrough 绕过缓存（维护/降级模式） 故障时临时用
 ```
 
 ```mermaid
 graph LR
-    subgraph cache["dm-cache 架构"]
-        ORIGIN["Origin Device<br/>慢速 HDD<br/>/dev/sda"]
-        CACHE["Cache Device<br/>快速 SSD<br/>/dev/nvme0n1p1"]
-        META["Metadata Device<br/>SSD 上的一小块</br>存储映射元数据"]
-        OUT["DM Cache 虚拟设备<br/>/dev/mapper/cached_disk"]
-    end
-    APP["应用程序"] --> OUT
-    OUT --> ORIGIN
-    OUT --> CACHE
-    CACHE --> META
-    style OUT fill:#ffcdd2,stroke:#333,stroke-width:2px
-    style ORIGIN fill:#cfd8dc,stroke:#333
-    style CACHE fill:#c8e6c9,stroke:#333
+ subgraph cache["dm-cache 架构"]
+ ORIGIN["Origin Device<br/>慢速 HDD<br/>/dev/sda"]
+ CACHE["Cache Device<br/>快速 SSD<br/>/dev/nvme0n1p1"]
+ META["Metadata Device<br/>SSD 上的一小块</br>存储映射元数据"]
+ OUT["DM Cache 虚拟设备<br/>/dev/mapper/cached_disk"]
+ end
+ APP["应用程序"] --> OUT
+ OUT --> ORIGIN
+ OUT --> CACHE
+ CACHE --> META
+ style OUT fill:#ffcdd2,stroke:#333,stroke-width:2px
+ style ORIGIN fill:#cfd8dc,stroke:#333
+ style CACHE fill:#c8e6c9,stroke:#333
 ```
 
 ### 52.4.2 使用 lvmcache 创建 dm-cache
@@ -350,8 +350,8 @@ sudo lvconvert --type cache --cachepool my_vg/cache_lv my_vg/data_lv
 
 # 查看缓存状态
 sudo lvs -a my_vg
-# LV         VG    Attr       LSize  Pool       Origin   Cachemode
-# data_lv    my_vg Cwi-aocC-- 500.00g [cache_lv] [data_lv_corig] writethrough
+# LV VG Attr LSize Pool Origin Cachemode
+# data_lv my_vg Cwi-aocC-- 500.00g [cache_lv] [data_lv_corig] writethrough
 
 # 修改缓存模式
 sudo lvchange --cachemode writeback my_vg/data_lv
@@ -370,19 +370,19 @@ sudo lvconvert --splitcache my_vg/data_lv
 
 ```mermaid
 graph TD
-    subgraph thinpool["精简池 (2TB 物理)"]
-        THIN_VOL1["thin_vol1<br/>逻辑大小: 1TB<br/>实际占用: 300GB"]
-        THIN_VOL2["thin_vol2<br/>逻辑大小: 1TB<br/>实际占用: 100GB"]
-        THIN_VOL3["thin_vol3<br/>逻辑大小: 500GB<br/>实际占用: 5GB"]
-        POOL["物理池空间: 2TB"]
-        THIN_VOL1 --> POOL
-        THIN_VOL2 --> POOL
-        THIN_VOL3 --> POOL
-    end
-    style POOL fill:#c8e6c9,stroke:#333
-    style THIN_VOL1 fill:#e1f5fe,stroke:#333
-    style THIN_VOL2 fill:#e1f5fe,stroke:#333
-    style THIN_VOL3 fill:#e1f5fe,stroke:#333
+ subgraph thinpool["精简池 (2TB 物理)"]
+ THIN_VOL1["thin_vol1<br/>逻辑大小: 1TB<br/>实际占用: 300GB"]
+ THIN_VOL2["thin_vol2<br/>逻辑大小: 1TB<br/>实际占用: 100GB"]
+ THIN_VOL3["thin_vol3<br/>逻辑大小: 500GB<br/>实际占用: 5GB"]
+ POOL["物理池空间: 2TB"]
+ THIN_VOL1 --> POOL
+ THIN_VOL2 --> POOL
+ THIN_VOL3 --> POOL
+ end
+ style POOL fill:#c8e6c9,stroke:#333
+ style THIN_VOL1 fill:#e1f5fe,stroke:#333
+ style THIN_VOL2 fill:#e1f5fe,stroke:#333
+ style THIN_VOL3 fill:#e1f5fe,stroke:#333
 ```
 
 ### 52.5.2 实战：LVM 精简配置
@@ -399,8 +399,8 @@ sudo lvcreate -n thinpool_meta -L 500M thin_vg
 
 # 将两者合并为精简池
 sudo lvconvert --type thin-pool \
-  --poolmetadata thin_vg/thinpool_meta \
-  thin_vg/thinpool_data
+ --poolmetadata thin_vg/thinpool_meta \
+ thin_vg/thinpool_data
 
 # === 从精简池创建精简卷 ===
 # 创建逻辑大小远超物理空间的精简卷
@@ -410,11 +410,11 @@ sudo lvcreate --thin -n customerC_vol -V 50G thin_vg/thinpool_data
 
 # 查看物理占用 vs 逻辑大小
 sudo lvs -a thin_vg
-# LV             VG      Attr       LSize   Pool           Origin Data%  Meta%
-# thinpool_data  thin_vg twi-a-tz--  20.00g                      10.42  5.33
-# customerA_vol  thin_vg Vwi-a-tz-- 100.00g thinpool_data         2.10
-# customerB_vol  thin_vg Vwi-a-tz-- 100.00g thinpool_data         1.50
-# customerC_vol  thin_vg Vwi-a-tz--  50.00g thinpool_data         0.05
+# LV VG Attr LSize Pool Origin Data% Meta%
+# thinpool_data thin_vg twi-a-tz-- 20.00g 10.42 5.33
+# customerA_vol thin_vg Vwi-a-tz-- 100.00g thinpool_data 2.10
+# customerB_vol thin_vg Vwi-a-tz-- 100.00g thinpool_data 1.50
+# customerC_vol thin_vg Vwi-a-tz-- 50.00g thinpool_data 0.05
 
 # === 使用精简卷 ===
 sudo mkfs.ext4 /dev/thin_vg/customerA_vol
@@ -422,7 +422,7 @@ sudo mount /dev/thin_vg/customerA_vol /mnt/customer_a
 
 # === 创建一个文件来观察空间分配 ===
 sudo dd if=/dev/urandom of=/mnt/customer_a/testfile bs=1M count=500
-sudo lvs -a thin_vg  # Data% 会上升
+sudo lvs -a thin_vg # Data% 会上升
 
 # === 精简卷快照（极快且空间高效） ===
 sudo lvcreate --snapshot -n snap_customera -L 1G thin_vg/customerA_vol
@@ -439,7 +439,7 @@ sudo lvs thin_vg/thinpool_data -o lv_name,data_percent
 # 这在虚拟化环境中尤其危险（所有 VM 磁盘同时挂起）
 
 # 预防措施 1：设置水位线监控
-sudo lvmconf --enable lvmpolld    # 启用 LVM 轮询守护进程
+sudo lvmconf --enable lvmpolld # 启用 LVM 轮询守护进程
 
 # 预防措施 2：扩展精简池
 sudo lvextend -L +10G thin_vg/thinpool_data
@@ -448,8 +448,8 @@ sudo lvextend -L +10G thin_vg/thinpool_data
 # 编辑 /etc/lvm/lvm.conf
 sudo tee -a /etc/lvm/lvm.conf <<'EOF'
 activation {
-    thin_pool_autoextend_threshold = 70   # 使用达 70% 时自动扩展
-    thin_pool_autoextend_percent = 20     # 扩展 20%
+ thin_pool_autoextend_threshold = 70 # 使用达 70% 时自动扩展
+ thin_pool_autoextend_percent = 20 # 扩展 20%
 }
 EOF
 
@@ -533,24 +533,24 @@ sudo lvs -a -o name,raid_sync_action,sync_percent raid_vg
 
 ```mermaid
 graph LR
-    A["initiator<br/>应用程序 I/O"]
-    MP["dm-multipath<br/>/dev/mapper/mpatha"]
-    P1["路径 1<br/>HBA1 → FC Switch 1 → SP-A"]
-    P2["路径 2<br/>HBA2 → FC Switch 2 → SP-B"]
-    P3["路径 3<br/>HBA1 → FC Switch 1 → SP-B"]
-    P4["路径 4<br/>HBA2 → FC Switch 2 → SP-A"]
-    STG["SAN LUN<br/>共享存储"]
-    A --> MP
-    MP --> P1
-    MP --> P2
-    MP --> P3
-    MP --> P4
-    P1 --> STG
-    P2 --> STG
-    P3 --> STG
-    P4 --> STG
-    style MP fill:#ffcdd2,stroke:#333,stroke-width:2px
-    style STG fill:#c8e6c9,stroke:#333
+ A["initiator<br/>应用程序 I/O"]
+ MP["dm-multipath<br/>/dev/mapper/mpatha"]
+ P1["路径 1<br/>HBA1 → FC Switch 1 → SP-A"]
+ P2["路径 2<br/>HBA2 → FC Switch 2 → SP-B"]
+ P3["路径 3<br/>HBA1 → FC Switch 1 → SP-B"]
+ P4["路径 4<br/>HBA2 → FC Switch 2 → SP-A"]
+ STG["SAN LUN<br/>共享存储"]
+ A --> MP
+ MP --> P1
+ MP --> P2
+ MP --> P3
+ MP --> P4
+ P1 --> STG
+ P2 --> STG
+ P3 --> STG
+ P4 --> STG
+ style MP fill:#ffcdd2,stroke:#333,stroke-width:2px
+ style STG fill:#c8e6c9,stroke:#333
 ```
 
 ### 52.7.2 配置 multipath
@@ -568,38 +568,38 @@ sudo multipath -ll
 # mpatha (36005076400810387c000000000000000) dm-3 LENOVO,S700
 # size=1.0T features='1 queue_if_no_path' hwhandler='0' wp=rw
 # `-+- policy='service-time 0' prio=1 status=active
-#   |- 1:0:0:0 sdb 8:16  active ready running
-#   |- 2:0:0:0 sdc 8:32  active ready running
-#   |- 3:0:0:0 sdd 8:48  active ready running
-#   `- 4:0:0:0 sde 8:64  active ready running
+# |- 1:0:0:0 sdb 8:16 active ready running
+# |- 2:0:0:0 sdc 8:32 active ready running
+# |- 3:0:0:0 sdd 8:48 active ready running
+# `- 4:0:0:0 sde 8:64 active ready running
 ```
 
 ```bash
 # /etc/multipath.conf 示例配置
 sudo tee /etc/multipath.conf <<'EOF'
 defaults {
-    user_friendly_names     yes     # 使用 mpathX 而非 WWID
-    find_multipaths         yes     # 仅聚合实际多路径的设备
-    path_grouping_policy    multibus  # 所有路径处于同一组
-    failback                immediate  # 路径恢复后立即切回
-    no_path_retry           queue   # 无可用路径时排队 I/O 而非失败
+ user_friendly_names yes # 使用 mpathX 而非 WWID
+ find_multipaths yes # 仅聚合实际多路径的设备
+ path_grouping_policy multibus # 所有路径处于同一组
+ failback immediate # 路径恢复后立即切回
+ no_path_retry queue # 无可用路径时排队 I/O 而非失败
 }
 devices {
-    device {
-        vendor              "LENOVO"
-        product             "S700"
-        path_grouping_policy    group_by_prio
-        path_selector           "service-time 0"
-        path_checker            tur     # Test Unit Ready
-        features                "1 queue_if_no_path"
-        failback                immediate
-    }
+ device {
+ vendor "LENOVO"
+ product "S700"
+ path_grouping_policy group_by_prio
+ path_selector "service-time 0"
+ path_checker tur # Test Unit Ready
+ features "1 queue_if_no_path"
+ failback immediate
+ }
 }
 blacklist {
-    # 黑名单：不聚合本地启动盘
-    wwid 35000000000000001
-    devnode "^(ram|raw|loop|fd|md|dm-|sr|scd|st)[0-9]*"
-    devnode "^sd[a]$"  # 系统盘
+ # 黑名单：不聚合本地启动盘
+ wwid 35000000000000001
+ devnode "^(ram|raw|loop|fd|md|dm-|sr|scd|st)[0-9]*"
+ devnode "^sd[a]$" # 系统盘
 }
 EOF
 
@@ -607,9 +607,9 @@ EOF
 sudo systemctl reload multipathd
 
 # 管理命令
-sudo multipath -F    # 刷新所有多路径设备
-sudo multipath -v2   # 详细扫描
-sudo multipath -r    # 重置多路径设备
+sudo multipath -F # 刷新所有多路径设备
+sudo multipath -v2 # 详细扫描
+sudo multipath -r # 重置多路径设备
 ```
 
 ---
@@ -622,9 +622,9 @@ dm-verity 为只读块设备提供透明完整性验证，是现代只读根文�
 
 ```
 数据块 → 哈希树 (Merkle Tree) 叶子 → 逐级向根哈希验证 → 与预期的根哈希比对
-                                                         ↓
-                                              不匹配 → 返回 I/O 错误
-                                              匹配   → 返回数据块
+ ↓
+ 不匹配 → 返回 I/O 错误
+ 匹配 → 返回数据块
 ```
 
 > **dm-verity 的详细配置**（包括 veritysetup、Systemd 集成、与 Secure Boot 的配合）将在 [[26-系统安全加固与审计]] 中深入讲解，其中涵盖了从内核命令行签名到 IMA/EVM 的完整验证链路。
@@ -638,28 +638,28 @@ dm-verity 为只读块设备提供透明完整性验证，是现代只读根文�
 LVM 本质上是一个用户空间框架，其所有卷管理能力都依赖 Device Mapper 实现。每个 LVM 逻辑卷背后都是 DM 设备。
 
 ```
-LVM 概念层            DM 映射
+LVM 概念层 DM 映射
 ─────────────────────────────────────────
-Linear LV      →     linear target     (1:1 映射)
-Striped LV     →     striped target    (RAID 0)
-Mirrored LV    →     mirror target     (RAID 1)
-Snapshot LV    →     snapshot target
-Thin LV        →     thin pool + thin target
-Cache LV       →     cache target
-RAID LV        →     raid target
+Linear LV → linear target (1:1 映射)
+Striped LV → striped target (RAID 0)
+Mirrored LV → mirror target (RAID 1)
+Snapshot LV → snapshot target
+Thin LV → thin pool + thin target
+Cache LV → cache target
+RAID LV → raid target
 ```
 
 ```bash
 # 查看 LVM 设备背后的 DM 映射
 sudo lvdisplay -m /dev/mapper/my_vg-my_lv
 # --- Logical volume ---
-# LV Name                my_lv
-# VG Name                my_vg
-# Segments               1  (segment 是对底层设备的映射片段)
+# LV Name my_lv
+# VG Name my_vg
+# Segments 1 (segment 是对底层设备的映射片段)
 # Logical extent 0 to 1023:
-#   Type                linear
-#   Physical volume     /dev/sda
-#   Physical extents    2048 to 3071
+# Type linear
+# Physical volume /dev/sda
+# Physical extents 2048 to 3071
 ```
 
 ### 52.9.2 LVM 核心概念回顾
@@ -674,51 +674,51 @@ sudo lvdisplay -m /dev/mapper/my_vg-my_lv
 
 ```mermaid
 graph TD
-    subgraph vg["Volume Group (my_vg)"]
-        LV1["LV: root (50GB)"]
-        LV2["LV: home (200GB)"]
-        LV3["LV: swap (8GB)"]
-        FREESPACE["Free Space (40GB)"]
-    end
-    PV1["PV: /dev/sda (200GB)"]
-    PV2["PV: /dev/sdb (100GB)"]
-    PV1 --> vg
-    PV2 --> vg
-    style vg fill:#e1f5fe,stroke:#333
-    style PV1 fill:#c8e6c9,stroke:#333
-    style PV2 fill:#c8e6c9,stroke:#333
+ subgraph vg["Volume Group (my_vg)"]
+ LV1["LV: root (50GB)"]
+ LV2["LV: home (200GB)"]
+ LV3["LV: swap (8GB)"]
+ FREESPACE["Free Space (40GB)"]
+ end
+ PV1["PV: /dev/sda (200GB)"]
+ PV2["PV: /dev/sdb (100GB)"]
+ PV1 --> vg
+ PV2 --> vg
+ style vg fill:#e1f5fe,stroke:#333
+ style PV1 fill:#c8e6c9,stroke:#333
+ style PV2 fill:#c8e6c9,stroke:#333
 ```
 
 ### 52.9.3 LVM 基础操作速查
 
 ```bash
 # === PV 操作 ===
-sudo pvcreate /dev/sdc1                   # 创建 PV
-sudo pvs                                  # 列出 PV
-sudo pvdisplay                            # 详细 PV 信息
-sudo pvmove /dev/sdc1                     # 将数据迁出 PV（移除前必须执行）
-sudo pvremove /dev/sdc1                   # 删除 PV
+sudo pvcreate /dev/sdc1 # 创建 PV
+sudo pvs # 列出 PV
+sudo pvdisplay # 详细 PV 信息
+sudo pvmove /dev/sdc1 # 将数据迁出 PV（移除前必须执行）
+sudo pvremove /dev/sdc1 # 删除 PV
 
 # === VG 操作 ===
-sudo vgcreate data_vg /dev/sdc1 /dev/sdd1  # 创建 VG
-sudo vgextend data_vg /dev/sde1            # 扩展 VG（添加 PV）
-sudo vgreduce data_vg /dev/sdd1            # 缩减 VG（移除 PV）
-sudo vgdisplay data_vg                     # 详细 VG 信息
-sudo vgs                                   # 列出所有 VG
+sudo vgcreate data_vg /dev/sdc1 /dev/sdd1 # 创建 VG
+sudo vgextend data_vg /dev/sde1 # 扩展 VG（添加 PV）
+sudo vgreduce data_vg /dev/sdd1 # 缩减 VG（移除 PV）
+sudo vgdisplay data_vg # 详细 VG 信息
+sudo vgs # 列出所有 VG
 
 # === LV 操作 ===
-sudo lvcreate -n data_lv -L 100G data_vg   # 创建线性 LV
-sudo lvextend -L +50G data_vg/data_lv      # 扩展 LV
-sudo lvextend -l +100%FREE data_vg/data_lv  # 扩展到所有可用空间
-sudo lvresize -L -10G data_vg/data_lv      # 缩减 LV（需要 FS 支持）
+sudo lvcreate -n data_lv -L 100G data_vg # 创建线性 LV
+sudo lvextend -L +50G data_vg/data_lv # 扩展 LV
+sudo lvextend -l +100%FREE data_vg/data_lv # 扩展到所有可用空间
+sudo lvresize -L -10G data_vg/data_lv # 缩减 LV（需要 FS 支持）
 
 # 扩展 LV 后，必须扩展文件系统
-sudo resize2fs /dev/data_vg/data_lv        # ext4 在线扩展
-sudo xfs_growfs /mnt/data                  # XFS 在线扩展（需要先挂载）
+sudo resize2fs /dev/data_vg/data_lv # ext4 在线扩展
+sudo xfs_growfs /mnt/data # XFS 在线扩展（需要先挂载）
 
 # === 快照操作 ===
-sudo lvcreate -s -n snap_lv -L 5G data_vg/data_lv  # 创建快照
-sudo lvremove data_vg/snap_lv                       # 删除快照
+sudo lvcreate -s -n snap_lv -L 5G data_vg/data_lv # 创建快照
+sudo lvremove data_vg/snap_lv # 删除快照
 
 # === 重命名 ===
 sudo lvrename data_vg data_lv backup_lv
@@ -738,13 +738,13 @@ sudo blktrace /dev/sda -o - | blkparse -i -
 # 显示每个 I/O 请求的完成时间、延迟、队列深度等
 
 # iostat：I/O 统计
-iostat -x 1 5        # 扩展统计，每秒刷新，共 5 次
+iostat -x 1 5 # 扩展统计，每秒刷新，共 5 次
 # await：平均 I/O 等待时间
 # util：设备利用率
 
 # 块层队列参数
 for f in /sys/block/sda/queue/*; do
-    echo "$(basename $f): $(cat $f)"
+ echo "$(basename $f): $(cat $f)"
 done
 # scheduler: 调度算法 (mq-deadline / kyber / bfq)
 # nr_requests: 最大队列深度
@@ -823,11 +823,11 @@ ls /lib/modules/$(uname -r)/kernel/drivers/md/dm-*
 > > **B**。精简池空间耗尽时，所有关联精简卷上的写入都会返回 I/O 错误（EIO），这可能导致文件系统变为只读。因此生产环境中必须配置监控和自动扩展。
 
 > [!question]- 判断题 4：dm-cache 的 writethrough 模式将数据同时写入 SSD 缓存和 HDD，因此数据安全性最高。
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**。writethrough 模式确保数据始终被同步写入后端慢速设备，即使 SSD 缓存故障，数据也不会丢失，但写入性能受限于 HDD。
+> > **A. 正确**。writethrough 模式确保数据始终被同步写入后端慢速设备，即使 SSD 缓存故障，数据也不会丢失，但写入性能受限于 HDD。
 
 > [!question]- 选择题 5：dm-multipath 的 `path_grouping_policy` 设置为 `multibus` 意味着？
 > - A. 一次只能使用一条路径，其余为备用

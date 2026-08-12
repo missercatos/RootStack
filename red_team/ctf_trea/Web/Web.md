@@ -4,43 +4,43 @@ Web 方向是 CTF 中最常见、入门门槛相对较低的题型方向，涵�
 
 ```mermaid
 mindmap
-  root((Web CTF))
-    HTTP 协议攻击
-      自定义请求方法
-      302 跳转
-      Cookie 篡改
-      基本认证
-      源代码
-      Host 头注入
-      HTTP 请求走私
-      缓存投毒
-    注入类
-      SQL 注入
-      NoSQL 注入
-      XPath 注入
-      SSTI 模板注入
-    XSS
-      反射型 XSS
-      存储型 XSS
-      DOM 型 XSS
-    CSRF
-    文件操作
-      文件包含 LFI/RFI
-      文件上传
-      文件读取
-    代码执行
-      RCE
-      命令注入
-      代码注入
-    认证与会话
-      Cookie 伪造
-      Session 劫持
-      JWT 攻击
-      SSRF
-    其他
-      CORS 配置错误
-      WebSocket 攻击
-      Prototype Pollution
+ root((Web CTF))
+ HTTP 协议攻击
+ 自定义请求方法
+ 302 跳转
+ Cookie 篡改
+ 基本认证
+ 源代码
+ Host 头注入
+ HTTP 请求走私
+ 缓存投毒
+ 注入类
+ SQL 注入
+ NoSQL 注入
+ XPath 注入
+ SSTI 模板注入
+ XSS
+ 反射型 XSS
+ 存储型 XSS
+ DOM 型 XSS
+ CSRF
+ 文件操作
+ 文件包含 LFI/RFI
+ 文件上传
+ 文件读取
+ 代码执行
+ RCE
+ 命令注入
+ 代码注入
+ 认证与会话
+ Cookie 伪造
+ Session 劫持
+ JWT 攻击
+ SSRF
+ 其他
+ CORS 配置错误
+ WebSocket 攻击
+ Prototype Pollution
 ```
 
 ### Web 在 CTF 中的含义

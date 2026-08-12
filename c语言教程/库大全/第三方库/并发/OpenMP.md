@@ -15,25 +15,25 @@
 /* 并行化 for 循环 */
 #pragma omp parallel for
 for (int i = 0; i < N; i++)
-    result[i] = heavy_compute(data[i]);
+ result[i] = heavy_compute(data[i]);
 
 /* 并行区域 */
 #pragma omp parallel
 {
-    int tid = omp_get_thread_num();
-    printf("Thread %d\n", tid);
+ int tid = omp_get_thread_num();
+ printf("Thread %d\n", tid);
 }
 
 /* 归约操作 */
 int sum = 0;
 #pragma omp parallel for reduction(+:sum)
 for (int i = 0; i < N; i++)
-    sum += array[i];
+ sum += array[i];
 
 /* 临界区 */
 #pragma omp critical
 {
-    shared_counter++;
+ shared_counter++;
 }
 ```
 

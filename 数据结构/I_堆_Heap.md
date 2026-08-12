@@ -16,18 +16,18 @@
 
 ```mermaid
 graph TD
-    subgraph "逻辑视图（完全二叉树）"
-        ROOT["50 (idx=0)"] --> L["30 (idx=1)"]
-        ROOT --> R["40 (idx=2)"]
-        L --> LL["10 (idx=3)"]
-        L --> LR["20 (idx=4)"]
-        R --> RL["35 (idx=5)"]
-        R --> RR["25 (idx=6)"]
-    end
-    subgraph "物理视图（一维数组）"
-        direction LR
-        A0["[0]=50"] --> A1["[1]=30"] --> A2["[2]=40"] --> A3["[3]=10"] --> A4["[4]=20"] --> A5["[5]=35"] --> A6["[6]=25"]
-    end
+ subgraph "逻辑视图（完全二叉树）"
+ ROOT["50 (idx=0)"] --> L["30 (idx=1)"]
+ ROOT --> R["40 (idx=2)"]
+ L --> LL["10 (idx=3)"]
+ L --> LR["20 (idx=4)"]
+ R --> RL["35 (idx=5)"]
+ R --> RR["25 (idx=6)"]
+ end
+ subgraph "物理视图（一维数组）"
+ direction LR
+ A0["[0]=50"] --> A1["[1]=30"] --> A2["[2]=40"] --> A3["[3]=10"] --> A4["[4]=20"] --> A5["[5]=35"] --> A6["[6]=25"]
+ end
 ```
 
 数组索引之间的跳转公式完全替代了指针：
@@ -53,12 +53,12 @@ graph TD
 
 ```mermaid
 flowchart TD
-    A["插入 x 到 data[size]"] --> B{"当前节点 idx > 0?"}
-    B -->|否| DONE["结束: x 已到达根节点"]
-    B -->|是| C{"x > parent(idx)?"}
-    C -->|是| S["交换 x 与父节点<br/>idx ← parent(idx)"]
-    S --> B
-    C -->|否| DONE
+ A["插入 x 到 data[size]"] --> B{"当前节点 idx > 0?"}
+ B -->|否| DONE["结束: x 已到达根节点"]
+ B -->|是| C{"x > parent(idx)?"}
+ C -->|是| S["交换 x 与父节点<br/>idx ← parent(idx)"]
+ S --> B
+ C -->|否| DONE
 ```
 
 上浮的最坏情况路径长度 = 树的高度 = $\lfloor \log_2 n \rfloor$。但实际中，随机插入的元素预期上浮距离很短——新元素在 50% 概率下小于父节点（无需交换），75% 概率下只需至多 1 次交换。均摊分析类似 vector 扩容。
@@ -67,12 +67,12 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A["从 idx 开始下沉"] --> B{"idx 有子节点?"}
-    B -->|否| DONE["结束: 已到达叶子"]
-    B -->|是| C{"max(左,右) > data[idx]?"}
-    C -->|是| S["与较大的子节点交换<br/>idx ← 较大子节点"]
-    S --> B
-    C -->|否| DONE
+ A["从 idx 开始下沉"] --> B{"idx 有子节点?"}
+ B -->|否| DONE["结束: 已到达叶子"]
+ B -->|是| C{"max(左,右) > data[idx]?"}
+ C -->|是| S["与较大的子节点交换<br/>idx ← 较大子节点"]
+ S --> B
+ C -->|否| DONE
 ```
 
 **上浮 vs 下沉的成本差异**：下沉在每一步中需要读取两个子节点、比较两次、交换一次，而上浮只需读一次父节点、比较一次、交换一次。建堆时主要使用下沉（因根节点附近的节点少数下沉很长距离），插入时使用上浮。
@@ -146,9 +146,9 @@ d-ary 堆在减少树高和增加每层比较次数之间做了折中。对于�
 #include <stdlib.h>
 
 typedef struct {
-    int* data;
-    size_t size;
-    size_t capacity;
+ int* data;
+ size_t size;
+ size_t capacity;
 } MaxHeap;
 
 void mh_init(MaxHeap* h) { h->data = NULL; h->size = 0; h->capacity = 0; }
@@ -157,66 +157,66 @@ void mh_destroy(MaxHeap* h) { free(h->data); h->data = NULL; h->size = h->capaci
 static void swap(int* a, int* b) { int t = *a; *a = *b; *b = t; }
 
 static void sift_up(MaxHeap* h, size_t idx) {
-    while (idx > 0) {
-        size_t parent = (idx - 1) / 2;
-        if (h->data[parent] >= h->data[idx]) break;
-        swap(&h->data[parent], &h->data[idx]);
-        idx = parent;
-    }
+ while (idx > 0) {
+ size_t parent = (idx - 1) / 2;
+ if (h->data[parent] >= h->data[idx]) break;
+ swap(&h->data[parent], &h->data[idx]);
+ idx = parent;
+ }
 }
 
 static void sift_down(MaxHeap* h, size_t idx) {
-    size_t n = h->size;
-    while (1) {
-        size_t largest = idx;
-        size_t left = 2 * idx + 1, right = 2 * idx + 2;
-        if (left < n && h->data[left] > h->data[largest])   largest = left;
-        if (right < n && h->data[right] > h->data[largest]) largest = right;
-        if (largest == idx) break;
-        swap(&h->data[idx], &h->data[largest]);
-        idx = largest;
-    }
+ size_t n = h->size;
+ while (1) {
+ size_t largest = idx;
+ size_t left = 2 * idx + 1, right = 2 * idx + 2;
+ if (left < n && h->data[left] > h->data[largest]) largest = left;
+ if (right < n && h->data[right] > h->data[largest]) largest = right;
+ if (largest == idx) break;
+ swap(&h->data[idx], &h->data[largest]);
+ idx = largest;
+ }
 }
 
 static int mh_expand(MaxHeap* h) {
-    size_t new_cap = h->capacity == 0 ? 8 : h->capacity * 2;
-    int* new_data = realloc(h->data, new_cap * sizeof(int));
-    if (!new_data) return -1;
-    h->data = new_data;
-    h->capacity = new_cap;
-    return 0;
+ size_t new_cap = h->capacity == 0 ? 8 : h->capacity * 2;
+ int* new_data = realloc(h->data, new_cap * sizeof(int));
+ if (!new_data) return -1;
+ h->data = new_data;
+ h->capacity = new_cap;
+ return 0;
 }
 
 int mh_push(MaxHeap* h, int value) {
-    if (h->size >= h->capacity)
-        if (mh_expand(h) != 0) return -1;
-    h->data[h->size++] = value;
-    sift_up(h, h->size - 1);
-    return 0;
+ if (h->size >= h->capacity)
+ if (mh_expand(h) != 0) return -1;
+ h->data[h->size++] = value;
+ sift_up(h, h->size - 1);
+ return 0;
 }
 
 int mh_extract_max(MaxHeap* h, int* out) {
-    if (h->size == 0) return -1;
-    *out = h->data[0];
-    h->data[0] = h->data[--h->size];
-    if (h->size > 0) sift_down(h, 0);
-    return 0;
+ if (h->size == 0) return -1;
+ *out = h->data[0];
+ h->data[0] = h->data[--h->size];
+ if (h->size > 0) sift_down(h, 0);
+ return 0;
 }
 
 int mh_top(const MaxHeap* h, int* out) {
-    if (h->size == 0) return -1;
-    *out = h->data[0];
-    return 0;
+ if (h->size == 0) return -1;
+ *out = h->data[0];
+ return 0;
 }
 
 // Floyd build-heap: O(n)
 void mh_build(MaxHeap* h, int* arr, size_t n) {
-    free(h->data);
-    h->data = arr;
-    h->size = n;
-    h->capacity = n;
-    for (int i = (int)n / 2 - 1; i >= 0; i--)
-        sift_down(h, (size_t)i);
+ free(h->data);
+ h->data = arr;
+ h->size = n;
+ h->capacity = n;
+ for (int i = (int)n / 2 - 1; i >= 0; i--)
+ sift_down(h, (size_t)i);
 }
 ```
 
@@ -224,24 +224,24 @@ void mh_build(MaxHeap* h, int* arr, size_t n) {
 
 ```c
 static void sift_down_range(int* arr, size_t n, size_t idx) {
-    while (1) {
-        size_t largest = idx;
-        size_t left = 2 * idx + 1, right = 2 * idx + 2;
-        if (left < n && arr[left] > arr[largest])   largest = left;
-        if (right < n && arr[right] > arr[largest]) largest = right;
-        if (largest == idx) break;
-        int t = arr[idx]; arr[idx] = arr[largest]; arr[largest] = t;
-        idx = largest;
-    }
+ while (1) {
+ size_t largest = idx;
+ size_t left = 2 * idx + 1, right = 2 * idx + 2;
+ if (left < n && arr[left] > arr[largest]) largest = left;
+ if (right < n && arr[right] > arr[largest]) largest = right;
+ if (largest == idx) break;
+ int t = arr[idx]; arr[idx] = arr[largest]; arr[largest] = t;
+ idx = largest;
+ }
 }
 
 void heap_sort(int* arr, size_t n) {
-    for (int i = (int)n / 2 - 1; i >= 0; i--)   // Floyd build-heap O(n)
-        sift_down_range(arr, n, (size_t)i);
-    for (size_t i = n - 1; i > 0; i--) {         // extract n times O(n log n)
-        int t = arr[0]; arr[0] = arr[i]; arr[i] = t;
-        sift_down_range(arr, i, 0);
-    }
+ for (int i = (int)n / 2 - 1; i >= 0; i--) // Floyd build-heap O(n)
+ sift_down_range(arr, n, (size_t)i);
+ for (size_t i = n - 1; i > 0; i--) { // extract n times O(n log n)
+ int t = arr[0]; arr[0] = arr[i]; arr[i] = t;
+ sift_down_range(arr, i, 0);
+ }
 }
 ```
 

@@ -12,10 +12,10 @@
 
 ### 连续存储 vs 节点存储
 
-| 类型   | 代表             | 内存布局      | 随机访问 | 中间插入/删除         |
+| 类型 | 代表 | 内存布局 | 随机访问 | 中间插入/删除 |
 | ---- | -------------- | --------- | ---- | --------------- |
-| 连续存储 | vector, array  | 元素连续排列    | O(1) | O(n)            |
-| 节点存储 | list, map, set | 节点散列，指针相连 | 不支持  | O(1) 或 O(log n) |
+| 连续存储 | vector, array | 元素连续排列 | O(1) | O(n) |
+| 节点存储 | list, map, set | 节点散列，指针相连 | 不支持 | O(1) 或 O(log n) |
 >注意：array不支持中间插入/删除，array是固定大小
  >map/set是有序关联容器，插入是按值排序，而不是简单的中间插入
  >>>有序关联容器内部是红黑树实现，元素按照键大小关系排序
@@ -50,29 +50,29 @@ CPU 缓存之上还有一层**虚拟内存**。进程看到的地址是虚拟地
 缺页中断不是"分配物理页"这一个动作，而是**硬件检测 + 陷入内核 + 处理 + 返回重试**的一整套机制：
 
 ```
-程序执行: int x = *p;        // p 是虚拟地址
-                  ↓
+程序执行: int x = *p; // p 是虚拟地址
+ ↓
 ① CPU 的 MMU（内存管理单元）查页表
-                  ↓
+ ↓
 ② 页表项标记为"不存在"（未分配物理页）
-                  ↓
+ ↓
 ③ MMU 触发硬件异常 → CPU 保存当前指令上下文
-                  ↓
+ ↓
 ④ CPU 切换到内核态 → 运行内核的缺页中断处理函数
-                  ↓
+ ↓
 ⑤ 内核判断: 这个虚拟地址合法吗？有权限吗？
-    ├─ 不合法 → SIGSEGV（段错误），杀进程
-    └─ 合法   → 继续
-                  ↓
+ ├─ 不合法 → SIGSEGV（段错误），杀进程
+ └─ 合法 → 继续
+ ↓
 ⑥ 内核从物理内存中找一个空闲页框（4KB）
-                  ↓
+ ↓
 ⑦ 内核在页表中添加映射: 虚拟页 → 物理页框
-                  ↓
+ ↓
 ⑧ 内核返回用户态，CPU 恢复上下文
-                  ↓
+ ↓
 ⑨ **重新执行那条指令** *p，这次 MMU 查到映射了
-                  ↓
-   成功读取数据
+ ↓
+ 成功读取数据
 ```
 
 类比：刷卡进地铁闸机
@@ -98,7 +98,7 @@ vector 扩容时，`realloc` 通过 `sbrk` 或 `mmap` 获取新内存：
 ### 迭代器原理
 
 迭代器是容器与算法之间的桥梁，抽象了"遍历元素"这一概念。本质上是智能指针。
-支持解引用( * )、自增(++)、比较( ==  !=  <  > )等操作
+支持解引用( * )、自增(++)、比较( == != < > )等操作
 
 随机访问迭代器（如 *vector, array,string*）基于指针算术原理：`it + n` 和 `it[n]`（it指针后移n位）来计算偏移量判断前后；额外支持< > >= <=关系比较运算符。
 双向迭代器（如 *list,set,map*）只支持 != 和 == 。因为内存不连续，比较大小（本质是比较地址前后）是低效的无意义操作
@@ -154,13 +154,13 @@ vector 内部维护三个指针：`_start`（起始）、`_finish`（已用末�
 
 ```mermaid
 flowchart TD
-    A["push_back 新元素"] --> B{"_finish == _end_of_storage?"}
-    B -->|否| C["直接写入 _finish 位置\n_finish++"]
-    B -->|是| D["分配 2 倍新容量内存"]
-    D --> E["将旧元素逐个拷贝到新内存"]
-    E --> F["释放旧内存"]
-    F --> G["更新 _start / _finish / _end_of_storage"]
-    G --> C
+ A["push_back 新元素"] --> B{"_finish == _end_of_storage?"}
+ B -->|否| C["直接写入 _finish 位置\n_finish++"]
+ B -->|是| D["分配 2 倍新容量内存"]
+ D --> E["将旧元素逐个拷贝到新内存"]
+ E --> F["释放旧内存"]
+ F --> G["更新 _start / _finish / _end_of_storage"]
+ G --> C
 ```
 
 单次扩容为 O(n)，但均摊后 push_back 仍为 O(1)。
@@ -174,9 +174,9 @@ flowchart TD
 每次扩容时拷贝的元素数 = 当前容量。总拷贝次数：
 ```
 总拷贝 = 1 + k + k² + ... + n/k
-       < n/k · (1 + 1/k + 1/k² + ...)   // 等比级数求和
-       = n/k · 1/(1 - 1/k)
-       = n/(k - 1)
+ < n/k · (1 + 1/k + 1/k² + ...) // 等比级数求和
+ = n/k · 1/(1 - 1/k)
+ = n/(k - 1)
 ```
 总 push_back 次数 ≈ n，所以每单次 push_back 均摊拷贝次数 ≈ 1/(k-1)，O(1)。
 
@@ -185,8 +185,8 @@ flowchart TD
 | 因子 | 均摊拷贝/次 | 最坏内存浪费 | 典型采用 |
 |:---:|:----------:|:----------:|:-------:|
 | 1.5 | ~2.0 | ~33% | GCC libstdc++ |
-| 2   | ~1.0 | ~50% | LLVM libc++, MSVC STL |
-| 3   | ~0.5 | ~66% | 极少使用 |
+| 2 | ~1.0 | ~50% | LLVM libc++, MSVC STL |
+| 3 | ~0.5 | ~66% | 极少使用 |
 
 - **k = 2**：拷贝次数最少（均摊 1 次/op），但最后一次扩容后最多浪费一半内存
 - **k = 1.5**：浪费更少（~33%），但扩容更频繁，拷贝总次数多一倍
@@ -229,20 +229,20 @@ flowchart TD
 CPU 读取对齐的地址（如 4 字节 int 在 4 的倍数地址上）能一次完成，未对齐的地址可能需要两次内存访问。因此编译器在结构体成员间插入 **padding（填充字节）** 保证自然对齐：
 
 ```c
-struct A {           // sizeof(struct A) = 8，而非 5
-    char a;          // 偏移 0，1 字节
-    // padding 3 字节 ← 让 int b 在 4 的倍数上
-    int  b;          // 偏移 4，4 字节
+struct A { // sizeof(struct A) = 8，而非 5
+ char a; // 偏移 0，1 字节
+ // padding 3 字节 ← 让 int b 在 4 的倍数上
+ int b; // 偏移 4，4 字节
 };
 
-struct B {           // sizeof(struct B) = 12，而非 8
-    char a;          // 偏移 0，1 字节
-    // padding 1 字节 ← 让 short c 在 2 的倍数上
-    short c;         // 偏移 2，2 字节
-    // padding 2 字节 ← 让 int b 在 4 的倍数上
-    int  b;          // 偏移 4，4 字节
-    char d;          // 偏移 8，1 字节
-    // padding 3 字节 ← struct 整体大小对齐到最大成员对齐值（4）
+struct B { // sizeof(struct B) = 12，而非 8
+ char a; // 偏移 0，1 字节
+ // padding 1 字节 ← 让 short c 在 2 的倍数上
+ short c; // 偏移 2，2 字节
+ // padding 2 字节 ← 让 int b 在 4 的倍数上
+ int b; // 偏移 4，4 字节
+ char d; // 偏移 8，1 字节
+ // padding 3 字节 ← struct 整体大小对齐到最大成员对齐值（4）
 };
 ```
 
@@ -265,55 +265,55 @@ struct B {           // sizeof(struct B) = 12，而非 8
 #include <string.h>
 
 typedef struct {
-    int* data;
-    size_t size;
-    size_t capacity;
-    //size是已用元素数，capacity是容量大小
+ int* data;
+ size_t size;
+ size_t capacity;
+ //size是已用元素数，capacity是容量大小
 } SimpleVector;
 
 void sv_init(SimpleVector* v) {
-    v->data = NULL;
-    v->size = 0;
-    v->capacity = 0;
+ v->data = NULL;
+ v->size = 0;
+ v->capacity = 0;
 }
 
 void sv_destroy(SimpleVector* v) {
-    free(v->data);  //free()函数来自stdlib.h,作用是释放之前由malloc,calloc,realloc分配的堆内存。
-    v->data = NULL;
-    v->size = 0;
-    v->capacity = 0;
+ free(v->data); //free()函数来自stdlib.h,作用是释放之前由malloc,calloc,realloc分配的堆内存。
+ v->data = NULL;
+ v->size = 0;
+ v->capacity = 0;
 }
 
 // 扩容：容量不足时翻倍
 int sv_expand(SimpleVector* v) {
-    size_t new_cap = v->capacity == 0 ? 1 : v->capacity * 2;
-    //void* realloc(void* ptr,size_t new_size)函数作用：在ptr指针原有内存上调整大小，如果能原地扩展就原地扩展，如果不能就分配新内存->拷贝就旧数据->释放旧内存
-    //void* malloc(size_t size)用于分配size字节上的堆内存，内容不初始化，保留垃圾值
-    //void* calloc(size_t n,size_t size)分配n*size字节，全部清零，多一个溢出保护，比malloc安全
-    int* new_data = realloc(v->data, new_cap * sizeof(int));
-    //这里已经包含了分配->拷贝->释放旧的全过程
-    //下面当realloc对data扩容失败的时候返回-1,扩容成功就进行指针赋值
-    if (!new_data) return -1;
-    v->data = new_data;
-    v->capacity = new_cap;
-    return 0;
+ size_t new_cap = v->capacity == 0 ? 1 : v->capacity * 2;
+ //void* realloc(void* ptr,size_t new_size)函数作用：在ptr指针原有内存上调整大小，如果能原地扩展就原地扩展，如果不能就分配新内存->拷贝就旧数据->释放旧内存
+ //void* malloc(size_t size)用于分配size字节上的堆内存，内容不初始化，保留垃圾值
+ //void* calloc(size_t n,size_t size)分配n*size字节，全部清零，多一个溢出保护，比malloc安全
+ int* new_data = realloc(v->data, new_cap * sizeof(int));
+ //这里已经包含了分配->拷贝->释放旧的全过程
+ //下面当realloc对data扩容失败的时候返回-1,扩容成功就进行指针赋值
+ if (!new_data) return -1;
+ v->data = new_data;
+ v->capacity = new_cap;
+ return 0;
 }
 
 int sv_push_back(SimpleVector* v, int value) {
-    if (v->size >= v->capacity)//这里是判断元素总量是否超量，如果超量或者用满则进行扩容，调用扩容函数，扩容失败则返回-1
-        if (sv_expand(v) != 0) return -1;
-    v->data[v->size++] = value; //扩容成功在data[size]位置写入value,然后size++。保证size是新的元素个数
-    return 0;
+ if (v->size >= v->capacity)//这里是判断元素总量是否超量，如果超量或者用满则进行扩容，调用扩容函数，扩容失败则返回-1
+ if (sv_expand(v) != 0) return -1;
+ v->data[v->size++] = value; //扩容成功在data[size]位置写入value,然后size++。保证size是新的元素个数
+ return 0;
 }
 
 void sv_pop_back(SimpleVector* v) {
-    if (v->size > 0) v->size--;//直接看这里是当满足元素数量大于零则删除尾部元素，其实没有清零，只是把size上限-1,让外部无法访问末位元素罢了，数据还在，下次push_back会覆盖
-    //假如说这里直接free清空，下次push_back会进行扩容产生额外开销，标准做法就是只减size,不清零内存，让数据被自然覆盖，这样均摊才会O(1)
+ if (v->size > 0) v->size--;//直接看这里是当满足元素数量大于零则删除尾部元素，其实没有清零，只是把size上限-1,让外部无法访问末位元素罢了，数据还在，下次push_back会覆盖
+ //假如说这里直接free清空，下次push_back会进行扩容产生额外开销，标准做法就是只减size,不清零内存，让数据被自然覆盖，这样均摊才会O(1)
 }
 
 int sv_at(SimpleVector* v, size_t index) {
-    return v->data[index];  // 调用者保证 index < size
-    //该函数用于返回索引为index的值
+ return v->data[index]; // 调用者保证 index < size
+ //该函数用于返回索引为index的值
 }
 
 size_t sv_size(SimpleVector* v) { return v->size; }
@@ -332,7 +332,7 @@ void sv_clear(SimpleVector* v) { v->size = 0; }
 
 **陷阱 1：不要直接赋值回原指针**
 ```c
-v->data = realloc(v->data, new_cap * sizeof(int));   // 危险！
+v->data = realloc(v->data, new_cap * sizeof(int)); // 危险！
 ```
 如果 `realloc` 返回 NULL（内存不足），原指针 `v->data` 已经丢失——既拿不到新内存，又丢失了旧数据的地址，数据全部泄漏。正确的做法是用临时变量接收返回值，判 NULL 后再赋值（即代码中 `sv_expand` 的写法）。
 
@@ -343,7 +343,7 @@ size_t new_cap = v->capacity == 0 ? 1 : v->capacity * 2;
 当 `v->capacity` 接近 `SIZE_MAX / 2` 时，`capacity * 2` 会回绕（wrap around）为一个很小的数，然后 `realloc` 失败。安全做法是先判溢出：
 
 ```c
-if (v->capacity > SIZE_MAX / 2) return -1;  // 无法再扩容
+if (v->capacity > SIZE_MAX / 2) return -1; // 无法再扩容
 size_t new_cap = v->capacity == 0 ? 1 : v->capacity * 2;
 ```
 
@@ -357,16 +357,16 @@ size_t new_cap = v->capacity == 0 ? 1 : v->capacity * 2;
 
 ```
 进程堆区
-    │
-    ├─ Arena（主 arena 用 sbrk，线程 arena 用 mmap）
-    │    │
-    │    ├─ Fast bins（小内存，LIFO，≤ 80B）
-    │    ├─ Small bins（中等内存，FIFO，≤ 1024B）
-    │    ├─ Unsorted bin（临时缓存）
-    │    ├─ Large bins（大内存）
-    │    └─ Top chunk（最后的"水龙头"）
-    │
-    └─ mmap（超大分配，> 128KB 走 mmap 映射匿名页）
+ │
+ ├─ Arena（主 arena 用 sbrk，线程 arena 用 mmap）
+ │ │
+ │ ├─ Fast bins（小内存，LIFO，≤ 80B）
+ │ ├─ Small bins（中等内存，FIFO，≤ 1024B）
+ │ ├─ Unsorted bin（临时缓存）
+ │ ├─ Large bins（大内存）
+ │ └─ Top chunk（最后的"水龙头"）
+ │
+ └─ mmap（超大分配，> 128KB 走 mmap 映射匿名页）
 ```
 
 #### 关键行为
@@ -374,8 +374,8 @@ size_t new_cap = v->capacity == 0 ? 1 : v->capacity * 2;
 1. **`malloc(n)`**：从对应 bin 中找空闲 chunk，找不到则从 top chunk 切，top chunk 不够则用 `sbrk` 或 `mmap` 向 OS 申请
 2. **`free(p)`**：不立即归还 OS！相邻空闲 chunk 合并，放入对应 bin 缓存以备复用
 3. **`realloc(ptr, new_size)`**：
-   - 原地可扩展 → 直接扩展 top chunk，返回原地址（免拷贝）
-   - 原地不可扩 → malloc 新内存 → memcpy 旧数据 → free 旧内存
+ - 原地可扩展 → 直接扩展 top chunk，返回原地址（免拷贝）
+ - 原地不可扩 → malloc 新内存 → memcpy 旧数据 → free 旧内存
 
 #### 这对容器意味着什么
 
@@ -433,39 +433,39 @@ C 标准库不提供任何通用容器，所有数据结构需手动实现，这
 ```c
 // 利用上一节实现的 SimpleVector 作为底层容器
 typedef struct {
-    SimpleVector* vec;  // 组合：持有底层容器的指针
+ SimpleVector* vec; // 组合：持有底层容器的指针
 } StackAdapter;
 
 void sa_init(StackAdapter* s, SimpleVector* v) {
-    s->vec = v;
+ s->vec = v;
 }
 
 void sa_destroy(StackAdapter* s) {
-    // 只释放栈对象本身，不释放底层容器
-    // 底层容器的生命周期由调用方管理
+ // 只释放栈对象本身，不释放底层容器
+ // 底层容器的生命周期由调用方管理
 }
 
 void sa_push(StackAdapter* s, int val) {
-    sv_push_back(s->vec, val);  // 委托：转发给 vector 的 push_back
+ sv_push_back(s->vec, val); // 委托：转发给 vector 的 push_back
 }
 
 int sa_pop(StackAdapter* s) {
-    // 限制：只暴露栈接口，隐藏 vector 的随机访问、任意位置插入等能力
-    int top = sv_at(s->vec, sv_size(s->vec) - 1);
-    sv_pop_back(s->vec);
-    return top;
+ // 限制：只暴露栈接口，隐藏 vector 的随机访问、任意位置插入等能力
+ int top = sv_at(s->vec, sv_size(s->vec) - 1);
+ sv_pop_back(s->vec);
+ return top;
 }
 
 int sa_top(StackAdapter* s) {
-    return sv_at(s->vec, sv_size(s->vec) - 1);
+ return sv_at(s->vec, sv_size(s->vec) - 1);
 }
 
 int sa_empty(StackAdapter* s) {
-    return sv_empty(s->vec);
+ return sv_empty(s->vec);
 }
 
 size_t sa_size(StackAdapter* s) {
-    return sv_size(s->vec);
+ return sv_size(s->vec);
 }
 ```
 

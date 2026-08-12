@@ -24,30 +24,30 @@ Chromium 的渲染内核 (Blink) 是浏览器将 HTML/CSS/JavaScript 转化为�
 ```
 mermaid
 graph TD
-    HTML["HTML 字节流"] --> Parser["HTML Parser<br/>增量解析"]
-    Parser --> DOM["DOM Tree"]
-    DOM --> |"preload scanner"| NET["网络资源加载<br/>CSS, JS, 图片, 字体"]
+ HTML["HTML 字节流"] --> Parser["HTML Parser<br/>增量解析"]
+ Parser --> DOM["DOM Tree"]
+ DOM --> |"preload scanner"| NET["网络资源加载<br/>CSS, JS, 图片, 字体"]
 
-    CSS["CSS 样式表"] --> CSSParser["CSS Parser"]
-    CSSParser --> CSSOM["CSSOM Tree"]
+ CSS["CSS 样式表"] --> CSSParser["CSS Parser"]
+ CSSParser --> CSSOM["CSSOM Tree"]
 
-    DOM --> Style["Style Engine<br/>选择器匹配 + 层叠"]
-    CSSOM --> Style
-    Style --> StyleTree["Computed Style<br/>(每个节点最终样式)"]
+ DOM --> Style["Style Engine<br/>选择器匹配 + 层叠"]
+ CSSOM --> Style
+ Style --> StyleTree["Computed Style<br/>(每个节点最终样式)"]
 
-    StyleTree --> Layout["Layout Engine<br/>几何计算: BFC, IFC"]
-    Layout --> LayoutTree["Layout Tree<br/>(每节点: x,y,w,h + LineBoxes)"]
+ StyleTree --> Layout["Layout Engine<br/>几何计算: BFC, IFC"]
+ Layout --> LayoutTree["Layout Tree<br/>(每节点: x,y,w,h + LineBoxes)"]
 
-    LayoutTree --> Paint["Paint<br/>将 Layout 转化为绘制指令"]
-    Paint --> DisplayList["Skia Display List<br/>(drawRect, drawText, drawImage...)"]
+ LayoutTree --> Paint["Paint<br/>将 Layout 转化为绘制指令"]
+ Paint --> DisplayList["Skia Display List<br/>(drawRect, drawText, drawImage...)"]
 
-    DisplayList --> Composite["Compositor<br/>图层合并"]
-    Composite --> GPU["GPU 合成<br/>GL/D3D/Vulkan"]
-    GPU --> Screen["屏幕像素"]
+ DisplayList --> Composite["Compositor<br/>图层合并"]
+ Composite --> GPU["GPU 合成<br/>GL/D3D/Vulkan"]
+ GPU --> Screen["屏幕像素"]
 
-    style Parser fill:#ff9,stroke:#333
-    style Layout fill:#9cf,stroke:#333
-    style Composite fill:#9f9,stroke:#333
+ style Parser fill:#ff9,stroke:#333
+ style Layout fill:#9cf,stroke:#333
+ style Composite fill:#9f9,stroke:#333
 ```
 
 ## Layout 引擎核心
@@ -55,28 +55,28 @@ graph TD
 ```c++
 // 简化版 Layout 流程
 void LayoutObject::Layout() {
-    // 1. 计算包含块宽度 (宽度自顶向下传递)
-    int available_width = containing_block->Width();
+ // 1. 计算包含块宽度 (宽度自顶向下传递)
+ int available_width = containing_block->Width();
 
-    // 2. 根据 Display 类型决定格式化上下文
-    if (IsBlockLevel()) {
-        LayoutBlock();    // BFC: 宽度填满父容器, 高度由内容撑开
-    } else if (IsInline()) {
-        LayoutInline();   // IFC: 横向流式排列, 自动换行
-    } else if (IsFlex()) {
-        LayoutFlex();     // 主轴/交叉轴弹性计算
-    } else if (IsGrid()) {
-        LayoutGrid();     // 网格布局
-    }
+ // 2. 根据 Display 类型决定格式化上下文
+ if (IsBlockLevel()) {
+ LayoutBlock(); // BFC: 宽度填满父容器, 高度由内容撑开
+ } else if (IsInline()) {
+ LayoutInline(); // IFC: 横向流式排列, 自动换行
+ } else if (IsFlex()) {
+ LayoutFlex(); // 主轴/交叉轴弹性计算
+ } else if (IsGrid()) {
+ LayoutGrid(); // 网格布局
+ }
 
-    // 3. 递归布局子节点
-    for (auto child : Children()) {
-        child->Layout();
-    }
+ // 3. 递归布局子节点
+ for (auto child : Children()) {
+ child->Layout();
+ }
 
-    // 4. 当子节点布局完毕, 父节点才能确定高度
-    //    (这就是为什么 CSS 百分比高度需要父元素有明确高度)
-    ComputeHeight();
+ // 4. 当子节点布局完毕, 父节点才能确定高度
+ // (这就是为什么 CSS 百分比高度需要父元素有明确高度)
+ ComputeHeight();
 }
 ```
 
@@ -84,25 +84,25 @@ void LayoutObject::Layout() {
 
 ```
 分层合成:
-    传统方式: 每帧重绘整个页面 → 性能瓶颈
-    分层合成: 将页面分为多个图层, 独立绘制, GPU 合成
+ 传统方式: 每帧重绘整个页面 → 性能瓶颈
+ 分层合成: 将页面分为多个图层, 独立绘制, GPU 合成
 
 图层提升条件:
-    1. 3D 变换 (transform: translateZ(0))
-    2. video / canvas 元素
-    3. 滚动区域 (overflow: scroll)
-    4. CSS will-change 属性
-    5. CSS 动画 (animation / transition) 作用于 transform/opacity
+ 1. 3D 变换 (transform: translateZ(0))
+ 2. video / canvas 元素
+ 3. 滚动区域 (overflow: scroll)
+ 4. CSS will-change 属性
+ 5. CSS 动画 (animation / transition) 作用于 transform/opacity
 
 合成线程 (Impl Thread):
-    主线程: JS → Style → Layout → Paint → Commit (给出绘制指令)
-    合成线程: 接收 Commit → 栅格化图层 → 合成 → Display
-    关键: 合成线程可以处理滚动和 transform 动画,
-          即使主线程被 JS 阻塞, 页面仍然可以平滑滚动!
+ 主线程: JS → Style → Layout → Paint → Commit (给出绘制指令)
+ 合成线程: 接收 Commit → 栅格化图层 → 合成 → Display
+ 关键: 合成线程可以处理滚动和 transform 动画,
+ 即使主线程被 JS 阻塞, 页面仍然可以平滑滚动!
 
 GPU 命令:
-    每帧给 GPU 的指令本质上是:
-        对每层: 绑定纹理 → 设置变换矩阵 → 设置混合模式 → 绘制四边形
+ 每帧给 GPU 的指令本质上是:
+ 对每层: 绑定纹理 → 设置变换矩阵 → 设置混合模式 → 绘制四边形
 ```
 ---
 

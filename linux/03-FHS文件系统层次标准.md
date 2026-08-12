@@ -18,8 +18,8 @@
 # 查看你的系统根目录
 ls /
 # 典型输出：
-# bin   dev  home  lib64       media  opt   root  sbin  sys  usr
-# boot  etc  lib   lost+found  mnt    proc  run   srv   tmp  var
+# bin dev home lib64 media opt root sbin sys usr
+# boot etc lib lost+found mnt proc run srv tmp var
 ```
 
 ---
@@ -30,26 +30,26 @@ ls /
 
 ```mermaid
 graph TD
-    /["/ (根目录)"] --> bin["/bin"]
-    / --> boot["/boot"]
-    / --> dev["/dev"]
-    / --> etc["/etc"]
-    / --> home["/home"]
-    / --> lib["/lib"]
-    / --> media["/media"]
-    / --> mnt["/mnt"]
-    / --> opt["/opt"]
-    / --> proc["/proc"]
-    / --> root_dir["/root"]
-    / --> run["/run"]
-    / --> sbin["/sbin"]
-    / --> srv["/srv"]
-    / --> sys["/sys"]
-    / --> tmp["/tmp"]
-    / --> usr["/usr"]
-    / --> var["/var"]
+ /["/ (根目录)"] --> bin["/bin"]
+ / --> boot["/boot"]
+ / --> dev["/dev"]
+ / --> etc["/etc"]
+ / --> home["/home"]
+ / --> lib["/lib"]
+ / --> media["/media"]
+ / --> mnt["/mnt"]
+ / --> opt["/opt"]
+ / --> proc["/proc"]
+ / --> root_dir["/root"]
+ / --> run["/run"]
+ / --> sbin["/sbin"]
+ / --> srv["/srv"]
+ / --> sys["/sys"]
+ / --> tmp["/tmp"]
+ / --> usr["/usr"]
+ / --> var["/var"]
 
-    style / fill:#e8f5e9,stroke:#4caf50,stroke-width:3px
+ style / fill:#e8f5e9,stroke:#4caf50,stroke-width:3px
 ```
 
 ---
@@ -73,9 +73,9 @@ ls /bin
 
 ```bash
 ls /boot
-# vmlinuz-linux        ← 内核镜像（压缩的 Linux 内核）
-# initramfs-linux.img  ← 初始 RAM 文件系统（initramfs）
-# grub/                ← GRUB 引导加载程序配置
+# vmlinuz-linux ← 内核镜像（压缩的 Linux 内核）
+# initramfs-linux.img ← 初始 RAM 文件系统（initramfs）
+# grub/ ← GRUB 引导加载程序配置
 ```
 
 | 文件 | 说明 |
@@ -104,9 +104,9 @@ Linux "一切皆文件" 哲学最直接的体现。`/dev` 中的每个条目代�
 
 ```bash
 # 常用设备操作
-lsblk                # 查看块设备（比直接看 /dev 更清晰）
-echo "test" > /dev/null   # 输出到黑洞（丢弃）
-dd if=/dev/zero of=test.bin bs=1M count=100    # 生成 100MB 的空文件
+lsblk # 查看块设备（比直接看 /dev 更清晰）
+echo "test" > /dev/null # 输出到黑洞（丢弃）
+dd if=/dev/zero of=test.bin bs=1M count=100 # 生成 100MB 的空文件
 ```
 
 ### 3.3.4 `/etc` — 配置文件
@@ -116,19 +116,19 @@ dd if=/dev/zero of=test.bin bs=1M count=100    # 生成 100MB 的空文件
 ```bash
 ls /etc
 # 常见文件和目录：
-# passwd      ← 用户账户信息
-# shadow      ← 加密后的密码（仅 root 可读）
-# group       ← 用户组信息
-# fstab       ← 文件系统挂载表
-# hosts       ← 主机名到 IP 的静态映射
+# passwd ← 用户账户信息
+# shadow ← 加密后的密码（仅 root 可读）
+# group ← 用户组信息
+# fstab ← 文件系统挂载表
+# hosts ← 主机名到 IP 的静态映射
 # resolv.conf ← DNS 解析配置
-# sudoers     ← sudo 权限配置
-# ssh/        ← SSH 服务配置
-# systemd/    ← systemd 配置
-# nginx/      ← Nginx Web 服务器配置
-# apt/        ← Debian 系列包管理器配置
-# dnf/        ← Fedora 系列包管理器配置
-# pacman.d/   ← Arch Linux 包管理器配置
+# sudoers ← sudo 权限配置
+# ssh/ ← SSH 服务配置
+# systemd/ ← systemd 配置
+# nginx/ ← Nginx Web 服务器配置
+# apt/ ← Debian 系列包管理器配置
+# dnf/ ← Fedora 系列包管理器配置
+# pacman.d/ ← Arch Linux 包管理器配置
 ```
 
 `/etc` 的名字源自 "et cetera"（以及其他），历史上一度是所有杂项配置的堆放地，如今已演进为统一的配置目录。
@@ -139,20 +139,20 @@ ls /etc
 
 ```
 /home/
-├── alice/           ← Alice 的主目录
-│   ├── Documents/
-│   ├── Downloads/
-│   ├── .bashrc      ← Bash 个人配置
-│   ├── .config/     ← 用户级应用配置
-│   └── .ssh/        ← SSH 密钥和配置
-├── bob/             ← Bob 的主目录
-│   └── ...
+├── alice/ ← Alice 的主目录
+│ ├── Documents/
+│ ├── Downloads/
+│ ├── .bashrc ← Bash 个人配置
+│ ├── .config/ ← 用户级应用配置
+│ └── .ssh/ ← SSH 密钥和配置
+├── bob/ ← Bob 的主目录
+│ └── ...
 ```
 
 ```bash
-echo $HOME           # 当前用户的主目录路径
-cd ~                 # 快速回到主目录
-ls ~/.config         # 查看应用个人配置
+echo $HOME # 当前用户的主目录路径
+cd ~ # 快速回到主目录
+ls ~/.config # 查看应用个人配置
 ```
 
 > 将 `/home` 放在独立分区是一种常见实践——重装系统时保留 `/home` 分区，所有个人数据不会丢失。
@@ -163,9 +163,9 @@ ls ~/.config         # 查看应用个人配置
 
 ```bash
 ls /lib
-# modules/      ← 内核模块（驱动）
-# firmware/     ← 硬件固件
-# systemd/      ← systemd 组件
+# modules/ ← 内核模块（驱动）
+# firmware/ ← 硬件固件
+# systemd/ ← systemd 组件
 ```
 
 在现代 Linux 中，`/lib` 通常也是 `/usr/lib` 的符号链接。
@@ -174,9 +174,9 @@ ls /lib
 # 查看程序的动态库依赖
 ldd /bin/ls
 # 典型输出：
-#   linux-vdso.so.1
-#   libcap.so.2 => /usr/lib/libcap.so.2
-#   libc.so.6 => /usr/lib/libc.so.6
+# linux-vdso.so.1
+# libcap.so.2 => /usr/lib/libcap.so.2
+# libc.so.6 => /usr/lib/libc.so.6
 ```
 
 ### 3.3.7 `/media` 与 `/mnt` — 挂载点
@@ -188,9 +188,9 @@ ldd /bin/ls
 
 ```bash
 # 典型使用
-ls /media/$USER/     # 查看自动挂载的 U 盘
-sudo mount /dev/sdb1 /mnt   # 手动挂载到 /mnt
-sudo mount -t iso9660 image.iso /mnt   # 挂载 ISO 文件
+ls /media/$USER/ # 查看自动挂载的 U 盘
+sudo mount /dev/sdb1 /mnt # 手动挂载到 /mnt
+sudo mount -t iso9660 image.iso /mnt # 挂载 ISO 文件
 ```
 
 ### 3.3.8 `/opt` — 可选/第三方软件包
@@ -200,10 +200,10 @@ sudo mount -t iso9660 image.iso /mnt   # 挂载 ISO 文件
 ```
 /opt/
 ├── google/
-│   └── chrome/        ← Google Chrome
+│ └── chrome/ ← Google Chrome
 ├── jetbrains/
-│   └── idea/          ← IntelliJ IDEA
-└── virtualbox/        ← VirtualBox
+│ └── idea/ ← IntelliJ IDEA
+└── virtualbox/ ← VirtualBox
 ```
 
 > 区分：通过包管理器安装的软件放在 `/usr` 下；手动安装的独立第三方软件放在 `/opt` 下。
@@ -215,17 +215,17 @@ sudo mount -t iso9660 image.iso /mnt   # 挂载 ISO 文件
 ```bash
 ls /proc
 # 数字目录（如 1, 1234...）= 进程 PID 的信息目录
-# cpuinfo     = CPU 信息
-# meminfo     = 内存信息
-# version     = 内核版本
-# uptime      = 系统运行时间
-# mounts      = 挂载信息
+# cpuinfo = CPU 信息
+# meminfo = 内存信息
+# version = 内核版本
+# uptime = 系统运行时间
+# mounts = 挂载信息
 
 # 常用操作
-cat /proc/cpuinfo | grep "model name"   # 查看 CPU 型号
-cat /proc/meminfo | grep MemTotal         # 查看总内存
-cat /proc/version                         # 查看内核版本
-cat /proc/uptime                          # 查看运行时间（秒）
+cat /proc/cpuinfo | grep "model name" # 查看 CPU 型号
+cat /proc/meminfo | grep MemTotal # 查看总内存
+cat /proc/version # 查看内核版本
+cat /proc/uptime # 查看运行时间（秒）
 ```
 
 `/proc/sys/` 子目录下的文件可以**读写**，用于动态调整内核参数。详见 [[48-BPF与系统追踪]] 中关于 sysctl 的内容。
@@ -247,10 +247,10 @@ ls /root
 
 ```bash
 ls /run
-# user/        ← 用户运行时目录（uid）
-# lock/        ← 锁文件
-# systemd/     ← systemd 通信 socket
-# log/         ← 运行时日志
+# user/ ← 用户运行时目录（uid）
+# lock/ ← 锁文件
+# systemd/ ← systemd 通信 socket
+# log/ ← 运行时日志
 # 各种 .pid 文件 ← 守护进程的 PID 文件
 ```
 
@@ -273,9 +273,9 @@ ls /sbin
 
 ```
 /srv/
-├── http/         ← Web 服务器的数据
-├── ftp/          ← FTP 服务器的数据
-└── git/          ← Git 仓库
+├── http/ ← Web 服务器的数据
+├── ftp/ ← FTP 服务器的数据
+└── git/ ← Git 仓库
 ```
 
 > 并非所有发行版都遵循这个规范。Apache 默认使用 `/var/www/html` 而非 `/srv/http`。
@@ -286,13 +286,13 @@ ls /sbin
 
 ```bash
 ls /sys
-# block/     ← 块设备
-# bus/       ← 总线类型（PCI, USB...）
-# class/     ← 设备类别
-# dev/       ← 设备节点
-# devices/   ← 所有设备的层次结构
-# firmware/  ← 固件属性
-# power/     ← 电源管理
+# block/ ← 块设备
+# bus/ ← 总线类型（PCI, USB...）
+# class/ ← 设备类别
+# dev/ ← 设备节点
+# devices/ ← 所有设备的层次结构
+# firmware/ ← 固件属性
+# power/ ← 电源管理
 ```
 
 ```bash
@@ -312,7 +312,7 @@ cat /sys/class/power_supply/BAT0/capacity
 mktemp /tmp/myapp.XXXXXX
 
 # 某些发行版将 /tmp 挂载为 tmpfs（内存文件系统），重启即清空
-df -h /tmp | grep tmpfs  # 检查是否是 tmpfs
+df -h /tmp | grep tmpfs # 检查是否是 tmpfs
 ```
 
 ### 3.3.16 `/usr` — 共享只读数据
@@ -331,22 +331,22 @@ df -h /tmp | grep tmpfs  # 检查是否是 tmpfs
 
 ```bash
 ls /usr/share
-# applications/  ← .desktop 启动器文件
-# man/           ← manual 手册页
-# doc/           ← 文档
-# icons/         ← 图标主题
-# locale/        ← 语言/地区本地化数据
+# applications/ ← .desktop 启动器文件
+# man/ ← manual 手册页
+# doc/ ← 文档
+# icons/ ← 图标主题
+# locale/ ← 语言/地区本地化数据
 ```
 
 `/usr/local` 的层次结构：
 
 ```
 /usr/local/
-├── bin/         ← 本地编译的可执行文件
-├── etc/         ← 本地编译软件的配置
-├── lib/         ← 本地编译的库
-├── share/       ← 本地编译的架构无关数据
-└── src/         ← 本地存放的源代码
+├── bin/ ← 本地编译的可执行文件
+├── etc/ ← 本地编译软件的配置
+├── lib/ ← 本地编译的库
+├── share/ ← 本地编译的架构无关数据
+└── src/ ← 本地存放的源代码
 ```
 
 ### 3.3.17 `/var` — 可变数据
@@ -368,9 +368,9 @@ ls /var/log
 # nginx/access.log, nginx/error.log
 
 # 查看包管理器数据库
-ls /var/lib/pacman/       # Arch Linux
-ls /var/lib/dpkg/         # Debian 系列
-ls /var/lib/rpm/          # RHEL/Fedora 系列
+ls /var/lib/pacman/ # Arch Linux
+ls /var/lib/dpkg/ # Debian 系列
+ls /var/lib/rpm/ # RHEL/Fedora 系列
 ```
 
 ---
@@ -407,9 +407,9 @@ ls /var/lib/rpm/          # RHEL/Fedora 系列
 **传统布局（FHS 2.x）：**
 
 ```
-/bin/    ← 基本命令（启动可用）
-/sbin/   ← 系统管理命令（启动可用）
-/lib/    ← 基本库（启动可用）
+/bin/ ← 基本命令（启动可用）
+/sbin/ ← 系统管理命令（启动可用）
+/lib/ ← 基本库（启动可用）
 /usr/bin/ ← 扩展用户命令
 /usr/sbin/ ← 扩展系统命令
 /usr/lib/ ← 扩展库
@@ -418,9 +418,9 @@ ls /var/lib/rpm/          # RHEL/Fedora 系列
 **/usr Merge（FHS 3.0）：**
 
 ```
-/usr/bin/   ← 所有命令（/bin → /usr/bin 符号链接）
-/usr/sbin/  ← 所有系统命令（/sbin → /usr/sbin 符号链接）
-/usr/lib/   ← 所有库（/lib → /usr/lib 符号链接）
+/usr/bin/ ← 所有命令（/bin → /usr/bin 符号链接）
+/usr/sbin/ ← 所有系统命令（/sbin → /usr/sbin 符号链接）
+/usr/lib/ ← 所有库（/lib → /usr/lib 符号链接）
 ```
 
 ### 3.5.2 各发行版的支持情况
@@ -490,8 +490,8 @@ NixOS 的结构与 FHS 差异极大（参见 [[46-不可变系统]]）：
 ls -1 /
 
 # 以树状图形式显示目录（需要安装 tree）
-tree -L 1 /          # 只显示一层
-tree -L 2 /usr       # 显示 /usr 下两层
+tree -L 1 / # 只显示一层
+tree -L 2 /usr # 显示 /usr 下两层
 
 # 查看目录的磁盘占用（不递归）
 du -sh /* 2>/dev/null

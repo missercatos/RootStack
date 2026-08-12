@@ -23,12 +23,12 @@ HotSpot JVM 是 Java 平台的旗舰实现，用 C++ 编写。JVM 不仅仅是�
 
 ```
 Bootstrap ClassLoader (加载核心库)
-      ^                   rt.jar / modules 中的 java.lang.*, java.util.*
-      |
-Extension ClassLoader    (JDK 8 及之前, 加载 jre/lib/ext)
-      ^
-      |
-Application ClassLoader  (加载 classpath 中的用户类)
+ ^ rt.jar / modules 中的 java.lang.*, java.util.*
+ |
+Extension ClassLoader (JDK 8 及之前, 加载 jre/lib/ext)
+ ^
+ |
+Application ClassLoader (加载 classpath 中的用户类)
 ```
 
 双亲委派模型: 每个类加载器收到加载请求时，先委托给父加载器，父加载器找不到才自己加载。这保证了核心类不会被用户代码篡改。
@@ -37,16 +37,16 @@ Application ClassLoader  (加载 classpath 中的用户类)
 
 ```
 +------------------------+------------------------+------------------------+------------------------+
-|   Mark Word (64-bit)   |  Klass Pointer (32-bit  |  Instance Fields...    |  Padding               |
-|                        |  with compressed oops) |                        |  (to 8-byte alignment) |
+| Mark Word (64-bit) | Klass Pointer (32-bit | Instance Fields... | Padding |
+| | with compressed oops) | | (to 8-byte alignment) |
 +------------------------+------------------------+------------------------+------------------------+
-| bits [0:1] = lock flag                                                                    |
-|   01: unlocked / biased                                                                   |
-|   00: lightweight locked                                                                  |
-|   10: heavyweight locked                                                                  |
-|   11: GC mark                                                                             |
-| bits [25:31] = identity hashcode (on demand)                                              |
-| bits [32:62] = age (GC 分代年龄)                                                           |
+| bits [0:1] = lock flag |
+| 01: unlocked / biased |
+| 00: lightweight locked |
+| 10: heavyweight locked |
+| 11: GC mark |
+| bits [25:31] = identity hashcode (on demand) |
+| bits [32:62] = age (GC 分代年龄) |
 ```
 
 ## C1 → C2 分层编译
@@ -54,20 +54,20 @@ Application ClassLoader  (加载 classpath 中的用户类)
 ```
 mermaid
 graph TD
-    L0["Level 0: 解释执行<br/>纯字节码解释器"]
-    L1["Level 1: C1 无 profile<br/>简单 C1 编译, 无收集数据"]
-    L2["Level 2: C1 有限 profile<br/>快速编译, 收集部分类型数据"]
-    L3["Level 3: C1 完整 profile<br/>完整编译, 收集所有调用/分支数据"]
-    L4["Level 4: C2 编译<br/>基于 profile 的深度优化"]
+ L0["Level 0: 解释执行<br/>纯字节码解释器"]
+ L1["Level 1: C1 无 profile<br/>简单 C1 编译, 无收集数据"]
+ L2["Level 2: C1 有限 profile<br/>快速编译, 收集部分类型数据"]
+ L3["Level 3: C1 完整 profile<br/>完整编译, 收集所有调用/分支数据"]
+ L4["Level 4: C2 编译<br/>基于 profile 的深度优化"]
 
-    L0 --> L3
-    L0 --> L2
-    L2 --> L3
-    L3 --> L4
-    L4 --> L0
+ L0 --> L3
+ L0 --> L2
+ L2 --> L3
+ L3 --> L4
+ L4 --> L0
 
-    style L0 fill:#f9f,stroke:#333
-    style L4 fill:#9f9,stroke:#333
+ style L0 fill:#f9f,stroke:#333
+ style L4 fill:#9f9,stroke:#333
 ```
 
 ## G1GC 概览
@@ -84,15 +84,15 @@ graph TD
 
 ```
 Java (JavaVM)
-  |
-  |  System.loadLibrary("native")
-  |  native int compute(int a, int b);
-  |                      |
-  |    JNIEXPORT jint JNICALL Java_com_example_Main_compute
-  |    (JNIEnv *env, jobject obj, jint a, jint b) {
-  |        return a + b;
-  |    }
-  |
+ |
+ | System.loadLibrary("native")
+ | native int compute(int a, int b);
+ | |
+ | JNIEXPORT jint JNICALL Java_com_example_Main_compute
+ | (JNIEnv *env, jobject obj, jint a, jint b) {
+ | return a + b;
+ | }
+ |
 C/C++ (libnative.so / native.dll)
 ```
 

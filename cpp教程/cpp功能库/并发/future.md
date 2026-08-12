@@ -27,99 +27,99 @@ title: "C++ 功能库 — future"
 
 ```
 FUNCTION demo_async:
-    fut = ASYNC(LAMBDA:
-        THIS_THREAD::SLEEP_FOR(2s)             // 模拟耗时
-        RETURN "结果"
-    )
+ fut = ASYNC(LAMBDA:
+ THIS_THREAD::SLEEP_FOR(2s) // 模拟耗时
+ RETURN "结果"
+ )
 
-    PRINT "主线程不阻塞，继续执行"
-    result = fut.GET()                          // 阻塞直到完成
-    PRINT result                                // "结果"
+ PRINT "主线程不阻塞，继续执行"
+ result = fut.GET() // 阻塞直到完成
+ PRINT result // "结果"
 ```
 
 ### launch 策略
 
 ```
 FUNCTION demo_launch:
-    // 强制新建线程执行
-    fut1 = ASYNC(LAUNCH::ASYNC, LAMBDA: RETURN 42)
+ // 强制新建线程执行
+ fut1 = ASYNC(LAUNCH::ASYNC, LAMBDA: RETURN 42)
 
-    // 延迟求值：get() 时才在当前线程执行（不创建线程）
-    fut2 = ASYNC(LAUNCH::DEFERRED, LAMBDA: RETURN heavy_compute())
+ // 延迟求值：get() 时才在当前线程执行（不创建线程）
+ fut2 = ASYNC(LAUNCH::DEFERRED, LAMBDA: RETURN heavy_compute())
 
-    // 默认策略（由实现决定）
-    fut3 = ASYNC(LAMBDA: RETURN 100)
+ // 默认策略（由实现决定）
+ fut3 = ASYNC(LAMBDA: RETURN 100)
 ```
 
 ### promise —— 手动传值
 
 ```
 FUNCTION demo_promise:
-    prom = PROMISE<INT>()
-    fut = prom.GET_FUTURE()
+ prom = PROMISE<INT>()
+ fut = prom.GET_FUTURE()
 
-    worker = THREAD(LAMBDA(p = MOVE(prom)):
-        result = COMPUTE()
-        p.SET_VALUE(result)                     // 向 future 传值
-        // 或者 p.SET_EXCEPTION(ex)              // 传异常
-    )
+ worker = THREAD(LAMBDA(p = MOVE(prom)):
+ result = COMPUTE()
+ p.SET_VALUE(result) // 向 future 传值
+ // 或者 p.SET_EXCEPTION(ex) // 传异常
+ )
 
-    TRY:
-        val = fut.GET()                         // 阻塞等待
-        PRINT val
-    CATCH ...:
-        PRINT "异步任务出错"
-    END TRY
-    worker.JOIN()
+ TRY:
+ val = fut.GET() // 阻塞等待
+ PRINT val
+ CATCH ...:
+ PRINT "异步任务出错"
+ END TRY
+ worker.JOIN()
 ```
 
 ### shared_future —— 多线程共享结果
 
 ```
 FUNCTION demo_shared_future:
-    prom = PROMISE<STRING>()
-    shared_fut = prom.GET_FUTURE().SHARE()
+ prom = PROMISE<STRING>()
+ shared_fut = prom.GET_FUTURE().SHARE()
 
-    FOR i = 1 TO 5:
-        THREAD(LAMBDA(sf = shared_fut):
-            PRINT "线程", i, "得到:", sf.GET()  // 每个线程都可以 get
-        ).DETACH()
-    END FOR
+ FOR i = 1 TO 5:
+ THREAD(LAMBDA(sf = shared_fut):
+ PRINT "线程", i, "得到:", sf.GET() // 每个线程都可以 get
+ ).DETACH()
+ END FOR
 
-    THIS_THREAD::SLEEP_FOR(100ms)
-    prom.SET_VALUE("广播消息")
-    THIS_THREAD::SLEEP_FOR(1s)                  // 等 detach 线程完成
+ THIS_THREAD::SLEEP_FOR(100ms)
+ prom.SET_VALUE("广播消息")
+ THIS_THREAD::SLEEP_FOR(1s) // 等 detach 线程完成
 ```
 
 ### 限时等待
 
 ```
 FUNCTION demo_timeout:
-    fut = ASYNC(LAMBDA:
-        THIS_THREAD::SLEEP_FOR(5s)
-        RETURN 42
-    )
+ fut = ASYNC(LAMBDA:
+ THIS_THREAD::SLEEP_FOR(5s)
+ RETURN 42
+ )
 
-    status = fut.WAIT_FOR(500ms)                 // 只等 500ms
-    IF status == READY THEN
-        PRINT "完成:", fut.GET()
-    ELSE
-        PRINT "超时，继续等待..."
-    END IF
+ status = fut.WAIT_FOR(500ms) // 只等 500ms
+ IF status == READY THEN
+ PRINT "完成:", fut.GET()
+ ELSE
+ PRINT "超时，继续等待..."
+ END IF
 ```
 
 ### packaged_task
 
 ```
 FUNCTION demo_packaged_task:
-    task = PACKAGED_TASK<INT(INT, INT)>(LAMBDA(a, b):
-        RETURN a + b
-    )
-    fut = task.GET_FUTURE()
+ task = PACKAGED_TASK<INT(INT, INT)>(LAMBDA(a, b):
+ RETURN a + b
+ )
+ fut = task.GET_FUTURE()
 
-    // 可以在任意线程中执行
-    task(3, 5)                                   // 执行任务
-    PRINT fut.GET()                              // 8
+ // 可以在任意线程中执行
+ task(3, 5) // 执行任务
+ PRINT fut.GET() // 8
 ```
 
 ---

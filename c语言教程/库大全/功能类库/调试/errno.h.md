@@ -19,10 +19,10 @@ extern int errno;
 ## 正确使用模式
 
 ```c
-errno = 0;                          // 手动清零
+errno = 0; // 手动清零
 long val = strtol(str, &endptr, 10);
-if (errno == ERANGE) {              // 仅在函数返回时检查
-    // 溢出
+if (errno == ERANGE) { // 仅在函数返回时检查
+ // 溢出
 }
 ```
 

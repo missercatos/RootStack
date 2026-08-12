@@ -3,34 +3,34 @@
 
 ```mermaid
 flowchart TD
-    subgraph Internet[互联网]
-        ATK[攻击者]
-    end
+ subgraph Internet[互联网]
+ ATK[攻击者]
+ end
 
-    subgraph VPS[VPS 服务器]
-        subgraph NginxLayer[Nginx 反向代理]
-            NG80[端口 80]
-            NG443[端口 443]
-        end
+ subgraph VPS[VPS 服务器]
+ subgraph NginxLayer[Nginx 反向代理]
+ NG80[端口 80]
+ NG443[端口 443]
+ end
 
-        subgraph FW[防火墙 - ufw]
-            FW22[22 SSH]
-            FW80[80 HTTP]
-            FW443[443 HTTPS]
-        end
+ subgraph FW[防火墙 - ufw]
+ FW22[22 SSH]
+ FW80[80 HTTP]
+ FW443[443 HTTPS]
+ end
 
-        subgraph Container[Docker 容器]
-            AstrBot
-            NapCat
-        end
+ subgraph Container[Docker 容器]
+ AstrBot
+ NapCat
+ end
 
-        AstrBot --> Config[cmd_config.json<br>API Keys / Secrets]
-        NapCat --> QQData[QQ 登录缓存<br>会话凭证]
-    end
+ AstrBot --> Config[cmd_config.json<br>API Keys / Secrets]
+ NapCat --> QQData[QQ 登录缓存<br>会话凭证]
+ end
 
-    ATK -.->|扫描| NG443
-    ATK -.->|爆破| AstrBot
-    ATK -.->|弱Token| NapCat
+ ATK -.->|扫描| NG443
+ ATK -.->|爆破| AstrBot
+ ATK -.->|弱Token| NapCat
 ```
 
 
@@ -44,11 +44,11 @@ AstrBot 首次安装的默认密码为 `astrbot` / `astrbot`，必须立即修�
 
 ```json
 {
-  "dashboard": {
-    "username": "your-admin-user",
-    "password": "md5_hashed_password",
-    "password_change_required": true
-  }
+ "dashboard": {
+ "username": "your-admin-user",
+ "password": "md5_hashed_password",
+ "password_change_required": true
+ }
 }
 ```
 
@@ -60,9 +60,9 @@ AstrBot 支持 TOTP（基于时间的一次性密码），在 WebUI -> 设置中
 
 ```json
 {
-  "admins_id": ["仅你的QQ号"],
-  "enable_id_white_list": true,
-  "id_whitelist": ["仅允许的QQ号群组"]
+ "admins_id": ["仅你的QQ号"],
+ "enable_id_white_list": true,
+ "id_whitelist": ["仅允许的QQ号群组"]
 }
 ```
 
@@ -70,22 +70,22 @@ AstrBot 支持 TOTP（基于时间的一次性密码），在 WebUI -> 设置中
 
 ```json
 {
-  "platform_settings": {
-    "enable_id_white_list": true,
-    "wl_ignore_admin_on_group": true,
-    "wl_ignore_admin_on_friend": true
-  },
-  "provider_settings": {
-    "llm_safety_mode": true,
-    "safety_mode_strategy": "system_prompt"
-  },
-  "content_safety": {
-    "also_use_in_response": true,
-    "internal_keywords": {
-      "enable": true,
-      "extra_keywords": ["敏感词列表"]
-    }
-  }
+ "platform_settings": {
+ "enable_id_white_list": true,
+ "wl_ignore_admin_on_group": true,
+ "wl_ignore_admin_on_friend": true
+ },
+ "provider_settings": {
+ "llm_safety_mode": true,
+ "safety_mode_strategy": "system_prompt"
+ },
+ "content_safety": {
+ "also_use_in_response": true,
+ "internal_keywords": {
+ "enable": true,
+ "extra_keywords": ["敏感词列表"]
+ }
+ }
 }
 ```
 
@@ -108,31 +108,31 @@ chown root:root /root/astrbot/data/cmd_config.json
 
 ```nginx
 server {
-    listen 443 ssl;
-    server_name bot.yourdomain.com;
+ listen 443 ssl;
+ server_name bot.yourdomain.com;
 
-    # SSL 配置
-    ssl_certificate /path/to/fullchain.cer;
-    ssl_certificate_key /path/to/private.key;
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers HIGH:!aNULL:!MD5;
+ # SSL 配置
+ ssl_certificate /path/to/fullchain.cer;
+ ssl_certificate_key /path/to/private.key;
+ ssl_protocols TLSv1.2 TLSv1.3;
+ ssl_ciphers HIGH:!aNULL:!MD5;
 
-    # 安全头
-    add_header X-Content-Type-Options "nosniff" always;
-    add_header X-Frame-Options "DENY" always;
-    add_header X-XSS-Protection "1; mode=block" always;
-    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+ # 安全头
+ add_header X-Content-Type-Options "nosniff" always;
+ add_header X-Frame-Options "DENY" always;
+ add_header X-XSS-Protection "1; mode=block" always;
+ add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
-    # 隐藏 Nginx 版本
-    server_tokens off;
+ # 隐藏 Nginx 版本
+ server_tokens off;
 
-    # 请求大小限制（防止大 payload 攻击）
-    client_max_body_size 10M;
+ # 请求大小限制（防止大 payload 攻击）
+ client_max_body_size 10M;
 
-    location / {
-        proxy_pass http://127.0.0.1:6185;
-        # ... 其他配置
-    }
+ location / {
+ proxy_pass http://127.0.0.1:6185;
+ # ... 其他配置
+ }
 }
 ```
 
@@ -140,9 +140,9 @@ server {
 
 ```nginx
 server {
-    listen 443 ssl;
-    server_name _;  # 未匹配的域名
-    return 444;     # 直接断开连接，不响应
+ listen 443 ssl;
+ server_name _; # 未匹配的域名
+ return 444; # 直接断开连接，不响应
 }
 ```
 
@@ -154,8 +154,8 @@ limit_req_zone $binary_remote_addr zone=login:10m rate=5r/m;
 
 # 在 location 中应用
 location /login {
-    limit_req zone=login burst=2 nodelay;
-    proxy_pass http://127.0.0.1:6185;
+ limit_req zone=login burst=2 nodelay;
+ proxy_pass http://127.0.0.1:6185;
 }
 ```
 
@@ -164,8 +164,8 @@ location /login {
 ```nginx
 # 自定义日志格式
 log_format security '$remote_addr - $remote_user [$time_local] '
-                   '"$request" $status $body_bytes_sent '
-                   '"$http_referer" "$http_user_agent"';
+ '"$request" $status $body_bytes_sent '
+ '"$http_referer" "$http_user_agent"';
 
 # 启用访问日志
 access_log /var/log/nginx/bot_access.log security;
@@ -176,16 +176,16 @@ access_log /var/log/nginx/bot_access.log security;
 ```bash
 cat > /etc/logrotate.d/nginx-bot << 'EOF'
 /var/log/nginx/bot_*.log {
-    daily
-    rotate 30
-    compress
-    delaycompress
-    missingok
-    notifempty
-    sharedscripts
-    postrotate
-        systemctl reload nginx
-    endscript
+ daily
+ rotate 30
+ compress
+ delaycompress
+ missingok
+ notifempty
+ sharedscripts
+ postrotate
+ systemctl reload nginx
+ endscript
 }
 EOF
 ```
@@ -211,14 +211,14 @@ dpkg-reconfigure --priority=low unattended-upgrades
 # 检查失败的 SSH 登录
 FAILED_SSH=$(grep "Failed password" /var/log/auth.log | wc -l)
 if [ $FAILED_SSH -gt 10 ]; then
-    echo "警告: 检测到 $FAILED_SSH 次失败的 SSH 登录" | mail -s "安全告警" your@email.com
+ echo "警告: 检测到 $FAILED_SSH 次失败的 SSH 登录" | mail -s "安全告警" your@email.com
 fi
 
 # 检查 Docker 容器状态
 for container in napcat astrbot; do
-    if ! docker ps --format '{{.Names}}' | grep -q $container; then
-        echo "警告: 容器 $container 未运行" | mail -s "服务告警" your@email.com
-    fi
+ if ! docker ps --format '{{.Names}}' | grep -q $container; then
+ echo "警告: 容器 $container 未运行" | mail -s "服务告警" your@email.com
+ fi
 done
 ```
 

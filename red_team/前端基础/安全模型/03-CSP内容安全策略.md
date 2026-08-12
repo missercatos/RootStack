@@ -34,10 +34,10 @@ Content-Security-Policy-Report-Only: default-src 'self'
 ### 基本指令结构
 
 ```
-指令名    值1     值2      值3
+指令名 值1 值2 值3
 script-src 'self' 'unsafe-inline' https://cdn.example.com
-           ↑       ↑                ↑
-         关键字    关键字           源表达式
+ ↑ ↑ ↑
+ 关键字 关键字 源表达式
 ```
 
 ## 二、CSP指令详解
@@ -79,17 +79,17 @@ script-src 'self' 'unsafe-inline' https://cdn.example.com
 
 | 表达式 | 含义 | 安全度 |
 |--------|------|:---:|
-| `*` | 任意源 | ✗ |
-| `'none'` | 不允许任何源 | ✓ |
-| `'self'` | 同源 | ✓ |
-| `'unsafe-inline'` | 允许内联脚本/样式 | ✗ |
-| `'unsafe-eval'` | 允许eval() | ✗ |
+| `*` | 任意源 | |
+| `'none'` | 不允许任何源 | |
+| `'self'` | 同源 | |
+| `'unsafe-inline'` | 允许内联脚本/样式 | |
+| `'unsafe-eval'` | 允许eval() | |
 | `'unsafe-hashes'` | 允许hash匹配的内联 | △ |
 | `'strict-dynamic'` | 信任已允许脚本动态创建的脚本 | △ |
-| `https:` | 任意HTTPS源 | ✗ |
-| `data:` | data: URI | ✗ |
+| `https:` | 任意HTTPS源 | |
+| `data:` | data: URI | |
 | `blob:` | blob: URI | △ |
-| `https://cdn.com` | 指定主机 | ✓ |
+| `https://cdn.com` | 指定主机 | |
 | `https://*.example.com` | 通配符子域 | △ |
 
 ## 三、nonce与hash机制
@@ -102,12 +102,12 @@ Content-Security-Policy: script-src 'nonce-rAnd0m123'
 
 <!-- 合法脚本 -->
 <script nonce="rAnd0m123">
-  console.log('This script is allowed');
+ console.log('This script is allowed');
 </script>
 
 <!-- 攻击者注入的脚本（无正确nonce）→ 被阻止 -->
 <script>
-  alert('XSS blocked by CSP!');
+ alert('XSS blocked by CSP!');
 </script>
 ```
 
@@ -133,10 +133,10 @@ Content-Security-Policy: script-src 'strict-dynamic' 'nonce-abc123'
 
 <!-- strict-dynamic会信任nonce允许的脚本所创建的脚本 -->
 <script nonce="abc123">
-  // 这个脚本可以动态创建其他script标签
-  var s = document.createElement('script');
-  s.src = 'https://cdn.com/helper.js';  // ← 会被允许！
-  document.body.appendChild(s);
+ // 这个脚本可以动态创建其他script标签
+ var s = document.createElement('script');
+ s.src = 'https://cdn.com/helper.js'; // ← 会被允许！
+ document.body.appendChild(s);
 </script>
 
 <!-- 优势：不需要列出所有CDN -->
@@ -152,14 +152,14 @@ Content-Security-Policy: default-src 'self'; report-uri /csp-report
 
 # 当违反CSP时，浏览器发送POST到 /csp-report：
 {
-  "csp-report": {
-    "document-uri": "https://example.com/page",
-    "violated-directive": "script-src 'self'",
-    "blocked-uri": "https://evil.com/exploit.js",
-    "original-policy": "default-src 'self'; ...",
-    "source-file": "https://example.com/page",
-    "line-number": 45
-  }
+ "csp-report": {
+ "document-uri": "https://example.com/page",
+ "violated-directive": "script-src 'self'",
+ "blocked-uri": "https://evil.com/exploit.js",
+ "original-policy": "default-src 'self'; ...",
+ "source-file": "https://example.com/page",
+ "line-number": 45
+ }
 }
 ```
 
@@ -201,7 +201,7 @@ Content-Security-Policy: default-src 'self'; report-uri /csp-report
 <!-- 如果目标网站加载了AngularJS（通过允许的CDN） -->
 <!-- CSP: script-src 'self' cdnjs.cloudflare.com -->
 <div ng-app ng-csp>
-  {{constructor.constructor('alert(1)')()}}
+ {{constructor.constructor('alert(1)')()}}
 </div>
 <!-- AngularJS在页面上解析{{}}表达式 → 执行alert(1) -->
 <!-- 绕过CSP！因为AngularJS本身是合法加载的 -->
@@ -261,7 +261,7 @@ Step 2: 加载AngularJS
 
 Step 3: CSTI Payload
 <div ng-app>
-  {{constructor.constructor('alert(1)')()}}
+ {{constructor.constructor('alert(1)')()}}
 </div>
 → Angular解析模板 → 执行JS → 绕过CSP！
 ```
@@ -322,14 +322,14 @@ Payload:
 ├─ script-src 'unsafe-inline' → 直接XSS！
 ├─ script-src 'unsafe-eval' → eval()注入
 ├─ script-src 'self' →
-│   ├─ 有JSONP端点 → JSONP回调注入
-│   ├─ 有AngularJS → ng-app CSTI
-│   ├─ 有文件上传 → 上传JS文件 + 同源加载
-│   └─ 无以上 → 尝试CDN资源利用
+│ ├─ 有JSONP端点 → JSONP回调注入
+│ ├─ 有AngularJS → ng-app CSTI
+│ ├─ 有文件上传 → 上传JS文件 + 同源加载
+│ └─ 无以上 → 尝试CDN资源利用
 ├─ script-src 'nonce-xxx' →
-│   ├─ DOM XSS？→ nonce不保护动态插入
-│   ├─ dangling markup？→ 窃取nonce
-│   └─ 原型链污染劫持nonce生成？
+│ ├─ DOM XSS？→ nonce不保护动态插入
+│ ├─ dangling markup？→ 窃取nonce
+│ └─ 原型链污染劫持nonce生成？
 ├─ 缺少object-src → <object>注入
 ├─ 缺少base-uri → <base>劫持
 └─ 顽固CSP → CSS注入、其他侧信道

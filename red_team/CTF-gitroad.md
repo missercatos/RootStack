@@ -97,14 +97,14 @@ VulnHub 提供的是完整的虚拟机镜像——你无法"重置单个漏洞"�
 
 | 序号 | 靶机名称 | 核心技能 | 难度 | 预计耗时 |
 |:---:|----------|----------|:---:|:---:|
-| 1 | **Kioptrix Level 1** | 基础侦察 → Samba漏洞利用 → 手动编译EXP |  | 2-4h |
-| 2 | **FristiLeaks** | Web信息泄露 → 图片马 → Base64编码绕过 → 内核提权 |  | 3-5h |
-| 3 | **Mr-Robot** | 多层渗透 → WordPress → 字典爆破 → SUID/nmap提权（致敬美剧《黑客军团》） |  | 4-6h |
-| 4 | **DC-1** | Drupal CMS利用（Drupalgeddon）、Hydra爆破、SUID find提权 |  | 4-6h |
-| 5 | **Brainpan** | Windows缓冲区溢出入门 → 逆向分析 → 手工构造Shellcode |  | 6-10h |
-| 6 | **SickOS 1.1** | Squid代理配置 → 代理链 → 内网Web渗透 |  | 4-8h |
-| 7 | **DevRandom** | CTF风格综合靶机 → 多步骤信息收集 |  | 5-8h |
-| 8 | **Tr0ll 系列（1-3）** | 极度强调枚举能力 → 不是难，是"藏得深" |  | 3-6h/台 |
+| 1 | **Kioptrix Level 1** | 基础侦察 → Samba漏洞利用 → 手动编译EXP | | 2-4h |
+| 2 | **FristiLeaks** | Web信息泄露 → 图片马 → Base64编码绕过 → 内核提权 | | 3-5h |
+| 3 | **Mr-Robot** | 多层渗透 → WordPress → 字典爆破 → SUID/nmap提权（致敬美剧《黑客军团》） | | 4-6h |
+| 4 | **DC-1** | Drupal CMS利用（Drupalgeddon）、Hydra爆破、SUID find提权 | | 4-6h |
+| 5 | **Brainpan** | Windows缓冲区溢出入门 → 逆向分析 → 手工构造Shellcode | | 6-10h |
+| 6 | **SickOS 1.1** | Squid代理配置 → 代理链 → 内网Web渗透 | | 4-8h |
+| 7 | **DevRandom** | CTF风格综合靶机 → 多步骤信息收集 | | 5-8h |
+| 8 | **Tr0ll 系列（1-3）** | 极度强调枚举能力 → 不是难，是"藏得深" | | 3-6h/台 |
 
 ### 3.2 渗透方法论（务必养成习惯）
 

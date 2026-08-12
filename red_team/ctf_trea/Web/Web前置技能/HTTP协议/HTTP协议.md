@@ -14,13 +14,13 @@ HTTP（HyperText Transfer Protocol）是 Web 通信的基石。CTF 中大量题�
 
 ```mermaid
 sequenceDiagram
-    participant C as 客户端 (curl/Browser)
-    participant S as 服务器 (Apache/Nginx)
-    C->>S: 1. 建立 TCP 连接 (三次握手)
-    C->>S: 2. 发送 HTTP 请求 (请求行 + 头部 + 可选的请求体)
-    S->>C: 3. 返回 HTTP 响应 (状态行 + 头部 + 响应体)
-    Note over C,S: HTTP 是无状态协议，每个请求独立
-    C->>S: 4. 后续请求携带 Cookie 维持会话
+ participant C as 客户端 (curl/Browser)
+ participant S as 服务器 (Apache/Nginx)
+ C->>S: 1. 建立 TCP 连接 (三次握手)
+ C->>S: 2. 发送 HTTP 请求 (请求行 + 头部 + 可选的请求体)
+ S->>C: 3. 返回 HTTP 响应 (状态行 + 头部 + 响应体)
+ Note over C,S: HTTP 是无状态协议，每个请求独立
+ C->>S: 4. 后续请求携带 Cookie 维持会话
 ```
 
 ### 核心概念速查

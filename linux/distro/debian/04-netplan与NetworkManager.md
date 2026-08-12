@@ -29,19 +29,19 @@
 
 ```
 netplan（声明式配置层）
-  ├── 后端渲染器：NetworkManager
-  └── 后端渲染器：systemd-networkd
+ ├── 后端渲染器：NetworkManager
+ └── 后端渲染器：systemd-networkd
 
 NetworkManager（连接管理器）
-  ├── nmcli（命令行）
-  ├── nmtui（终端界面）
-  └── nm-connection-editor（GUI）
+ ├── nmcli（命令行）
+ ├── nmtui（终端界面）
+ └── nm-connection-editor（GUI）
 
 systemd-networkd（系统网络守护进程）
-  └── /etc/systemd/network/*.network 配置
+ └── /etc/systemd/network/*.network 配置
 
 ifupdown（传统，已逐步淘汰）
-  └── /etc/network/interfaces
+ └── /etc/network/interfaces
 ```
 
 ---
@@ -64,22 +64,22 @@ ls /etc/netplan/
 ```yaml
 # /etc/netplan/01-static.yaml
 network:
-  version: 2
-  renderer: networkd          # 或 NetworkManager
-  ethernets:
-    eth0:
-      dhcp4: no
-      addresses:
-        - 192.168.1.100/24
-      routes:
-        - to: default
-          via: 192.168.1.1
-      nameservers:
-        addresses:
-          - 8.8.8.8
-          - 1.1.1.1
-        search:
-          - example.com
+ version: 2
+ renderer: networkd # 或 NetworkManager
+ ethernets:
+ eth0:
+ dhcp4: no
+ addresses:
+ - 192.168.1.100/24
+ routes:
+ - to: default
+ via: 192.168.1.1
+ nameservers:
+ addresses:
+ - 8.8.8.8
+ - 1.1.1.1
+ search:
+ - example.com
 ```
 
 ### 3.3 DHCP 配置
@@ -87,15 +87,15 @@ network:
 ```yaml
 # /etc/netplan/01-dhcp.yaml
 network:
-  version: 2
-  renderer: networkd
-  ethernets:
-    eth0:
-      dhcp4: true
-      dhcp4-overrides:
-        use-dns: false        # 不覆盖 DNS（手动指定 DNS）
-        use-routes: true
-      dhcp6: false            # 禁用 IPv6 DHCP
+ version: 2
+ renderer: networkd
+ ethernets:
+ eth0:
+ dhcp4: true
+ dhcp4-overrides:
+ use-dns: false # 不覆盖 DNS（手动指定 DNS）
+ use-routes: true
+ dhcp6: false # 禁用 IPv6 DHCP
 ```
 
 ### 3.4 多网卡配置
@@ -103,22 +103,22 @@ network:
 ```yaml
 # /etc/netplan/02-multi-nic.yaml
 network:
-  version: 2
-  renderer: networkd
-  ethernets:
-    eth0:                     # 管理网络
-      dhcp4: true
-    eth1:                     # 存储网络（静态）
-      dhcp4: no
-      addresses:
-        - 10.0.0.10/24
-      routes:
-        - to: 10.0.0.0/24
-          via: 10.0.0.1
-    eth2:                     # 心跳网络（无网关）
-      dhcp4: no
-      addresses:
-        - 192.168.99.10/24
+ version: 2
+ renderer: networkd
+ ethernets:
+ eth0: # 管理网络
+ dhcp4: true
+ eth1: # 存储网络（静态）
+ dhcp4: no
+ addresses:
+ - 10.0.0.10/24
+ routes:
+ - to: 10.0.0.0/24
+ via: 10.0.0.1
+ eth2: # 心跳网络（无网关）
+ dhcp4: no
+ addresses:
+ - 192.168.99.10/24
 ```
 
 ### 3.5 Bonding（链路聚合）
@@ -126,35 +126,35 @@ network:
 ```yaml
 # /etc/netplan/03-bond.yaml
 network:
-  version: 2
-  renderer: networkd
-  ethernets:
-    eth0:
-      dhcp4: no
-    eth1:
-      dhcp4: no
-  bonds:
-    bond0:
-      dhcp4: no
-      addresses:
-        - 192.168.1.100/24
-      routes:
-        - to: default
-          via: 192.168.1.1
-      nameservers:
-        addresses: [8.8.8.8, 1.1.1.1]
-      interfaces:
-        - eth0
-        - eth1
-      parameters:
-        mode: 802.3ad             # LACP 模式
-        transmit-hash-policy: layer3+4
-        mii-monitor-interval: 100
-        lacp-rate: fast
-      # 其他常见模式：
-      # mode: active-backup       # 主备
-      # mode: balance-rr          # 轮询
-      # mode: balance-xor         # XOR 负载均衡
+ version: 2
+ renderer: networkd
+ ethernets:
+ eth0:
+ dhcp4: no
+ eth1:
+ dhcp4: no
+ bonds:
+ bond0:
+ dhcp4: no
+ addresses:
+ - 192.168.1.100/24
+ routes:
+ - to: default
+ via: 192.168.1.1
+ nameservers:
+ addresses: [8.8.8.8, 1.1.1.1]
+ interfaces:
+ - eth0
+ - eth1
+ parameters:
+ mode: 802.3ad # LACP 模式
+ transmit-hash-policy: layer3+4
+ mii-monitor-interval: 100
+ lacp-rate: fast
+ # 其他常见模式：
+ # mode: active-backup # 主备
+ # mode: balance-rr # 轮询
+ # mode: balance-xor # XOR 负载均衡
 ```
 
 ### 3.6 Bridging（网桥）
@@ -162,19 +162,19 @@ network:
 ```yaml
 # /etc/netplan/04-bridge.yaml — KVM/容器用网桥
 network:
-  version: 2
-  renderer: networkd
-  ethernets:
-    eth0:
-      dhcp4: no
-  bridges:
-    br0:
-      dhcp4: true
-      interfaces:
-        - eth0
-      parameters:
-        stp: true
-        forward-delay: 4
+ version: 2
+ renderer: networkd
+ ethernets:
+ eth0:
+ dhcp4: no
+ bridges:
+ br0:
+ dhcp4: true
+ interfaces:
+ - eth0
+ parameters:
+ stp: true
+ forward-delay: 4
 ```
 
 ### 3.7 VLAN
@@ -182,22 +182,22 @@ network:
 ```yaml
 # /etc/netplan/05-vlan.yaml
 network:
-  version: 2
-  renderer: networkd
-  ethernets:
-    eth0:
-      dhcp4: no
-  vlans:
-    vlan10:                 # VLAN ID 10
-      id: 10
-      link: eth0
-      addresses:
-        - 192.168.10.10/24
-    vlan20:                 # VLAN ID 20
-      id: 20
-      link: eth0
-      addresses:
-        - 192.168.20.10/24
+ version: 2
+ renderer: networkd
+ ethernets:
+ eth0:
+ dhcp4: no
+ vlans:
+ vlan10: # VLAN ID 10
+ id: 10
+ link: eth0
+ addresses:
+ - 192.168.10.10/24
+ vlan20: # VLAN ID 20
+ id: 20
+ link: eth0
+ addresses:
+ - 192.168.20.10/24
 ```
 
 ### 3.8 WiFi 配置（NetworkManager 后端）
@@ -205,23 +205,23 @@ network:
 ```yaml
 # /etc/netplan/06-wifi.yaml
 network:
-  version: 2
-  renderer: NetworkManager
-  wifis:
-    wlan0:
-      dhcp4: true
-      access-points:
-        "MyWiFi-2.4G":
-          password: "my-secret-password"
-        "MyWiFi-5G":
-          password: "another-password"
-      # 企业 WPA2-Enterprise
-      # "CorporateWiFi":
-      #   auth:
-      #     key-management: eap
-      #     method: peap
-      #     identity: "user@company.com"
-      #     password: "corp-password"
+ version: 2
+ renderer: NetworkManager
+ wifis:
+ wlan0:
+ dhcp4: true
+ access-points:
+ "MyWiFi-2.4G":
+ password: "my-secret-password"
+ "MyWiFi-5G":
+ password: "another-password"
+ # 企业 WPA2-Enterprise
+ # "CorporateWiFi":
+ # auth:
+ # key-management: eap
+ # method: peap
+ # identity: "user@company.com"
+ # password: "corp-password"
 ```
 
 ### 3.9 netplan 管理命令
@@ -256,15 +256,15 @@ sudo netplan --debug generate
 ```bash
 # 查看整体网络状态
 nmcli general status
-nmcli -t general hostname          # 查看主机名
+nmcli -t general hostname # 查看主机名
 
 # 设置主机名
 sudo nmcli general hostname new-hostname
 
 # 查看无线电状态（WiFi/WWAN）
 nmcli radio
-nmcli radio wifi on                # 开启 WiFi
-nmcli radio wifi off               # 关闭 WiFi
+nmcli radio wifi on # 开启 WiFi
+nmcli radio wifi off # 关闭 WiFi
 ```
 
 ### 4.2 连接管理
@@ -310,7 +310,7 @@ nmcli device disconnect eth0
 
 # WiFi 扫描
 nmcli device wifi list
-nmcli device wifi rescan           # 重新扫描
+nmcli device wifi rescan # 重新扫描
 ```
 
 ### 4.4 创建连接
@@ -318,37 +318,37 @@ nmcli device wifi rescan           # 重新扫描
 ```bash
 # 创建 DHCP 以太网连接
 nmcli connection add \
-    type ethernet \
-    con-name "office-lan" \
-    ifname eth0 \
-    autoconnect yes
+ type ethernet \
+ con-name "office-lan" \
+ ifname eth0 \
+ autoconnect yes
 
 # 创建静态 IP 连接
 nmcli connection add \
-    type ethernet \
-    con-name "static-home" \
-    ifname eth0 \
-    ipv4.method manual \
-    ipv4.addresses "192.168.1.100/24" \
-    ipv4.gateway "192.168.1.1" \
-    ipv4.dns "8.8.8.8 1.1.1.1" \
-    autoconnect yes
+ type ethernet \
+ con-name "static-home" \
+ ifname eth0 \
+ ipv4.method manual \
+ ipv4.addresses "192.168.1.100/24" \
+ ipv4.gateway "192.168.1.1" \
+ ipv4.dns "8.8.8.8 1.1.1.1" \
+ autoconnect yes
 
 # 创建 WiFi 连接
 nmcli connection add \
-    type wifi \
-    con-name "home-wifi" \
-    ifname wlan0 \
-    ssid "MyWiFi" \
-    wifi-sec.key-mgmt wpa-psk \
-    wifi-sec.psk "my-secret-password" \
-    autoconnect yes
+ type wifi \
+ con-name "home-wifi" \
+ ifname wlan0 \
+ ssid "MyWiFi" \
+ wifi-sec.key-mgmt wpa-psk \
+ wifi-sec.psk "my-secret-password" \
+ autoconnect yes
 
 # 修改已有连接的属性
 nmcli connection modify "office-lan" \
-    ipv4.method manual \
-    ipv4.addresses "192.168.2.100/24" \
-    ipv4.gateway "192.168.2.1"
+ ipv4.method manual \
+ ipv4.addresses "192.168.2.100/24" \
+ ipv4.gateway "192.168.2.1"
 ```
 
 ### 4.5 Bond 连接
@@ -356,34 +356,34 @@ nmcli connection modify "office-lan" \
 ```bash
 # 创建 Bond 连接（主备模式）
 nmcli connection add \
-    type bond \
-    con-name "bond0" \
-    ifname bond0 \
-    bond.options "mode=active-backup,miimon=100" \
-    ipv4.method manual \
-    ipv4.addresses "192.168.1.100/24" \
-    ipv4.gateway "192.168.1.1"
+ type bond \
+ con-name "bond0" \
+ ifname bond0 \
+ bond.options "mode=active-backup,miimon=100" \
+ ipv4.method manual \
+ ipv4.addresses "192.168.1.100/24" \
+ ipv4.gateway "192.168.1.1"
 
 # 添加 slave 接口
 nmcli connection add \
-    type ethernet \
-    con-name "bond0-port1" \
-    ifname eth0 \
-    master bond0
+ type ethernet \
+ con-name "bond0-port1" \
+ ifname eth0 \
+ master bond0
 
 nmcli connection add \
-    type ethernet \
-    con-name "bond0-port2" \
-    ifname eth1 \
-    master bond0
+ type ethernet \
+ con-name "bond0-port2" \
+ ifname eth1 \
+ master bond0
 
 # Bond 模式：
-# active-backup  — 主备故障转移
-# balance-rr     — 轮询（需交换机支持）
-# balance-xor    — XOR 负载均衡
-# 802.3ad        — LACP（需交换机支持）
-# balance-tlb    — 发送负载均衡
-# balance-alb    — 自适应负载均衡
+# active-backup — 主备故障转移
+# balance-rr — 轮询（需交换机支持）
+# balance-xor — XOR 负载均衡
+# 802.3ad — LACP（需交换机支持）
+# balance-tlb — 发送负载均衡
+# balance-alb — 自适应负载均衡
 ```
 
 ### 4.6 Bridge 连接
@@ -391,20 +391,20 @@ nmcli connection add \
 ```bash
 # 创建 Bridge
 nmcli connection add \
-    type bridge \
-    con-name "br0" \
-    ifname br0 \
-    stp yes \
-    ipv4.method manual \
-    ipv4.addresses "192.168.1.100/24" \
-    ipv4.gateway "192.168.1.1"
+ type bridge \
+ con-name "br0" \
+ ifname br0 \
+ stp yes \
+ ipv4.method manual \
+ ipv4.addresses "192.168.1.100/24" \
+ ipv4.gateway "192.168.1.1"
 
 # 添加 slave
 nmcli connection add \
-    type ethernet \
-    con-name "br0-port" \
-    ifname eth0 \
-    master br0
+ type ethernet \
+ con-name "br0-port" \
+ ifname eth0 \
+ master br0
 
 # 启动
 nmcli connection up br0
@@ -415,12 +415,12 @@ nmcli connection up br0
 ```bash
 # 创建 VLAN 接口
 nmcli connection add \
-    type vlan \
-    con-name "vlan10" \
-    dev eth0 \
-    id 10 \
-    ipv4.method manual \
-    ipv4.addresses "192.168.10.10/24"
+ type vlan \
+ con-name "vlan10" \
+ dev eth0 \
+ id 10 \
+ ipv4.method manual \
+ ipv4.addresses "192.168.10.10/24"
 ```
 
 ### 4.8 nmtui — 终端图形界面
@@ -430,9 +430,9 @@ nmcli connection add \
 nmtui
 
 # 功能：
-# Edit a connection    — 编辑连接
+# Edit a connection — 编辑连接
 # Activate a connection — 激活连接
-# Set system hostname   — 设置主机名
+# Set system hostname — 设置主机名
 ```
 
 ---
@@ -471,7 +471,7 @@ DHCP=yes
 IPv6AcceptRA=yes
 
 [DHCPv4]
-UseDNS=no          # 不使用 DHCP 提供的 DNS
+UseDNS=no # 不使用 DHCP 提供的 DNS
 ```
 
 ```bash
@@ -662,24 +662,24 @@ iface eth0 inet dhcp
 # 静态 IP
 # auto eth0
 # iface eth0 inet static
-#     address 192.168.1.100/24
-#     gateway 192.168.1.1
-#     dns-nameservers 8.8.8.8 1.1.1.1
+# address 192.168.1.100/24
+# gateway 192.168.1.1
+# dns-nameservers 8.8.8.8 1.1.1.1
 
 # Bridge（用于 KVM 虚拟机）
 # auto br0
 # iface br0 inet dhcp
-#     bridge_ports eth0
-#     bridge_stp on
-#     bridge_fd 0
+# bridge_ports eth0
+# bridge_stp on
+# bridge_fd 0
 ```
 
 ```bash
 # 管理命令
-sudo ifup eth0        # 启用接口
-sudo ifdown eth0      # 停用接口
-sudo ifup -a          # 启用所有 auto 接口
-sudo ifdown -a        # 停用所有接口
+sudo ifup eth0 # 启用接口
+sudo ifdown eth0 # 停用接口
+sudo ifup -a # 启用所有 auto 接口
+sudo ifdown -a # 停用所有接口
 ```
 
 ---
@@ -699,15 +699,15 @@ ip -6 route show
 ip neigh show
 
 # DNS 解析测试
-resolvectl status                  # systemd-resolved
-nmcli device show eth0 | grep DNS  # NetworkManager
+resolvectl status # systemd-resolved
+nmcli device show eth0 | grep DNS # NetworkManager
 dig google.com
 nslookup google.com
 
 # 网络连通性
-ping -c 3 8.8.8.8                  # 测试 IP 连通性
-ping -c 3 google.com               # 测试 DNS 是否正常
-mtr google.com                     # 路径追踪
+ping -c 3 8.8.8.8 # 测试 IP 连通性
+ping -c 3 google.com # 测试 DNS 是否正常
+mtr google.com # 路径追踪
 
 # 端口监听
 ss -tlnp
@@ -718,8 +718,8 @@ sudo tcpdump -i eth0 -n port 80
 sudo tcpdump -i any -w capture.pcap
 
 # 查看带宽使用
-sudo iftop -i eth0                  # 需要安装 iftop
-nethogs eth0                       # 需要安装 nethogs
+sudo iftop -i eth0 # 需要安装 iftop
+nethogs eth0 # 需要安装 nethogs
 
 # 查看 NetworkManager 日志
 journalctl -u NetworkManager -f

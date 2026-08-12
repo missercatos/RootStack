@@ -31,8 +31,8 @@ printf("Name: %s\n", name->valuestring);
 cJSON *items = cJSON_GetObjectItem(root, "items");
 int count = cJSON_GetArraySize(items);
 for (int i = 0; i < count; i++) {
-    cJSON *item = cJSON_GetArrayItem(items, i);
-    printf("%d\n", item->valueint);
+ cJSON *item = cJSON_GetArrayItem(items, i);
+ printf("%d\n", item->valueint);
 }
 cJSON_Delete(root);
 ```

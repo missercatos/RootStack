@@ -23,11 +23,11 @@
 int fd[2];
 pipe(fd);
 if (fork() == 0) {
-    close(fd[0]);           // 子进程关闭读端
-    write(fd[1], "hello", 5);
+ close(fd[0]); // 子进程关闭读端
+ write(fd[1], "hello", 5);
 } else {
-    close(fd[1]);           // 父进程关闭写端
-    read(fd[0], buf, 5);
+ close(fd[1]); // 父进程关闭写端
+ read(fd[0], buf, 5);
 }
 ```
 
@@ -44,7 +44,7 @@ if (fork() == 0) {
 ```c
 // 创建共享内存段
 int shm_id = shmget(key, 4096, IPC_CREAT | 0666);
-char *addr  = shmat(shm_id, NULL, 0);
+char *addr = shmat(shm_id, NULL, 0);
 // 现在 addr 可被创建进程和所有附加进程同时访问
 ```
 

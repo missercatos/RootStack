@@ -2,15 +2,15 @@
 
 - [[#一、什么是 OSINT|一、什么是 OSINT]]
 - [[#二、搜索引擎 Dorking 进阶|二、搜索引擎 Dorking 进阶]]
-  - [[#2.1 Google Dorks 基础|2.1 Google Dorks 基础]]
-  - [[#2.2 高级 Google Dorking 技巧|2.2 高级 Google Dorking 技巧]]
-  - [[#2.3 Shodan 搜索语法|2.3 Shodan 搜索语法]]
-  - [[#2.4 Censys 搜索|2.4 Censys 搜索]]
+ - [[#2.1 Google Dorks 基础|2.1 Google Dorks 基础]]
+ - [[#2.2 高级 Google Dorking 技巧|2.2 高级 Google Dorking 技巧]]
+ - [[#2.3 Shodan 搜索语法|2.3 Shodan 搜索语法]]
+ - [[#2.4 Censys 搜索|2.4 Censys 搜索]]
 - [[#三、Maltego 社区版 — 关系图谱分析|三、Maltego 社区版 — 关系图谱分析]]
 - [[#四、社交媒体侦察|四、社交媒体侦察]]
-  - [[#4.1 LinkedIn 人员信息收集|4.1 LinkedIn 人员信息收集]]
-  - [[#4.2 Twitter 侦察|4.2 Twitter 侦察]]
-  - [[#4.3 GitHub 代码泄露侦察|4.3 GitHub 代码泄露侦察]]
+ - [[#4.1 LinkedIn 人员信息收集|4.1 LinkedIn 人员信息收集]]
+ - [[#4.2 Twitter 侦察|4.2 Twitter 侦察]]
+ - [[#4.3 GitHub 代码泄露侦察|4.3 GitHub 代码泄露侦察]]
 - [[#五、综合 OSINT 工具链|五、综合 OSINT 工具链]]
 - [[#六、完整 OSINT 实践流程|六、完整 OSINT 实践流程]]
 - [[#七、OSINT 的伦理与法律考量|七、OSINT 的伦理与法律考量]]
@@ -18,29 +18,29 @@
 
 ```mermaid
 sequenceDiagram
-    participant R as 红队操作员
-    participant W as 搜索引擎
-    participant S as Shodan/Censys
-    participant G as GitHub
-    participant M as Maltego
-    participant L as LinkedIn/Twitter
+ participant R as 红队操作员
+ participant W as 搜索引擎
+ participant S as Shodan/Censys
+ participant G as GitHub
+ participant M as Maltego
+ participant L as LinkedIn/Twitter
 
-    R->>W: Google Dorks (site:/filetype:/inurl:)
-    W-->>R: 泄露文件、登录页、目录列表
+ R->>W: Google Dorks (site:/filetype:/inurl:)
+ W-->>R: 泄露文件、登录页、目录列表
 
-    R->>S: org:"Target" / port:3389
-    S-->>R: 开放端口、服务版本、SSL证书
+ R->>S: org:"Target" / port:3389
+ S-->>R: 开放端口、服务版本、SSL证书
 
-    R->>G: "example.com" filename:.env
-    G-->>R: 暴露的密钥、配置、内部URL
+ R->>G: "example.com" filename:.env
+ G-->>R: 暴露的密钥、配置、内部URL
 
-    R->>L: 搜索公司名、员工名
-    L-->>R: 员工列表、技术栈、命名规则
+ R->>L: 搜索公司名、员工名
+ L-->>R: 员工列表、技术栈、命名规则
 
-    R->>M: Domain → Transforms → DNS/Whois
-    M-->>R: 完整关系图谱
+ R->>M: Domain → Transforms → DNS/Whois
+ M-->>R: 完整关系图谱
 
-    Note over R: 整合所有发现 → OSINT 报告
+ Note over R: 整合所有发现 → OSINT 报告
 ```
 
 ## 一、什么是 OSINT
@@ -78,10 +78,10 @@ site:example.com -www
 site:example.com filetype:pdf
 site:example.com filetype:doc OR filetype:docx
 site:example.com filetype:xls OR filetype:xlsx
-site:example.com filetype:sql            # 数据库备份泄露
+site:example.com filetype:sql # 数据库备份泄露
 site:example.com filetype:bak
 site:example.com filetype:log
-site:example.com filetype:env            # 可能包含凭证
+site:example.com filetype:env # 可能包含凭证
 ```
 
 **查找目录列表:**
@@ -420,11 +420,11 @@ site:example.com "password" OR "secret"
 
 ```
 ~/osint_ExampleCorp/
-  01_organization/         (组织信息 — whois, linkedin, crunchbase)
-  02_technical/            (技术资产 — 子域名, 活跃服务, shodan/censys)
-  03_leaks/                (泄露信息 — github, google dorks)
-  04_social_media/         (社交媒体 — linkedin员工, twitter发现)
-  05_report/               (最终报告 + maltego_graph.pdf)
+ 01_organization/ (组织信息 — whois, linkedin, crunchbase)
+ 02_technical/ (技术资产 — 子域名, 活跃服务, shodan/censys)
+ 03_leaks/ (泄露信息 — github, google dorks)
+ 04_social_media/ (社交媒体 — linkedin员工, twitter发现)
+ 05_report/ (最终报告 + maltego_graph.pdf)
 ```
 
 ## 七、OSINT 的伦理与法律考量
@@ -445,8 +445,8 @@ TARGET=$1
 DOMAIN=$2
 
 if [ -z "$TARGET" ] || [ -z "$DOMAIN" ]; then
-  echo "用法: ./osint_gather.sh 'Company Name' example.com"
-  exit 1
+ echo "用法: ./osint_gather.sh 'Company Name' example.com"
+ exit 1
 fi
 
 DIR="osint_$(echo $DOMAIN | tr '.' '_')"
@@ -480,9 +480,9 @@ theHarvester -d $DOMAIN -b google,linkedin -l 200 -f harvester.html 2>/dev/null
 
 echo "[*] 自动化 OSINT 完成！"
 echo "[*] 请在 Firefox 中手动执行以下搜索:"
-echo "    - Shodan: org:'$TARGET'"
-echo "    - GitHub: '$DOMAIN' filename:.env"
-echo "    - LinkedIn: 搜索公司 '$TARGET'"
+echo " - Shodan: org:'$TARGET'"
+echo " - GitHub: '$DOMAIN' filename:.env"
+echo " - LinkedIn: 搜索公司 '$TARGET'"
 ```
 
 OSINT 是红队行动的起点，也是信息最密集的阶段。一个优秀的红队队员应该在未接触目标系统之前，就能通过公开信息构建出目标的完整画像。关键在于耐心和系统化的方法：从组织信息到技术资产，从代码泄露到社交媒体，逐步拼接出一个完整的攻击面图谱。

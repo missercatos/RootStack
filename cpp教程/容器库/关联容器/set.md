@@ -47,27 +47,27 @@ set<int> s
 // 插入（自动去重）
 s.insert(42)
 s.insert(7)
-s.insert(42)            // 忽略，set 中 42 仍只有一份
+s.insert(42) // 忽略，set 中 42 仍只有一份
 s.emplace(100)
 
 // 查找
 if s.find(42) != s.end():
-    print "found 42"
+ print "found 42"
 
 // 遍历（自动升序）
 for each x in s:
-    print x               // 输出: 7 42 100
+ print x // 输出: 7 42 100
 
 // 前驱后继
-it = s.lower_bound(50)    // 指向 100（第一个 >= 50）
-pred = prev(it)           // 前驱: 42
-succ = s.upper_bound(50)  // 后继: 100
+it = s.lower_bound(50) // 指向 100（第一个 >= 50）
+pred = prev(it) // 前驱: 42
+succ = s.upper_bound(50) // 后继: 100
 
 // 删除
 s.erase(42)
 
 // multiset 删除一个重复值
-ms.erase(ms.find(5))      // 仅删除一个 5
+ms.erase(ms.find(5)) // 仅删除一个 5
 ```
 
 ## 相关链接

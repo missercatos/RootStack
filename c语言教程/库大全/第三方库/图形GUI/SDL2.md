@@ -22,22 +22,22 @@
 ```c
 #include <SDL2/SDL.h>
 int main(void) {
-    SDL_Init(SDL_INIT_VIDEO);
-    SDL_Window *win = SDL_CreateWindow("SDL2", 100, 100, 800, 600, 0);
-    SDL_Renderer *ren = SDL_CreateRenderer(win, -1, 0);
-    SDL_Event e;
-    int running = 1;
-    while (running) {
-        while (SDL_PollEvent(&e))
-            if (e.type == SDL_QUIT) running = 0;
-        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
-        SDL_RenderClear(ren);
-        SDL_RenderPresent(ren);
-    }
-    SDL_DestroyRenderer(ren);
-    SDL_DestroyWindow(win);
-    SDL_Quit();
-    return 0;
+ SDL_Init(SDL_INIT_VIDEO);
+ SDL_Window *win = SDL_CreateWindow("SDL2", 100, 100, 800, 600, 0);
+ SDL_Renderer *ren = SDL_CreateRenderer(win, -1, 0);
+ SDL_Event e;
+ int running = 1;
+ while (running) {
+ while (SDL_PollEvent(&e))
+ if (e.type == SDL_QUIT) running = 0;
+ SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+ SDL_RenderClear(ren);
+ SDL_RenderPresent(ren);
+ }
+ SDL_DestroyRenderer(ren);
+ SDL_DestroyWindow(win);
+ SDL_Quit();
+ return 0;
 }
 ```
 

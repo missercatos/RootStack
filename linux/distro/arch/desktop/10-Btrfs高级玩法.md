@@ -8,19 +8,19 @@
 
 ```mermaid
 graph TD
-    A[物理分区 partition] --> B["Btrfs 文件系统<br/>(一个 UUID)"]
-    B --> C["子卷 @ → /"]
-    B --> D["子卷 @home → /home"]
-    B --> E["子卷 @pkg → /var/cache/pacman/pkg"]
-    B --> F["子卷 @log → /var/log"]
-    B --> G["子卷 @snapshots → /.snapshots"]
-    style A fill:#f9f,stroke:#333
-    style B fill:#bbf,stroke:#333
-    style C fill:#bfb,stroke:#333
-    style D fill:#bfb,stroke:#333
-    style E fill:#bfb,stroke:#333
-    style F fill:#bfb,stroke:#333
-    style G fill:#bfb,stroke:#333
+ A[物理分区 partition] --> B["Btrfs 文件系统<br/>(一个 UUID)"]
+ B --> C["子卷 @ → /"]
+ B --> D["子卷 @home → /home"]
+ B --> E["子卷 @pkg → /var/cache/pacman/pkg"]
+ B --> F["子卷 @log → /var/log"]
+ B --> G["子卷 @snapshots → /.snapshots"]
+ style A fill:#f9f,stroke:#333
+ style B fill:#bbf,stroke:#333
+ style C fill:#bfb,stroke:#333
+ style D fill:#bfb,stroke:#333
+ style E fill:#bfb,stroke:#333
+ style F fill:#bfb,stroke:#333
+ style G fill:#bfb,stroke:#333
 ```
 
 > [!info] 关键认知
@@ -45,10 +45,10 @@ graph TD
 
 ```bash
 # 同一块 NVMe 盘，Btrfs 子卷挂载
-UUID=3762fae6-...  /                       btrfs  rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@      0 0
-UUID=3762fae6-...  /home                   btrfs  rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@home  0 0
-UUID=3762fae6-...  /var/cache/pacman/pkg   btrfs  rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@pkg   0 0
-UUID=3762fae6-...  /var/log                btrfs  rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@log   0 0
+UUID=3762fae6-... / btrfs rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@ 0 0
+UUID=3762fae6-... /home btrfs rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@home 0 0
+UUID=3762fae6-... /var/cache/pacman/pkg btrfs rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@pkg 0 0
+UUID=3762fae6-... /var/log btrfs rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=/@log 0 0
 ```
 
 ### 挂载选项详解
@@ -87,7 +87,7 @@ sudo btrfs subvolume delete /path/to/subvol
 
 # 查看子卷占用空间
 sudo btrfs subvolume show /
-sudo btrfs qgroup show /        # 需要先启用 quota
+sudo btrfs qgroup show / # 需要先启用 quota
 ```
 
 ---
@@ -116,15 +116,15 @@ sudo snapper -c root create-config /
 
 # 时间线快照频率
 TIMELINE_CREATE="yes"
-TIMELINE_HOURLY="5"       # 保留最近 5 个小时快照
-TIMELINE_DAILY="7"        # 保留最近 7 天
-TIMELINE_WEEKLY="4"       # 保留最近 4 周
-TIMELINE_MONTHLY="3"      # 保留最近 3 月
-TIMELINE_YEARLY="0"       # 不保留年度
+TIMELINE_HOURLY="5" # 保留最近 5 个小时快照
+TIMELINE_DAILY="7" # 保留最近 7 天
+TIMELINE_WEEKLY="4" # 保留最近 4 周
+TIMELINE_MONTHLY="3" # 保留最近 3 月
+TIMELINE_YEARLY="0" # 不保留年度
 
 # 清理规则
 NUMBER_CLEANUP="yes"
-NUMBER_LIMIT="50"         # 最多保留 50 个快照
+NUMBER_LIMIT="50" # 最多保留 50 个快照
 NUMBER_LIMIT_IMPORTANT="10" # 重要快照最多 10 个
 
 TIMELINE_CLEANUP="yes"
@@ -134,7 +134,7 @@ TIMELINE_LIMIT_WEEKLY="4"
 TIMELINE_LIMIT_MONTHLY="3"
 
 # 不自动快照的子卷
-SUBVOLUME="/home"         # 如果用同一 Btrfs，排除 @home
+SUBVOLUME="/home" # 如果用同一 Btrfs，排除 @home
 SUBVOLUME="/var/cache/pacman/pkg"
 SUBVOLUME="/var/log"
 ```
@@ -162,8 +162,8 @@ sudo btrfs subvolume snapshot / /.snapshots/@-rw-fix
 sudo snapper -c root list
 
 # 比较两个快照间的文件变化
-sudo snapper -c root status 15..20      # 15 到 20 之间变化的文件
-sudo snapper -c root diff 15..20        # 详细的 diff 输出
+sudo snapper -c root status 15..20 # 15 到 20 之间变化的文件
+sudo snapper -c root diff 15..20 # 详细的 diff 输出
 
 # 撤销单个文件的更改（不整个回滚）
 sudo snapper -c root undochange 15..20 /etc/pacman.conf
@@ -215,12 +215,12 @@ quickload
 ```bash
 # sysup 脚本中的集成片段：
 perform_update() {
-    # 如果根文件系统是 btrfs 且 quicksave 可用
-    if command -v quicksave >/dev/null 2>&1 && \
-       [[ "$(findmnt -no FSTYPE /)" == "btrfs" ]]; then
-        quicksave -d quicksave-sysup   # 创建快照
-    fi
-    # ... 执行系统更新 ...
+ # 如果根文件系统是 btrfs 且 quicksave 可用
+ if command -v quicksave >/dev/null 2>&1 && \
+ [[ "$(findmnt -no FSTYPE /)" == "btrfs" ]]; then
+ quicksave -d quicksave-sysup # 创建快照
+ fi
+ # ... 执行系统更新 ...
 }
 ```
 
@@ -231,21 +231,21 @@ perform_update() {
 ```bash
 # 全量发送
 sudo btrfs send /.snapshots/root-2025-01-01 | \
-    sudo btrfs receive /mnt/backup/
+ sudo btrfs receive /mnt/backup/
 
 # 增量发送（只传差异）
 sudo btrfs send -p /.snapshots/root-2025-01-01 \
-    /.snapshots/root-2025-02-01 | \
-    sudo btrfs receive /mnt/backup/
+ /.snapshots/root-2025-02-01 | \
+ sudo btrfs receive /mnt/backup/
 
 # 发送到远程（通过 SSH）
 sudo btrfs send /.snapshots/root-2025-01-01 | \
-    ssh backup-server "sudo btrfs receive /backup/pool/"
+ ssh backup-server "sudo btrfs receive /backup/pool/"
 
 # 增量远程
 sudo btrfs send -p /.snapshots/root-2025-01-01 \
-    /.snapshots/root-2025-02-01 | \
-    ssh backup-server "sudo btrfs receive /backup/pool/"
+ /.snapshots/root-2025-02-01 | \
+ ssh backup-server "sudo btrfs receive /backup/pool/"
 
 # 实用备份脚本
 #!/bin/bash
@@ -254,9 +254,9 @@ SRC="/.snapshots"
 LAST=$(ls -1 "$DEST" 2>/dev/null | tail -1)
 
 if [ -n "$LAST" ]; then
-    sudo btrfs send -p "$SRC/$LAST" "$SRC/latest" | sudo btrfs receive "$DEST/"
+ sudo btrfs send -p "$SRC/$LAST" "$SRC/latest" | sudo btrfs receive "$DEST/"
 else
-    sudo btrfs send "$SRC/latest" | sudo btrfs receive "$DEST/"
+ sudo btrfs send "$SRC/latest" | sudo btrfs receive "$DEST/"
 fi
 ```
 
@@ -267,13 +267,13 @@ fi
 ```bash
 # 查看当前压缩状态
 sudo btrfs filesystem df /
-sudo compsize /                    # 需要安装 compsize
+sudo compsize / # 需要安装 compsize
 
 # 检查压缩率
 compsize /home
 # Processed 25643 files, 42112 regular extents
-# Type       Perc     Disk Usage   Uncompressed Referenced
-# TOTAL       57%      2.1G         3.8G         4.1G
+# Type Perc Disk Usage Uncompressed Referenced
+# TOTAL 57% 2.1G 3.8G 4.1G
 
 # 重新压缩已有数据（改变压缩级别）
 sudo btrfs filesystem defragment -r -czstd:1 /home
@@ -370,11 +370,11 @@ lsattr /path/to/file
 ### 为什么禁用 CoW？
 
 ```
-场景                    CoW=on               CoW=off
-数据库 (PostgreSQL)     写放大、碎片化       预分配 + 直接写入
-虚拟机镜像 (qcow2)      CoW on CoW 双重开销   直接 IO
-BitTorrent 下载          极度碎片化            顺序写入
-Steam 游戏库             碎片累积              性能稳定
+场景 CoW=on CoW=off
+数据库 (PostgreSQL) 写放大、碎片化 预分配 + 直接写入
+虚拟机镜像 (qcow2) CoW on CoW 双重开销 直接 IO
+BitTorrent 下载 极度碎片化 顺序写入
+Steam 游戏库 碎片累积 性能稳定
 ```
 
 ---
@@ -388,8 +388,8 @@ Steam 游戏库             碎片累积              性能稳定
 sudo btrfs inspect-internal dump-super /dev/nvme0n1p2 | grep csum
 
 # 用更强的校验（需要重新格式化，不可在线改）
-mkfs.btrfs --csum xxhash64 /dev/sdXX      # 更快
-mkfs.btrfs --csum sha256 /dev/sdXX        # 更强
+mkfs.btrfs --csum xxhash64 /dev/sdXX # 更快
+mkfs.btrfs --csum sha256 /dev/sdXX # 更强
 
 # 检测数据损坏
 sudo btrfs scrub start /
@@ -428,12 +428,12 @@ sudo btrfs filesystem frag /path
 # 磁盘使用详情
 btrfs filesystem usage /
 # 输出：
-#  Overall:
-#      Device size:         476.94GiB
-#      Device allocated:    300.00GiB
-#      Device unallocated:  176.94GiB
-#      Used:                280.50GiB
-#      Free (estimated):    190.00GiB
+# Overall:
+# Device size: 476.94GiB
+# Device allocated: 300.00GiB
+# Device unallocated: 176.94GiB
+# Used: 280.50GiB
+# Free (estimated): 190.00GiB
 
 # 实时 I/O 监控
 sudo btrfs filesystem show /
@@ -451,28 +451,28 @@ sudo btrfs device stats /
 ## 16.15 Btrfs 最佳实践
 
 ```
-✓ DO
-  - 使用子卷分离系统/用户/缓存/日志
-  - 启用 compress=zstd（SSD 级别 1-3，HDD 级别 3-6）
-  - 定期 scrub（每月一次）
-  - 更新前创建快照
-  - 对数据库/VM/下载目录禁用 CoW
-  - 用 noatime 减少写入量
-  - 监控磁盘空间（Btrfs 空间不足时行为异常）
+ DO
+ - 使用子卷分离系统/用户/缓存/日志
+ - 启用 compress=zstd（SSD 级别 1-3，HDD 级别 3-6）
+ - 定期 scrub（每月一次）
+ - 更新前创建快照
+ - 对数据库/VM/下载目录禁用 CoW
+ - 用 noatime 减少写入量
+ - 监控磁盘空间（Btrfs 空间不足时行为异常）
 
-✗ DON'T
-  - 在空间不足 10% 时继续大量写入（Btrfs 会进入只读模式）
-  - 大量快照后做 full balance（极慢）
-  - 在快照很多的系统上整理碎片（CoW 会复制所有快照数据）
-  - 混用 RAID 级别（除非你确切知道在做什么）
-  - 作为 /boot 文件系统（用 FAT32/EXT4）
+ DON'T
+ - 在空间不足 10% 时继续大量写入（Btrfs 会进入只读模式）
+ - 大量快照后做 full balance（极慢）
+ - 在快照很多的系统上整理碎片（CoW 会复制所有快照数据）
+ - 混用 RAID 级别（除非你确切知道在做什么）
+ - 作为 /boot 文件系统（用 FAT32/EXT4）
 ```
 
 ---
 
 ## 16.16 本章测验
 
-> [!example] 📝 自测题目
+> [!example] 自测题目
 
 > [!question]- 选择题 1：Btrfs 快照的空间占用特性是什么？
 > - A. 立即占用与原始数据相同的空间
@@ -505,11 +505,11 @@ sudo btrfs device stats /
 > > zstd:3 表示 zstd 压缩的级别 3，是速度和压缩率的甜点平衡点。级别 1 最快，级别 15 压缩率最高但最慢。
 
 > [!question]- 判断题 4：btrfs send/receive 只能传输只读快照
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > btrfs send 要求源必须是只读快照（-r 标志创建），读写快照不能直接 send。接收端收到后也是只读的。
 
 > [!question]- 选择题 5：对数据库/虚拟机镜像目录应该如何处理 CoW？
@@ -533,11 +533,11 @@ sudo btrfs device stats /
 > > scrub 读取所有数据块并对比 checksum，发现数据损坏时尝试从镜像/奇偶校验修复。推荐每月执行一次。
 
 > [!question]- 判断题 7：Btrfs 子卷需要预留固定空间，类似传统分区
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **B. ✗ 错误**
+> > **B. 错误**
 > > Btrfs 子卷不是分区，不需要预留空间。所有子卷共享同一块存储池，空间动态分配。
 
 > [!question]- 选择题 8：Snapper 的 timeline 快照中 TIMELINE_DAILY="7" 表示什么？
@@ -561,9 +561,9 @@ sudo btrfs device stats /
 > > Btrfs 在空间不足时行为异常，可能进入只读模式。因此需要监控磁盘空间，确保不要让使用率超过 90%。
 
 > [!question]- 判断题 10：在快照很多的系统上执行碎片整理（defragment）会导致所有快照数据被复制
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > 碎片整理会破坏 CoW 共享，导致快照间共享的数据块被复制为独立副本，可能大幅增加磁盘占用。快照多的系统不应频繁整理碎片。

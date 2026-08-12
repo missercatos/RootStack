@@ -12,11 +12,11 @@
 
 ```mermaid
 graph TD
-    subgraph "跳表 — 多层索引"
-        L3["Level 2: [head] →——————→————————→————————→ [56] → NULL"]
-        L2["Level 1: [head] →——————→ [23] →——————→ [56] → NULL"]
-        L1["Level 0: [head] → [5] → [12] → [23] → [38] → [45] → [56] → NULL"]
-    end
+ subgraph "跳表 — 多层索引"
+ L3["Level 2: [head] →——————→————————→————————→ [56] → NULL"]
+ L2["Level 1: [head] →——————→ [23] →——————→ [56] → NULL"]
+ L1["Level 0: [head] → [5] → [12] → [23] → [38] → [45] → [56] → NULL"]
+ end
 ```
 
 - **Level 0**（底层）是包含所有元素的有序链表
@@ -46,10 +46,10 @@ $$
 
 ```c
 int random_level(double p, int max_level) {
-    int level = 1;
-    while ((double)rand() / RAND_MAX < p && level < max_level)
-        level++;
-    return level;
+ int level = 1;
+ while ((double)rand() / RAND_MAX < p && level < max_level)
+ level++;
+ return level;
 }
 ```
 
@@ -81,75 +81,75 @@ int random_level(double p, int max_level) {
 #define P 0.25
 
 typedef struct SkipNode {
-    int key, value;
-    struct SkipNode* forward[];  // 柔性数组: forward[level]
+ int key, value;
+ struct SkipNode* forward[]; // 柔性数组: forward[level]
 } SkipNode;
 
 typedef struct {
-    SkipNode* header;
-    int level;   // 当前最大层数
+ SkipNode* header;
+ int level; // 当前最大层数
 } SkipList;
 
 SkipNode* sl_create_node(int level, int key, int value) {
-    SkipNode* node = malloc(sizeof(SkipNode) + level * sizeof(SkipNode*));
-    node->key = key; node->value = value;
-    return node;
+ SkipNode* node = malloc(sizeof(SkipNode) + level * sizeof(SkipNode*));
+ node->key = key; node->value = value;
+ return node;
 }
 
 void sl_init(SkipList* sl) {
-    sl->header = sl_create_node(MAX_LEVEL, 0, 0);
-    sl->level = 1;
-    for (int i = 0; i < MAX_LEVEL; i++)
-        sl->header->forward[i] = NULL;
+ sl->header = sl_create_node(MAX_LEVEL, 0, 0);
+ sl->level = 1;
+ for (int i = 0; i < MAX_LEVEL; i++)
+ sl->header->forward[i] = NULL;
 }
 
 static int random_level(void) {
-    int level = 1;
-    while ((double)rand() / RAND_MAX < P && level < MAX_LEVEL)
-        level++;
-    return level;
+ int level = 1;
+ while ((double)rand() / RAND_MAX < P && level < MAX_LEVEL)
+ level++;
+ return level;
 }
 
 // 查找: 返回指定 key 的节点指针, 并记录各级前驱到 update[] 中
 SkipNode* sl_find(SkipList* sl, int key, SkipNode** update) {
-    SkipNode* cur = sl->header;
-    for (int i = sl->level - 1; i >= 0; i--) {
-        while (cur->forward[i] && cur->forward[i]->key < key)
-            cur = cur->forward[i];
-        if (update) update[i] = cur;      // 记录第 i 层的前驱
-    }
-    cur = cur->forward[0];
-    if (cur && cur->key == key) return cur;
-    return NULL;
+ SkipNode* cur = sl->header;
+ for (int i = sl->level - 1; i >= 0; i--) {
+ while (cur->forward[i] && cur->forward[i]->key < key)
+ cur = cur->forward[i];
+ if (update) update[i] = cur; // 记录第 i 层的前驱
+ }
+ cur = cur->forward[0];
+ if (cur && cur->key == key) return cur;
+ return NULL;
 }
 
 void sl_insert(SkipList* sl, int key, int value) {
-    SkipNode* update[MAX_LEVEL];
-    SkipNode* existing = sl_find(sl, key, update);
-    if (existing) { existing->value = value; return; }  // 更新
+ SkipNode* update[MAX_LEVEL];
+ SkipNode* existing = sl_find(sl, key, update);
+ if (existing) { existing->value = value; return; } // 更新
 
-    int new_level = random_level();
-    if (new_level > sl->level) {
-        for (int i = sl->level; i < new_level; i++)
-            update[i] = sl->header;       // 超出现有层的前驱 = header
-        sl->level = new_level;
-    }
+ int new_level = random_level();
+ if (new_level > sl->level) {
+ for (int i = sl->level; i < new_level; i++)
+ update[i] = sl->header; // 超出现有层的前驱 = header
+ sl->level = new_level;
+ }
 
-    SkipNode* node = sl_create_node(new_level, key, value);
-    for (int i = 0; i < new_level; i++) {
-        node->forward[i] = update[i]->forward[i];   // 插入链表的标准操作
-        update[i]->forward[i] = node;
-    }
+ SkipNode* node = sl_create_node(new_level, key, value);
+ for (int i = 0; i < new_level; i++) {
+ node->forward[i] = update[i]->forward[i]; // 插入链表的标准操作
+ update[i]->forward[i] = node;
+ }
 }
 
 void sl_destroy(SkipList* sl) {
-    SkipNode* cur = sl->header->forward[0];
-    while (cur) {
-        SkipNode* next = cur->forward[0];
-        free(cur);
-        cur = next;
-    }
-    free(sl->header);
+ SkipNode* cur = sl->header->forward[0];
+ while (cur) {
+ SkipNode* next = cur->forward[0];
+ free(cur);
+ cur = next;
+ }
+ free(sl->header);
 }
 ```
 
@@ -208,119 +208,119 @@ void sl_destroy(SkipList* sl) {
 #define MAX_LEVEL 16
 
 typedef struct SLNode {
-    int key;
-    int value;
-    struct SLNode** forward;  // 各层后继指针
+ int key;
+ int value;
+ struct SLNode** forward; // 各层后继指针
 } SLNode;
 
 typedef struct {
-    SLNode* header;
-    int currentLevel;
-    double probability;
+ SLNode* header;
+ int currentLevel;
+ double probability;
 } SkipList;
 
 static SLNode* sl_create_node(int key, int value, int level) {
-    SLNode* node = malloc(sizeof(SLNode));
-    node->key = key;
-    node->value = value;
-    node->forward = calloc(level + 1, sizeof(SLNode*));
-    return node;
+ SLNode* node = malloc(sizeof(SLNode));
+ node->key = key;
+ node->value = value;
+ node->forward = calloc(level + 1, sizeof(SLNode*));
+ return node;
 }
 
 static int sl_random_level(double prob) {
-    int level = 0;
-    while ((double)rand() / RAND_MAX < prob && level < MAX_LEVEL)
-        level++;
-    return level;
+ int level = 0;
+ while ((double)rand() / RAND_MAX < prob && level < MAX_LEVEL)
+ level++;
+ return level;
 }
 
 void sl_init(SkipList* sl) {
-    srand((unsigned)time(NULL));
-    sl->probability = 0.5;
-    sl->currentLevel = 0;
-    sl->header = sl_create_node(0, 0, MAX_LEVEL);
+ srand((unsigned)time(NULL));
+ sl->probability = 0.5;
+ sl->currentLevel = 0;
+ sl->header = sl_create_node(0, 0, MAX_LEVEL);
 }
 
 void sl_destroy(SkipList* sl) {
-    SLNode* cur = sl->header->forward[0];
-    while (cur) {
-        SLNode* next = cur->forward[0];
-        free(cur->forward);
-        free(cur);
-        cur = next;
-    }
-    free(sl->header->forward);
-    free(sl->header);
+ SLNode* cur = sl->header->forward[0];
+ while (cur) {
+ SLNode* next = cur->forward[0];
+ free(cur->forward);
+ free(cur);
+ cur = next;
+ }
+ free(sl->header->forward);
+ free(sl->header);
 }
 
 int sl_search(SkipList* sl, int key, int* out_value) {
-    SLNode* cur = sl->header;
-    for (int i = sl->currentLevel; i >= 0; i--) {
-        while (cur->forward[i] && cur->forward[i]->key < key)
-            cur = cur->forward[i];
-    }
-    cur = cur->forward[0];
-    if (cur && cur->key == key) {
-        *out_value = cur->value;
-        return 1;
-    }
-    return 0;
+ SLNode* cur = sl->header;
+ for (int i = sl->currentLevel; i >= 0; i--) {
+ while (cur->forward[i] && cur->forward[i]->key < key)
+ cur = cur->forward[i];
+ }
+ cur = cur->forward[0];
+ if (cur && cur->key == key) {
+ *out_value = cur->value;
+ return 1;
+ }
+ return 0;
 }
 
 void sl_insert(SkipList* sl, int key, int value) {
-    SLNode* update[MAX_LEVEL + 1];
-    SLNode* cur = sl->header;
+ SLNode* update[MAX_LEVEL + 1];
+ SLNode* cur = sl->header;
 
-    for (int i = sl->currentLevel; i >= 0; i--) {
-        while (cur->forward[i] && cur->forward[i]->key < key)
-            cur = cur->forward[i];
-        update[i] = cur;
-    }
-    cur = cur->forward[0];
+ for (int i = sl->currentLevel; i >= 0; i--) {
+ while (cur->forward[i] && cur->forward[i]->key < key)
+ cur = cur->forward[i];
+ update[i] = cur;
+ }
+ cur = cur->forward[0];
 
-    if (cur && cur->key == key) {
-        cur->value = value;
-        return;
-    }
+ if (cur && cur->key == key) {
+ cur->value = value;
+ return;
+ }
 
-    int new_level = sl_random_level(sl->probability);
-    if (new_level > sl->currentLevel) {
-        for (int i = sl->currentLevel + 1; i <= new_level; i++)
-            update[i] = sl->header;
-        sl->currentLevel = new_level;
-    }
+ int new_level = sl_random_level(sl->probability);
+ if (new_level > sl->currentLevel) {
+ for (int i = sl->currentLevel + 1; i <= new_level; i++)
+ update[i] = sl->header;
+ sl->currentLevel = new_level;
+ }
 
-    SLNode* new_node = sl_create_node(key, value, new_level);
-    for (int i = 0; i <= new_level; i++) {
-        new_node->forward[i] = update[i]->forward[i];
-        update[i]->forward[i] = new_node;
-    }
+ SLNode* new_node = sl_create_node(key, value, new_level);
+ for (int i = 0; i <= new_level; i++) {
+ new_node->forward[i] = update[i]->forward[i];
+ update[i]->forward[i] = new_node;
+ }
 }
 
 int sl_remove(SkipList* sl, int key) {
-    SLNode* update[MAX_LEVEL + 1];
-    SLNode* cur = sl->header;
+ SLNode* update[MAX_LEVEL + 1];
+ SLNode* cur = sl->header;
 
-    for (int i = sl->currentLevel; i >= 0; i--) {
-        while (cur->forward[i] && cur->forward[i]->key < key)
-            cur = cur->forward[i];
-        update[i] = cur;
-    }
-    cur = cur->forward[0];
+ for (int i = sl->currentLevel; i >= 0; i--) {
+ while (cur->forward[i] && cur->forward[i]->key < key)
+ cur = cur->forward[i];
+ update[i] = cur;
+ }
+ cur = cur->forward[0];
 
-    if (!cur || cur->key != key) return 0;
+ if (!cur || cur->key != key) return 0;
 
-    for (int i = 0; i <= sl->currentLevel; i++) {
-        if (update[i]->forward[i] != cur) break;
-        update[i]->forward[i] = cur->forward[i];
-    }
-    free(cur->forward);
-    free(cur);
+ for (int i = 0; i <= sl->currentLevel; i++) {
+ if (update[i]->forward[i] != cur) break;
+ update[i]->forward[i] = cur->forward[i];
+ }
+ free(cur->forward);
+ free(cur);
 
-    while (sl->currentLevel > 0 && !sl->header->forward[sl->currentLevel])
-        sl->currentLevel--;
+ while (sl->currentLevel > 0 && !sl->header->forward[sl->currentLevel])
+ sl->currentLevel--;
 
-    return 1;
+ return 1;
 }
 ```
 

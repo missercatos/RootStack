@@ -46,22 +46,22 @@ rayon = "1.10"
 
 ```rust
 fn main() {
-    // 不可变绑定
-    let target = "192.168.1.0/24";
-    // 可变绑定
-    let mut open_ports = Vec::new();
+ // 不可变绑定
+ let target = "192.168.1.0/24";
+ // 可变绑定
+ let mut open_ports = Vec::new();
 
-    // if 是表达式
-    let verdict = if open_ports.len() > 10 { "活跃" } else { "冷清" };
+ // if 是表达式
+ let verdict = if open_ports.len() > 10 { "活跃" } else { "冷清" };
 
-    // loop + match
-    for port in 1..=1024 {
-        match scan_port(target, port) {
-            Ok(true) => open_ports.push(port),
-            Ok(false) => {}
-            Err(e) => eprintln!("扫描 {} 端口 {} 失败: {}", target, port, e),
-        }
-    }
+ // loop + match
+ for port in 1..=1024 {
+ match scan_port(target, port) {
+ Ok(true) => open_ports.push(port),
+ Ok(false) => {}
+ Err(e) => eprintln!("扫描 {} 端口 {} 失败: {}", target, port, e),
+ }
+ }
 }
 ```
 
@@ -73,17 +73,17 @@ Rust 的所有权规则确保了内存安全，但写安全工具时要注意：
 // 所有权转移：适合消息传递式的并发架构（channel）
 let data = vec![1, 2, 3];
 std::thread::spawn(move || {
-    println!("{:?}", data); // data 的所有权移入线程
+ println!("{:?}", data); // data 的所有权移入线程
 });
 
 // 借用：多个线程只读访问用 Arc
 use std::sync::Arc;
 let targets = Arc::new(vec!["host1", "host2", "host3"]);
 for _ in 0..3 {
-    let t = Arc::clone(&targets);
-    std::thread::spawn(move || {
-        println!("{}", t[0]); // 只读借用
-    });
+ let t = Arc::clone(&targets);
+ std::thread::spawn(move || {
+ println!("{}", t[0]); // 只读借用
+ });
 }
 ```
 
@@ -97,13 +97,13 @@ for _ in 0..3 {
 use std::io;
 
 fn read_targets(path: &str) -> Result<Vec<String>, io::Error> {
-    let content = std::fs::read_to_string(path)?;
-    Ok(content.lines().map(String::from).collect())
+ let content = std::fs::read_to_string(path)?;
+ Ok(content.lines().map(String::from).collect())
 }
 // 调用时
 match read_targets("targets.txt") {
-    Ok(hosts) => println!("加载了 {} 个目标", hosts.len()),
-    Err(e) => eprintln!("读取失败: {}", e),
+ Ok(hosts) => println!("加载了 {} 个目标", hosts.len()),
+ Err(e) => eprintln!("读取失败: {}", e),
 }
 ```
 

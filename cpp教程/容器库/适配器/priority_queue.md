@@ -38,7 +38,7 @@ priority_queue<int, vector<int>, greater<int>> minHeap
 
 // 自定义比较器（返回 true 表示前者优先级更低）
 struct Compare {
-    bool operator()(int a, int b) { return a > b; }  // 小根堆
+ bool operator()(int a, int b) { return a > b; } // 小根堆
 }
 priority_queue<int, vector<int>, Compare> pq
 
@@ -52,41 +52,41 @@ priority_queue<pair<int, string>> pqPair
 // 合并果子（贪心 + 小根堆）
 priority_queue<int, vector<int>, greater<int>> pq
 for each x in fruits:
-    pq.push(x)
+ pq.push(x)
 total_cost = 0
 while pq.size() > 1:
-    a = pq.top(); pq.pop()
-    b = pq.top(); pq.pop()
-    total_cost += a + b
-    pq.push(a + b)
+ a = pq.top(); pq.pop()
+ b = pq.top(); pq.pop()
+ total_cost += a + b
+ pq.push(a + b)
 
 // Dijkstra 最短路径
 priority_queue<{dist, node}, vector, greater> pq
 dist[start] = 0
 pq.push({0, start})
 while not pq.empty():
-    {d, u} = pq.top(); pq.pop()
-    if d != dist[u]: continue       // 过时数据跳过
-    for each {v, w} adjacent to u:
-        if dist[v] > dist[u] + w:
-            dist[v] = dist[u] + w
-            pq.push({dist[v], v})
+ {d, u} = pq.top(); pq.pop()
+ if d != dist[u]: continue // 过时数据跳过
+ for each {v, w} adjacent to u:
+ if dist[v] > dist[u] + w:
+ dist[v] = dist[u] + w
+ pq.push({dist[v], v})
 
 // 对顶堆求动态中位数
-priority_queue<int> left              // 大根堆存较小的一半
-priority_queue<int, vector, greater> right  // 小根堆存较大的一半
+priority_queue<int> left // 大根堆存较小的一半
+priority_queue<int, vector, greater> right // 小根堆存较大的一半
 function add(x):
-    if left.empty() or x <= left.top():
-        left.push(x)
-    else:
-        right.push(x)
-    // 平衡大小
-    if left.size() > right.size() + 1:
-        right.push(left.top()); left.pop()
-    if right.size() > left.size():
-        left.push(right.top()); right.pop()
+ if left.empty() or x <= left.top():
+ left.push(x)
+ else:
+ right.push(x)
+ // 平衡大小
+ if left.size() > right.size() + 1:
+ right.push(left.top()); left.pop()
+ if right.size() > left.size():
+ left.push(right.top()); right.pop()
 function median():
-    return left.top()
+ return left.top()
 ```
 
 ## 相关链接

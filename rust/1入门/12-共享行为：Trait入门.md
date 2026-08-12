@@ -20,15 +20,15 @@ Trait 是 Rust 实现多态的核心机制。编译期多态通过泛型 + trait
 
 ```rust
 trait Speak {
-    fn speak(&self);                    // 必须实现
-    fn introduce(&self) -> String {     // 默认实现
-        format!("I can speak!")
-    }
+ fn speak(&self); // 必须实现
+ fn introduce(&self) -> String { // 默认实现
+ format!("I can speak!")
+ }
 }
 
 struct Dog;
 impl Speak for Dog {
-    fn speak(&self) { println!("Woof!"); }
+ fn speak(&self) { println!("Woof!"); }
 }
 ```
 
@@ -38,8 +38,8 @@ impl Speak for Dog {
 fn say(animal: &impl Speak) { animal.speak(); }
 
 fn say_twice<T: Speak>(animal: &T) {
-    animal.speak();
-    animal.speak();
+ animal.speak();
+ animal.speak();
 }
 ```
 
@@ -47,7 +47,7 @@ fn say_twice<T: Speak>(animal: &T) {
 
 ```rust
 fn create() -> Box<dyn Speak> {
-    Box::new(Dog)
+ Box::new(Dog)
 }
 ```
 
@@ -73,8 +73,8 @@ struct User { name: String, id: u32 }
 ### 孤儿规则
 
 ```rust
-trait MyTrait { }           // 我的 trait
-impl MyTrait for i32 { }    // 合法：trait 是我的
+trait MyTrait { } // 我的 trait
+impl MyTrait for i32 { } // 合法：trait 是我的
 
 // impl Display for Vec<i32> { } // 非法：trait 和类型都不是我的
 ```

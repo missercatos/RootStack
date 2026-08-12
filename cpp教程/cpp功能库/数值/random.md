@@ -38,52 +38,52 @@ C++ `<random>` 库将随机数生成器与概率分布解耦——生成器(engi
 
 ```
 FUNCTION demo_random:
-    rd = RANDOM_DEVICE()                         // 真随机源
-    gen = MT19937(rd())                          // 用真随机数做种子
+ rd = RANDOM_DEVICE() // 真随机源
+ gen = MT19937(rd()) // 用真随机数做种子
 
-    dice = UNIFORM_INT_DIST(1, 6)                // [1, 6] 均匀分布
-    FOR i = 1 TO 5:
-        PRINT dice(gen)                          // 每次调用产生新随机数
-    END FOR
+ dice = UNIFORM_INT_DIST(1, 6) // [1, 6] 均匀分布
+ FOR i = 1 TO 5:
+ PRINT dice(gen) // 每次调用产生新随机数
+ END FOR
 ```
 
 ### 各种分布
 
 ```
 FUNCTION demo_distributions:
-    gen = MT19937(RANDOM_DEVICE()())
+ gen = MT19937(RANDOM_DEVICE()())
 
-    uni_real = UNIFORM_REAL_DIST(0.0, 1.0)
-    PRINT uni_real(gen)                          // 0.0 ~ 1.0 均匀浮点
+ uni_real = UNIFORM_REAL_DIST(0.0, 1.0)
+ PRINT uni_real(gen) // 0.0 ~ 1.0 均匀浮点
 
-    normal = NORMAL_DIST(70.0, 10.0)             // 均值70，标准差10
-    PRINT normal(gen)                            // 接近正态分布值
+ normal = NORMAL_DIST(70.0, 10.0) // 均值70，标准差10
+ PRINT normal(gen) // 接近正态分布值
 
-    coin = BERNOULLI_DIST(0.7)                   // 70% 概率为 true
-    PRINT coin(gen)
+ coin = BERNOULLI_DIST(0.7) // 70% 概率为 true
+ PRINT coin(gen)
 
-    choices = DISCRETE_DIST({1, 3, 6})           // 权重 1:3:6
-    PRINT choices(gen)                           // 索引 2 概率最高
+ choices = DISCRETE_DIST({1, 3, 6}) // 权重 1:3:6
+ PRINT choices(gen) // 索引 2 概率最高
 ```
 
 ### 洗牌
 
 ```
 FUNCTION demo_shuffle:
-    v = [1, 2, 3, 4, 5, 6]
-    gen = MT19937(RANDOM_DEVICE()())
-    SHUFFLE(v, gen)                              // 随机打乱
-    PRINT v                                      // e.g. [3, 1, 5, 2, 6, 4]
+ v = [1, 2, 3, 4, 5, 6]
+ gen = MT19937(RANDOM_DEVICE()())
+ SHUFFLE(v, gen) // 随机打乱
+ PRINT v // e.g. [3, 1, 5, 2, 6, 4]
 ```
 
 ### 随机项目选择
 
 ```
 FUNCTION demo_sample:
-    src = [10, 20, 30, 40, 50]
-    dst = ARRAY OF SIZE(3)
-    gen = MT19937(RANDOM_DEVICE()())
-    SAMPLE(src, dst, 3, gen)                     // 不重复抽样 3 个
+ src = [10, 20, 30, 40, 50]
+ dst = ARRAY OF SIZE(3)
+ gen = MT19937(RANDOM_DEVICE()())
+ SAMPLE(src, dst, 3, gen) // 不重复抽样 3 个
 ```
 
 ---

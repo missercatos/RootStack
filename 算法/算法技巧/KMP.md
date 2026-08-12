@@ -21,15 +21,15 @@
 
 ```cpp
 vector<int> pi(const string &s) {
-    int n = s.size();
-    vector<int> p(n);
-    for (int i = 1; i < n; i++) {
-        int j = p[i-1];
-        while (j > 0 && s[i] != s[j]) j = p[j-1];
-        if (s[i] == s[j]) j++;
-        p[i] = j;
-    }
-    return p;
+ int n = s.size();
+ vector<int> p(n);
+ for (int i = 1; i < n; i++) {
+ int j = p[i-1];
+ while (j > 0 && s[i] != s[j]) j = p[j-1];
+ if (s[i] == s[j]) j++;
+ p[i] = j;
+ }
+ return p;
 }
 ```
 
@@ -41,13 +41,13 @@ vector<int> pi(const string &s) {
 
 ```cpp
 vector<int> kmp(const string &t, const string &p) {
-    string s = p + '#' + t;
-    auto pi = compute_pi(s);
-    vector<int> matches;
-    for (int i = p.size() + 1; i < s.size(); i++)
-        if (pi[i] == p.size())
-            matches.push_back(i - 2 * p.size());
-    return matches;
+ string s = p + '#' + t;
+ auto pi = compute_pi(s);
+ vector<int> matches;
+ for (int i = p.size() + 1; i < s.size(); i++)
+ if (pi[i] == p.size())
+ matches.push_back(i - 2 * p.size());
+ return matches;
 }
 ```
 
@@ -65,11 +65,11 @@ vector<int> kmp(const string &t, const string &p) {
 
 **前缀函数匹配过程**:
 ```
-文本串:  a  b  a  b  a  b  a  b  c
-模式串:  a  b  a  b  c
-         √  √  √  √  ×  → 回退到 π[3]=2
-               a  b  a  b  c
-               √  √  √  √  √  → 匹配成功
+文本串: a b a b a b a b c
+模式串: a b a b c
+ √ √ √ √ × → 回退到 π[3]=2
+ a b a b c
+ √ √ √ √ √ → 匹配成功
 ```
 
 ### 应用

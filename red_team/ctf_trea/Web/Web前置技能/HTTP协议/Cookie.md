@@ -10,13 +10,13 @@ HTTP 是无状态协议，服务器无法在两次请求之间记住"你是谁"�
 
 ```mermaid
 sequenceDiagram
-    participant C as 客户端 (curl/浏览器)
-    participant S as 服务器 (PHP)
-    C->>S: 1. GET /
-    S-->>C: 2. 200 OK<br/>Set-Cookie: admin=0
-    Note over C: 浏览器/curl 存下这个 Cookie
-    C->>S: 3. GET / (携带 Cookie: admin=0)
-    S->>S: 读取 $_COOKIE['admin'] 判断身份
+ participant C as 客户端 (curl/浏览器)
+ participant S as 服务器 (PHP)
+ C->>S: 1. GET /
+ S-->>C: 2. 200 OK<br/>Set-Cookie: admin=0
+ Note over C: 浏览器/curl 存下这个 Cookie
+ C->>S: 3. GET / (携带 Cookie: admin=0)
+ S->>S: 读取 $_COOKIE['admin'] 判断身份
 ```
 
 #### 漏洞本质：服务器无条件信任客户端提交的值
@@ -25,12 +25,12 @@ sequenceDiagram
 
 ```php
 <?php
-setcookie("admin", 0);                    // 下发 admin=0
-$admin = $_COOKIE['admin'] ?? 0;          // 读取 Cookie
+setcookie("admin", 0); // 下发 admin=0
+$admin = $_COOKIE['admin'] ?? 0; // 读取 Cookie
 if ($admin == 1) {
-    echo $flag;                           // admin=1 -> 返回 flag
+ echo $flag; // admin=1 -> 返回 flag
 } else {
-    echo "hello guest. only admin can get flag.";
+ echo "hello guest. only admin can get flag.";
 }
 ?>
 ```

@@ -7,7 +7,7 @@ author: hydingsy, Link-cute, Ir1d, greyqz, LuoshuiTianyi, odeinjul, xyf007, Good
 在具体讲何为「背包 dp」前，先来看如下的例题：
 
 ???+ note "[「USACO07 DEC」Charm Bracelet](https://www.luogu.com.cn/problem/P2871)"
-    题意概要：有 $n$ 个物品和一个容量为 $W$ 的背包，每个物品有重量 $w_{i}$ 和价值 $v_{i}$ 两种属性，要求选若干物品放入背包使背包中物品的总价值最大且背包中物品的总重量不超过背包的容量．
+ 题意概要：有 $n$ 个物品和一个容量为 $W$ 的背包，每个物品有重量 $w_{i}$ 和价值 $v_{i}$ 两种属性，要求选若干物品放入背包使背包中物品的总价值最大且背包中物品的总重量不超过背包的容量．
 
 在上述例题中，由于每个物体只有两种可能的状态（取与不取），对应二进制中的 $0$ 和 $1$，这类问题便被称为「0-1 背包问题」．
 
@@ -42,22 +42,22 @@ $$
 还有一点需要注意的是，很容易写出这样的 **错误核心代码**：
 
 === "C++"
-    ```cpp
-    for (int i = 1; i <= n; i++)
-      for (int l = 0; l <= W - w[i]; l++)
-        f[l + w[i]] = max(f[l] + v[i], f[l + w[i]]);
-    // 由 f[i][l + w[i]] = max(max(f[i - 1][l + w[i]], f[i - 1][l] + v[i]),
-    // f[i][l + w[i]]); 简化而来
-    ```
+ ```cpp
+ for (int i = 1; i <= n; i++)
+ for (int l = 0; l <= W - w[i]; l++)
+ f[l + w[i]] = max(f[l] + v[i], f[l + w[i]]);
+ // 由 f[i][l + w[i]] = max(max(f[i - 1][l + w[i]], f[i - 1][l] + v[i]),
+ // f[i][l + w[i]]); 简化而来
+ ```
 
 === "Python"
-    ```python
-    for i in range(1, n + 1):
-        for l in range(0, W - w[i] + 1):
-            f[l + w[i]] = max(f[l] + v[i], f[l + w[i]])
-    # 由 f[i][l + w[i]] = max(max(f[i - 1][l + w[i]], f[i - 1][l] + v[i]),
-    # f[i][l + w[i]]) 简化而来
-    ```
+ ```python
+ for i in range(1, n + 1):
+ for l in range(0, W - w[i] + 1):
+ f[l + w[i]] = max(f[l] + v[i], f[l + w[i]])
+ # 由 f[i][l + w[i]] = max(max(f[i - 1][l + w[i]], f[i - 1][l] + v[i]),
+ # f[i][l + w[i]]) 简化而来
+ ```
 
 这段代码哪里错了呢？枚举顺序错了．
 
@@ -68,22 +68,22 @@ $$
 因此实际核心代码为
 
 === "C++"
-    ```cpp
-    for (int i = 1; i <= n; i++)
-      for (int l = W; l >= w[i]; l--) f[l] = max(f[l], f[l - w[i]] + v[i]);
-    ```
+ ```cpp
+ for (int i = 1; i <= n; i++)
+ for (int l = W; l >= w[i]; l--) f[l] = max(f[l], f[l - w[i]] + v[i]);
+ ```
 
 === "Python"
-    ```python
-    for i in range(1, n + 1):
-        for l in range(W, w[i] - 1, -1):
-            f[l] = max(f[l], f[l - w[i]] + v[i])
-    ```
+ ```python
+ for i in range(1, n + 1):
+ for l in range(W, w[i] - 1, -1):
+ f[l] = max(f[l], f[l - w[i]] + v[i])
+ ```
 
 ??? note "例题代码"
-    ```cpp
-    --8<-- "docs/dp/code/knapsack/knapsack_1.cpp"
-    ```
+ ```cpp
+ --8<-- "docs/dp/code/knapsack/knapsack_1.cpp"
+ ```
 
 ## 完全背包
 
@@ -116,12 +116,12 @@ $$
 与 0-1 背包相同，我们可以将第一维去掉来优化空间复杂度．如果理解了 0-1 背包的优化方式，就不难明白压缩后的循环是正向的（也就是上文中提到的错误优化）．
 
 ??? note "[「Luogu P1616」疯狂的采药](https://www.luogu.com.cn/problem/P1616)"
-    题意概要：有 $n$ 种物品和一个容量为 $W$ 的背包，每种物品有重量 $w_{i}$ 和价值 $v_{i}$ 两种属性，要求选若干个物品放入背包使背包中物品的总价值最大且背包中物品的总重量不超过背包的容量．
+ 题意概要：有 $n$ 种物品和一个容量为 $W$ 的背包，每种物品有重量 $w_{i}$ 和价值 $v_{i}$ 两种属性，要求选若干个物品放入背包使背包中物品的总价值最大且背包中物品的总重量不超过背包的容量．
 
 ??? note "例题代码"
-    ```cpp
-    --8<-- "docs/dp/code/knapsack/knapsack_2.cpp"
-    ```
+ ```cpp
+ --8<-- "docs/dp/code/knapsack/knapsack_2.cpp"
+ ```
 
 ## 多重背包
 
@@ -136,16 +136,16 @@ $$
 时间复杂度 $O(W\sum_{i=1}^nk_i)$．
 
 ??? note "核心代码"
-    ```cpp
-    for (int i = 1; i <= n; i++) {
-      for (int weight = W; weight >= w[i]; weight--) {
-        // 多遍历一层物品数量
-        for (int k = 1; k * w[i] <= weight && k <= cnt[i]; k++) {
-          dp[weight] = max(dp[weight], dp[weight - k * w[i]] + k * v[i]);
-        }
-      }
-    }
-    ```
+ ```cpp
+ for (int i = 1; i <= n; i++) {
+ for (int weight = W; weight >= w[i]; weight--) {
+ // 多遍历一层物品数量
+ for (int k = 1; k * w[i] <= weight && k <= cnt[i]; k++) {
+ dp[weight] = max(dp[weight], dp[weight - k * w[i]] + k * v[i]);
+ }
+ }
+ }
+ ```
 
 ### 二进制分组优化
 
@@ -165,10 +165,10 @@ $$
 
 举几个例子：
 
--   $6=1+2+3$
--   $8=1+2+4+1$
--   $18=1+2+4+8+3$
--   $31=1+2+4+8+16$
+- $6=1+2+3$
+- $8=1+2+4+1$
+- $18=1+2+4+8+3$
+- $31=1+2+4+8+16$
 
 显然，通过上述拆分方式，可以表示任意 $\le k_i$ 个物品的等效选择方式．将每种物品按照上述方式拆分后，使用 0-1 背包的方法解决即可．
 
@@ -177,39 +177,39 @@ $$
 ### 实现
 
 ??? note "二进制分组代码"
-    === "C++"
-        ```cpp
-        index = 0;
-        for (int i = 1; i <= m; i++) {
-          int c = 1, p, h, k;
-          cin >> p >> h >> k;
-          while (k > c) {
-            k -= c;
-            list[++index].w = c * p;
-            list[index].v = c * h;
-            c *= 2;
-          }
-          list[++index].w = p * k;
-          list[index].v = h * k;
-        }
-        ```
-    
-    === "Python"
-        ```python
-        index = 0
-        for i in range(1, m + 1):
-            c = 1
-            p, h, k = map(int, input().split())
-            while k > c:
-                k -= c
-                index += 1
-                list[index].w = c * p
-                list[index].v = c * h
-                c *= 2
-            index += 1
-            list[index].w = p * k
-            list[index].v = h * k
-        ```
+ === "C++"
+ ```cpp
+ index = 0;
+ for (int i = 1; i <= m; i++) {
+ int c = 1, p, h, k;
+ cin >> p >> h >> k;
+ while (k > c) {
+ k -= c;
+ list[++index].w = c * p;
+ list[index].v = c * h;
+ c *= 2;
+ }
+ list[++index].w = p * k;
+ list[index].v = h * k;
+ }
+ ```
+ 
+ === "Python"
+ ```python
+ index = 0
+ for i in range(1, m + 1):
+ c = 1
+ p, h, k = map(int, input().split())
+ while k > c:
+ k -= c
+ index += 1
+ list[index].w = c * p
+ list[index].v = c * h
+ c *= 2
+ index += 1
+ list[index].w = p * k
+ list[index].v = h * k
+ ```
 
 ### 单调队列优化
 
@@ -225,45 +225,45 @@ $$
 
 ```plain
 for (循环物品种类) {
-  if (是 0 - 1 背包)
-    套用 0 - 1 背包代码;
-  else if (是完全背包)
-    套用完全背包代码;
-  else if (是多重背包)
-    套用多重背包代码;
+ if (是 0 - 1 背包)
+ 套用 0 - 1 背包代码;
+ else if (是完全背包)
+ 套用完全背包代码;
+ else if (是多重背包)
+ 套用多重背包代码;
 }
 ```
 
 ### 例题
 
 ???+ note "[「Luogu P1833」樱花](https://www.luogu.com.cn/problem/P1833)"
-    有 $n$ 种樱花树和长度为 $T$ 的时间，有的樱花树只能看一遍，有的樱花树最多看 $A_{i}$ 遍，有的樱花树可以看无数遍．每棵樱花树都有一个美学值 $C_{i}$，求在 $T$ 的时间内看哪些樱花树能使美学值最高．
+ 有 $n$ 种樱花树和长度为 $T$ 的时间，有的樱花树只能看一遍，有的樱花树最多看 $A_{i}$ 遍，有的樱花树可以看无数遍．每棵樱花树都有一个美学值 $C_{i}$，求在 $T$ 的时间内看哪些樱花树能使美学值最高．
 
 ??? note "核心代码"
-    ```cpp
-    for (int i = 1; i <= n; i++) {
-      if (cnt[i] == 0) {  // 如果数量没有限制使用完全背包的核心代码
-        for (int weight = w[i]; weight <= W; weight++) {
-          dp[weight] = max(dp[weight], dp[weight - w[i]] + v[i]);
-        }
-      } else {  // 物品有限使用多重背包的核心代码，它也可以处理0-1背包问题
-        for (int weight = W; weight >= w[i]; weight--) {
-          for (int k = 1; k * w[i] <= weight && k <= cnt[i]; k++) {
-            dp[weight] = max(dp[weight], dp[weight - k * w[i]] + k * v[i]);
-          }
-        }
-      }
-    }
-    ```
+ ```cpp
+ for (int i = 1; i <= n; i++) {
+ if (cnt[i] == 0) { // 如果数量没有限制使用完全背包的核心代码
+ for (int weight = w[i]; weight <= W; weight++) {
+ dp[weight] = max(dp[weight], dp[weight - w[i]] + v[i]);
+ }
+ } else { // 物品有限使用多重背包的核心代码，它也可以处理0-1背包问题
+ for (int weight = W; weight >= w[i]; weight--) {
+ for (int k = 1; k * w[i] <= weight && k <= cnt[i]; k++) {
+ dp[weight] = max(dp[weight], dp[weight - k * w[i]] + k * v[i]);
+ }
+ }
+ }
+ }
+ ```
 
 习题：[HDU 5410 CRB and His Birthday](https://acm.hdu.edu.cn/showproblem.php?pid=5410)
 
 ## 二维费用背包
 
 ???+ note "[「Luogu P1855」榨取 kkksc03](https://www.luogu.com.cn/problem/P1855)"
-    有 $n$ 个任务需要完成，完成第 $i$ 个任务需要花费 $t_i$ 分钟，产生 $c_i$ 元的开支．
-    
-    现在有 $T$ 分钟时间，$W$ 元钱来处理这些任务，求最多能完成多少任务．
+ 有 $n$ 个任务需要完成，完成第 $i$ 个任务需要花费 $t_i$ 分钟，产生 $c_i$ 元的开支．
+ 
+ 现在有 $T$ 分钟时间，$W$ 元钱来处理这些任务，求最多能完成多少任务．
 
 这道题是很明显的 0-1 背包问题，可是不同的是选一个物品会消耗两种价值（经费、时间），只需在状态中增加一维存放第二种价值即可．
 
@@ -272,25 +272,25 @@ for (循环物品种类) {
 ### 实现
 
 === "C++"
-    ```cpp
-    for (int k = 1; k <= n; k++)
-      for (int i = m; i >= mi; i--)    // 对经费进行一层枚举
-        for (int j = t; j >= ti; j--)  // 对时间进行一层枚举
-          dp[i][j] = max(dp[i][j], dp[i - mi][j - ti] + 1);
-    ```
+ ```cpp
+ for (int k = 1; k <= n; k++)
+ for (int i = m; i >= mi; i--) // 对经费进行一层枚举
+ for (int j = t; j >= ti; j--) // 对时间进行一层枚举
+ dp[i][j] = max(dp[i][j], dp[i - mi][j - ti] + 1);
+ ```
 
 === "Python"
-    ```python
-    for k in range(1, n + 1):
-        for i in range(m, mi - 1, -1):  # 对经费进行一层枚举
-            for j in range(t, ti - 1, -1):  # 对时间进行一层枚举
-                dp[i][j] = max(dp[i][j], dp[i - mi][j - ti] + 1)
-    ```
+ ```python
+ for k in range(1, n + 1):
+ for i in range(m, mi - 1, -1): # 对经费进行一层枚举
+ for j in range(t, ti - 1, -1): # 对时间进行一层枚举
+ dp[i][j] = max(dp[i][j], dp[i - mi][j - ti] + 1)
+ ```
 
 ## 分组背包
 
 ???+ note "[「Luogu P1757」通天之分组背包](https://www.luogu.com.cn/problem/P1757)"
-    有 $n$ 件物品和一个大小为 $m$ 的背包，第 $i$ 个物品的价值为 $w_i$，体积为 $v_i$．同时，每个物品属于一个组，同组内最多只能选择一个物品．求背包能装载物品的最大总价值．
+ 有 $n$ 件物品和一个大小为 $m$ 的背包，第 $i$ 个物品的价值为 $w_i$，体积为 $v_i$．同时，每个物品属于一个组，同组内最多只能选择一个物品．求背包能装载物品的最大总价值．
 
 这种题怎么想呢？其实是从「在所有物品中选择一件」变成了「从当前组中选择一件」，于是就对每一组进行一次 0-1 背包就可以了．
 
@@ -299,34 +299,34 @@ for (循环物品种类) {
 ### 实现
 
 === "C++"
-    ```cpp
-    for (int k = 1; k <= ts; k++)          // 循环每一组
-      for (int i = m; i >= 0; i--)         // 循环背包容量
-        for (int j = 1; j <= cnt[k]; j++)  // 循环该组的每一个物品
-          if (i >= w[t[k][j]])             // 背包容量充足
-            dp[i] = max(dp[i],
-                        dp[i - w[t[k][j]]] + c[t[k][j]]);  // 像0-1背包一样状态转移
-    ```
+ ```cpp
+ for (int k = 1; k <= ts; k++) // 循环每一组
+ for (int i = m; i >= 0; i--) // 循环背包容量
+ for (int j = 1; j <= cnt[k]; j++) // 循环该组的每一个物品
+ if (i >= w[t[k][j]]) // 背包容量充足
+ dp[i] = max(dp[i],
+ dp[i - w[t[k][j]]] + c[t[k][j]]); // 像0-1背包一样状态转移
+ ```
 
 === "Python"
-    ```python
-    for k in range(1, ts + 1):  # 循环每一组
-        for i in range(m, -1, -1):  # 循环背包容量
-            for j in range(1, cnt[k] + 1):  # 循环该组的每一个物品
-                if i >= w[t[k][j]]:  # 背包容量充足
-                    dp[i] = max(
-                        dp[i], dp[i - w[t[k][j]]] + c[t[k][j]]
-                    )  # 像0-1背包一样状态转移
-    ```
+ ```python
+ for k in range(1, ts + 1): # 循环每一组
+ for i in range(m, -1, -1): # 循环背包容量
+ for j in range(1, cnt[k] + 1): # 循环该组的每一个物品
+ if i >= w[t[k][j]]: # 背包容量充足
+ dp[i] = max(
+ dp[i], dp[i - w[t[k][j]]] + c[t[k][j]]
+ ) # 像0-1背包一样状态转移
+ ```
 
 这里要注意：**一定不能搞错循环顺序**，这样才能保证正确性．
 
 ## 有依赖的背包
 
 ???+ note "[「Luogu P1064」金明的预算方案](https://www.luogu.com.cn/problem/P1064)"
-    金明有 $n$ 元钱，想要买 $m$ 个物品，第 $i$ 件物品的价格为 $v_i$，重要度为 $p_i$．有些物品是从属于某个主件物品的附件，要买这个物品，必须购买它的主件．
-    
-    目标是让所有购买的物品的 $v_i \times p_i$ 之和最大．
+ 金明有 $n$ 元钱，想要买 $m$ 个物品，第 $i$ 件物品的价格为 $v_i$，重要度为 $p_i$．有些物品是从属于某个主件物品的附件，要买这个物品，必须购买它的主件．
+ 
+ 目标是让所有购买的物品的 $v_i \times p_i$ 之和最大．
 
 考虑分类讨论．对于一个主件和它的若干附件，有以下几种可能：只买主件，买主件 + 某些附件．因为这几种可能性只能选一种，所以可以将这看成分组背包．
 
@@ -349,16 +349,16 @@ for (循环物品种类) {
 输出方案其实就是记录下来背包中的某一个状态是怎么推出来的．我们可以用 $g_{i,v}$ 表示第 $i$ 件物品占用空间为 $v$ 的时候是否选择了此物品．然后在转移时记录是选用了哪一种策略（选或不选）．输出时的伪代码：
 
 ```cpp
-int v = V;  // 记录当前的存储空间
+int v = V; // 记录当前的存储空间
 
 // 因为最后一件物品存储的是最终状态，所以从最后一件物品进行循环
 for (从最后一件循环至第一件) {
-  if (g[i][v]) {
-    选了第 i 项物品;
-    v -= 第 i 项物品的重量;
-  } else {
-    未选第 i 项物品;
-  }
+ if (g[i][v]) {
+ 选了第 i 项物品;
+ v -= 第 i 项物品的重量;
+ } else {
+ 未选第 i 项物品;
+ }
 }
 ```
 
@@ -403,7 +403,7 @@ memset(f, 0xcf, sizeof(f));
 // 因为是求最大值，初始化为负无穷，避免没有装满而进行了转移
 // 若求最小值，则初始化为正无穷0x3f
 f[0] = 0;
-g[0] = 1;  // 什么都不装是一种方案
+g[0] = 1; // 什么都不装是一种方案
 ```
 
 因为背包体积最大值有可能装不满，所以最优解不一定是 $f_{m}$．
@@ -411,28 +411,28 @@ g[0] = 1;  // 什么都不装是一种方案
 最后我们通过找到最优解的价值，把 $g_{j}$ 数组里取到最优解的所有方案数相加即可．
 
 ???+ note "实现"
-    ```cpp
-    for (int i = 0; i < N; i++) {
-      for (int j = V; j >= v[i]; j--) {
-        int tmp = std::max(dp[j], dp[j - v[i]] + w[i]);
-        int c = 0;
-        if (tmp == dp[j]) c += cnt[j];                       // 如果从dp[j]转移
-        if (tmp == dp[j - v[i]] + w[i]) c += cnt[j - v[i]];  // 如果从dp[j-v[i]]转移
-        dp[j] = tmp;
-        cnt[j] = c;
-      }
-    }
-    int max = 0;  // 寻找最优解
-    for (int i = 0; i <= V; i++) {
-      max = std::max(max, dp[i]);
-    }
-    int res = 0;
-    for (int i = 0; i <= V; i++) {
-      if (dp[i] == max) {
-        res += cnt[i];  // 求和最优解方案数
-      }
-    }
-    ```
+ ```cpp
+ for (int i = 0; i < N; i++) {
+ for (int j = V; j >= v[i]; j--) {
+ int tmp = std::max(dp[j], dp[j - v[i]] + w[i]);
+ int c = 0;
+ if (tmp == dp[j]) c += cnt[j]; // 如果从dp[j]转移
+ if (tmp == dp[j - v[i]] + w[i]) c += cnt[j - v[i]]; // 如果从dp[j-v[i]]转移
+ dp[j] = tmp;
+ cnt[j] = c;
+ }
+ }
+ int max = 0; // 寻找最优解
+ for (int i = 0; i <= V; i++) {
+ max = std::max(max, dp[i]);
+ }
+ int res = 0;
+ for (int i = 0; i <= V; i++) {
+ if (dp[i] == max) {
+ res += cnt[i]; // 求和最优解方案数
+ }
+ }
+ ```
 
 #### 背包的第 k 优解
 
@@ -440,34 +440,34 @@ g[0] = 1;  // 什么都不装是一种方案
 具体来讲：$\mathit{dp_{i,j,k}}$ 记录了前 $i$ 个物品中，选择的物品总体积为 $j$ 时，能够得到的第 $k$ 大的价值和．这个状态可以理解为将普通 0-1 背包只用记录一个数据的 $\mathit{dp_{i,j}}$ 扩展为记录一个有序的优解序列．转移时，普通背包最优解的求法是 $\mathit{dp_{i,j}}=\max(\mathit{dp_{i-1,j}},\mathit{dp_{i-1,j-v_{i}}}+w_{i})$，现在我们则是要合并 $\mathit{dp_{i-1,j}}$，$\mathit{dp_{i-1,j-v_{i}}}+w_{i}$ 这两个大小为 $k$ 的递减序列，并保留合并后前 $k$ 大的价值记在 $\mathit{dp_{i,j}}$ 里，这一步利用双指针法，复杂度是 $O(k)$ 的，整体时间复杂度为 $O(nmk)$．空间上，此方法与普通背包一样可以压缩掉第一维，复杂度是 $O(mk)$ 的．
 
 ??? note "例题 [HDU 2639 Bone Collector II](https://acm.hdu.edu.cn/showproblem.php?pid=2639)"
-    求 0-1 背包的严格第 $k$ 优解．$n \leq 100,v \leq 1000,k \leq 30$
+ 求 0-1 背包的严格第 $k$ 优解．$n \leq 100,v \leq 1000,k \leq 30$
 
 ??? note "实现"
-    ```cpp
-    memset(dp, 0, sizeof(dp));
-    int i, j, p, x, y, z;
-    scanf("%d%d%d", &n, &m, &K);
-    for (i = 0; i < n; i++) scanf("%d", &w[i]);
-    for (i = 0; i < n; i++) scanf("%d", &c[i]);
-    for (i = 0; i < n; i++) {
-      for (j = m; j >= c[i]; j--) {
-        for (p = 1; p <= K; p++) {
-          a[p] = dp[j - c[i]][p] + w[i];
-          b[p] = dp[j][p];
-        }
-        a[p] = b[p] = -1;
-        x = y = z = 1;
-        while (z <= K && (a[x] != -1 || b[y] != -1)) {
-          if (a[x] > b[y])
-            dp[j][z] = a[x++];
-          else
-            dp[j][z] = b[y++];
-          if (dp[j][z] != dp[j][z - 1]) z++;
-        }
-      }
-    }
-    printf("%d\n", dp[m][K]);
-    ```
+ ```cpp
+ memset(dp, 0, sizeof(dp));
+ int i, j, p, x, y, z;
+ scanf("%d%d%d", &n, &m, &K);
+ for (i = 0; i < n; i++) scanf("%d", &w[i]);
+ for (i = 0; i < n; i++) scanf("%d", &c[i]);
+ for (i = 0; i < n; i++) {
+ for (j = m; j >= c[i]; j--) {
+ for (p = 1; p <= K; p++) {
+ a[p] = dp[j - c[i]][p] + w[i];
+ b[p] = dp[j][p];
+ }
+ a[p] = b[p] = -1;
+ x = y = z = 1;
+ while (z <= K && (a[x] != -1 || b[y] != -1)) {
+ if (a[x] > b[y])
+ dp[j][z] = a[x++];
+ else
+ dp[j][z] = b[y++];
+ if (dp[j][z] != dp[j][z - 1]) z++;
+ }
+ }
+ }
+ printf("%d\n", dp[m][K]);
+ ```
 
 ## 多平台练习
 

@@ -24,37 +24,37 @@ SQLite 是一个嵌入式关系数据库，整个数据库是一个单一的 .db
 ```
 SQL: "SELECT name FROM users WHERE age > 18 ORDER BY name"
 
-    |        Tokenizer (tokenize.c)
-    v
+ | Tokenizer (tokenize.c)
+ v
 Tokens: SELECT, name, FROM, users, WHERE, age, >, 18, ORDER, BY, name
 
-    |        Parser (parse.y → parse.c by Lemon)
-    v
+ | Parser (parse.y → parse.c by Lemon)
+ v
 AST: SelectStmt
-       ├── columns: [Expr(ColumnRef "name")]
-       ├── from: [SrcTable "users"]
-       ├── where: BinaryExpr(">", ColumnRef "age", Integer 18)
-       └── orderBy: [OrderBy(ColumnRef "name", ASC)]
+ ├── columns: [Expr(ColumnRef "name")]
+ ├── from: [SrcTable "users"]
+ ├── where: BinaryExpr(">", ColumnRef "age", Integer 18)
+ └── orderBy: [OrderBy(ColumnRef "name", ASC)]
 
-    |        Code Generator (select.c, where.c)
-    v
+ | Code Generator (select.c, where.c)
+ v
 VDBE Bytecode:
-    0:  Init       0, 15, 0
-    1:  OpenRead   0, 2, 0       // 打开 users 表 (cursor 0)
-    2:  OpenRead   1, 3, 0       // 打开排序索引 (cursor 1)
-    3:  Rewind     0, 10, 0      // 移到表头
-    4:    Column   0, 2          // 读取 age 列
-    5:    Ge       18, 9         // age >= 18? 否跳转到9
-    6:    Column   0, 1          // 读取 name 列
-    7:    MakeRecord 1, 0        // 生成排序 key
-    8:    IdxInsert 1, 0         // 插入排序索引
-    9:  Next       0, 4          // 下一行, 跳回4
-    10: Close      0, 0
-    11: Sort       1, 14
-    12:   Column   1, 0
-    13:   ResultRow 0, 1
-    14: Next       1, 12
-    15: Halt       0, 0
+ 0: Init 0, 15, 0
+ 1: OpenRead 0, 2, 0 // 打开 users 表 (cursor 0)
+ 2: OpenRead 1, 3, 0 // 打开排序索引 (cursor 1)
+ 3: Rewind 0, 10, 0 // 移到表头
+ 4: Column 0, 2 // 读取 age 列
+ 5: Ge 18, 9 // age >= 18? 否跳转到9
+ 6: Column 0, 1 // 读取 name 列
+ 7: MakeRecord 1, 0 // 生成排序 key
+ 8: IdxInsert 1, 0 // 插入排序索引
+ 9: Next 0, 4 // 下一行, 跳回4
+ 10: Close 0, 0
+ 11: Sort 1, 14
+ 12: Column 1, 0
+ 13: ResultRow 0, 1
+ 14: Next 1, 12
+ 15: Halt 0, 0
 ```
 
 ## VDBE 虚拟机
@@ -62,10 +62,10 @@ VDBE Bytecode:
 ```c
 // VDBE 执行循环 (sqlite3VdbeExec 简化)
 struct Vdbe {
-    Op *aOp;           // 字节码指令数组
-    Mem *aMem;         // 内存寄存器数组
-    int pc;            // 程序计数器
-    Cursor *aCursor;   // B-Tree 游标 (表的"指针")
+ Op *aOp; // 字节码指令数组
+ Mem *aMem; // 内存寄存器数组
+ int pc; // 程序计数器
+ Cursor *aCursor; // B-Tree 游标 (表的"指针")
 };
 
 // 每条指令有 5 个操作数: P1, P2, P3, P4, P5
@@ -76,40 +76,40 @@ struct Vdbe {
 
 ```
 表 "users" 的内部存储:
-    B-Tree 根页 (Table 1, Root Page 2):
-        Interior Page (内部节点, 存储 key + 子页指针):
-            [key: 100, child: page3] [key: 200, child: page4] [key:300, child: page5]
+ B-Tree 根页 (Table 1, Root Page 2):
+ Interior Page (内部节点, 存储 key + 子页指针):
+ [key: 100, child: page3] [key: 200, child: page4] [key:300, child: page5]
 
-        Leaf Page (叶子节点, 存储实际数据):
-            [Cell 0: rowid=100, payload=(name:"Alice", age:22)]
-            [Cell 1: rowid=101, payload=(name:"Bob",   age:35)]
-            ...
+ Leaf Page (叶子节点, 存储实际数据):
+ [Cell 0: rowid=100, payload=(name:"Alice", age:22)]
+ [Cell 1: rowid=101, payload=(name:"Bob", age:35)]
+ ...
 
 索引 "idx_users_age" 的 B-Tree:
-    Leaf Page:
-        [Cell 0: key=(age:18, rowid:105)]
-        [Cell 1: key=(age:22, rowid:100)]
-        ...
+ Leaf Page:
+ [Cell 0: key=(age:18, rowid:105)]
+ [Cell 1: key=(age:22, rowid:100)]
+ ...
 ```
 
 ## Pager 层 + WAL
 
 ```
 传统回滚日志 (Rollback Journal):
-    写事务前复制旧页到 journal 文件
-    提交时删除 journal
-    崩溃恢复时回滚 journal
+ 写事务前复制旧页到 journal 文件
+ 提交时删除 journal
+ 崩溃恢复时回滚 journal
 
 WAL (Write-Ahead Log):
-    写操作不直接修改主数据页
-    而是追加到 WAL 文件末尾
-    读操作首先检查 WAL 中是否有更新
-    达到 checkpoint 阈值后合并 WAL 到主数据文件
+ 写操作不直接修改主数据页
+ 而是追加到 WAL 文件末尾
+ 读操作首先检查 WAL 中是否有更新
+ 达到 checkpoint 阈值后合并 WAL 到主数据文件
 
 WAL 优势:
-    读写不互斥 (reader 不阻塞 writer)
-    写入顺序追加 (磁盘友好)
-    崩溃恢复简单 (只收尾 WAL)
+ 读写不互斥 (reader 不阻塞 writer)
+ 写入顺序追加 (磁盘友好)
+ 崩溃恢复简单 (只收尾 WAL)
 ```
 
 ---

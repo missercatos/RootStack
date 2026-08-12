@@ -29,7 +29,7 @@ unsafe { *raw = 10; }
 
 // FFI
 extern "C" {
-    fn abs(input: i32) -> i32;
+ fn abs(input: i32) -> i32;
 }
 unsafe { println!("{}", abs(-3)); }
 
@@ -39,8 +39,8 @@ pub extern "C" fn rust_fn(x: i32) -> i32 { x + 1 }
 
 // Union
 union MyUnion {
-    i: i32,
-    f: f32,
+ i: i32,
+ f: f32,
 }
 let u = MyUnion { i: 42 };
 unsafe { println!("{}", u.i); }
@@ -56,9 +56,9 @@ unsafe { COUNTER += 1; }
 let mut v = vec![1, 2, 3];
 let p = v.as_mut_ptr();
 unsafe {
-    ptr::write(p.add(0), 10);
-    ptr::write(p.add(1), 20);
-    let val = ptr::read(p.add(1));
+ ptr::write(p.add(0), 10);
+ ptr::write(p.add(1), 20);
+ let val = ptr::read(p.add(1));
 }
 ```
 

@@ -32,9 +32,9 @@ Linux 默认采用 1:1 模型（通过 clone + futex 等系统调用实现），
 ```c
 // 两个线程同时执行 counter++
 // counter++ 不是原子操作！它被编译为三条汇编指令：
-//    mov eax, [counter]      ; 1. 从内存读
-//    add eax, 1              ; 2. 加一
-//    mov [counter], eax      ; 3. 写回内存
+// mov eax, [counter] ; 1. 从内存读
+// add eax, 1 ; 2. 加一
+// mov [counter], eax ; 3. 写回内存
 // 如果两线程交错执行这 3 条指令，最终 counter 可能只加了 1 而非 2
 ```
 
@@ -45,9 +45,9 @@ Linux 默认采用 1:1 模型（通过 clone + futex 等系统调用实现），
 原子操作是不可分割的 CPU 指令，不会被其他线程打断。x86 提供 `LOCK` 前缀实现原子性：
 
 ```c
-#include <stdatomic.h>  // C11 原子类型
+#include <stdatomic.h> // C11 原子类型
 atomic_int counter = 0;
-atomic_fetch_add(&counter, 1);  // 原子递增，编译为 lock xadd
+atomic_fetch_add(&counter, 1); // 原子递增，编译为 lock xadd
 ```
 
 | 操作 | 指令（x86） | 说明 |

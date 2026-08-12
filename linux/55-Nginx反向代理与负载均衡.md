@@ -9,14 +9,14 @@
 ### 正向代理 vs 反向代理
 
 ```
-正向代理（Forward Proxy）           反向代理（Reverse Proxy）
-    客户端 → 代理 → 互联网             客户端 → 代理 → 后端服务器
-    隐藏客户端身份                      隐藏服务器身份
-    
-    [Client A] ─┐                      [Client A] ─┐
-    [Client B] ─┤→ [Proxy] → [Internet]             ├→ [Nginx] ─┬→ [Server 1]
-    [Client C] ─┘                                    │          ├→ [Server 2]
-                                                 [Client B] ───┘          └→ [Server 3]
+正向代理（Forward Proxy） 反向代理（Reverse Proxy）
+ 客户端 → 代理 → 互联网 客户端 → 代理 → 后端服务器
+ 隐藏客户端身份 隐藏服务器身份
+ 
+ [Client A] ─┐ [Client A] ─┐
+ [Client B] ─┤→ [Proxy] → [Internet] ├→ [Nginx] ─┬→ [Server 1]
+ [Client C] ─┘ │ ├→ [Server 2]
+ [Client B] ───┘ └→ [Server 3]
 ```
 
 ### 反向代理的核心作用
@@ -42,16 +42,16 @@
 # /etc/nginx/conf.d/reverse-proxy.conf
 
 server {
-    listen 80;
-    server_name api.example.com;
+ listen 80;
+ server_name api.example.com;
 
-    location / {
-        proxy_pass http://127.0.0.1:3000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
+ location / {
+ proxy_pass http://127.0.0.1:3000;
+ proxy_set_header Host $host;
+ proxy_set_header X-Real-IP $remote_addr;
+ proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+ proxy_set_header X-Forwarded-Proto $scheme;
+ }
 }
 ```
 
@@ -60,14 +60,14 @@ server {
 ```nginx
 # 带 / — 替换匹配的前缀
 location /api/ {
-    proxy_pass http://backend/;
-    # 请求 /api/users → 转发到 http://backend/users
+ proxy_pass http://backend/;
+ # 请求 /api/users → 转发到 http://backend/users
 }
 
 # 不带 / — 保留完整路径
 location /api/ {
-    proxy_pass http://backend;
-    # 请求 /api/users → 转发到 http://backend/api/users
+ proxy_pass http://backend;
+ # 请求 /api/users → 转发到 http://backend/api/users
 }
 ```
 
@@ -75,30 +75,30 @@ location /api/ {
 
 ```nginx
 # 向后端传递客户端真实信息的标准头集合
-proxy_set_header Host              $host;
-proxy_set_header X-Real-IP         $remote_addr;
-proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+proxy_set_header Host $host;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 proxy_set_header X-Forwarded-Proto $scheme;
-proxy_set_header X-Forwarded-Host  $host;
-proxy_set_header X-Forwarded-Port  $server_port;
+proxy_set_header X-Forwarded-Host $host;
+proxy_set_header X-Forwarded-Port $server_port;
 
 # 对于 WebSocket
-proxy_set_header Upgrade           $http_upgrade;
-proxy_set_header Connection        "upgrade";
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection "upgrade";
 ```
 
 ### proxy 超时设置
 
 ```nginx
 location / {
-    proxy_pass http://backend;
-    proxy_connect_timeout 60s;       # 连接后端超时
-    proxy_send_timeout 60s;          # 发送请求到后端超时
-    proxy_read_timeout 120s;         # 等待后端响应超时
-    proxy_buffering on;
-    proxy_buffer_size 4k;
-    proxy_buffers 8 16k;
-    proxy_busy_buffers_size 32k;
+ proxy_pass http://backend;
+ proxy_connect_timeout 60s; # 连接后端超时
+ proxy_send_timeout 60s; # 发送请求到后端超时
+ proxy_read_timeout 120s; # 等待后端响应超时
+ proxy_buffering on;
+ proxy_buffer_size 4k;
+ proxy_buffers 8 16k;
+ proxy_busy_buffers_size 32k;
 }
 ```
 
@@ -123,21 +123,21 @@ Nginx 支持以下负载均衡算法：
 
 ```nginx
 upstream backend_servers {
-    # 轮询（默认）
-    server 192.168.1.10:8080;
-    server 192.168.1.11:8080;
-    server 192.168.1.12:8080;
+ # 轮询（默认）
+ server 192.168.1.10:8080;
+ server 192.168.1.11:8080;
+ server 192.168.1.12:8080;
 }
 
 server {
-    listen 80;
-    server_name app.example.com;
+ listen 80;
+ server_name app.example.com;
 
-    location / {
-        proxy_pass http://backend_servers;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
+ location / {
+ proxy_pass http://backend_servers;
+ proxy_set_header Host $host;
+ proxy_set_header X-Real-IP $remote_addr;
+ }
 }
 ```
 
@@ -145,9 +145,9 @@ server {
 
 ```nginx
 upstream backend_weighted {
-    server 192.168.1.10:8080 weight=5;   # 50% 流量
-    server 192.168.1.11:8080 weight=3;   # 30% 流量
-    server 192.168.1.12:8080 weight=2;   # 20% 流量
+ server 192.168.1.10:8080 weight=5; # 50% 流量
+ server 192.168.1.11:8080 weight=3; # 30% 流量
+ server 192.168.1.12:8080 weight=2; # 20% 流量
 }
 ```
 
@@ -155,10 +155,10 @@ upstream backend_weighted {
 
 ```nginx
 upstream backend_leastconn {
-    least_conn;
-    server 192.168.1.10:8080;
-    server 192.168.1.11:8080;
-    server 192.168.1.12:8080;
+ least_conn;
+ server 192.168.1.10:8080;
+ server 192.168.1.11:8080;
+ server 192.168.1.12:8080;
 }
 ```
 
@@ -166,10 +166,10 @@ upstream backend_leastconn {
 
 ```nginx
 upstream backend_iphash {
-    ip_hash;
-    server 192.168.1.10:8080;
-    server 192.168.1.11:8080;
-    server 192.168.1.12:8080;
+ ip_hash;
+ server 192.168.1.10:8080;
+ server 192.168.1.11:8080;
+ server 192.168.1.12:8080;
 }
 ```
 
@@ -179,10 +179,10 @@ upstream backend_iphash {
 
 ```nginx
 upstream backend_hash {
-    hash $request_uri consistent;
-    server 192.168.1.10:8080;
-    server 192.168.1.11:8080;
-    server 192.168.1.12:8080;
+ hash $request_uri consistent;
+ server 192.168.1.10:8080;
+ server 192.168.1.11:8080;
+ server 192.168.1.12:8080;
 }
 ```
 
@@ -196,10 +196,10 @@ upstream backend_hash {
 
 ```nginx
 upstream backend_health {
-    server 192.168.1.10:8080 max_fails=3 fail_timeout=30s;
-    server 192.168.1.11:8080 max_fails=3 fail_timeout=30s;
-    server 192.168.1.12:8080 max_fails=3 fail_timeout=30s backup;
-    server 192.168.1.13:8080 down;
+ server 192.168.1.10:8080 max_fails=3 fail_timeout=30s;
+ server 192.168.1.11:8080 max_fails=3 fail_timeout=30s;
+ server 192.168.1.12:8080 max_fails=3 fail_timeout=30s backup;
+ server 192.168.1.13:8080 down;
 }
 ```
 
@@ -216,12 +216,12 @@ upstream backend_health {
 # Nginx Plus 商业版支持主动健康检查
 # 开源版可使用 nginx_upstream_check 模块（需自行编译）
 upstream backend_active {
-    server 192.168.1.10:8080;
-    server 192.168.1.11:8080;
+ server 192.168.1.10:8080;
+ server 192.168.1.11:8080;
 
-    check interval=3000 rise=2 fall=5 timeout=1000 type=http;
-    check_http_send "HEAD /health HTTP/1.0\r\n\r\n";
-    check_http_expect_alive http_2xx http_3xx;
+ check interval=3000 rise=2 fall=5 timeout=1000 type=http;
+ check_http_send "HEAD /health HTTP/1.0\r\n\r\n";
+ check_http_expect_alive http_2xx http_3xx;
 }
 ```
 
@@ -230,9 +230,9 @@ upstream backend_active {
 ```nginx
 # 开源版变通方案：定义一个健康检查 location
 location /nginx-health {
-    access_log off;
-    return 200 "healthy\n";
-    add_header Content-Type text/plain;
+ access_log off;
+ return 200 "healthy\n";
+ add_header Content-Type text/plain;
 }
 ```
 
@@ -246,35 +246,35 @@ location /nginx-health {
 
 ```nginx
 server {
-    listen 443 ssl http2;
-    server_name api.example.com;
+ listen 443 ssl http2;
+ server_name api.example.com;
 
-    ssl_certificate     /etc/nginx/ssl/api.example.com.crt;
-    ssl_certificate_key /etc/nginx/ssl/api.example.com.key;
+ ssl_certificate /etc/nginx/ssl/api.example.com.crt;
+ ssl_certificate_key /etc/nginx/ssl/api.example.com.key;
 
-    # Let's Encrypt 证书（推荐）
-    # ssl_certificate     /etc/letsencrypt/live/api.example.com/fullchain.pem;
-    # ssl_certificate_key /etc/letsencrypt/live/api.example.com/privkey.pem;
+ # Let's Encrypt 证书（推荐）
+ # ssl_certificate /etc/letsencrypt/live/api.example.com/fullchain.pem;
+ # ssl_certificate_key /etc/letsencrypt/live/api.example.com/privkey.pem;
 
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
-    ssl_prefer_server_ciphers on;
-    ssl_session_cache shared:SSL:10m;
-    ssl_session_timeout 10m;
+ ssl_protocols TLSv1.2 TLSv1.3;
+ ssl_ciphers 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
+ ssl_prefer_server_ciphers on;
+ ssl_session_cache shared:SSL:10m;
+ ssl_session_timeout 10m;
 
-    location / {
-        proxy_pass http://backend_servers;
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-Proto https;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
+ location / {
+ proxy_pass http://backend_servers;
+ proxy_set_header Host $host;
+ proxy_set_header X-Forwarded-Proto https;
+ proxy_set_header X-Real-IP $remote_addr;
+ }
 }
 
 # HTTP → HTTPS 重定向
 server {
-    listen 80;
-    server_name api.example.com;
-    return 301 https://$host$request_uri;
+ listen 80;
+ server_name api.example.com;
+ return 301 https://$host$request_uri;
 }
 ```
 
@@ -283,19 +283,19 @@ server {
 ```nginx
 # Nginx 自动根据 SNI 选择合适的证书
 server {
-    listen 443 ssl http2;
-    server_name site-a.example.com;
-    ssl_certificate     /etc/nginx/ssl/site-a.crt;
-    ssl_certificate_key /etc/nginx/ssl/site-a.key;
-    # ...
+ listen 443 ssl http2;
+ server_name site-a.example.com;
+ ssl_certificate /etc/nginx/ssl/site-a.crt;
+ ssl_certificate_key /etc/nginx/ssl/site-a.key;
+ # ...
 }
 
 server {
-    listen 443 ssl http2;
-    server_name site-b.example.com;
-    ssl_certificate     /etc/nginx/ssl/site-b.crt;
-    ssl_certificate_key /etc/nginx/ssl/site-b.key;
-    # ...
+ listen 443 ssl http2;
+ server_name site-b.example.com;
+ ssl_certificate /etc/nginx/ssl/site-b.crt;
+ ssl_certificate_key /etc/nginx/ssl/site-b.key;
+ # ...
 }
 ```
 
@@ -305,34 +305,34 @@ server {
 
 ```nginx
 server {
-    listen 443 ssl http2;
-    server_name ws.example.com;
+ listen 443 ssl http2;
+ server_name ws.example.com;
 
-    ssl_certificate     /etc/letsencrypt/live/ws.example.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/ws.example.com/privkey.pem;
+ ssl_certificate /etc/letsencrypt/live/ws.example.com/fullchain.pem;
+ ssl_certificate_key /etc/letsencrypt/live/ws.example.com/privkey.pem;
 
-    location /ws/ {
-        proxy_pass http://ws_backend;
-        proxy_http_version 1.1;
+ location /ws/ {
+ proxy_pass http://ws_backend;
+ proxy_http_version 1.1;
 
-        # WebSocket 必需的 Upgrade 头
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
+ # WebSocket 必需的 Upgrade 头
+ proxy_set_header Upgrade $http_upgrade;
+ proxy_set_header Connection "upgrade";
 
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+ proxy_set_header Host $host;
+ proxy_set_header X-Real-IP $remote_addr;
+ proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+ proxy_set_header X-Forwarded-Proto $scheme;
 
-        # WebSocket 长连接超时
-        proxy_read_timeout 3600s;
-        proxy_send_timeout 3600s;
-    }
+ # WebSocket 长连接超时
+ proxy_read_timeout 3600s;
+ proxy_send_timeout 3600s;
+ }
 }
 
 upstream ws_backend {
-    server 127.0.0.1:3001;
-    server 127.0.0.1:3002;
+ server 127.0.0.1:3001;
+ server 127.0.0.1:3002;
 }
 ```
 
@@ -343,42 +343,42 @@ upstream ws_backend {
 ```nginx
 # 定义缓存路径
 proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=api_cache:100m
-                 max_size=10g inactive=60m use_temp_path=off;
+ max_size=10g inactive=60m use_temp_path=off;
 
 server {
-    listen 80;
-    server_name api.example.com;
+ listen 80;
+ server_name api.example.com;
 
-    # 通用缓存配置
-    proxy_cache api_cache;
-    proxy_cache_valid 200 302 10m;
-    proxy_cache_valid 404      1m;
-    proxy_cache_use_stale error timeout updating http_500 http_502 http_503;
-    proxy_cache_lock on;
-    proxy_cache_background_update on;
+ # 通用缓存配置
+ proxy_cache api_cache;
+ proxy_cache_valid 200 302 10m;
+ proxy_cache_valid 404 1m;
+ proxy_cache_use_stale error timeout updating http_500 http_502 http_503;
+ proxy_cache_lock on;
+ proxy_cache_background_update on;
 
-    # 缓存 bypass 头（调试用）
-    proxy_cache_bypass $http_cache_control;
+ # 缓存 bypass 头（调试用）
+ proxy_cache_bypass $http_cache_control;
 
-    # 向客户端返回缓存状态头
-    add_header X-Cache-Status $upstream_cache_status;
+ # 向客户端返回缓存状态头
+ add_header X-Cache-Status $upstream_cache_status;
 
-    location / {
-        proxy_pass http://backend_servers;
-        proxy_set_header Host $host;
-    }
+ location / {
+ proxy_pass http://backend_servers;
+ proxy_set_header Host $host;
+ }
 
-    # 特定路径更长的缓存时间
-    location /static/ {
-        proxy_pass http://backend_servers;
-        proxy_cache_valid 200 1h;
-    }
+ # 特定路径更长的缓存时间
+ location /static/ {
+ proxy_pass http://backend_servers;
+ proxy_cache_valid 200 1h;
+ }
 
-    # 不缓存的路径
-    location /api/private/ {
-        proxy_pass http://backend_servers;
-        proxy_cache off;
-    }
+ # 不缓存的路径
+ location /api/private/ {
+ proxy_pass http://backend_servers;
+ proxy_cache off;
+ }
 }
 ```
 
@@ -410,27 +410,27 @@ limit_req_zone $binary_remote_addr zone=api_limit:10m rate=10r/s;
 limit_req_zone $binary_remote_addr zone=login_limit:10m rate=1r/m;
 
 server {
-    listen 80;
-    server_name api.example.com;
+ listen 80;
+ server_name api.example.com;
 
-    # API 全局限流：10 请求/秒，允许额外 5 个突发
-    location /api/ {
-        limit_req zone=api_limit burst=5 nodelay;
-        proxy_pass http://backend_servers;
-    }
+ # API 全局限流：10 请求/秒，允许额外 5 个突发
+ location /api/ {
+ limit_req zone=api_limit burst=5 nodelay;
+ proxy_pass http://backend_servers;
+ }
 
-    # 登录接口严格限流：1 请求/分钟
-    location /api/login {
-        limit_req zone=login_limit burst=2 nodelay;
-        proxy_pass http://backend_servers;
-    }
+ # 登录接口严格限流：1 请求/分钟
+ location /api/login {
+ limit_req zone=login_limit burst=2 nodelay;
+ proxy_pass http://backend_servers;
+ }
 
-    # 带宽限制（下载限速）
-    location /downloads/ {
-        limit_rate 500k;
-        limit_rate_after 2m;
-        proxy_pass http://backend_servers;
-    }
+ # 带宽限制（下载限速）
+ location /downloads/ {
+ limit_rate 500k;
+ limit_rate_after 2m;
+ proxy_pass http://backend_servers;
+ }
 }
 ```
 
@@ -440,11 +440,11 @@ server {
 limit_conn_zone $binary_remote_addr zone=conn_limit:10m;
 
 server {
-    location / {
-        limit_conn conn_limit 10;          # 每 IP 最多 10 并发连接
-        limit_conn_status 429;             # 超限返回 429
-        proxy_pass http://backend_servers;
-    }
+ location / {
+ limit_conn conn_limit 10; # 每 IP 最多 10 并发连接
+ limit_conn_status 429; # 超限返回 429
+ proxy_pass http://backend_servers;
+ }
 }
 ```
 
@@ -456,12 +456,12 @@ limit_req_log_level warn;
 log_format rate_limit '$remote_addr - $request - rate_limit_rejected';
 
 server {
-    # 限流达到时记录
-    location /api/ {
-        limit_req zone=api_limit burst=5 nodelay;
-        limit_req_log_level error;
-        proxy_pass http://backend_servers;
-    }
+ # 限流达到时记录
+ location /api/ {
+ limit_req zone=api_limit burst=5 nodelay;
+ limit_req_log_level error;
+ proxy_pass http://backend_servers;
+ }
 }
 ```
 
@@ -473,50 +473,50 @@ server {
 
 ```nginx
 server {
-    listen 443 ssl http2;
-    server_name services.example.com;
+ listen 443 ssl http2;
+ server_name services.example.com;
 
-    # API 鉴权服务
-    location /api/auth/ {
-        proxy_pass http://auth_service;
-    }
+ # API 鉴权服务
+ location /api/auth/ {
+ proxy_pass http://auth_service;
+ }
 
-    # 用户服务
-    location /api/users/ {
-        proxy_pass http://user_service;
-    }
+ # 用户服务
+ location /api/users/ {
+ proxy_pass http://user_service;
+ }
 
-    # 订单服务
-    location /api/orders/ {
-        proxy_pass http://order_service;
-    }
+ # 订单服务
+ location /api/orders/ {
+ proxy_pass http://order_service;
+ }
 
-    # 文件服务（直通上传）
-    location /api/files/ {
-        proxy_pass http://file_service;
-        client_max_body_size 100m;         # 大文件上传
-        proxy_request_buffering off;        # 禁用请求缓冲
-    }
+ # 文件服务（直通上传）
+ location /api/files/ {
+ proxy_pass http://file_service;
+ client_max_body_size 100m; # 大文件上传
+ proxy_request_buffering off; # 禁用请求缓冲
+ }
 }
 
 # 各服务 upstream 定义
 upstream auth_service {
-    server 10.0.0.10:3000;
-    server 10.0.0.11:3000;
+ server 10.0.0.10:3000;
+ server 10.0.0.11:3000;
 }
 
 upstream user_service {
-    server 10.0.0.20:4000;
-    server 10.0.0.21:4000;
+ server 10.0.0.20:4000;
+ server 10.0.0.21:4000;
 }
 
 upstream order_service {
-    server 10.0.0.30:5000;
-    server 10.0.0.31:5000;
+ server 10.0.0.30:5000;
+ server 10.0.0.31:5000;
 }
 
 upstream file_service {
-    server 10.0.0.40:6000;
+ server 10.0.0.40:6000;
 }
 ```
 
@@ -525,32 +525,32 @@ upstream file_service {
 ```nginx
 # 主 API 网关配置
 server {
-    listen 443 ssl http2;
-    server_name api.example.com;
+ listen 443 ssl http2;
+ server_name api.example.com;
 
-    # 认证后添加自定义头
-    location / {
-        auth_request /internal/auth;
-        auth_request_set $user_id $upstream_http_x_user_id;
+ # 认证后添加自定义头
+ location / {
+ auth_request /internal/auth;
+ auth_request_set $user_id $upstream_http_x_user_id;
 
-        proxy_set_header X-User-ID $user_id;
-        proxy_pass http://microservices;
-    }
+ proxy_set_header X-User-ID $user_id;
+ proxy_pass http://microservices;
+ }
 
-    # 内部认证端点
-    location = /internal/auth {
-        internal;
-        proxy_pass http://auth_service/verify;
-        proxy_pass_request_body off;
-        proxy_set_header Content-Length "";
-        proxy_set_header X-Original-URI $request_uri;
-    }
+ # 内部认证端点
+ location = /internal/auth {
+ internal;
+ proxy_pass http://auth_service/verify;
+ proxy_pass_request_body off;
+ proxy_set_header Content-Length "";
+ proxy_set_header X-Original-URI $request_uri;
+ }
 }
 
 upstream microservices {
-    hash $request_uri consistent;
-    server 10.0.0.100:8080;
-    server 10.0.0.101:8080;
+ hash $request_uri consistent;
+ server 10.0.0.100:8080;
+ server 10.0.0.101:8080;
 }
 ```
 
@@ -558,29 +558,29 @@ upstream microservices {
 
 ```nginx
 server {
-    listen 443 ssl http2;
-    server_name app.example.com;
+ listen 443 ssl http2;
+ server_name app.example.com;
 
-    root /var/www/app/dist;
+ root /var/www/app/dist;
 
-    # API 请求转发到后端
-    location /api/ {
-        proxy_pass http://backend_servers;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    }
+ # API 请求转发到后端
+ location /api/ {
+ proxy_pass http://backend_servers;
+ proxy_set_header Host $host;
+ proxy_set_header X-Real-IP $remote_addr;
+ proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+ }
 
-    # SPA 静态文件
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
+ # SPA 静态文件
+ location / {
+ try_files $uri $uri/ /index.html;
+ }
 
-    # 静态资源长期缓存
-    location /assets/ {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-    }
+ # 静态资源长期缓存
+ location /assets/ {
+ expires 1y;
+ add_header Cache-Control "public, immutable";
+ }
 }
 ```
 
@@ -601,94 +601,94 @@ limit_req_zone $binary_remote_addr zone=login:10m rate=1r/m;
 
 # === 后端 upstream 组 ===
 upstream flask_api {
-    least_conn;
-    server 127.0.0.1:5000 max_fails=3 fail_timeout=30s;
-    server 127.0.0.1:5001 max_fails=3 fail_timeout=30s;
-    keepalive 32;
+ least_conn;
+ server 127.0.0.1:5000 max_fails=3 fail_timeout=30s;
+ server 127.0.0.1:5001 max_fails=3 fail_timeout=30s;
+ keepalive 32;
 }
 
 upstream nodejs_ws {
-    ip_hash;
-    server 127.0.0.1:3000 max_fails=2 fail_timeout=15s;
-    server 127.0.0.1:3001 max_fails=2 fail_timeout=15s;
+ ip_hash;
+ server 127.0.0.1:3000 max_fails=2 fail_timeout=15s;
+ server 127.0.0.1:3001 max_fails=2 fail_timeout=15s;
 }
 
 upstream admin_panel {
-    server 127.0.0.1:8080;
+ server 127.0.0.1:8080;
 }
 
 # === 主站点 ===
 server {
-    listen 443 ssl http2;
-    server_name mysite.com;
+ listen 443 ssl http2;
+ server_name mysite.com;
 
-    ssl_certificate     /etc/letsencrypt/live/mysite.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/mysite.com/privkey.pem;
+ ssl_certificate /etc/letsencrypt/live/mysite.com/fullchain.pem;
+ ssl_certificate_key /etc/letsencrypt/live/mysite.com/privkey.pem;
 
-    root /var/www/mysite/dist;
-    index index.html;
-    charset utf-8;
+ root /var/www/mysite/dist;
+ index index.html;
+ charset utf-8;
 
-    # 全局限流
-    limit_req zone=global burst=10 nodelay;
+ # 全局限流
+ limit_req zone=global burst=10 nodelay;
 
-    # 前端 SPA
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
+ # 前端 SPA
+ location / {
+ try_files $uri $uri/ /index.html;
+ }
 
-    location /assets/ {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-    }
+ location /assets/ {
+ expires 1y;
+ add_header Cache-Control "public, immutable";
+ }
 
-    # Python Flask REST API
-    location /api/v1/ {
-        proxy_pass http://flask_api;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header Connection "";
-    }
+ # Python Flask REST API
+ location /api/v1/ {
+ proxy_pass http://flask_api;
+ proxy_http_version 1.1;
+ proxy_set_header Host $host;
+ proxy_set_header X-Real-IP $remote_addr;
+ proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+ proxy_set_header X-Forwarded-Proto $scheme;
+ proxy_set_header Connection "";
+ }
 
-    # 登录接口 — 严格限流
-    location = /api/v1/login {
-        limit_req zone=login burst=2 nodelay;
-        proxy_pass http://flask_api;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
+ # 登录接口 — 严格限流
+ location = /api/v1/login {
+ limit_req zone=login burst=2 nodelay;
+ proxy_pass http://flask_api;
+ proxy_set_header Host $host;
+ proxy_set_header X-Real-IP $remote_addr;
+ }
 
-    # Node.js WebSocket
-    location /ws/ {
-        proxy_pass http://nodejs_ws;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_read_timeout 3600s;
-    }
+ # Node.js WebSocket
+ location /ws/ {
+ proxy_pass http://nodejs_ws;
+ proxy_http_version 1.1;
+ proxy_set_header Upgrade $http_upgrade;
+ proxy_set_header Connection "upgrade";
+ proxy_set_header Host $host;
+ proxy_set_header X-Real-IP $remote_addr;
+ proxy_read_timeout 3600s;
+ }
 
-    # 内部管理后台（仅允许内网访问）
-    location /admin/ {
-        allow 10.0.0.0/8;
-        allow 192.168.0.0/16;
-        deny all;
+ # 内部管理后台（仅允许内网访问）
+ location /admin/ {
+ allow 10.0.0.0/8;
+ allow 192.168.0.0/16;
+ deny all;
 
-        proxy_pass http://admin_panel;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
+ proxy_pass http://admin_panel;
+ proxy_set_header Host $host;
+ proxy_set_header X-Real-IP $remote_addr;
+ }
 }
 
 # === HTTP 重定向到 HTTPS ===
 server {
-    listen 80;
-    server_name mysite.com;
-    return 301 https://$host$request_uri;
+ listen 80;
+ server_name mysite.com;
+ return 301 https://$host$request_uri;
 }
 ```
 
@@ -696,10 +696,10 @@ server {
 
 ```bash
 # 启动后端服务
-cd /opt/app/flask    && gunicorn -w 4 -b 127.0.0.1:5000 app:app &
-cd /opt/app/flask2   && gunicorn -w 4 -b 127.0.0.1:5001 app:app &
-cd /opt/app/nodejs   && node server.js &       # 监听 127.0.0.1:3000
-cd /opt/app/nodejs2  && node server.js &       # 监听 127.0.0.1:3001
+cd /opt/app/flask && gunicorn -w 4 -b 127.0.0.1:5000 app:app &
+cd /opt/app/flask2 && gunicorn -w 4 -b 127.0.0.1:5001 app:app &
+cd /opt/app/nodejs && node server.js & # 监听 127.0.0.1:3000
+cd /opt/app/nodejs2 && node server.js & # 监听 127.0.0.1:3001
 
 # 测试 Nginx 配置
 sudo nginx -t
@@ -721,13 +721,13 @@ curl -I -H "Upgrade: websocket" -H "Connection: upgrade" https://mysite.com/ws/
 ```nginx
 # 自定义日志格式，包含 upstream 相关信息
 log_format upstream_info '$remote_addr - $remote_user [$time_local] '
-    '"$request" $status $body_bytes_sent '
-    '"$http_referer" "$http_user_agent" '
-    'upstream=[$upstream_addr] '
-    'rt=$upstream_response_time '
-    'uct=$upstream_connect_time '
-    'uht=$upstream_header_time '
-    'cache=$upstream_cache_status';
+ '"$request" $status $body_bytes_sent '
+ '"$http_referer" "$http_user_agent" '
+ 'upstream=[$upstream_addr] '
+ 'rt=$upstream_response_time '
+ 'uct=$upstream_connect_time '
+ 'uht=$upstream_header_time '
+ 'cache=$upstream_cache_status';
 
 access_log /var/log/nginx/access.log upstream_info;
 ```
@@ -749,15 +749,15 @@ ngxtop -l /var/log/nginx/access.log
 # 查看 Nginx stub_status 模块的状态
 # 在配置中添加：
 # location /nginx_status {
-#     stub_status on;
-#     access_log off;
-#     allow 127.0.0.1;
-#     deny all;
+# stub_status on;
+# access_log off;
+# allow 127.0.0.1;
+# deny all;
 # }
 curl http://127.0.0.1/nginx_status
 # Active connections: 291
 # server accepts handled requests
-#  16630948 16630948 31070465
+# 16630948 16630948 31070465
 # Reading: 6 Writing: 179 Waiting: 106
 ```
 
@@ -795,18 +795,18 @@ sudo vim /etc/keepalived/keepalived.conf
 
 ```
 vrrp_instance VI_1 {
-    state MASTER
-    interface eth0
-    virtual_router_id 51
-    priority 100
-    advert_int 1
-    authentication {
-        auth_type PASS
-        auth_pass s3cr3t
-    }
-    virtual_ipaddress {
-        192.168.1.100/24
-    }
+ state MASTER
+ interface eth0
+ virtual_router_id 51
+ priority 100
+ advert_int 1
+ authentication {
+ auth_type PASS
+ auth_pass s3cr3t
+ }
+ virtual_ipaddress {
+ 192.168.1.100/24
+ }
 }
 ```
 
@@ -840,8 +840,8 @@ systemctl status nginx --no-pager | head -5
 
 echo "=== 后端健康检查 ==="
 for backend in 3000 3001 5000 5001 8080; do
-    curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:$backend/health 2>/dev/null \
-        && echo " :$backend OK" || echo " :$backend FAIL"
+ curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:$backend/health 2>/dev/null \
+ && echo " :$backend OK" || echo " :$backend FAIL"
 done
 
 echo "=== 最近 Nginx 错误 ==="

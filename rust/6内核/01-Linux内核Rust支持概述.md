@@ -6,7 +6,7 @@
 
 Linux 内核是世界上最庞大的 C 语言代码库之一，超过 3000 万行代码。几十年来，内存安全漏洞——use-after-free（UAF）、缓冲区溢出、空指针解引用——一直是内核漏洞的主要来源。根据 Google 的统计，Chrome 和 Android 中约 70% 的高危安全漏洞都是内存安全 bug。微软的研究表明，他们修补的漏洞中约 70% 也是内存安全问题。
 
-> 📌 **C语言内核编程**：Linux内核是世界上最大的C语言项目。要理解Rust在内核中的意义，必须先理解C语言在内核中的实践方式。请参阅 [[../../内核/系统内核/01_C语言与操作系统|C语言教程: C语言与操作系统]] 以及 [[../../内核/系统内核/07_Linux内核源码导读|C语言教程: Linux内核源码导读]]。
+> **C语言内核编程**：Linux内核是世界上最大的C语言项目。要理解Rust在内核中的意义，必须先理解C语言在内核中的实践方式。请参阅 [[../../内核/系统内核/01_C语言与操作系统|C语言教程: C语言与操作系统]] 以及 [[../../内核/系统内核/07_Linux内核源码导读|C语言教程: Linux内核源码导读]]。
 
 内核中的内存安全漏洞尤其危险，因为它们通常导致：
 - **权限提升**（privilege escalation）：普通用户获得 root 权限
@@ -69,11 +69,11 @@ Linux 6.1（发布于 2022 年 12 月 11 日）是第一个包含 Rust 支持的
 commit 8aebac82933ff641c5cca6b4825e6c1df28da293
 Merge: ... 
 Author: Linus Torvalds
-Date:   Mon Oct 10 2022
+Date: Mon Oct 10 2022
 
-    Merge tag 'rust-v6.1-rc1' of https://github.com/Rust-for-Linux/linux
-    
-    Rust introduction for v6.1-rc1
+ Merge tag 'rust-v6.1-rc1' of https://github.com/Rust-for-Linux/linux
+ 
+ Rust introduction for v6.1-rc1
 ```
 
 这是将 Rust 支持合并入主线的合并提交。它引入了约 12,500 行 Rust 代码，涵盖内核 crate、alloc 分支和构建系统集成。
@@ -140,7 +140,7 @@ PCI NVMe 驱动也有 Rust 实现正在开发中。核心开发者包括 Wedson 
 has_rust := $(shell rustc --version 2>/dev/null)
 
 ifdef has_rust
-  core-y += rust/
+ core-y += rust/
 endif
 ```
 
@@ -156,14 +156,14 @@ endif
 ```makefile
 # rust/Makefile 中的关键变量（简化示意）
 RUSTC_FLAGS := \
-    --edition 2021 \
-    --crate-type rlib \
-    -C opt-level=2 \
-    -C panic=abort \
-    -C no-redzone=y \
-    -C code-model=kernel \
-    -C relocation-model=static \
-    --emit=obj
+ --edition 2021 \
+ --crate-type rlib \
+ -C opt-level=2 \
+ -C panic=abort \
+ -C no-redzone=y \
+ -C code-model=kernel \
+ -C relocation-model=static \
+ --emit=obj
 ```
 
 注意：
@@ -176,11 +176,11 @@ RUSTC_FLAGS := \
 ```makefile
 # 通过 Kconfig 启用 Rust
 config RUST
-    bool "Rust support"
-    depends on HAVE_RUST
-    depends on !MODVERSIONS
-    help
-      This option enables support for Rust in the kernel.
+ bool "Rust support"
+ depends on HAVE_RUST
+ depends on !MODVERSIONS
+ help
+ This option enables support for Rust in the kernel.
 ```
 
 配置选项：
@@ -194,36 +194,36 @@ config RUST
 
 ```mermaid
 graph TD
-    ROOT["rust/"] --> MK["Makefile - Rust 构建规则"]
-    ROOT --> KERNEL["kernel/ - 内核抽象层（核心）"]
-    ROOT --> MACROS["macros/ - 过程宏"]
-    ROOT --> BINDINGS["bindings/ - 自动生成的 FFI 绑定"]
-    ROOT --> ALLOC["alloc/ - alloc crate 分支"]
-    ROOT --> EXPORTS["exports.c - C 侧导出符号"]
-    KERNEL --> KLIB["lib.rs - kernel crate 入口"]
-    KERNEL --> KPRE["prelude.rs - 便捷导入"]
-    KERNEL --> KALLOC["alloc/ - 内存分配器封装"]
-    KERNEL --> KSYNC["sync/ - 同步原语"]
-    KERNEL --> KERR["error.rs - 错误类型"]
-    KERNEL --> KSTR["str.rs - 字符串类型"]
-    KERNEL --> KTYP["types.rs - 通用类型"]
-    KERNEL --> KINIT["init.rs - 原地初始化"]
-    KERNEL --> KIO["io_buffer.rs - I/O 缓冲区"]
-    KERNEL --> KFILE["file.rs - 文件操作"]
-    KERNEL --> KTASK["task.rs - 进程抽象"]
-    KERNEL --> KPRINT["print.rs - pr_info!/pr_err!"]
-    KERNEL --> KMOD["module_param.rs - 模块参数宏"]
-    KALLOC --> KALLOCRS["allocator.rs - GFP_KERNEL 等"]
-    KALLOC --> KBOX["box_ext.rs - Box 扩展"]
-    KSYNC --> KARC["arc.rs - Arc 实现"]
-    KSYNC --> KLOCK["lock.rs - Lock 实现"]
-    KSYNC --> KCOND["condvar.rs - 条件变量"]
-    MACROS --> MLIB["lib.rs"]
-    MACROS --> MMOD["module.rs - module! 宏"]
-    MACROS --> MHELP["helpers.rs"]
-    BINDINGS --> BH["bindings_helper.h - bindgen 输入"]
-    BINDINGS --> BG["bindings_generated.rs - 生成的绑定"]
-    BINDINGS --> BLIB["lib.rs"]
+ ROOT["rust/"] --> MK["Makefile - Rust 构建规则"]
+ ROOT --> KERNEL["kernel/ - 内核抽象层（核心）"]
+ ROOT --> MACROS["macros/ - 过程宏"]
+ ROOT --> BINDINGS["bindings/ - 自动生成的 FFI 绑定"]
+ ROOT --> ALLOC["alloc/ - alloc crate 分支"]
+ ROOT --> EXPORTS["exports.c - C 侧导出符号"]
+ KERNEL --> KLIB["lib.rs - kernel crate 入口"]
+ KERNEL --> KPRE["prelude.rs - 便捷导入"]
+ KERNEL --> KALLOC["alloc/ - 内存分配器封装"]
+ KERNEL --> KSYNC["sync/ - 同步原语"]
+ KERNEL --> KERR["error.rs - 错误类型"]
+ KERNEL --> KSTR["str.rs - 字符串类型"]
+ KERNEL --> KTYP["types.rs - 通用类型"]
+ KERNEL --> KINIT["init.rs - 原地初始化"]
+ KERNEL --> KIO["io_buffer.rs - I/O 缓冲区"]
+ KERNEL --> KFILE["file.rs - 文件操作"]
+ KERNEL --> KTASK["task.rs - 进程抽象"]
+ KERNEL --> KPRINT["print.rs - pr_info!/pr_err!"]
+ KERNEL --> KMOD["module_param.rs - 模块参数宏"]
+ KALLOC --> KALLOCRS["allocator.rs - GFP_KERNEL 等"]
+ KALLOC --> KBOX["box_ext.rs - Box 扩展"]
+ KSYNC --> KARC["arc.rs - Arc 实现"]
+ KSYNC --> KLOCK["lock.rs - Lock 实现"]
+ KSYNC --> KCOND["condvar.rs - 条件变量"]
+ MACROS --> MLIB["lib.rs"]
+ MACROS --> MMOD["module.rs - module! 宏"]
+ MACROS --> MHELP["helpers.rs"]
+ BINDINGS --> BH["bindings_helper.h - bindgen 输入"]
+ BINDINGS --> BG["bindings_generated.rs - 生成的绑定"]
+ BINDINGS --> BLIB["lib.rs"]
 ```
 
 ### 5.2 `kernel` crate 提供的关键抽象
@@ -233,7 +233,7 @@ graph TD
 ```rust
 // rust/kernel/lib.rs（简化示意）
 #![no_std]
-#![feature(...)]  // 使用多个 nightly 特性
+#![feature(...)] // 使用多个 nightly 特性
 
 extern crate alloc;
 
@@ -250,8 +250,8 @@ pub mod task;
 
 // 重新导出 C 绑定
 pub mod bindings {
-    // 使用 bindgen 从 C 头文件生成的 FFI 绑定
-    pub use crate::bindings::*;
+ // 使用 bindgen 从 C 头文件生成的 FFI 绑定
+ pub use crate::bindings::*;
 }
 ```
 
@@ -296,13 +296,13 @@ pub mod bindings {
 
 ```mermaid
 graph TD
-    SAFE["Safe Rust API<br>← 驱动开发者使用"]
-    KERNEL["kernel crate (安全封装)<br>← 内核抽象层"]
-    UNSAFE["unsafe Rust (FFI 调用)<br>← 内核内部实现"]
-    CAPI["C 内核 API<br>← 被封装的对象"]
-    SAFE --> KERNEL
-    KERNEL --> UNSAFE
-    UNSAFE --> CAPI
+ SAFE["Safe Rust API<br>← 驱动开发者使用"]
+ KERNEL["kernel crate (安全封装)<br>← 内核抽象层"]
+ UNSAFE["unsafe Rust (FFI 调用)<br>← 内核内部实现"]
+ CAPI["C 内核 API<br>← 被封装的对象"]
+ SAFE --> KERNEL
+ KERNEL --> UNSAFE
+ UNSAFE --> CAPI
 ```
 
 ### 7.2 Zero-Cost Abstraction
@@ -369,9 +369,9 @@ cat Documentation/rust/quick-start.rst
 // 生成的绑定示例（简化）
 // 来自 include/linux/kref.h
 extern "C" {
-    pub fn kref_init(kref: *mut kref);
-    pub fn kref_get(kref: *mut kref);
-    pub fn kref_put(kref: *mut kref, release: unsafe extern "C" fn(*mut kref)) -> c_int;
+ pub fn kref_init(kref: *mut kref);
+ pub fn kref_get(kref: *mut kref);
+ pub fn kref_put(kref: *mut kref, release: unsafe extern "C" fn(*mut kref)) -> c_int;
 }
 ```
 

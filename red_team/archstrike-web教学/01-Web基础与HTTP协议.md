@@ -2,24 +2,24 @@
 
 ## 目录
 - [[#一、HTTP协议详解|一、HTTP协议详解]]
-  - [[#1.1 HTTP请求结构|1.1 HTTP请求结构]]
-  - [[#1.2 HTTP请求方法详解|1.2 HTTP请求方法详解]]
-  - [[#1.3 HTTP响应结构|1.3 HTTP响应结构]]
-  - [[#1.4 HTTP状态码分类|1.4 HTTP状态码分类]]
-  - [[#1.5 关键HTTP请求头详解|1.5 关键HTTP请求头详解]]
-  - [[#1.6 关键HTTP响应头分析|1.6 关键HTTP响应头分析]]
+ - [[#1.1 HTTP请求结构|1.1 HTTP请求结构]]
+ - [[#1.2 HTTP请求方法详解|1.2 HTTP请求方法详解]]
+ - [[#1.3 HTTP响应结构|1.3 HTTP响应结构]]
+ - [[#1.4 HTTP状态码分类|1.4 HTTP状态码分类]]
+ - [[#1.5 关键HTTP请求头详解|1.5 关键HTTP请求头详解]]
+ - [[#1.6 关键HTTP响应头分析|1.6 关键HTTP响应头分析]]
 - [[#二、HTTPS与TLS原理|二、HTTPS与TLS原理]]
-  - [[#2.1 TLS握手过程|2.1 TLS握手过程]]
+ - [[#2.1 TLS握手过程|2.1 TLS握手过程]]
 - [[#三、Cookie与Session机制|三、Cookie与Session机制]]
-  - [[#3.1 Session工作流程|3.1 Session工作流程]]
-  - [[#3.2 Cookie属性安全分析|3.2 Cookie属性安全分析]]
+ - [[#3.1 Session工作流程|3.1 Session工作流程]]
+ - [[#3.2 Cookie属性安全分析|3.2 Cookie属性安全分析]]
 - [[#四、同源策略与CORS|四、同源策略与CORS]]
-  - [[#4.1 同源策略|4.1 同源策略]]
-  - [[#4.2 CORS跨域资源共享|4.2 CORS跨域资源共享]]
+ - [[#4.1 同源策略|4.1 同源策略]]
+ - [[#4.2 CORS跨域资源共享|4.2 CORS跨域资源共享]]
 - [[#五、Firefox开发者工具实战|五、Firefox开发者工具实战]]
 - [[#六、curl命令行HTTP操作|六、curl命令行HTTP操作]]
-  - [[#6.1 curl基础命令|6.1 curl基础命令]]
-  - [[#6.2 curl进阶技巧|6.2 curl进阶技巧]]
+ - [[#6.1 curl基础命令|6.1 curl基础命令]]
+ - [[#6.2 curl进阶技巧|6.2 curl进阶技巧]]
 - [[#七、Burp Suite社区版入门|七、Burp Suite社区版入门]]
 - [[#八、实践练习|八、实践练习]]
 
@@ -35,14 +35,14 @@ HTTP请求由**请求行、请求头、空行、请求体**四部分组成。渗
 
 ```mermaid
 flowchart LR
-    client[客户端浏览器] --> req[构造HTTP请求]
-    req --> parse[请求行: 方法+URI+版本]
-    parse --> headers[请求头: Host/Cookie/UA...]
-    headers --> blank[空行 CRLF]
-    blank --> body[请求体: POST数据]
-    body --> server[Web服务器处理]
-    server --> resp[HTTP响应]
-    resp --> client2[客户端渲染]
+ client[客户端浏览器] --> req[构造HTTP请求]
+ req --> parse[请求行: 方法+URI+版本]
+ parse --> headers[请求头: Host/Cookie/UA...]
+ headers --> blank[空行 CRLF]
+ blank --> body[请求体: POST数据]
+ body --> server[Web服务器处理]
+ server --> resp[HTTP响应]
+ resp --> client2[客户端渲染]
 ```
 
 请求行格式：`<方法> <请求URI> <HTTP版本>`
@@ -84,11 +84,11 @@ HTTP响应由**状态行、响应头、空行、响应体**组成：
 
 ```mermaid
 flowchart TD
-    S[服务器处理完成] --> SL[状态行: HTTP版本 状态码 原因短语]
-    SL --> RH[响应头: Server/Set-Cookie/CSP...]
-    RH --> BL[空行 CRLF]
-    BL --> RB[响应体: HTML/JSON/XML...]
-    RB --> END[浏览器解析渲染]
+ S[服务器处理完成] --> SL[状态行: HTTP版本 状态码 原因短语]
+ SL --> RH[响应头: Server/Set-Cookie/CSP...]
+ RH --> BL[空行 CRLF]
+ BL --> RB[响应体: HTML/JSON/XML...]
+ RB --> END[浏览器解析渲染]
 ```
 
 ### 1.4 HTTP状态码分类
@@ -140,19 +140,19 @@ flowchart TD
 ### 1.6 关键HTTP响应头分析
 
 ```
-Server: Apache/2.4.41 (Ubuntu)       # 泄露服务器版本 → 找准已知漏洞
-X-Powered-By: PHP/7.4.3              # 泄露后端语言及版本 → 精准攻击
+Server: Apache/2.4.41 (Ubuntu) # 泄露服务器版本 → 找准已知漏洞
+X-Powered-By: PHP/7.4.3 # 泄露后端语言及版本 → 精准攻击
 
 Set-Cookie: PHPSESSID=abc123; HttpOnly; Secure; SameSite=Strict
-  HttpOnly   → 阻止JavaScript读取Cookie（防XSS窃取）
-  Secure     → 仅通过HTTPS传输
-  SameSite   → 跨站请求控制（防CSRF）
+ HttpOnly → 阻止JavaScript读取Cookie（防XSS窃取）
+ Secure → 仅通过HTTPS传输
+ SameSite → 跨站请求控制（防CSRF）
 
-Access-Control-Allow-Origin: *       # CORS配置* → 存在CORS漏洞
-Content-Security-Policy: default-src 'self'   # CSP安全策略
-X-Frame-Options: DENY               # 防Clickjacking
-X-Content-Type-Options: nosniff     # 防MIME类型嗅探
-Strict-Transport-Security: max-age=31536000  # HSTS强制HTTPS
+Access-Control-Allow-Origin: * # CORS配置* → 存在CORS漏洞
+Content-Security-Policy: default-src 'self' # CSP安全策略
+X-Frame-Options: DENY # 防Clickjacking
+X-Content-Type-Options: nosniff # 防MIME类型嗅探
+Strict-Transport-Security: max-age=31536000 # HSTS强制HTTPS
 ```
 
 渗透测试信息收集关注点：收集Server/X-Powered-By版本信息；检查安全头缺失；分析CORS宽松策略。
@@ -165,16 +165,16 @@ Strict-Transport-Security: max-age=31536000  # HSTS强制HTTPS
 
 ```mermaid
 sequenceDiagram
-    participant C as 客户端
-    participant S as 服务器
+ participant C as 客户端
+ participant S as 服务器
 
-    C->>S: (1) ClientHello<br/>支持的加密套件, 随机数1
-    S->>C: (2) ServerHello<br/>选定加密套件, 随机数2, 证书
-    C->>S: (3) ClientKeyExchange<br/>用服务器公钥加密的预主密钥
-    C->>S: (4) ChangeCipherSpec<br/>切换加密
-    S->>C: (5) ChangeCipherSpec<br/>切换加密
-    Note over C,S: (6) 对称加密数据传输
-    C<-->S: AES/ChaCha20 加密通信
+ C->>S: (1) ClientHello<br/>支持的加密套件, 随机数1
+ S->>C: (2) ServerHello<br/>选定加密套件, 随机数2, 证书
+ C->>S: (3) ClientKeyExchange<br/>用服务器公钥加密的预主密钥
+ C->>S: (4) ChangeCipherSpec<br/>切换加密
+ S->>C: (5) ChangeCipherSpec<br/>切换加密
+ Note over C,S: (6) 对称加密数据传输
+ C<-->S: AES/ChaCha20 加密通信
 ```
 
 关键概念：
@@ -197,22 +197,22 @@ HTTP是无状态协议，每次请求都是独立的。服务器需要Session机
 
 ```mermaid
 flowchart LR
-    A[用户登录] --> B[服务器验证凭证]
-    B --> C[创建Session]
-    C --> D[生成SessionID]
-    D --> E[Set-Cookie返回]
-    E --> F[浏览器存储Cookie]
-    F --> G[后续请求自动携带Cookie]
-    G --> H[服务器查找Session]
-    H --> I[识别用户身份]
+ A[用户登录] --> B[服务器验证凭证]
+ B --> C[创建Session]
+ C --> D[生成SessionID]
+ D --> E[Set-Cookie返回]
+ E --> F[浏览器存储Cookie]
+ F --> G[后续请求自动携带Cookie]
+ G --> H[服务器查找Session]
+ H --> I[识别用户身份]
 ```
 
 ### 3.2 Cookie属性安全分析
 
 ```
 Set-Cookie: session=abc123; Domain=.example.com; Path=/;
-            Expires=Wed, 21 Oct 2026 07:28:00 GMT;
-            HttpOnly; Secure; SameSite=Lax
+ Expires=Wed, 21 Oct 2026 07:28:00 GMT;
+ HttpOnly; Secure; SameSite=Lax
 ```
 
 | 属性 | 作用 | 渗透视角 |
@@ -261,17 +261,17 @@ Firefox开发者工具是渗透测试中最常用的分析工具之一。参见 
 
 ```mermaid
 flowchart TD
-    F12[按F12打开] --> PANEL{选择面板}
-    PANEL --> NET[Network: HTTP流量分析]
-    PANEL --> CON[Console: 执行JS/查看错误]
-    PANEL --> STO[Storage: Cookie/Storage查看]
-    PANEL --> INS[Inspector: DOM编辑]
-    PANEL --> DEB[Debugger: JS断点调试]
-    PANEL --> SEC[Security: TLS证书]
-    NET --> COPY[右键→Copy as cURL]
-    CON --> COOKIE[document.cookie]
-    STO --> EDIT[双击修改Cookie值]
-    INS --> HTML[Edit as HTML]
+ F12[按F12打开] --> PANEL{选择面板}
+ PANEL --> NET[Network: HTTP流量分析]
+ PANEL --> CON[Console: 执行JS/查看错误]
+ PANEL --> STO[Storage: Cookie/Storage查看]
+ PANEL --> INS[Inspector: DOM编辑]
+ PANEL --> DEB[Debugger: JS断点调试]
+ PANEL --> SEC[Security: TLS证书]
+ NET --> COPY[右键→Copy as cURL]
+ CON --> COOKIE[document.cookie]
+ STO --> EDIT[双击修改Cookie值]
+ INS --> HTML[Edit as HTML]
 ```
 
 **关键操作：**
@@ -306,7 +306,7 @@ curl -X POST -d "user=admin&pass=123" http://testphp.vulnweb.com/login.php
 
 # 发送JSON数据
 curl -X POST -H "Content-Type: application/json" \
-  -d '{"user":"admin","pass":"123"}' http://example.com/api/login
+ -d '{"user":"admin","pass":"123"}' http://example.com/api/login
 
 # 携带Cookie
 curl -b "PHPSESSID=abc123; security=low" http://example.com/page
@@ -329,8 +329,8 @@ curl -vvv --trace-ascii trace.log https://example.com
 ```bash
 # 发送自定义头部
 curl -H "X-Forwarded-For: 127.0.0.1" \
-     -H "X-Forwarded-Host: internal.local" \
-     http://example.com
+ -H "X-Forwarded-Host: internal.local" \
+ http://example.com
 
 # 上传文件
 curl -F "file=@/path/to/shell.php" http://example.com/upload.php
@@ -343,8 +343,8 @@ curl -X OPTIONS -v http://example.com
 
 # 时间分析
 curl -w "DNS: %{time_namelookup}s | Connect: %{time_connect}s | \
-  TLS: %{time_appconnect}s | TTFB: %{time_starttransfer}s | \
-  Total: %{time_total}s\n" -o /dev/null -s https://example.com
+ TLS: %{time_appconnect}s | TTFB: %{time_starttransfer}s | \
+ Total: %{time_total}s\n" -o /dev/null -s https://example.com
 ```
 
 ---
@@ -355,17 +355,17 @@ Burp Suite是Web渗透测试的瑞士军刀。ArchStrike中自带社区版。
 
 ```mermaid
 flowchart TD
-    B[启动Burp: burpsuite] --> P[临时项目 → Burp默认 → 启动]
-    P --> PR[Proxy → Intercept标签]
-    PR --> FF[Firefox代理: 127.0.0.1:8080]
-    FF --> CERT[安装Burp CA证书: http:// burpsuite]
-    CERT --> INT[开启Intercept → 拦截请求]
-    INT --> ACT{操作}
-    ACT --> FWD[Forward放行]
-    ACT --> DROP[Drop丢弃]
-    ACT --> EDIT[修改后Forward]
-    ACT --> REP[Send to Repeater]
-    REP --> SEND[Repeater中修改并重放]
+ B[启动Burp: burpsuite] --> P[临时项目 → Burp默认 → 启动]
+ P --> PR[Proxy → Intercept标签]
+ PR --> FF[Firefox代理: 127.0.0.1:8080]
+ FF --> CERT[安装Burp CA证书: http:// burpsuite]
+ CERT --> INT[开启Intercept → 拦截请求]
+ INT --> ACT{操作}
+ ACT --> FWD[Forward放行]
+ ACT --> DROP[Drop丢弃]
+ ACT --> EDIT[修改后Forward]
+ ACT --> REP[Send to Repeater]
+ REP --> SEND[Repeater中修改并重放]
 ```
 
 **步骤概览：**

@@ -8,9 +8,9 @@ IDE/编辑器通过**语言服务器协议（LSP）**与编译器后端通信，
 
 ```mermaid
 graph LR
-    Editor[编辑器 VSCode/Vim] -->|LSP| clangd[clangd 语言服务器]
-    clangd -->|读取| compile_commands.json
-    clangd -->|调用| Compiler[编译器前端]
+ Editor[编辑器 VSCode/Vim] -->|LSP| clangd[clangd 语言服务器]
+ clangd -->|读取| compile_commands.json
+ clangd -->|调用| Compiler[编译器前端]
 ```
 
 clangd 是 LLVM 项目的 LSP 服务器，使用 Clang 的前端分析代码，因此其错误诊断与编译器完全一致。clangd 依赖 `compile_commands.json` 获取每个源文件的编译选项（头文件路径、宏定义等）。

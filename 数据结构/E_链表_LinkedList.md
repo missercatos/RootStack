@@ -19,18 +19,18 @@
 
 ```mermaid
 graph LR
-    subgraph "单向链表"
-        direction LR
-        SL0["[head]"] --> SL1["data | next●"] --> SL2["data | next●"] --> SL3["data | next●"] --> SLN["NULL"]
-    end
-    subgraph "双向链表"
-        direction LR
-        DL0["[head]"] <-->|"prev●|●next"| DL1["data"] <-->|"prev●|●next"| DL2["data"] <-->|"prev●|●next"| DL3["data"]
-    end
-    subgraph "循环链表"
-        direction LR
-        CL0["[head]"] --> CL1["data | next●"] --> CL2["data | next●"] --> CL3["data | next●"] --> CL0
-    end
+ subgraph "单向链表"
+ direction LR
+ SL0["[head]"] --> SL1["data | next●"] --> SL2["data | next●"] --> SL3["data | next●"] --> SLN["NULL"]
+ end
+ subgraph "双向链表"
+ direction LR
+ DL0["[head]"] <-->|"prev●|●next"| DL1["data"] <-->|"prev●|●next"| DL2["data"] <-->|"prev●|●next"| DL3["data"]
+ end
+ subgraph "循环链表"
+ direction LR
+ CL0["[head]"] --> CL1["data | next●"] --> CL2["data | next●"] --> CL3["data | next●"] --> CL0
+ end
 ```
 
 双向链表的两个指针赋予了对称性——可以从任意节点向两个方向遍历。Linux 内核大量使用双向循环链表（`struct list_head`），正是因为这种对称性允许在不知道"容器头部"的情况下执行节点删除和拼接。
@@ -93,16 +93,16 @@ free(cur);
 
 ```mermaid
 graph TD
-    subgraph "数组遍历 — cache 行为"
-        direction LR
-        ARR0["arr[0]"] --> ARR1["arr[1]"] --> ARR2["arr[2]"] --> ARR3["arr[3]"] --> ARR4["arr[4]"]
-    end
-    subgraph "链表遍历 — cache 行为"
-        direction LR
-        LL0["node 0<br/>heap addr 0x55a1"] -.->|"next ptr"| LL1["node 1<br/>heap addr 0x7f3c"]
-        LL1 -.->|"next ptr (cache miss)"| LL2["node 2<br/>heap addr 0x4b90"]
-        LL2 -.->|"next ptr (cache miss)"| LL3["node 3<br/>heap addr 0x91e2"]
-    end
+ subgraph "数组遍历 — cache 行为"
+ direction LR
+ ARR0["arr[0]"] --> ARR1["arr[1]"] --> ARR2["arr[2]"] --> ARR3["arr[3]"] --> ARR4["arr[4]"]
+ end
+ subgraph "链表遍历 — cache 行为"
+ direction LR
+ LL0["node 0<br/>heap addr 0x55a1"] -.->|"next ptr"| LL1["node 1<br/>heap addr 0x7f3c"]
+ LL1 -.->|"next ptr (cache miss)"| LL2["node 2<br/>heap addr 0x4b90"]
+ LL2 -.->|"next ptr (cache miss)"| LL3["node 3<br/>heap addr 0x91e2"]
+ end
 ```
 
 **数组的遍历开销**：一次 `arr[0]` 的 cache miss（加载一条 cache line），后续 15 次访问 `arr[1..15]` 全部命中 L1。
@@ -146,21 +146,21 @@ graph TD
 
 ```mermaid
 sequenceDiagram
-    participant CPU as CPU (LSU)
-    participant L1 as L1 Cache
-    participant L2 as L2 Cache
-    participant DRAM as 主存 (DRAM)
+ participant CPU as CPU (LSU)
+ participant L1 as L1 Cache
+ participant L2 as L2 Cache
+ participant DRAM as 主存 (DRAM)
 
-    CPU->>L1: 读 node0->next
-    L1-->>CPU: MISS (node0 不在 L1)
-    CPU->>L2: 读 node0->next
-    L2-->>CPU: MISS (node0 不在 L2)
-    CPU->>DRAM: 读 node0->next (~100ns)
-    DRAM-->>CPU: 返回 node1 的地址
-    Note over CPU: 拿到 node1 地址后<br/>才能发起下一次访问
-    CPU->>L1: 读 node1->next
-    L1-->>CPU: MISS
-    Note over CPU,DRAM: 又是 ~100ns 延迟...
+ CPU->>L1: 读 node0->next
+ L1-->>CPU: MISS (node0 不在 L1)
+ CPU->>L2: 读 node0->next
+ L2-->>CPU: MISS (node0 不在 L2)
+ CPU->>DRAM: 读 node0->next (~100ns)
+ DRAM-->>CPU: 返回 node1 的地址
+ Note over CPU: 拿到 node1 地址后<br/>才能发起下一次访问
+ CPU->>L1: 读 node1->next
+ L1-->>CPU: MISS
+ Note over CPU,DRAM: 又是 ~100ns 延迟...
 ```
 
 这个串行依赖链意味着：无论 CPU 有多快，链表遍历的速度受限于 DRAM 延迟（~100ns）乘以节点数。10 万个节点约需 10ms——而等量的数组遍历约需 30μs，差距约 300 倍。
@@ -171,10 +171,10 @@ sequenceDiagram
 
 ```mermaid
 graph LR
-    subgraph "展开链表 (展开因子=4)"
-        direction LR
-        N0["node 0<br/>arr[0..3] | next●"] --> N1["node 1<br/>arr[0..3] | next●"] --> N2["node 2<br/>arr[0..2] | next●"] --> NUL["NULL"]
-    end
+ subgraph "展开链表 (展开因子=4)"
+ direction LR
+ N0["node 0<br/>arr[0..3] | next●"] --> N1["node 1<br/>arr[0..3] | next●"] --> N2["node 2<br/>arr[0..2] | next●"] --> NUL["NULL"]
+ end
 ```
 
 在 C++ 中，`std::deque` 使用了类似的思想——分块连续存储（block-based contiguous storage），但 deque 的块由中央控制结构管理，与展开链表的手动指针链接不同。详见 [[D_容器_Container|容器章节]]。
@@ -198,21 +198,21 @@ Linux 内核不使用"节点包含数据"的链表，而使用侵入式链表—
 ```c
 // Linux 内核风格 (定义在 <linux/list.h>)
 struct list_head {
-    struct list_head *prev, *next;
+ struct list_head *prev, *next;
 };
 
 struct my_struct {
-    int data;
-    struct list_head list;  // 嵌入的链节点，而非包含
+ int data;
+ struct list_head list; // 嵌入的链节点，而非包含
 };
 ```
 
 ```mermaid
 graph LR
-    subgraph "侵入式链表"
-        direction LR
-        HEAD["list_head<br/>head"] --> D1["my_struct<br/>{data=1, list}"] --> D2["my_struct<br/>{data=2, list}"] --> HEAD
-    end
+ subgraph "侵入式链表"
+ direction LR
+ HEAD["list_head<br/>head"] --> D1["my_struct<br/>{data=1, list}"] --> D2["my_struct<br/>{data=2, list}"] --> HEAD
+ end
 ```
 
 侵入式链表的优势：
@@ -229,10 +229,10 @@ graph LR
 ```c
 // 危险的删除——释放后未断开链接
 void dangerous_delete(DNode* cur) {
-    cur->prev->next = cur->next;  // 先改链表
-    cur->next->prev = cur->prev;
-    free(cur);                    // 释放内存
-    // 此时 cur 是悬垂指针，但链表中的其他节点可能不再引用它
+ cur->prev->next = cur->next; // 先改链表
+ cur->next->prev = cur->prev;
+ free(cur); // 释放内存
+ // 此时 cur 是悬垂指针，但链表中的其他节点可能不再引用它
 }
 
 // 更危险的场景——
@@ -240,7 +240,7 @@ DNode* victim = list->head;
 list->head = victim->next;
 free(victim);
 // ... 稍后 ...
-victim->data = 42;  // use-after-free! 写入已释放的内存
+victim->data = 42; // use-after-free! 写入已释放的内存
 ```
 
 在链表操作中，释放节点前必须确保：(a) 已从链表中断开（所有指向它的指针已修改），(b) 不保留悬垂指针，(c) 不重复释放（double-free）。侵入式链表将内存管理交给外覆对象的创建者，在一定程度上避免了这个问题——链表操作不负责 `free`，只负责断开链接。
@@ -255,78 +255,78 @@ victim->data = 42;  // use-after-free! 写入已释放的内存
 #include <stdlib.h>
 
 typedef struct SNode {
-    int data;
-    struct SNode* next;
+ int data;
+ struct SNode* next;
 } SNode;
 
 typedef struct {
-    SNode* head;
-    SNode* tail;    // O(1) 尾部插入
-    size_t size;
+ SNode* head;
+ SNode* tail; // O(1) 尾部插入
+ size_t size;
 } SinglyLinkedList;
 
 void sll_init(SinglyLinkedList* list) {
-    list->head = list->tail = NULL;
-    list->size = 0;
+ list->head = list->tail = NULL;
+ list->size = 0;
 }
 
 void sll_destroy(SinglyLinkedList* list) {
-    while (list->head) {
-        SNode* tmp = list->head;
-        list->head = list->head->next;
-        free(tmp);
-    }
-    list->tail = NULL;
-    list->size = 0;
+ while (list->head) {
+ SNode* tmp = list->head;
+ list->head = list->head->next;
+ free(tmp);
+ }
+ list->tail = NULL;
+ list->size = 0;
 }
 
 int sll_push_front(SinglyLinkedList* list, int value) {
-    SNode* node = malloc(sizeof(SNode));
-    if (!node) return -1;
-    node->data = value;
-    node->next = list->head;
-    list->head = node;
-    if (!list->tail) list->tail = node;  // 首个元素，tail 也指向它
-    list->size++;
-    return 0;
+ SNode* node = malloc(sizeof(SNode));
+ if (!node) return -1;
+ node->data = value;
+ node->next = list->head;
+ list->head = node;
+ if (!list->tail) list->tail = node; // 首个元素，tail 也指向它
+ list->size++;
+ return 0;
 }
 
 int sll_push_back(SinglyLinkedList* list, int value) {
-    SNode* node = malloc(sizeof(SNode));
-    if (!node) return -1;
-    node->data = value;
-    node->next = NULL;
-    if (list->tail) {
-        list->tail->next = node;
-        list->tail = node;
-    } else {
-        list->head = list->tail = node;   // 空链表的首个元素
-    }
-    list->size++;
-    return 0;
+ SNode* node = malloc(sizeof(SNode));
+ if (!node) return -1;
+ node->data = value;
+ node->next = NULL;
+ if (list->tail) {
+ list->tail->next = node;
+ list->tail = node;
+ } else {
+ list->head = list->tail = node; // 空链表的首个元素
+ }
+ list->size++;
+ return 0;
 }
 
 int sll_pop_front(SinglyLinkedList* list) {
-    if (!list->head) return -1;
-    SNode* tmp = list->head;
-    list->head = list->head->next;
-    if (!list->head) list->tail = NULL;  // 链表变空，tail 也置 NULL
-    free(tmp);
-    list->size--;
-    return 0;
+ if (!list->head) return -1;
+ SNode* tmp = list->head;
+ list->head = list->head->next;
+ if (!list->head) list->tail = NULL; // 链表变空，tail 也置 NULL
+ free(tmp);
+ list->size--;
+ return 0;
 }
 
 // 原地反转（迭代）
 void sll_reverse(SinglyLinkedList* list) {
-    SNode *prev = NULL, *cur = list->head;
-    list->tail = list->head;         // 原 head 变新 tail
-    while (cur) {
-        SNode* nxt = cur->next;
-        cur->next = prev;
-        prev = cur;
-        cur = nxt;
-    }
-    list->head = prev;
+ SNode *prev = NULL, *cur = list->head;
+ list->tail = list->head; // 原 head 变新 tail
+ while (cur) {
+ SNode* nxt = cur->next;
+ cur->next = prev;
+ prev = cur;
+ cur = nxt;
+ }
+ list->head = prev;
 }
 ```
 
@@ -338,66 +338,66 @@ void sll_reverse(SinglyLinkedList* list) {
 #include <stdlib.h>
 
 typedef struct DNode {
-    int data;
-    struct DNode* prev;
-    struct DNode* next;
+ int data;
+ struct DNode* prev;
+ struct DNode* next;
 } DNode;
 
 typedef struct {
-    DNode sentinel;    // 哨兵：sentinel.next = 真头，sentinel.prev = 真尾
-    size_t size;
+ DNode sentinel; // 哨兵：sentinel.next = 真头，sentinel.prev = 真尾
+ size_t size;
 } DoublyLinkedList;
 
 void dll_init(DoublyLinkedList* list) {
-    list->sentinel.prev = &list->sentinel;
-    list->sentinel.next = &list->sentinel;
-    list->size = 0;
+ list->sentinel.prev = &list->sentinel;
+ list->sentinel.next = &list->sentinel;
+ list->size = 0;
 }
 
 // 哨兵链表无需区分空/非空——统一在哨兵后插入
 // 在 node 之前插入 new_node
 static void dll_insert_before(DNode* node, DNode* new_node) {
-    new_node->next = node;
-    new_node->prev = node->prev;
-    node->prev->next = new_node;
-    node->prev = new_node;
+ new_node->next = node;
+ new_node->prev = node->prev;
+ node->prev->next = new_node;
+ node->prev = new_node;
 }
 
 int dll_push_back(DoublyLinkedList* list, int value) {
-    DNode* node = malloc(sizeof(DNode));
-    if (!node) return -1;
-    node->data = value;
-    dll_insert_before(&list->sentinel, node);  // 插到哨兵前 = 尾部
-    list->size++;
-    return 0;
+ DNode* node = malloc(sizeof(DNode));
+ if (!node) return -1;
+ node->data = value;
+ dll_insert_before(&list->sentinel, node); // 插到哨兵前 = 尾部
+ list->size++;
+ return 0;
 }
 
 int dll_push_front(DoublyLinkedList* list, int value) {
-    DNode* node = malloc(sizeof(DNode));
-    if (!node) return -1;
-    node->data = value;
-    dll_insert_before(list->sentinel.next, node);  // 插到真头前 = 头部
-    list->size++;
-    return 0;
+ DNode* node = malloc(sizeof(DNode));
+ if (!node) return -1;
+ node->data = value;
+ dll_insert_before(list->sentinel.next, node); // 插到真头前 = 头部
+ list->size++;
+ return 0;
 }
 
 // 从链表中摘除节点（不释放内存）
 static void dll_unlink(DNode* node) {
-    node->prev->next = node->next;
-    node->next->prev = node->prev;
+ node->prev->next = node->next;
+ node->next->prev = node->prev;
 }
 
 int dll_remove(DoublyLinkedList* list, DNode* node) {
-    if (node == &list->sentinel) return -1;  // 不能删除哨兵
-    dll_unlink(node);
-    free(node);
-    list->size--;
-    return 0;
+ if (node == &list->sentinel) return -1; // 不能删除哨兵
+ dll_unlink(node);
+ free(node);
+ list->size--;
+ return 0;
 }
 
 void dll_destroy(DoublyLinkedList* list) {
-    while (list->sentinel.next != &list->sentinel)
-        dll_remove(list, list->sentinel.next);
+ while (list->sentinel.next != &list->sentinel)
+ dll_remove(list, list->sentinel.next);
 }
 ```
 
@@ -407,47 +407,47 @@ void dll_destroy(DoublyLinkedList* list) {
 
 ```c
 typedef struct ListNode {
-    int data;
-    struct ListNode* next;
+ int data;
+ struct ListNode* next;
 } ListNode;
 
 // Floyd's cycle detection (tortoise and hare)
 int has_cycle(ListNode* head) {
-    ListNode *slow = head, *fast = head;
-    while (fast && fast->next) {
-        slow = slow->next;
-        fast = fast->next->next;
-        if (slow == fast) return 1;   // 相遇 = 有环
-    }
-    return 0;
+ ListNode *slow = head, *fast = head;
+ while (fast && fast->next) {
+ slow = slow->next;
+ fast = fast->next->next;
+ if (slow == fast) return 1; // 相遇 = 有环
+ }
+ return 0;
 }
 
 // 确定环的入口: Floyd 算法的第二阶段
 // 相遇后，slow 退回 head，两者同速度前进，再次相遇即环入口
 ListNode* detect_cycle_entry(ListNode* head) {
-    ListNode *slow = head, *fast = head;
-    while (fast && fast->next) {
-        slow = slow->next;
-        fast = fast->next->next;
-        if (slow == fast) {              // 第一阶段：确认有环
-            slow = head;                  // 第二阶段：slow 回起点
-            while (slow != fast) {
-                slow = slow->next;
-                fast = fast->next;        // 两者同速
-            }
-            return slow;                  // 再次相遇 = 环入口
-        }
-    }
-    return NULL;
+ ListNode *slow = head, *fast = head;
+ while (fast && fast->next) {
+ slow = slow->next;
+ fast = fast->next->next;
+ if (slow == fast) { // 第一阶段：确认有环
+ slow = head; // 第二阶段：slow 回起点
+ while (slow != fast) {
+ slow = slow->next;
+ fast = fast->next; // 两者同速
+ }
+ return slow; // 再次相遇 = 环入口
+ }
+ }
+ return NULL;
 }
 
 ListNode* find_middle(ListNode* head) {
-    ListNode *slow = head, *fast = head;
-    while (fast && fast->next) {
-        slow = slow->next;
-        fast = fast->next->next;
-    }
-    return slow;  // fast 到达末尾时，slow 正好到中间
+ ListNode *slow = head, *fast = head;
+ while (fast && fast->next) {
+ slow = slow->next;
+ fast = fast->next->next;
+ }
+ return slow; // fast 到达末尾时，slow 正好到中间
 }
 ```
 

@@ -37,8 +37,8 @@ p2 = make_pair("banana", 3)
 p3 = pair<string, int>{"cherry", 7}
 
 // 访问
-print p1.first          // "apple"
-print p1.second         // 5
+print p1.first // "apple"
+print p1.second // 5
 
 // 结构化绑定
 auto [name, count] = p1
@@ -47,22 +47,22 @@ print name, count
 // 比较（字典序：先比 first，相等再比 second）
 a = pair<int, int>{1, 5}
 b = pair<int, int>{1, 3}
-print a < b             // false（1==1, 5>3 所以 a > b）
+print a < b // false（1==1, 5>3 所以 a > b）
 
 // 函数返回多值
 function minmax(arr):
-    return pair<int, int>(min_val, max_val)
+ return pair<int, int>(min_val, max_val)
 auto [lo, hi] = minmax(vec)
 
 // map insert 返回值
 auto [it, ok] = mp.insert({"key", value})
 if not ok:
-    print "key already exists, value: " + it.second
+ print "key already exists, value: " + it.second
 
 // 在 priority_queue 中存优先级
 priority_queue<pair<int, string>> pq
 pq.push({3, "taskA"})
-pq.push({1, "taskB"})       // 1 < 3，默认大根堆中 taskB 优先级更高
+pq.push({1, "taskB"}) // 1 < 3，默认大根堆中 taskB 优先级更高
 ```
 
 ## 相关链接

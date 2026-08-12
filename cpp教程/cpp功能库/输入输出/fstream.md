@@ -36,39 +36,39 @@ title: "C++ 功能库 — fstream"
 
 ```
 FUNCTION demo_write:
-    fout = OFSTREAM("data.txt")
-    IF NOT fout.IS_OPEN() THEN
-        ERROR << "无法打开文件" << ENDL
-        RETURN
-    END IF
+ fout = OFSTREAM("data.txt")
+ IF NOT fout.IS_OPEN() THEN
+ ERROR << "无法打开文件" << ENDL
+ RETURN
+ END IF
 
-    fout << "第一行" << ENDL
-    fout << 42 << " " << 3.14 << ENDL
-    fout.CLOSE()
+ fout << "第一行" << ENDL
+ fout << 42 << " " << 3.14 << ENDL
+ fout.CLOSE()
 ```
 
 ### 读取文件
 
 ```
 FUNCTION demo_read:
-    fin = IFSTREAM("data.txt")
-    line = STRING()
-    WHILE GETLINE(fin, line):
-        PRINT line
-    END WHILE
-    fin.CLOSE()
+ fin = IFSTREAM("data.txt")
+ line = STRING()
+ WHILE GETLINE(fin, line):
+ PRINT line
+ END WHILE
+ fin.CLOSE()
 ```
 
 ### 追加与二进制
 
 ```
 FUNCTION demo_append_binary:
-    fout = OFSTREAM("log.txt", APP)         // 追加模式
-    fout << "新日志条目" << ENDL
+ fout = OFSTREAM("log.txt", APP) // 追加模式
+ fout << "新日志条目" << ENDL
 
-    fbin = OFSTREAM("data.bin", BINARY)     // 二进制写入
-    x = 0x12345678
-    fbin.WRITE(&x, SIZEOF(x))               // 写入原始字节
+ fbin = OFSTREAM("data.bin", BINARY) // 二进制写入
+ x = 0x12345678
+ fbin.WRITE(&x, SIZEOF(x)) // 写入原始字节
 ```
 
 ---

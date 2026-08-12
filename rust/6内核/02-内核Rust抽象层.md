@@ -15,7 +15,7 @@
 - **安全**：不安全代码局限在抽象层内部，外部暴露安全 API
 - **符合内核风格**：不强行改变内核既有的设计模式
 
-> 📌 **C语言作为参照**：Rust的内核抽象层（如Pin、Arc、锁机制等）的设计，很大程度上是对C语言内核模式的封装。要理解这些抽象的背后逻辑，请参阅 [[../../内核/系统内核/06_并发与同步|C语言教程: 并发与同步（C视角）]] 和 [[../../c语言教程/2深化/07_面向对象C编程|C语言教程: C语言中的面向对象编程]]。
+> **C语言作为参照**：Rust的内核抽象层（如Pin、Arc、锁机制等）的设计，很大程度上是对C语言内核模式的封装。要理解这些抽象的背后逻辑，请参阅 [[../../内核/系统内核/06_并发与同步|C语言教程: 并发与同步（C视角）]] 和 [[../../c语言教程/2深化/07_面向对象C编程|C语言教程: C语言中的面向对象编程]]。
 
 ## 2. `rust/kernel/` 目录结构详解
 
@@ -23,37 +23,37 @@
 
 ```mermaid
 graph TD
-    ROOT["rust/kernel/"] --> LIB["lib.rs - crate根"]
-    ROOT --> PRE["prelude.rs - 便利导入"]
-    ROOT --> ALLOC["alloc/ - 内存分配"]
-    ROOT --> SYNC["sync/ - 同步原语"]
-    ROOT --> ERR["error.rs - 内核错误码"]
-    ROOT --> STR["str.rs - CStr, CString"]
-    ROOT --> TYPES["types.rs - ForeignOwnable, ARef"]
-    ROOT --> INIT["init.rs + init/macros.rs - 原地初始化"]
-    ROOT --> IOBUF["io_buffer.rs + io_buffer/vec.rs"]
-    ROOT --> FILE["file.rs + file/operations.rs"]
-    ROOT --> TASK["task.rs + task/work.rs"]
-    ROOT --> PRINT["print.rs - pr_info! 等日志宏"]
-    ROOT --> MODP["module_param.rs"]
-    ROOT --> NET["net.rs - 网络抽象"]
-    ROOT --> RB["rbtree.rs - 红黑树"]
-    ROOT --> PAGE["page.rs - 物理页"]
-    ROOT --> LIST["list.rs - 链表"]
-    ROOT --> PREEMPT["preempt.rs - 抢占控制"]
-    ROOT --> UACCESS["uaccess.rs - copy_from_user"]
-    ROOT --> KUNIT["kunit.rs - KUnit测试"]
-    ROOT --> WQ["workqueue.rs - 工作队列"]
-    ALLOC --> A1["allocator.rs - Kmalloc/GFP"]
-    ALLOC --> A2["allocator_test.rs"]
-    ALLOC --> A3["box_ext.rs"]
-    ALLOC --> A4["vec_ext.rs"]
-    SYNC --> S1["arc.rs - Arc实现"]
-    SYNC --> S2["condvar.rs - 条件变量"]
-    SYNC --> S3["lock.rs - Lock实现"]
-    SYNC --> S4["lock/ - 各锁类型"]
-    SYNC --> S5["locked_by.rs"]
-    S4 --> S4A["global.rs / mutex.rs / spinlock.rs"]
+ ROOT["rust/kernel/"] --> LIB["lib.rs - crate根"]
+ ROOT --> PRE["prelude.rs - 便利导入"]
+ ROOT --> ALLOC["alloc/ - 内存分配"]
+ ROOT --> SYNC["sync/ - 同步原语"]
+ ROOT --> ERR["error.rs - 内核错误码"]
+ ROOT --> STR["str.rs - CStr, CString"]
+ ROOT --> TYPES["types.rs - ForeignOwnable, ARef"]
+ ROOT --> INIT["init.rs + init/macros.rs - 原地初始化"]
+ ROOT --> IOBUF["io_buffer.rs + io_buffer/vec.rs"]
+ ROOT --> FILE["file.rs + file/operations.rs"]
+ ROOT --> TASK["task.rs + task/work.rs"]
+ ROOT --> PRINT["print.rs - pr_info! 等日志宏"]
+ ROOT --> MODP["module_param.rs"]
+ ROOT --> NET["net.rs - 网络抽象"]
+ ROOT --> RB["rbtree.rs - 红黑树"]
+ ROOT --> PAGE["page.rs - 物理页"]
+ ROOT --> LIST["list.rs - 链表"]
+ ROOT --> PREEMPT["preempt.rs - 抢占控制"]
+ ROOT --> UACCESS["uaccess.rs - copy_from_user"]
+ ROOT --> KUNIT["kunit.rs - KUnit测试"]
+ ROOT --> WQ["workqueue.rs - 工作队列"]
+ ALLOC --> A1["allocator.rs - Kmalloc/GFP"]
+ ALLOC --> A2["allocator_test.rs"]
+ ALLOC --> A3["box_ext.rs"]
+ ALLOC --> A4["vec_ext.rs"]
+ SYNC --> S1["arc.rs - Arc实现"]
+ SYNC --> S2["condvar.rs - 条件变量"]
+ SYNC --> S3["lock.rs - Lock实现"]
+ SYNC --> S4["lock/ - 各锁类型"]
+ SYNC --> S5["locked_by.rs"]
+ S4 --> S4A["global.rs / mutex.rs / spinlock.rs"]
 ```
 
 ## 3. 关键抽象详解
@@ -87,40 +87,40 @@ graph TD
 #[allow(non_snake_case)]
 #[allow(dead_code)]
 pub mod bindings_raw {
-    // 类型定义
-    pub type gfp_t = core::ffi::c_uint;
-    
-    // 常量
-    pub const GFP_KERNEL: gfp_t = 0xcc0;
-    pub const GFP_ATOMIC: gfp_t = 0xdc0;
-    pub const EINVAL: i32 = 22;
-    pub const ENOMEM: i32 = 12;
-    
-    // 结构体
-    #[repr(C)]
-    #[derive(Copy, Clone)]
-    pub struct kref {
-        pub refcount: atomic_t,
-    }
-    
-    #[repr(C)]
-    pub struct mutex {
-        pub owner: atomic_long_t,
-        pub wait_lock: spinlock_t,
-        // ... 更多字段
-    }
-    
-    // 函数声明
-    extern "C" {
-        pub fn kref_init(kref: *mut kref);
-        pub fn kref_get(kref: *mut kref);
-        pub fn kref_put(kref: *mut kref, release: ...) -> c_int;
-        pub fn mutex_lock(lock: *mut mutex);
-        pub fn mutex_unlock(lock: *mut mutex);
-        pub fn kmalloc(size: usize, flags: gfp_t) -> *mut c_void;
-        pub fn kfree(ptr: *const c_void);
-        pub fn printk(fmt: *const c_char, ...) -> c_int;
-    }
+ // 类型定义
+ pub type gfp_t = core::ffi::c_uint;
+ 
+ // 常量
+ pub const GFP_KERNEL: gfp_t = 0xcc0;
+ pub const GFP_ATOMIC: gfp_t = 0xdc0;
+ pub const EINVAL: i32 = 22;
+ pub const ENOMEM: i32 = 12;
+ 
+ // 结构体
+ #[repr(C)]
+ #[derive(Copy, Clone)]
+ pub struct kref {
+ pub refcount: atomic_t,
+ }
+ 
+ #[repr(C)]
+ pub struct mutex {
+ pub owner: atomic_long_t,
+ pub wait_lock: spinlock_t,
+ // ... 更多字段
+ }
+ 
+ // 函数声明
+ extern "C" {
+ pub fn kref_init(kref: *mut kref);
+ pub fn kref_get(kref: *mut kref);
+ pub fn kref_put(kref: *mut kref, release: ...) -> c_int;
+ pub fn mutex_lock(lock: *mut mutex);
+ pub fn mutex_unlock(lock: *mut mutex);
+ pub fn kmalloc(size: usize, flags: gfp_t) -> *mut c_void;
+ pub fn kfree(ptr: *const c_void);
+ pub fn printk(fmt: *const c_char, ...) -> c_int;
+ }
 }
 ```
 
@@ -137,7 +137,7 @@ pub mod bindings_raw {
 ```c
 // include/linux/kref.h
 struct kref {
-    refcount_t refcount;
+ refcount_t refcount;
 };
 
 static inline void kref_init(struct kref *kref);
@@ -162,62 +162,62 @@ use crate::bindings;
 /// - 通过 `&self` 访问是安全的（不可变引用无竞争）
 /// - 通过 `Arc<T>` 进行 `Send`/`Sync` 派发，取决于 `T`
 pub struct Arc<T: ?Sized> {
-    ptr: NonNull<ArcInner<T>>,
+ ptr: NonNull<ArcInner<T>>,
 }
 
 #[repr(C)]
 struct ArcInner<T: ?Sized> {
-    refcount: bindings::kref,
-    data: T,
+ refcount: bindings::kref,
+ data: T,
 }
 
 impl<T> Arc<T> {
-    /// 从值创建新的 Arc（用 GFP_KERNEL 分配）
-    pub fn new(contents: T, flags: Flags) -> Result<Self> {
-        let inner = Kmalloc::alloc(
-            ArcInner {
-                // SAFETY: kref_init 在此调用时是安全的
-                refcount: unsafe { core::mem::zeroed() },
-                data: contents,
-            },
-            flags,
-        )?;
-        
-        // SAFETY: inner 刚刚分配，refcount 归零后调用 kref_init
-        unsafe { bindings::kref_init(&mut (*inner).refcount) };
-        
-        Ok(Arc {
-            ptr: inner.into(),
-        })
-    }
+ /// 从值创建新的 Arc（用 GFP_KERNEL 分配）
+ pub fn new(contents: T, flags: Flags) -> Result<Self> {
+ let inner = Kmalloc::alloc(
+ ArcInner {
+ // SAFETY: kref_init 在此调用时是安全的
+ refcount: unsafe { core::mem::zeroed() },
+ data: contents,
+ },
+ flags,
+ )?;
+ 
+ // SAFETY: inner 刚刚分配，refcount 归零后调用 kref_init
+ unsafe { bindings::kref_init(&mut (*inner).refcount) };
+ 
+ Ok(Arc {
+ ptr: inner.into(),
+ })
+ }
 }
 
 impl<T: ?Sized> Clone for Arc<T> {
-    fn clone(&self) -> Self {
-        // SAFETY: self.ptr 有效，因为我们持有此 Arc 的一个引用
-        unsafe { bindings::kref_get(&(*self.ptr.as_ptr()).refcount) };
-        Self { ptr: self.ptr }
-    }
+ fn clone(&self) -> Self {
+ // SAFETY: self.ptr 有效，因为我们持有此 Arc 的一个引用
+ unsafe { bindings::kref_get(&(*self.ptr.as_ptr()).refcount) };
+ Self { ptr: self.ptr }
+ }
 }
 
 impl<T: ?Sized> Drop for Arc<T> {
-    fn drop(&mut self) {
-        // SAFETY: 在 Drop 时仍持有引用，所以可以安全操作 kref
-        // 当 refcount 减到 0 时，release 回调会释放内存
-        unsafe {
-            bindings::kref_put(
-                &mut (*self.ptr.as_ptr()).refcount,
-                Some(dec_ref_and_free::<T>),
-            );
-        }
-    }
+ fn drop(&mut self) {
+ // SAFETY: 在 Drop 时仍持有引用，所以可以安全操作 kref
+ // 当 refcount 减到 0 时，release 回调会释放内存
+ unsafe {
+ bindings::kref_put(
+ &mut (*self.ptr.as_ptr()).refcount,
+ Some(dec_ref_and_free::<T>),
+ );
+ }
+ }
 }
 
 unsafe extern "C" fn dec_ref_and_free<T: ?Sized>(kref: *mut bindings::kref) {
-    // SAFETY: 从 kref 指针计算 ArcInner 指针（使用 container_of! 宏）
-    let ptr = container_of!(kref, ArcInner<T>, refcount);
-    // 释放分配
-    unsafe { Kmalloc::free(ptr as *mut c_void) };
+ // SAFETY: 从 kref 指针计算 ArcInner 指针（使用 container_of! 宏）
+ let ptr = container_of!(kref, ArcInner<T>, refcount);
+ // 释放分配
+ unsafe { Kmalloc::free(ptr as *mut c_void) };
 }
 ```
 
@@ -237,15 +237,15 @@ unsafe impl<T: ?Sized + Send + Sync> Sync for Arc<T> {}
 /// 从 Arc<T> 借用的引用，生命周期绑定到 Arc
 /// 这允许函数接收对 Arc 内部数据的借用而不获取 Arc 的所有权
 pub struct ARef<T: AlwaysRefCounted + ?Sized> {
-    ptr: NonNull<T>,
-    _phantom: PhantomData<T>,
+ ptr: NonNull<T>,
+ _phantom: PhantomData<T>,
 }
 
 impl<T: AlwaysRefCounted + ?Sized> Drop for ARef<T> {
-    fn drop(&mut self) {
-        // 释放借用计数（减引用）
-        T::dec_ref(unsafe { &*self.ptr.as_ptr() });
-    }
+ fn drop(&mut self) {
+ // 释放借用计数（减引用）
+ T::dec_ref(unsafe { &*self.ptr.as_ptr() });
+ }
 }
 ```
 
@@ -253,8 +253,8 @@ impl<T: AlwaysRefCounted + ?Sized> Drop for ARef<T> {
 ```rust
 /// 表示一个类型总是通过 Arc 引用计数的
 pub unsafe trait AlwaysRefCounted {
-    fn inc_ref(&self);
-    unsafe fn dec_ref(obj: NonNull<Self>);
+ fn inc_ref(&self);
+ unsafe fn dec_ref(obj: NonNull<Self>);
 }
 ```
 
@@ -270,65 +270,65 @@ pub unsafe trait AlwaysRefCounted {
 // extern struct my_data shared_data;
 // 
 // void update_data(int val) {
-//     spin_lock(&my_lock);
-//     shared_data.value = val;  // 如果忘记拿锁，UB 静默发生
-//     spin_unlock(&my_lock);
+// spin_lock(&my_lock);
+// shared_data.value = val; // 如果忘记拿锁，UB 静默发生
+// spin_unlock(&my_lock);
 // }
 
 // Rust 核内模式（简化自 rust/kernel/sync/lock.rs）
 pub struct Lock<T: ?Sized, B: Backend> {
-    // 锁的内部表示
-    pub(crate) state: B::State,
-    // 受保护的数据
-    pub(crate) data: UnsafeCell<T>,
+ // 锁的内部表示
+ pub(crate) state: B::State,
+ // 受保护的数据
+ pub(crate) data: UnsafeCell<T>,
 }
 
 pub trait Backend {
-    type State;       // 锁的状态类型（spinlock_t, mutex 等）
-    type GuardState;  // guard 携带的状态
+ type State; // 锁的状态类型（spinlock_t, mutex 等）
+ type GuardState; // guard 携带的状态
 
-    unsafe fn init(ptr: *mut Self::State, name: *const c_char, key: *mut bindings::lock_class_key);
-    unsafe fn lock(ptr: *const Self::State) -> Self::GuardState;
-    unsafe fn unlock(ptr: *const Self::State, guard_state: &Self::GuardState);
+ unsafe fn init(ptr: *mut Self::State, name: *const c_char, key: *mut bindings::lock_class_key);
+ unsafe fn lock(ptr: *const Self::State) -> Self::GuardState;
+ unsafe fn unlock(ptr: *const Self::State, guard_state: &Self::GuardState);
 }
 
 impl<T: ?Sized, B: Backend> Lock<T, B> {
-    /// 获取锁，返回一个 guard，解锁时自动释放
-    pub fn lock(&self) -> Guard<'_, T, B> {
-        // SAFETY: 锁被正确初始化
-        let guard_state = unsafe { B::lock(self.state.get()) };
-        Guard {
-            lock: self,
-            state: guard_state,
-        }
-    }
+ /// 获取锁，返回一个 guard，解锁时自动释放
+ pub fn lock(&self) -> Guard<'_, T, B> {
+ // SAFETY: 锁被正确初始化
+ let guard_state = unsafe { B::lock(self.state.get()) };
+ Guard {
+ lock: self,
+ state: guard_state,
+ }
+ }
 }
 
 pub struct Guard<'a, T: ?Sized, B: Backend> {
-    pub(crate) lock: &'a Lock<T, B>,
-    pub(crate) state: B::GuardState,
+ pub(crate) lock: &'a Lock<T, B>,
+ pub(crate) state: B::GuardState,
 }
 
 // Guard 实现 Deref 和 DerefMut，自动提供对内部数据的访问
 impl<T: ?Sized, B: Backend> Deref for Guard<'_, T, B> {
-    type Target = T;
-    fn deref(&self) -> &T {
-        // SAFETY: 持有锁时对数据的访问是安全的
-        unsafe { &*self.lock.data.get() }
-    }
+ type Target = T;
+ fn deref(&self) -> &T {
+ // SAFETY: 持有锁时对数据的访问是安全的
+ unsafe { &*self.lock.data.get() }
+ }
 }
 
 impl<T: ?Sized, B: Backend> DerefMut for Guard<'_, T, B> {
-    fn deref_mut(&mut self) -> &mut T {
-        unsafe { &mut *self.lock.data.get() }
-    }
+ fn deref_mut(&mut self) -> &mut T {
+ unsafe { &mut *self.lock.data.get() }
+ }
 }
 
 impl<T: ?Sized, B: Backend> Drop for Guard<'_, T, B> {
-    fn drop(&mut self) {
-        // SAFETY: Guard 持有锁的状态
-        unsafe { B::unlock(self.lock.state.get(), &self.state) };
-    }
+ fn drop(&mut self) {
+ // SAFETY: Guard 持有锁的状态
+ unsafe { B::unlock(self.lock.state.get(), &self.state) };
+ }
 }
 ```
 
@@ -339,19 +339,19 @@ impl<T: ?Sized, B: Backend> Drop for Guard<'_, T, B> {
 // rust/kernel/sync/lock/mutex.rs（概念性简化）
 pub struct MutexBackend;
 impl Backend for MutexBackend {
-    type State = bindings::mutex;
-    type GuardState = ();
+ type State = bindings::mutex;
+ type GuardState = ();
 
-    unsafe fn init(ptr: *mut Self::State, name: *const c_char, key: *mut bindings::lock_class_key) {
-        // SAFETY: 调用者保证指针有效
-        unsafe { bindings::__mutex_init(ptr, name, key) };
-    }
-    unsafe fn lock(ptr: *const Self::State) {
-        unsafe { bindings::mutex_lock(ptr as *mut _) };
-    }
-    unsafe fn unlock(ptr: *const Self::State, _: &Self::GuardState) {
-        unsafe { bindings::mutex_unlock(ptr as *mut _) };
-    }
+ unsafe fn init(ptr: *mut Self::State, name: *const c_char, key: *mut bindings::lock_class_key) {
+ // SAFETY: 调用者保证指针有效
+ unsafe { bindings::__mutex_init(ptr, name, key) };
+ }
+ unsafe fn lock(ptr: *const Self::State) {
+ unsafe { bindings::mutex_lock(ptr as *mut _) };
+ }
+ unsafe fn unlock(ptr: *const Self::State, _: &Self::GuardState) {
+ unsafe { bindings::mutex_unlock(ptr as *mut _) };
+ }
 }
 
 pub type Mutex<T> = Lock<T, MutexBackend>;
@@ -360,18 +360,18 @@ pub type Mutex<T> = Lock<T, MutexBackend>;
 // rust/kernel/sync/lock/spinlock.rs（概念性简化）
 pub struct SpinLockBackend;
 impl Backend for SpinLockBackend {
-    type State = bindings::spinlock_t;
-    type GuardState = ();
+ type State = bindings::spinlock_t;
+ type GuardState = ();
 
-    unsafe fn init(ptr: *mut Self::State, name: *const c_char, key: *mut bindings::lock_class_key) {
-        unsafe { bindings::__raw_spin_lock_init(ptr, name, key) };
-    }
-    unsafe fn lock(ptr: *const Self::State) {
-        unsafe { bindings::spin_lock(ptr as *mut _) };
-    }
-    unsafe fn unlock(ptr: *const Self::State, _: &Self::GuardState) {
-        unsafe { bindings::spin_unlock(ptr as *mut _) };
-    }
+ unsafe fn init(ptr: *mut Self::State, name: *const c_char, key: *mut bindings::lock_class_key) {
+ unsafe { bindings::__raw_spin_lock_init(ptr, name, key) };
+ }
+ unsafe fn lock(ptr: *const Self::State) {
+ unsafe { bindings::spin_lock(ptr as *mut _) };
+ }
+ unsafe fn unlock(ptr: *const Self::State, _: &Self::GuardState) {
+ unsafe { bindings::spin_unlock(ptr as *mut _) };
+ }
 }
 
 pub type SpinLock<T> = Lock<T, SpinLockBackend>;
@@ -387,24 +387,24 @@ pub type SpinLock<T> = Lock<T, SpinLockBackend>;
 ```rust
 // rust/kernel/sync/condvar.rs（概念性简化）
 pub struct CondVar {
-    pub(crate) wait_list: WaitList,
+ pub(crate) wait_list: WaitList,
 }
 
 impl CondVar {
-    pub fn new() -> Self { /* ... */ }
+ pub fn new() -> Self { /* ... */ }
 
-    /// 等待条件变量（释放锁、睡眠、被唤醒后重新获取锁）
-    /// 注意：这与 C 的 wait_event() 宏不同——它基于 wait_list
-    pub fn wait<B: Backend>(
-        &self,
-        guard: &mut Guard<'_, T, B>,
-    ) -> Result<()> { /* ... */ }
+ /// 等待条件变量（释放锁、睡眠、被唤醒后重新获取锁）
+ /// 注意：这与 C 的 wait_event() 宏不同——它基于 wait_list
+ pub fn wait<B: Backend>(
+ &self,
+ guard: &mut Guard<'_, T, B>,
+ ) -> Result<()> { /* ... */ }
 
-    /// 唤醒一个等待者
-    pub fn notify_one(&self) { /* ... */ }
+ /// 唤醒一个等待者
+ pub fn notify_one(&self) { /* ... */ }
 
-    /// 唤醒所有等待者
-    pub fn notify_all(&self) { /* ... */ }
+ /// 唤醒所有等待者
+ pub fn notify_all(&self) { /* ... */ }
 }
 ```
 
@@ -426,65 +426,65 @@ use core::fmt;
 pub struct Error(core::ffi::c_int);
 
 impl Error {
-    /// 从 C 返回的 errno 创建 Error
-    /// 返回 `-errno`（即正值表示错误码）
-    pub fn from_errno(errno: core::ffi::c_int) -> Error {
-        if errno < 0 {
-            Error(errno)
-        } else {
-            // 不应该发生：调用者传入的已经是 -errno
-            Error(-errno)
-        }
-    }
+ /// 从 C 返回的 errno 创建 Error
+ /// 返回 `-errno`（即正值表示错误码）
+ pub fn from_errno(errno: core::ffi::c_int) -> Error {
+ if errno < 0 {
+ Error(errno)
+ } else {
+ // 不应该发生：调用者传入的已经是 -errno
+ Error(-errno)
+ }
+ }
 
-    /// 从内核 errno 值创建（如 EINVAL = 22）
-    pub fn from_kernel_errno(errno: core::ffi::c_int) -> Error {
-        Error(-errno)  // C 值为正，Rust Error 内部存储负数
-    }
+ /// 从内核 errno 值创建（如 EINVAL = 22）
+ pub fn from_kernel_errno(errno: core::ffi::c_int) -> Error {
+ Error(-errno) // C 值为正，Rust Error 内部存储负数
+ }
 
-    /// 转为 C 的 int 返回值格式（内核函数通常 return -EXXX）
-    pub fn to_kernel_errno(self) -> core::ffi::c_int {
-        self.0
-    }
+ /// 转为 C 的 int 返回值格式（内核函数通常 return -EXXX）
+ pub fn to_kernel_errno(self) -> core::ffi::c_int {
+ self.0
+ }
 
-    /// 转为 errno 绝对值（如 22 代表 EINVAL）
-    pub fn to_errno(self) -> core::ffi::c_int {
-        -self.0
-    }
+ /// 转为 errno 绝对值（如 22 代表 EINVAL）
+ pub fn to_errno(self) -> core::ffi::c_int {
+ -self.0
+ }
 
-    // 常用错误构造函数
-    pub const EINVAL: Error = Error(-(bindings::EINVAL as i32));
-    pub const ENOMEM: Error = Error(-(bindings::ENOMEM as i32));
-    pub const ENODEV: Error = Error(-(bindings::ENODEV as i32));
-    pub const EIO: Error = Error(-(bindings::EIO as i32));
-    pub const ERANGE: Error = Error(-(bindings::ERANGE as i32));
-    pub const EBUSY: Error = Error(-(bindings::EBUSY as i32));
-    pub const ENOSPC: Error = Error(-(bindings::ENOSPC as i32));
-    pub const EAGAIN: Error = Error(-(bindings::EAGAIN as i32));
-    pub const EPERM: Error = Error(-(bindings::EPERM as i32));
-    pub const ENOENT: Error = Error(-(bindings::ENOENT as i32));
-    pub const ENXIO: Error = Error(-(bindings::ENXIO as i32));
-    pub const ENOTTY: Error = Error(-(bindings::ENOTTY as i32));
-    pub const EEXIST: Error = Error(-(bindings::EEXIST as i32));
+ // 常用错误构造函数
+ pub const EINVAL: Error = Error(-(bindings::EINVAL as i32));
+ pub const ENOMEM: Error = Error(-(bindings::ENOMEM as i32));
+ pub const ENODEV: Error = Error(-(bindings::ENODEV as i32));
+ pub const EIO: Error = Error(-(bindings::EIO as i32));
+ pub const ERANGE: Error = Error(-(bindings::ERANGE as i32));
+ pub const EBUSY: Error = Error(-(bindings::EBUSY as i32));
+ pub const ENOSPC: Error = Error(-(bindings::ENOSPC as i32));
+ pub const EAGAIN: Error = Error(-(bindings::EAGAIN as i32));
+ pub const EPERM: Error = Error(-(bindings::EPERM as i32));
+ pub const ENOENT: Error = Error(-(bindings::ENOENT as i32));
+ pub const ENXIO: Error = Error(-(bindings::ENXIO as i32));
+ pub const ENOTTY: Error = Error(-(bindings::ENOTTY as i32));
+ pub const EEXIST: Error = Error(-(bindings::EEXIST as i32));
 }
 
 impl fmt::Debug for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Error({})", self.to_errno())
-    }
+ fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+ write!(f, "Error({})", self.to_errno())
+ }
 }
 
 impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        // 实际实现可能使用 errname() 获取字符串名称
-        write!(f, "errno {}", self.to_errno())
-    }
+ fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+ // 实际实现可能使用 errname() 获取字符串名称
+ write!(f, "errno {}", self.to_errno())
+ }
 }
 
 impl From<core::alloc::AllocError> for Error {
-    fn from(_: core::alloc::AllocError) -> Error {
-        Error::ENOMEM
-    }
+ fn from(_: core::alloc::AllocError) -> Error {
+ Error::ENOMEM
+ }
 }
 
 /// 内核 Result 类型别名
@@ -495,15 +495,15 @@ pub type Result<T = ()> = core::result::Result<T, Error>;
 /// C 内核函数常用 NULL 或 ERR_PTR 表示错误
 /// 此函数处理这种惯例
 pub fn from_result_ptr<T>(ptr: *mut T) -> Result<*mut T> {
-    if ptr.is_null() {
-        return Err(Error::ENOMEM);
-    }
-    // 检查是否为 ERR_PTR 值
-    let addr = ptr as usize;
-    if addr >= usize::MAX - MAX_ERRNO {
-        return Err(Error::from_kernel_errno((-(addr as isize)) as i32));
-    }
-    Ok(ptr)
+ if ptr.is_null() {
+ return Err(Error::ENOMEM);
+ }
+ // 检查是否为 ERR_PTR 值
+ let addr = ptr as usize;
+ if addr >= usize::MAX - MAX_ERRNO {
+ return Err(Error::from_kernel_errno((-(addr as isize)) as i32));
+ }
+ Ok(ptr)
 }
 ```
 
@@ -533,49 +533,49 @@ use core::fmt;
 pub struct CStr<'a>(&'a CoreCStr);
 
 impl<'a> CStr<'a> {
-    /// 从字节切片创建 CStr（必须NUL结尾，长度不含NUL）
-    pub fn from_bytes_with_nul(bytes: &'a [u8]) -> Result<Self> {
-        let core_cstr = CoreCStr::from_bytes_with_nul(bytes)
-            .map_err(|_| Error::EINVAL)?;
-        Ok(CStr(core_cstr))
-    }
+ /// 从字节切片创建 CStr（必须NUL结尾，长度不含NUL）
+ pub fn from_bytes_with_nul(bytes: &'a [u8]) -> Result<Self> {
+ let core_cstr = CoreCStr::from_bytes_with_nul(bytes)
+ .map_err(|_| Error::EINVAL)?;
+ Ok(CStr(core_cstr))
+ }
 
-    /// 转为字节切片（不含 NUL）
-    pub fn as_bytes(&self) -> &[u8] {
-        self.0.to_bytes()
-    }
+ /// 转为字节切片（不含 NUL）
+ pub fn as_bytes(&self) -> &[u8] {
+ self.0.to_bytes()
+ }
 
-    /// 转为 &str（如果内容为有效 UTF-8）
-    pub fn to_str(&self) -> Result<&str> {
-        self.0.to_str().map_err(|_| Error::EINVAL)
-    }
+ /// 转为 &str（如果内容为有效 UTF-8）
+ pub fn to_str(&self) -> Result<&str> {
+ self.0.to_str().map_err(|_| Error::EINVAL)
+ }
 
-    /// 从裸指针创建 CStr
-    /// 
-    /// # Safety
-    /// 
-    /// 指针必须指向一个以 NUL 结尾的有效 C 字符串
-    pub unsafe fn from_ptr<'b>(ptr: *const u8) -> &'b Self {
-        // 使用 core::ffi::CStr::from_ptr
-        let core_ref = unsafe { CoreCStr::from_ptr(ptr as *const i8) };
-        // 转换为 &CStr（零成本 transmute）
-        unsafe { &*(core_ref as *const CoreCStr as *const CStr) }
-    }
+ /// 从裸指针创建 CStr
+ /// 
+ /// # Safety
+ /// 
+ /// 指针必须指向一个以 NUL 结尾的有效 C 字符串
+ pub unsafe fn from_ptr<'b>(ptr: *const u8) -> &'b Self {
+ // 使用 core::ffi::CStr::from_ptr
+ let core_ref = unsafe { CoreCStr::from_ptr(ptr as *const i8) };
+ // 转换为 &CStr（零成本 transmute）
+ unsafe { &*(core_ref as *const CoreCStr as *const CStr) }
+ }
 }
 
 impl fmt::Display for CStr<'_> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        // 以字节显示，非 UTF-8 字节显示为 �
-        for &b in self.as_bytes() {
-            let c = b as char;
-            if c.is_ascii_graphic() || c == ' ' {
-                write!(f, "{}", c)?;
-            } else {
-                write!(f, "\u{FFFD}")?;
-            }
-        }
-        Ok(())
-    }
+ fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+ // 以字节显示，非 UTF-8 字节显示为 �
+ for &b in self.as_bytes() {
+ let c = b as char;
+ if c.is_ascii_graphic() || c == ' ' {
+ write!(f, "{}", c)?;
+ } else {
+ write!(f, "\u{FFFD}")?;
+ }
+ }
+ Ok(())
+ }
 }
 ```
 
@@ -597,56 +597,56 @@ use core::marker::PhantomData;
 /// — `from_foreign` 正确地收回所有权
 /// — `borrow` 在借用期间保证安全性
 pub unsafe trait ForeignOwnable: Sized {
-    /// 将 Self 转为 C 侧指针（移交所有权）
-    fn into_foreign(self) -> *const core::ffi::c_void;
+ /// 将 Self 转为 C 侧指针（移交所有权）
+ fn into_foreign(self) -> *const core::ffi::c_void;
 
-    /// 从 C 侧指针取回所有权
-    /// 
-    /// # Safety
-    /// 
-    /// 调用者必须保证：
-    /// — 指针由此类型的 `into_foreign` 产生
-    /// — 指针尚未被 `from_foreign` 消耗
-    unsafe fn from_foreign(ptr: *const core::ffi::c_void) -> Self;
+ /// 从 C 侧指针取回所有权
+ /// 
+ /// # Safety
+ /// 
+ /// 调用者必须保证：
+ /// — 指针由此类型的 `into_foreign` 产生
+ /// — 指针尚未被 `from_foreign` 消耗
+ unsafe fn from_foreign(ptr: *const core::ffi::c_void) -> Self;
 
-    /// 借用 C 侧指针指向的对象
-    /// 
-    /// # Safety
-    /// 
-    /// 指针必须有效，且借用期间不被释放
-    unsafe fn borrow<'a>(ptr: *const core::ffi::c_void) -> &'a Self;
+ /// 借用 C 侧指针指向的对象
+ /// 
+ /// # Safety
+ /// 
+ /// 指针必须有效，且借用期间不被释放
+ unsafe fn borrow<'a>(ptr: *const core::ffi::c_void) -> &'a Self;
 }
 
 // 对 Arc<T> 的 ForeignOwnable 实现
 unsafe impl<T: Send + Sync + 'static> ForeignOwnable for Arc<T> {
-    fn into_foreign(self) -> *const core::ffi::c_void {
-        let ptr = Arc::into_raw(self);
-        ptr as *const core::ffi::c_void
-    }
+ fn into_foreign(self) -> *const core::ffi::c_void {
+ let ptr = Arc::into_raw(self);
+ ptr as *const core::ffi::c_void
+ }
 
-    unsafe fn from_foreign(ptr: *const core::ffi::c_void) -> Self {
-        unsafe { Arc::from_raw(ptr as *const T) }
-    }
+ unsafe fn from_foreign(ptr: *const core::ffi::c_void) -> Self {
+ unsafe { Arc::from_raw(ptr as *const T) }
+ }
 
-    unsafe fn borrow<'a>(ptr: *const core::ffi::c_void) -> &'a Self {
-        // 从 ArcInner 中获取 T 的引用
-        unsafe { &*(ptr as *const Self) }
-    }
+ unsafe fn borrow<'a>(ptr: *const core::ffi::c_void) -> &'a Self {
+ // 从 ArcInner 中获取 T 的引用
+ unsafe { &*(ptr as *const Self) }
+ }
 }
 
 // 对 Box<T> 的 ForeignOwnable 实现
 unsafe impl<T: 'static> ForeignOwnable for Box<T> {
-    fn into_foreign(self) -> *const core::ffi::c_void {
-        Box::into_raw(self) as *const core::ffi::c_void
-    }
+ fn into_foreign(self) -> *const core::ffi::c_void {
+ Box::into_raw(self) as *const core::ffi::c_void
+ }
 
-    unsafe fn from_foreign(ptr: *const core::ffi::c_void) -> Self {
-        unsafe { Box::from_raw(ptr as *mut T) }
-    }
+ unsafe fn from_foreign(ptr: *const core::ffi::c_void) -> Self {
+ unsafe { Box::from_raw(ptr as *mut T) }
+ }
 
-    unsafe fn borrow<'a>(ptr: *const core::ffi::c_void) -> &'a Self {
-        panic!("Borrow of Box is not allowed");
-    }
+ unsafe fn borrow<'a>(ptr: *const core::ffi::c_void) -> &'a Self {
+ panic!("Borrow of Box is not allowed");
+ }
 }
 ```
 
@@ -662,14 +662,14 @@ use core::pin::Pin;
 /// 
 /// 用于在内核分配的内存上直接构造对象
 pub trait InPlaceInit<T>: Sized {
-    /// 通过原地初始化器写入对象
-    fn init(self, init: impl PinInit<T, Error>) -> Result<Pin<Self>>;
+ /// 通过原地初始化器写入对象
+ fn init(self, init: impl PinInit<T, Error>) -> Result<Pin<Self>>;
 }
 
 /// 不可失败（infallible）的原地初始化器
 pub trait PinInit<T: ?Sized, E> {
-    /// 在给定指针上初始化对象
-    unsafe fn __pinned_init(self, slot: *mut T) -> Result<(), E>;
+ /// 在给定指针上初始化对象
+ unsafe fn __pinned_init(self, slot: *mut T) -> Result<(), E>;
 }
 
 /// 使用 PinInit 的宏：pin_init!
@@ -678,17 +678,17 @@ pub trait PinInit<T: ?Sized, E> {
 ///
 /// ```ignore
 /// let obj = Box::pin_init(
-///     pin_init!(MyStruct {
-///         value: 42,
-///         name: CStr::from_bytes_with_nul(b"hello\0").unwrap(),
-///         list: ListHead::new(),
-///     }),
-///     GFP_KERNEL,
+/// pin_init!(MyStruct {
+/// value: 42,
+/// name: CStr::from_bytes_with_nul(b"hello\0").unwrap(),
+/// list: ListHead::new(),
+/// }),
+/// GFP_KERNEL,
 /// )?;
 /// ```
 #[macro_export]
 macro_rules! pin_init {
-    ($($fields:tt)*) => { /* 展开为 PinInit 实现 */ };
+ ($($fields:tt)*) => { /* 展开为 PinInit 实现 */ };
 }
 ```
 
@@ -701,32 +701,32 @@ use crate::bindings;
 /// 内核 struct file 的安全封装
 #[derive(Debug)]
 pub struct File {
-    ptr: NonNull<bindings::file>,
-    _p: PhantomData<bindings::file>,
+ ptr: NonNull<bindings::file>,
+ _p: PhantomData<bindings::file>,
 }
 
 impl File {
-    /// 从 raw 指针创建 File
-    /// 
-    /// # Safety
-    /// 
-    /// 调用者确保 ptr 有效且非空
-    pub unsafe fn from_ptr(ptr: *mut bindings::file) -> Self {
-        File {
-            ptr: NonNull::new_unchecked(ptr),
-            _p: PhantomData,
-        }
-    }
+ /// 从 raw 指针创建 File
+ /// 
+ /// # Safety
+ /// 
+ /// 调用者确保 ptr 有效且非空
+ pub unsafe fn from_ptr(ptr: *mut bindings::file) -> Self {
+ File {
+ ptr: NonNull::new_unchecked(ptr),
+ _p: PhantomData,
+ }
+ }
 
-    pub fn as_ptr(&self) -> *mut bindings::file {
-        self.ptr.as_ptr()
-    }
+ pub fn as_ptr(&self) -> *mut bindings::file {
+ self.ptr.as_ptr()
+ }
 
-    /// 获取文件描述符的 flags（如 O_RDONLY, O_CLOEXEC）
-    pub fn flags(&self) -> i32 {
-        // SAFETY: self.ptr 保证非空
-        unsafe { (*self.ptr.as_ptr()).f_flags }
-    }
+ /// 获取文件描述符的 flags（如 O_RDONLY, O_CLOEXEC）
+ pub fn flags(&self) -> i32 {
+ // SAFETY: self.ptr 保证非空
+ unsafe { (*self.ptr.as_ptr()).f_flags }
+ }
 }
 
 /// 文件操作的 trait
@@ -734,49 +734,49 @@ impl File {
 ///
 /// 对应 C 中的 `struct file_operations`
 pub trait FileOperations: Sized {
-    type Data: ForeignOwnable + Send + Sync;
-    type OpenData: Sync;
+ type Data: ForeignOwnable + Send + Sync;
+ type OpenData: Sync;
 
-    /// 打开文件时调用
-    fn open(context: &Self::OpenData, file: &File) -> Result<Self::Data>;
+ /// 打开文件时调用
+ fn open(context: &Self::OpenData, file: &File) -> Result<Self::Data>;
 
-    /// 读取数据
-    fn read(
-        data: <Self::Data as ForeignOwnable>::Borrowed<'_>,
-        _file: &File,
-        writer: &mut impl IoBufferWriter,
-        offset: u64,
-    ) -> Result<usize> {
-        Err(Error::EINVAL)  // 默认：不支持
-    }
+ /// 读取数据
+ fn read(
+ data: <Self::Data as ForeignOwnable>::Borrowed<'_>,
+ _file: &File,
+ writer: &mut impl IoBufferWriter,
+ offset: u64,
+ ) -> Result<usize> {
+ Err(Error::EINVAL) // 默认：不支持
+ }
 
-    /// 写入数据
-    fn write(
-        data: <Self::Data as ForeignOwnable>::Borrowed<'_>,
-        _file: &File,
-        reader: &mut impl IoBufferReader,
-        offset: u64,
-    ) -> Result<usize> {
-        Err(Error::EINVAL)
-    }
+ /// 写入数据
+ fn write(
+ data: <Self::Data as ForeignOwnable>::Borrowed<'_>,
+ _file: &File,
+ reader: &mut impl IoBufferReader,
+ offset: u64,
+ ) -> Result<usize> {
+ Err(Error::EINVAL)
+ }
 
-    /// ioctl 支持
-    fn ioctl(
-        data: <Self::Data as ForeignOwnable>::Borrowed<'_>,
-        _file: &File,
-        cmd: u32,
-        arg: usize,
-    ) -> Result<u32> {
-        Err(Error::ENOTTY)
-    }
+ /// ioctl 支持
+ fn ioctl(
+ data: <Self::Data as ForeignOwnable>::Borrowed<'_>,
+ _file: &File,
+ cmd: u32,
+ arg: usize,
+ ) -> Result<u32> {
+ Err(Error::ENOTTY)
+ }
 
-    /// 释放文件时调用
-    fn release(
-        data: Self::Data,
-        _file: &File,
-    ) {
-        // 默认：data 被 drop
-    }
+ /// 释放文件时调用
+ fn release(
+ data: Self::Data,
+ _file: &File,
+ ) {
+ // 默认：data 被 drop
+ }
 }
 ```
 
@@ -790,47 +790,47 @@ use crate::bindings;
 /// 表示内核中的一个任务（进程或线程）
 #[derive(Debug)]
 pub struct Task {
-    ptr: NonNull<bindings::task_struct>,
-    _p: PhantomData<bindings::task_struct>,
+ ptr: NonNull<bindings::task_struct>,
+ _p: PhantomData<bindings::task_struct>,
 }
 
 impl Task {
-    /// 获取当前任务（current）
-    pub fn current() -> TaskRef {
-        // SAFETY: get_current() 返回的指针在任务退出前都有效
-        // 由于当前任务正在执行此代码，它不会退出
-        let ptr = unsafe { bindings::get_current() };
-        TaskRef {
-            task: Task {
-                ptr: NonNull::new(ptr).unwrap(),
-                _p: PhantomData,
-            },
-            _not_send: PhantomData,
-        }
-    }
+ /// 获取当前任务（current）
+ pub fn current() -> TaskRef {
+ // SAFETY: get_current() 返回的指针在任务退出前都有效
+ // 由于当前任务正在执行此代码，它不会退出
+ let ptr = unsafe { bindings::get_current() };
+ TaskRef {
+ task: Task {
+ ptr: NonNull::new(ptr).unwrap(),
+ _p: PhantomData,
+ },
+ _not_send: PhantomData,
+ }
+ }
 
-    /// 唤醒任务（wake_up_process）
-    pub fn wake_up(&self) {
-        // SAFETY: self.ptr 保证非空
-        unsafe { bindings::wake_up_process(self.ptr.as_ptr()) };
-    }
+ /// 唤醒任务（wake_up_process）
+ pub fn wake_up(&self) {
+ // SAFETY: self.ptr 保证非空
+ unsafe { bindings::wake_up_process(self.ptr.as_ptr()) };
+ }
 
-    pub fn pid(&self) -> i32 {
-        unsafe { (*self.ptr.as_ptr()).pid as i32 }
-    }
+ pub fn pid(&self) -> i32 {
+ unsafe { (*self.ptr.as_ptr()).pid as i32 }
+ }
 }
 
 /// 对当前任务的引用（非 Send，因为仅对当前上下文有效）
 pub struct TaskRef {
-    task: Task,
-    _not_send: PhantomData<*const ()>,
+ task: Task,
+ _not_send: PhantomData<*const ()>,
 }
 
 impl Deref for TaskRef {
-    type Target = Task;
-    fn deref(&self) -> &Task {
-        &self.task
-    }
+ type Target = Task;
+ fn deref(&self) -> &Task {
+ &self.task
+ }
 }
 ```
 
@@ -849,26 +849,26 @@ use core::alloc::{GlobalAlloc, Layout};
 struct KernelAllocator;
 
 unsafe impl GlobalAlloc for KernelAllocator {
-    unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-        // 大型分配使用 kvmalloc（可 fallback 到 vmalloc）
-        // 小型分配使用 kmalloc
-        let size = layout.size();
-        let ptr = if size > PAGE_SIZE {
-            unsafe { bindings::kvmalloc(size, bindings::GFP_KERNEL) }
-        } else {
-            unsafe { bindings::kmalloc(size, bindings::GFP_KERNEL) }
-        };
-        ptr as *mut u8
-    }
+ unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
+ // 大型分配使用 kvmalloc（可 fallback 到 vmalloc）
+ // 小型分配使用 kmalloc
+ let size = layout.size();
+ let ptr = if size > PAGE_SIZE {
+ unsafe { bindings::kvmalloc(size, bindings::GFP_KERNEL) }
+ } else {
+ unsafe { bindings::kmalloc(size, bindings::GFP_KERNEL) }
+ };
+ ptr as *mut u8
+ }
 
-    unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
-        let size = layout.size();
-        if size > PAGE_SIZE {
-            unsafe { bindings::kvfree(ptr as *const c_void) };
-        } else {
-            unsafe { bindings::kfree(ptr as *const c_void) };
-        }
-    }
+ unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
+ let size = layout.size();
+ if size > PAGE_SIZE {
+ unsafe { bindings::kvfree(ptr as *const c_void) };
+ } else {
+ unsafe { bindings::kfree(ptr as *const c_void) };
+ }
+ }
 }
 
 // 注册为全局分配器
@@ -911,29 +911,29 @@ let boxed = Box::try_new(42, flags::GFP_ATOMIC)?;
 // 经典的 C 内核错误处理
 static int my_driver_probe(struct platform_device *pdev)
 {
-    struct my_device *dev;
-    void __iomem *regs;
-    int irq, ret;
+ struct my_device *dev;
+ void __iomem *regs;
+ int irq, ret;
 
-    dev = devm_kzalloc(&pdev->dev, sizeof(*dev), GFP_KERNEL);
-    if (!dev)
-        return -ENOMEM;
+ dev = devm_kzalloc(&pdev->dev, sizeof(*dev), GFP_KERNEL);
+ if (!dev)
+ return -ENOMEM;
 
-    regs = devm_platform_ioremap_resource(pdev, 0);
-    if (IS_ERR(regs))
-        return PTR_ERR(regs);
+ regs = devm_platform_ioremap_resource(pdev, 0);
+ if (IS_ERR(regs))
+ return PTR_ERR(regs);
 
-    irq = platform_get_irq(pdev, 0);
-    if (irq < 0)
-        return irq;  // 如果忘记检查，负值会传播
+ irq = platform_get_irq(pdev, 0);
+ if (irq < 0)
+ return irq; // 如果忘记检查，负值会传播
 
-    ret = devm_request_irq(&pdev->dev, irq, my_irq_handler,
-                           0, "my_driver", dev);
-    if (ret)
-        return ret;
+ ret = devm_request_irq(&pdev->dev, irq, my_irq_handler,
+ 0, "my_driver", dev);
+ if (ret)
+ return ret;
 
-    platform_set_drvdata(pdev, dev);
-    return 0;
+ platform_set_drvdata(pdev, dev);
+ return 0;
 }
 ```
 
@@ -941,13 +941,13 @@ static int my_driver_probe(struct platform_device *pdev)
 ```rust
 // 等价的 Rust 内核驱动
 fn probe(pdev: &platform::Device) -> Result<Self> {
-    let regs = pdev.ioremap_resource(0)?;     // 自动传播错误
-    let irq = pdev.get_irq(0)?;               // 不会忘记检查
-    let dev = Arc::pin_init(/* ... */, GFP_KERNEL)?;
+ let regs = pdev.ioremap_resource(0)?; // 自动传播错误
+ let irq = pdev.get_irq(0)?; // 不会忘记检查
+ let dev = Arc::pin_init(/* ... */, GFP_KERNEL)?;
 
-    irq.request(my_irq_handler, "my_driver", dev.clone())?;
+ irq.request(my_irq_handler, "my_driver", dev.clone())?;
 
-    Ok(MyDriver { dev })
+ Ok(MyDriver { dev })
 }
 ```
 
@@ -962,24 +962,24 @@ fn probe(pdev: &platform::Device) -> Result<Self> {
 ```c
 // 这个 C 代码有竞态条件
 struct shared_counter {
-    spinlock_t lock;
-    int count;
+ spinlock_t lock;
+ int count;
 };
 
 static int get_count(struct shared_counter *sc)
 {
-    int val;
-    spin_lock(&sc->lock);
-    val = sc->count;
-    spin_unlock(&sc->lock);
-    return val;
+ int val;
+ spin_lock(&sc->lock);
+ val = sc->count;
+ spin_unlock(&sc->lock);
+ return val;
 }
 
 // 问题：count 字段可以在没有拿锁的情况下被访问
 // 编译器不能强制锁保护数据
 static void bad_access(struct shared_counter *sc)
 {
-    sc->count++;  // 竞态条件！编译器不报错
+ sc->count++; // 竞态条件！编译器不报错
 }
 ```
 
@@ -988,20 +988,20 @@ static void bad_access(struct shared_counter *sc)
 use kernel::sync::SpinLock;
 
 struct SharedCounter {
-    count: SpinLock<i32>,  // 锁和数据绑定在一起
+ count: SpinLock<i32>, // 锁和数据绑定在一起
 }
 
 impl SharedCounter {
-    fn get_count(&self) -> i32 {
-        let guard = self.count.lock();
-        *guard  // 通过 guard 访问数据
-    }
-    // lock() 在 guard 离开作用域时自动释放
+ fn get_count(&self) -> i32 {
+ let guard = self.count.lock();
+ *guard // 通过 guard 访问数据
+ }
+ // lock() 在 guard 离开作用域时自动释放
 }
 
 // 编译器阻止的代码：
 // fn bad_access(sc: &SharedCounter) {
-//     *sc.count = 5;  // 编译错误！不能绕过 Lock<T> 访问内部数据
+// *sc.count = 5; // 编译错误！不能绕过 Lock<T> 访问内部数据
 // }
 ```
 
@@ -1011,56 +1011,56 @@ impl SharedCounter {
 ```c
 static int my_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 {
-    int err;
-    void *mem1, *mem2;
+ int err;
+ void *mem1, *mem2;
 
-    mem1 = kzalloc(SIZE1, GFP_KERNEL);
-    if (!mem1) {
-        err = -ENOMEM;
-        goto err_mem1;
-    }
+ mem1 = kzalloc(SIZE1, GFP_KERNEL);
+ if (!mem1) {
+ err = -ENOMEM;
+ goto err_mem1;
+ }
 
-    err = pci_enable_device(pdev);
-    if (err)
-        goto err_enable;
+ err = pci_enable_device(pdev);
+ if (err)
+ goto err_enable;
 
-    mem2 = kzalloc(SIZE2, GFP_KERNEL);
-    if (!mem2) {
-        err = -ENOMEM;
-        goto err_mem2;
-    }
+ mem2 = kzalloc(SIZE2, GFP_KERNEL);
+ if (!mem2) {
+ err = -ENOMEM;
+ goto err_mem2;
+ }
 
-    err = register_driver();
-    if (err)
-        goto err_register;
+ err = register_driver();
+ if (err)
+ goto err_register;
 
-    return 0;
+ return 0;
 
 err_register:
-    kfree(mem2);
+ kfree(mem2);
 err_mem2:
-    pci_disable_device(pdev);
+ pci_disable_device(pdev);
 err_enable:
-    kfree(mem1);
+ kfree(mem1);
 err_mem1:
-    return err;
+ return err;
 }
 ```
 
 **Rust 版本（自动清理）**：
 ```rust
 fn my_probe(pdev: &pci::Device) -> Result<Self> {
-    let mem1 = KBox::new_zeroed(SIZE1, GFP_KERNEL)?;    // ? 出错自动返回，mem1 自动释放
+ let mem1 = KBox::new_zeroed(SIZE1, GFP_KERNEL)?; // ? 出错自动返回，mem1 自动释放
 
-    pdev.enable()?;                                     // 出错自动返回
+ pdev.enable()?; // 出错自动返回
 
-    let mem2 = KBox::new_zeroed(SIZE2, GFP_KERNEL)?;    // 出错自动返回
-                                                        // mem1 和 pdev 状态自动清理
+ let mem2 = KBox::new_zeroed(SIZE2, GFP_KERNEL)?; // 出错自动返回
+ // mem1 和 pdev 状态自动清理
 
-    register_driver()?;                                  // 出错自动返回
-                                                        // 所有资源自动清理
+ register_driver()?; // 出错自动返回
+ // 所有资源自动清理
 
-    Ok(MyDevice { mem1, mem2 })
+ Ok(MyDevice { mem1, mem2 })
 }
 // 无需 goto，无需写清理路径！
 // Drop 在出错时自动调用，确保 mem1, mem2 释放、pdev 禁用
@@ -1092,46 +1092,46 @@ fn my_probe(pdev: &pci::Device) -> Result<Self> {
 use kernel::sync::{Arc, Mutex, CondVar};
 
 pub struct Process {
-    // 用 Mutex 保护的状态
-    inner: Mutex<ProcessInner>,
+ // 用 Mutex 保护的状态
+ inner: Mutex<ProcessInner>,
 }
 
 struct ProcessInner {
-    // Binder 线程池
-    threads: u32,
-    max_threads: u32,
-    // 等待工作队列
-    wait: CondVar,
-    // ... 更多字段
+ // Binder 线程池
+ threads: u32,
+ max_threads: u32,
+ // 等待工作队列
+ wait: CondVar,
+ // ... 更多字段
 }
 
 impl Process {
-    pub fn new() -> Result<Arc<Self>> {
-        Arc::new(Process {
-            inner: Mutex::new(ProcessInner {
-                threads: 0,
-                max_threads: 4,
-                wait: CondVar::new(),
-            }),
-        }, GFP_KERNEL)
-    }
+ pub fn new() -> Result<Arc<Self>> {
+ Arc::new(Process {
+ inner: Mutex::new(ProcessInner {
+ threads: 0,
+ max_threads: 4,
+ wait: CondVar::new(),
+ }),
+ }, GFP_KERNEL)
+ }
 
-    // 线程安全地增加线程计数
-    pub fn register_thread(self: &Arc<Self>) -> Result {
-        let mut inner = self.inner.lock();
-        if inner.threads >= inner.max_threads {
-            return Err(Error::EBUSY);
-        }
-        inner.threads += 1;
-        Ok(())
-    }
+ // 线程安全地增加线程计数
+ pub fn register_thread(self: &Arc<Self>) -> Result {
+ let mut inner = self.inner.lock();
+ if inner.threads >= inner.max_threads {
+ return Err(Error::EBUSY);
+ }
+ inner.threads += 1;
+ Ok(())
+ }
 
-    // 等待有工作可用
-    pub fn wait_for_work(self: &Arc<Self>) {
-        let mut inner = self.inner.lock();
-        // 在 condvar 上等待，自动释放/重新获取锁
-        // 实际实现中使用 wait_event 风格的模式
-    }
+ // 等待有工作可用
+ pub fn wait_for_work(self: &Arc<Self>) {
+ let mut inner = self.inner.lock();
+ // 在 condvar 上等待，自动释放/重新获取锁
+ // 实际实现中使用 wait_event 风格的模式
+ }
 }
 ```
 
@@ -1147,35 +1147,35 @@ use kernel::block::gendisk;
 use kernel::sync::SpinLock;
 
 struct NullBlkDevice {
-    // 自旋锁保护的数据
-    data: SpinLock<Vec<u8>>,
-    // 块设备对象
-    disk: gendisk::GenDisk<Self>,
-    // 内存标签
-    tagset: SpinLock<Option<Box<blk_mq_tag_set>>>,
+ // 自旋锁保护的数据
+ data: SpinLock<Vec<u8>>,
+ // 块设备对象
+ disk: gendisk::GenDisk<Self>,
+ // 内存标签
+ tagset: SpinLock<Option<Box<blk_mq_tag_set>>>,
 }
 
 impl NullBlkDevice {
-    fn new(capacity: u64) -> Result<Box<Self>> {
-        let data = SpinLock::new(vec![0u8; capacity as usize]);
-        // ... 初始化块设备
-        Ok(Box::try_new(Self {
-            data,
-            disk: todo!(),
-            tagset: SpinLock::new(None),
-        }, GFP_KERNEL)?)
-    }
+ fn new(capacity: u64) -> Result<Box<Self>> {
+ let data = SpinLock::new(vec![0u8; capacity as usize]);
+ // ... 初始化块设备
+ Ok(Box::try_new(Self {
+ data,
+ disk: todo!(),
+ tagset: SpinLock::new(None),
+ }, GFP_KERNEL)?)
+ }
 }
 
 // 实现块设备操作
 impl blk_mq::Operations for NullBlkDevice {
-    fn queue_rq(
-        _hctx: &blk_mq::HardwareContext,
-        bd: &blk_mq::QueueData<Self>,
-    ) -> blk_mq::Status {
-        // 处理 I/O 请求
-        blk_mq::Status::Ok
-    }
+ fn queue_rq(
+ _hctx: &blk_mq::HardwareContext,
+ bd: &blk_mq::QueueData<Self>,
+ ) -> blk_mq::Status {
+ // 处理 I/O 请求
+ blk_mq::Status::Ok
+ }
 }
 ```
 
@@ -1276,11 +1276,11 @@ Rust `Arc<T>` 的改进：
 
 ```rust
 pub trait Backend {
-    type State;
-    type GuardState;
-    unsafe fn init(...);
-    unsafe fn lock(...) -> Self::GuardState;
-    unsafe fn unlock(...);
+ type State;
+ type GuardState;
+ unsafe fn init(...);
+ unsafe fn lock(...) -> Self::GuardState;
+ unsafe fn unlock(...);
 }
 ```
 
@@ -1379,8 +1379,8 @@ let guard = my_mutex.lock();
 
 ```
 用户代码（安全） → Arc::new() → unsafe { kref_init() } → C API
-用户代码（安全） → clone()    → unsafe { kref_get() }  → C API
-编译器自动     → drop()      → unsafe { kref_put() }  → C API
+用户代码（安全） → clone() → unsafe { kref_get() } → C API
+编译器自动 → drop() → unsafe { kref_put() } → C API
 ```
 
 用户永远不需要自己调用 `unsafe` 块，所有的安全性由抽象层内部的 `unsafe` 块与 Rust 的所有权系统共同保证。这就是"用 unsafe 封装出 safe API"的核心理念。

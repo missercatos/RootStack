@@ -9,13 +9,13 @@ I/O 接口是 CPU 与外部设备之间的桥接电路，完成数据缓冲、�
 
 ```mermaid
 flowchart LR
-    CPU["CPU"] <-->|"数据线"| DREG["数据缓冲寄存器<br/>(DBR)"]
-    CPU <-->|"控制线"| CSREG["控制/状态寄存器<br/>(CSR)"]
-    DREG <--> XI["I/O 接口逻辑<br/>(设备端)"]
-    CSREG <--> XI
-    ABUS["地址线"] -->|"地址译码"| DECODE["地址译码器"]
-    DECODE --> XI
-    XI <-->|"设备驱动电路"| DEV["外部设备"]
+ CPU["CPU"] <-->|"数据线"| DREG["数据缓冲寄存器<br/>(DBR)"]
+ CPU <-->|"控制线"| CSREG["控制/状态寄存器<br/>(CSR)"]
+ DREG <--> XI["I/O 接口逻辑<br/>(设备端)"]
+ CSREG <--> XI
+ ABUS["地址线"] -->|"地址译码"| DECODE["地址译码器"]
+ DECODE --> XI
+ XI <-->|"设备驱动电路"| DEV["外部设备"]
 ```
 
 I/O 接口内部的核心寄存器：
@@ -43,9 +43,9 @@ I/O 端口拥有与内存完全独立的地址空间，使用专用的 I/O 指�
 | 代表架构 | x86 (IA-32), Intel 8051 等嵌入式 MCU |
 
 ```
-IN  AL, 0x60       ; 从端口 0x60 读取一个字节到 AL
-OUT 0x64, AL       ; 将 AL 写入端口 0x64
-IN  AX, DX         ; 以 DX 中的值作为端口地址，读取一个字
+IN AL, 0x60 ; 从端口 0x60 读取一个字节到 AL
+OUT 0x64, AL ; 将 AL 写入端口 0x64
+IN AX, DX ; 以 DX 中的值作为端口地址，读取一个字
 ```
 
 #### 统一编址 — Memory-Mapped I/O (MMIO)
@@ -61,9 +61,9 @@ IN  AX, DX         ; 以 DX 中的值作为端口地址，读取一个字
 
 ```
 ; ARM: UART 数据寄存器映射在 0x40000000
-LDR R0, =0x40000000   ; 加载 I/O 寄存器映射地址
-STR R1, [R0]           ; 向 UART 发送一字节
-LDR R2, [R0]           ; 从 UART 读取一字节
+LDR R0, =0x40000000 ; 加载 I/O 寄存器映射地址
+STR R1, [R0] ; 向 UART 发送一字节
+LDR R2, [R0] ; 从 UART 读取一字节
 ```
 
 #### PMIO vs MMIO 对比
@@ -82,28 +82,28 @@ LDR R2, [R0]           ; 从 UART 读取一字节
 
 ```mermaid
 flowchart TD
-    START["CPU 发起 I/O 操作"] --> SETUP["初始化:<br/>设置传送字节数、缓冲区指针"]
-    SETUP --> RDS["从状态寄存器读取设备状态"]
-    RDS --> CHK{"设备就绪?<br/>(READY==1 且 ERROR==0)"}
-    CHK -->|"否, 设备忙"| RDS
-    CHK -->|"是"| XFER["执行一次数据传送<br/>(从数据寄存器读取/写入<br/>一个字节或一个字)"]
-    XFER --> UPDATE["缓冲区指针 +1,<br/>字节计数 −1"]
-    UPDATE --> DONE{"字节计数 == 0?"}
-    DONE -->|"否"| RDS
-    DONE -->|"是"| END["I/O 完成"]
+ START["CPU 发起 I/O 操作"] --> SETUP["初始化:<br/>设置传送字节数、缓冲区指针"]
+ SETUP --> RDS["从状态寄存器读取设备状态"]
+ RDS --> CHK{"设备就绪?<br/>(READY==1 且 ERROR==0)"}
+ CHK -->|"否, 设备忙"| RDS
+ CHK -->|"是"| XFER["执行一次数据传送<br/>(从数据寄存器读取/写入<br/>一个字节或一个字)"]
+ XFER --> UPDATE["缓冲区指针 +1,<br/>字节计数 −1"]
+ UPDATE --> DONE{"字节计数 == 0?"}
+ DONE -->|"否"| RDS
+ DONE -->|"是"| END["I/O 完成"]
 ```
 
 典型查询代码 (x86 从 IDE 磁盘读数据)：
 
 ```
-wait_drq:   IN  AL, 0x1F7       ; 读取磁盘状态寄存器
-            TEST AL, 0x08       ; 测试 DRQ 位 (数据请求)
-            JZ  wait_drq        ; 设备未就绪 → 循环等待
-            IN  AX, 0x1F0       ; 从数据寄存器读取一个字
+wait_drq: IN AL, 0x1F7 ; 读取磁盘状态寄存器
+ TEST AL, 0x08 ; 测试 DRQ 位 (数据请求)
+ JZ wait_drq ; 设备未就绪 → 循环等待
+ IN AX, 0x1F0 ; 从数据寄存器读取一个字
 
-wait_ready: IN  AL, 0x1F7
-            TEST AL, 0x80       ; 测试 BSY 位
-            JNZ wait_ready      ; 设备忙 → 等待空闲
+wait_ready: IN AL, 0x1F7
+ TEST AL, 0x80 ; 测试 BSY 位
+ JNZ wait_ready ; 设备忙 → 等待空闲
 ```
 
 | 特征 | 描述 |
@@ -122,26 +122,26 @@ wait_ready: IN  AL, 0x1F7
 
 ```mermaid
 sequenceDiagram
-    participant DEV as 外部设备
-    participant PIC as 中断控制器
-    participant CPU as CPU
-    participant MEM as 内存/栈
+ participant DEV as 外部设备
+ participant PIC as 中断控制器
+ participant CPU as CPU
+ participant MEM as 内存/栈
 
-    DEV->>PIC: 1. 设备将 IRQ 信号线拉高
-    PIC->>PIC: 2. IRR 对应位置 1, 检查 IMR 是否屏蔽
-    PIC->>CPU: 3. INTR 引脚拉高
-    CPU-->>CPU: 4. 当前指令执行完毕, 检查 IF 标志 (是否开中断)
-    CPU->>PIC: 5. 发送 INTA# (中断响应) — 第 1 个 INTA 周期
-    PIC->>PIC: 6. IRR 清零对应位, ISR 置位, 优先级解析器选中最高优先级 IRQ
-    CPU->>PIC: 7. 发送 INTA# — 第 2 个 INTA 周期
-    PIC->>CPU: 8. 将中断向量号 (0~255) 送到数据总线 D[7:0]
-    CPU->>MEM: 9. 压栈: FLAGS → CS → IP (实模式)
-    CPU->>CPU: 10. 清除 IF 标志 (关中断，防止嵌套)
-    CPU->>MEM: 11. 以向量号×4 (实模式) 或 ×8 (保护模式) 为索引，从 IVT/IDT 加载 ISR 入口地址
-    CPU->>DEV: 12. 跳转到 ISR 开始执行中断服务程序
-    DEV->>PIC: 13. ISR 末尾向 PIC 发送 EOI (End of Interrupt)
-    PIC->>PIC: 14. ISR 对应位清零
-    CPU->>MEM: 15. IRET: 弹出 IP → CS → FLAGS，恢复现场
+ DEV->>PIC: 1. 设备将 IRQ 信号线拉高
+ PIC->>PIC: 2. IRR 对应位置 1, 检查 IMR 是否屏蔽
+ PIC->>CPU: 3. INTR 引脚拉高
+ CPU-->>CPU: 4. 当前指令执行完毕, 检查 IF 标志 (是否开中断)
+ CPU->>PIC: 5. 发送 INTA# (中断响应) — 第 1 个 INTA 周期
+ PIC->>PIC: 6. IRR 清零对应位, ISR 置位, 优先级解析器选中最高优先级 IRQ
+ CPU->>PIC: 7. 发送 INTA# — 第 2 个 INTA 周期
+ PIC->>CPU: 8. 将中断向量号 (0~255) 送到数据总线 D[7:0]
+ CPU->>MEM: 9. 压栈: FLAGS → CS → IP (实模式)
+ CPU->>CPU: 10. 清除 IF 标志 (关中断，防止嵌套)
+ CPU->>MEM: 11. 以向量号×4 (实模式) 或 ×8 (保护模式) 为索引，从 IVT/IDT 加载 ISR 入口地址
+ CPU->>DEV: 12. 跳转到 ISR 开始执行中断服务程序
+ DEV->>PIC: 13. ISR 末尾向 PIC 发送 EOI (End of Interrupt)
+ PIC->>PIC: 14. ISR 对应位清零
+ CPU->>MEM: 15. IRET: 弹出 IP → CS → FLAGS，恢复现场
 ```
 
 #### 8259A 可编程中断控制器 (PIC)
@@ -150,19 +150,19 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    IR0["IRQ0 (定时器)"] --> IRR["中断请求寄存器<br/>(IRR — 8bit)"]
-    IR1["IRQ1 (键盘)"] --> IRR
-    IR2["IRQ2 (级联从片)"] --> IRR
-    IR3["IRQ3 (COM2)"] --> IRR
-    IR4["IRQ4 (COM1)"] --> IRR
-    IR5["IRQ5 (声卡/LPT2)"] --> IRR
-    IR6["IRQ6 (软盘控制器)"] --> IRR
-    IR7["IRQ7 (LPT1)"] --> IRR
-    
-    IRR --> PR["优先级解析器<br/>(Priority Resolver)<br/>选出最高优先级"]
-    IMR["中断屏蔽寄存器<br/>(IMR — 8bit)"] -.->|"屏蔽信号"| PR
-    PR --> ISR["中断服务寄存器<br/>(ISR — 8bit)"]
-    ISR --> INT_OUT["送往 CPU INTR 引脚"]
+ IR0["IRQ0 (定时器)"] --> IRR["中断请求寄存器<br/>(IRR — 8bit)"]
+ IR1["IRQ1 (键盘)"] --> IRR
+ IR2["IRQ2 (级联从片)"] --> IRR
+ IR3["IRQ3 (COM2)"] --> IRR
+ IR4["IRQ4 (COM1)"] --> IRR
+ IR5["IRQ5 (声卡/LPT2)"] --> IRR
+ IR6["IRQ6 (软盘控制器)"] --> IRR
+ IR7["IRQ7 (LPT1)"] --> IRR
+ 
+ IRR --> PR["优先级解析器<br/>(Priority Resolver)<br/>选出最高优先级"]
+ IMR["中断屏蔽寄存器<br/>(IMR — 8bit)"] -.->|"屏蔽信号"| PR
+ PR --> ISR["中断服务寄存器<br/>(ISR — 8bit)"]
+ ISR --> INT_OUT["送往 CPU INTR 引脚"]
 ```
 
 三个 8 位寄存器：
@@ -185,27 +185,27 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    subgraph "主片 8259A (Master, 端口 0x20/0x21)"
-        MIR0["IR0 — 定时器 (PIT)"]
-        MIR1["IR1 — 键盘控制器 (8042)"]
-        MIR2["IR2 — 级联从片 8259A"]
-        MIR3["IR3 — COM2"]
-        MIR4["IR4 — COM1"]
-        MIR5["IR5 — LPT2 / 声卡"]
-        MIR6["IR6 — 软盘控制器"]
-        MIR7["IR7 — LPT1"]
-    end
-    subgraph "从片 8259A (Slave, 端口 0xA0/0xA1)"
-        SIR0["IR8 — 实时时钟 (RTC)"]
-        SIR1["IR9 — ACPI / 遗留中断"]
-        SIR2["IR10 — 通用"]
-        SIR3["IR11 — 通用"]
-        SIR4["IR12 — PS/2 鼠标"]
-        SIR5["IR13 — FPU 协处理器"]
-        SIR6["IR14 — 主 IDE 控制器"]
-        SIR7["IR15 — 从 IDE 控制器"]
-    end
-    MIR2 -.->|"级联信号"| SLAVE_INT["从片 INT 引脚"]
+ subgraph "主片 8259A (Master, 端口 0x20/0x21)"
+ MIR0["IR0 — 定时器 (PIT)"]
+ MIR1["IR1 — 键盘控制器 (8042)"]
+ MIR2["IR2 — 级联从片 8259A"]
+ MIR3["IR3 — COM2"]
+ MIR4["IR4 — COM1"]
+ MIR5["IR5 — LPT2 / 声卡"]
+ MIR6["IR6 — 软盘控制器"]
+ MIR7["IR7 — LPT1"]
+ end
+ subgraph "从片 8259A (Slave, 端口 0xA0/0xA1)"
+ SIR0["IR8 — 实时时钟 (RTC)"]
+ SIR1["IR9 — ACPI / 遗留中断"]
+ SIR2["IR10 — 通用"]
+ SIR3["IR11 — 通用"]
+ SIR4["IR12 — PS/2 鼠标"]
+ SIR5["IR13 — FPU 协处理器"]
+ SIR6["IR14 — 主 IDE 控制器"]
+ SIR7["IR15 — 从 IDE 控制器"]
+ end
+ MIR2 -.->|"级联信号"| SLAVE_INT["从片 INT 引脚"]
 ```
 
 #### 高级可编程中断控制器 (APIC)
@@ -219,14 +219,14 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    DEV1["外部设备 1"] --> IOAPIC["I/O APIC<br/>(24+ 个中断输入)"]
-    DEV2["外部设备 2"] --> IOAPIC
-    DEV3["外部设备 3"] --> IOAPIC
-    IOAPIC -->|"中断消息 (APIC Bus/System Bus)"| LAPIC0["LAPIC<br/>核 0"]
-    IOAPIC -->|"中断消息"| LAPIC1["LAPIC<br/>核 1"]
-    IOAPIC -->|"中断消息"| LAPIC2["LAPIC<br/>核 2"]
-    IOAPIC -->|"中断消息"| LAPIC3["LAPIC<br/>核 3"]
-    LAPIC0 <-->|"IPI (核间中断)"| LAPIC1
+ DEV1["外部设备 1"] --> IOAPIC["I/O APIC<br/>(24+ 个中断输入)"]
+ DEV2["外部设备 2"] --> IOAPIC
+ DEV3["外部设备 3"] --> IOAPIC
+ IOAPIC -->|"中断消息 (APIC Bus/System Bus)"| LAPIC0["LAPIC<br/>核 0"]
+ IOAPIC -->|"中断消息"| LAPIC1["LAPIC<br/>核 1"]
+ IOAPIC -->|"中断消息"| LAPIC2["LAPIC<br/>核 2"]
+ IOAPIC -->|"中断消息"| LAPIC3["LAPIC<br/>核 3"]
+ LAPIC0 <-->|"IPI (核间中断)"| LAPIC1
 ```
 
 APIC 相比 8259A 的优势：
@@ -241,28 +241,28 @@ APIC 相比 8259A 的优势：
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Main: 执行主程序 (IF=1, 开中断)
-    Main --> ISR_Low: IRQ_1 请求 (低优先级)
-    
-    state ISR_Low {
-        [*] --> LowPrologue: 保存现场, 设置屏蔽字
-        LowPrologue --> LowExec: 开中断 (IF=1), 允许嵌套
-        LowExec --> LowSuspended: 高优先级 IRQ_0 到达
-        LowSuspended --> LowResume: IRQ_0 的 ISR 执行完毕 (IRET)
-        LowResume --> LowEpilogue: 恢复屏蔽字
-        LowEpilogue --> [*]: 发送 EOI, IRET
-    }
-    
-    state ISR_High {
-        [*] --> HighPrologue: 保存现场
-        HighPrologue --> HighExec: 执行紧急处理
-        HighExec --> HighEpilogue: 发送 EOI
-        HighEpilogue --> [*]: IRET
-    }
-    
-    ISR_Low --> ISR_High: 高优先级中断到达
-    ISR_High --> ISR_Low: 高优先级 ISR 完成
-    ISR_Low --> Main: 低优先级 ISR 完成
+ [*] --> Main: 执行主程序 (IF=1, 开中断)
+ Main --> ISR_Low: IRQ_1 请求 (低优先级)
+ 
+ state ISR_Low {
+ [*] --> LowPrologue: 保存现场, 设置屏蔽字
+ LowPrologue --> LowExec: 开中断 (IF=1), 允许嵌套
+ LowExec --> LowSuspended: 高优先级 IRQ_0 到达
+ LowSuspended --> LowResume: IRQ_0 的 ISR 执行完毕 (IRET)
+ LowResume --> LowEpilogue: 恢复屏蔽字
+ LowEpilogue --> [*]: 发送 EOI, IRET
+ }
+ 
+ state ISR_High {
+ [*] --> HighPrologue: 保存现场
+ HighPrologue --> HighExec: 执行紧急处理
+ HighExec --> HighEpilogue: 发送 EOI
+ HighEpilogue --> [*]: IRET
+ }
+ 
+ ISR_Low --> ISR_High: 高优先级中断到达
+ ISR_High --> ISR_Low: 高优先级 ISR 完成
+ ISR_Low --> Main: 低优先级 ISR 完成
 ```
 
 中断嵌套的要点：
@@ -306,21 +306,21 @@ DMA 使高速设备可以直接与主存交换数据，CPU 仅在传送开始和
 
 ```mermaid
 flowchart TD
-    subgraph "Intel 8237 DMAC"
-        CH0["通道 0<br/>基地址+当前地址 (16+4位)<br/>基计数+当前计数 (16位)"]
-        CH1["通道 1<br/>(同通道0结构)"]
-        CH2["通道 2<br/>(同通道0结构)"]
-        CH3["通道 3<br/>(同通道0结构)"]
-        CH0 & CH1 & CH2 & CH3 --> PRIO["优先级仲裁器<br/>(固定/轮转)"]
-        PRIO --> TC["时序与控制逻辑<br/>(产生 MEMR#/MEMW#/IOR#/IOW#)"]
-        TC --> ABUS["地址总线 (A0-A15)"]
-        TC --> DBUS["数据总线"]
-    end
-    CPU["CPU"] -->|"程序设定"| CH0
-    CPU -->|"HRQ (总线请求)"| TC
-    TC -->|"HLDA (总线应答)"| CPU
-    DEV["设备"] -->|"DREQ"| CH0
-    CH0 -->|"DACK#"| DEV
+ subgraph "Intel 8237 DMAC"
+ CH0["通道 0<br/>基地址+当前地址 (16+4位)<br/>基计数+当前计数 (16位)"]
+ CH1["通道 1<br/>(同通道0结构)"]
+ CH2["通道 2<br/>(同通道0结构)"]
+ CH3["通道 3<br/>(同通道0结构)"]
+ CH0 & CH1 & CH2 & CH3 --> PRIO["优先级仲裁器<br/>(固定/轮转)"]
+ PRIO --> TC["时序与控制逻辑<br/>(产生 MEMR#/MEMW#/IOR#/IOW#)"]
+ TC --> ABUS["地址总线 (A0-A15)"]
+ TC --> DBUS["数据总线"]
+ end
+ CPU["CPU"] -->|"程序设定"| CH0
+ CPU -->|"HRQ (总线请求)"| TC
+ TC -->|"HLDA (总线应答)"| CPU
+ DEV["设备"] -->|"DREQ"| CH0
+ CH0 -->|"DACK#"| DEV
 ```
 
 每个通道的核心寄存器：
@@ -339,12 +339,12 @@ DMA 的单周期飞越传送是最快模式，在同一个总线周期内同时�
 
 ```
 DMA 读周期 (设备 → 内存), 每个周期:
-  T1: DMAC 将 20 位地址送上地址总线, DACK# 有效
-  T2: DMAC 同时激活 IOR# 和 MEMW# → 设备数据直接流入内存地址
-  T3: 延长等待周期 (若设备需要)
-  T4: 撤消控制信号, 地址 ±1, 字节计数 −1
-       → 计数 != 0: 回到 T1 (继续下一字节)
-       → 计数 == 0: 激活 EOP#, 释放总线
+ T1: DMAC 将 20 位地址送上地址总线, DACK# 有效
+ T2: DMAC 同时激活 IOR# 和 MEMW# → 设备数据直接流入内存地址
+ T3: 延长等待周期 (若设备需要)
+ T4: 撤消控制信号, 地址 ±1, 字节计数 −1
+ → 计数 != 0: 回到 T1 (继续下一字节)
+ → 计数 == 0: 激活 EOP#, 释放总线
 ```
 
 DMA 写周期 (内存 → 设备)：激活 MEMR# 和 IOW#，数据从内存直接流向设备。
@@ -379,13 +379,13 @@ I/O 通道是一种拥有独立指令系统的专用 I/O 处理器 (IOP)，可�
 
 ```mermaid
 flowchart TD
-    CPU["CPU"] -->|"START I/O 指令"| CHAN["I/O 通道控制器<br/>(独立处理器)"]
-    CHAN -->|"取通道程序<br/>存入主存"| MEM["主存"]
-    CHAN -->|"子通道 0"| DEV0["磁盘控制器 0"]
-    CHAN -->|"子通道 1"| DEV1["磁盘控制器 1"]
-    CHAN -->|"子通道 2"| DEV2["磁带控制器"]
-    CHAN -->|"子通道 3"| DEV3["打印机控制器"]
-    CPU -->|"处理其他程序"| CONTINUE["... 与通道并行工作"]
+ CPU["CPU"] -->|"START I/O 指令"| CHAN["I/O 通道控制器<br/>(独立处理器)"]
+ CHAN -->|"取通道程序<br/>存入主存"| MEM["主存"]
+ CHAN -->|"子通道 0"| DEV0["磁盘控制器 0"]
+ CHAN -->|"子通道 1"| DEV1["磁盘控制器 1"]
+ CHAN -->|"子通道 2"| DEV2["磁带控制器"]
+ CHAN -->|"子通道 3"| DEV3["打印机控制器"]
+ CPU -->|"处理其他程序"| CONTINUE["... 与通道并行工作"]
 ```
 
 #### 通道命令字 (CCW, IBM System/360 风格)
@@ -406,11 +406,11 @@ flowchart TD
 通道程序示例 (读取一个磁盘扇区，分为两个缓冲区)：
 
 ```
-CCW1: SEEK   命令码=0x07, 数据地址=搜索参数块地址, 计数=6, CC=1, CD=0
+CCW1: SEEK 命令码=0x07, 数据地址=搜索参数块地址, 计数=6, CC=1, CD=0
 CCW2: SEARCH 命令码=0x31, 数据地址=ID 参数块地址, 计数=5, CC=1, CD=0
-CCW3: TIC    命令码=0x08, 数据地址=CCW1 地址         , 计数=0, CC=1 (通道转移)
-CCW4: READ   命令码=0x06, 数据地址=缓冲区A 地址       , 计数=256, CC=0, CD=1
-CCW5: READ   命令码=0x06, 数据地址=缓冲区B 地址       , 计数=256, CC=0, CD=0
+CCW3: TIC 命令码=0x08, 数据地址=CCW1 地址 , 计数=0, CC=1 (通道转移)
+CCW4: READ 命令码=0x06, 数据地址=缓冲区A 地址 , 计数=256, CC=0, CD=1
+CCW5: READ 命令码=0x06, 数据地址=缓冲区B 地址 , 计数=256, CC=0, CD=0
 ```
 
 CPU 发出 `SIOF` (Start I/O Fast) 指向 CCW1 → 通道找到正确扇区后 → 在 CCW4/CCW5 处把 512 字节扇区分别读到两个 256 字节缓冲区中。

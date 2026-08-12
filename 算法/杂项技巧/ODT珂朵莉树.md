@@ -8,10 +8,10 @@
 
 ```cpp
 struct Node {
-  int l, r;
-  mutable int v;
-  Node(int il, int ir, int iv) : l(il), r(ir), v(iv) {}
-  bool operator<(const Node &o) const { return l < o.l; }
+ int l, r;
+ mutable int v;
+ Node(int il, int ir, int iv) : l(il), r(ir), v(iv) {}
+ bool operator<(const Node &o) const { return l < o.l; }
 };
 set<Node> odt;
 ```
@@ -24,13 +24,13 @@ set<Node> odt;
 
 ```cpp
 auto split(int x) {
-  auto it = odt.lower_bound(Node(x, 0, 0));
-  if (it != odt.end() && it->l == x) return it;
-  --it;
-  int l = it->l, r = it->r, v = it->v;
-  odt.erase(it);
-  odt.insert(Node(l, x - 1, v));
-  return odt.insert(Node(x, r, v)).first;
+ auto it = odt.lower_bound(Node(x, 0, 0));
+ if (it != odt.end() && it->l == x) return it;
+ --it;
+ int l = it->l, r = it->r, v = it->v;
+ odt.erase(it);
+ odt.insert(Node(l, x - 1, v));
+ return odt.insert(Node(x, r, v)).first;
 }
 ```
 
@@ -40,9 +40,9 @@ auto split(int x) {
 
 ```cpp
 void assign(int l, int r, int v) {
-  auto itr = split(r + 1), itl = split(l);
-  odt.erase(itl, itr);
-  odt.insert(Node(l, r, v));
+ auto itr = split(r + 1), itl = split(l);
+ odt.erase(itl, itr);
+ odt.insert(Node(l, r, v));
 }
 ```
 

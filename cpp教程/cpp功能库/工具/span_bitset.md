@@ -48,76 +48,76 @@ title: "C++ 功能库 — span / bitset / byte"
 
 ```
 FUNCTION demo_span:
-    arr = INT[]{1, 2, 3, 4, 5, 6, 7, 8}
+ arr = INT[]{1, 2, 3, 4, 5, 6, 7, 8}
 
-    s = SPAN<INT>(arr, 8)
-    PRINT s.SIZE()                              // 8
-    PRINT s[0]                                  // 1
+ s = SPAN<INT>(arr, 8)
+ PRINT s.SIZE() // 8
+ PRINT s[0] // 1
 
-    sub = s.SUBSPAN(2, 4)                       // [3, 4, 5, 6]（不拷贝）
-    last3 = s.LAST(3)                           // [6, 7, 8]
+ sub = s.SUBSPAN(2, 4) // [3, 4, 5, 6]（不拷贝）
+ last3 = s.LAST(3) // [6, 7, 8]
 
-    // 统一接口：接收 vector, array, C数组
-    PROCESS = LAMBDA(s SPAN<CONST INT>):
-        FOR x IN s: PRINT x
-    END LAMBDA
+ // 统一接口：接收 vector, array, C数组
+ PROCESS = LAMBDA(s SPAN<CONST INT>):
+ FOR x IN s: PRINT x
+ END LAMBDA
 
-    v = VECTOR<INT>{1, 2, 3}
-    PROCESS(SPAN<INT>(v))                       // vector → span
-    PROCESS(SPAN<INT>(arr, 3))                  // C数组 → span
+ v = VECTOR<INT>{1, 2, 3}
+ PROCESS(SPAN<INT>(v)) // vector → span
+ PROCESS(SPAN<INT>(arr, 3)) // C数组 → span
 ```
 
 ### bitset —— 位集操作
 
 ```
 FUNCTION demo_bitset:
-    flags = BITSET<10>()
-    flags.SET(0)                                // 0000000001
-    flags.SET(3, true)                          // 0000001001
-    flags.FLIP(1)                               // 0000001011
+ flags = BITSET<10>()
+ flags.SET(0) // 0000000001
+ flags.SET(3, true) // 0000001001
+ flags.FLIP(1) // 0000001011
 
-    PRINT flags.TEST(3)                         // true
-    PRINT flags.COUNT()                         // 2
-    PRINT flags.ANY()                           // true
+ PRINT flags.TEST(3) // true
+ PRINT flags.COUNT() // 2
+ PRINT flags.ANY() // true
 
-    a = BITSET<4>("1010")
-    b = BITSET<4>("0110")
-    PRINT a & b                                 // 0010
-    PRINT a | b                                 // 1110
+ a = BITSET<4>("1010")
+ b = BITSET<4>("0110")
+ PRINT a & b // 0010
+ PRINT a | b // 1110
 
-    n = flags.TO_ULONG()                        // 转为 unsigned long
-    PRINT flags.TO_STRING()                     // "0000001011"
+ n = flags.TO_ULONG() // 转为 unsigned long
+ PRINT flags.TO_STRING() // "0000001011"
 ```
 
 ### 标志位模式
 
 ```
 FUNCTION demo_flags:
-    FLAGS = ENUM:
-        READ    = 0
-        WRITE   = 1
-        EXECUTE = 2
-    END ENUM
+ FLAGS = ENUM:
+ READ = 0
+ WRITE = 1
+ EXECUTE = 2
+ END ENUM
 
-    perms = BITSET<8>()
-    perms.SET(FLAGS::READ)
-    perms.SET(FLAGS::WRITE)
+ perms = BITSET<8>()
+ perms.SET(FLAGS::READ)
+ perms.SET(FLAGS::WRITE)
 
-    IF perms.TEST(FLAGS::READ):    PRINT "可读"
-    IF perms.TEST(FLAGS::EXECUTE): PRINT "可执行"
+ IF perms.TEST(FLAGS::READ): PRINT "可读"
+ IF perms.TEST(FLAGS::EXECUTE): PRINT "可执行"
 ```
 
 ### byte —— 字节操作
 
 ```
 FUNCTION demo_byte:
-    b1 = BYTE{0xA0}
-    b2 = BYTE{0x0B}
-    result = b1 | b2                            // 0xAB
+ b1 = BYTE{0xA0}
+ b2 = BYTE{0x0B}
+ result = b1 | b2 // 0xAB
 
-    shifted = b1 << 4                            // 0x00（高位移出）
+ shifted = b1 << 4 // 0x00（高位移出）
 
-    val = TO_INTEGER<INT>(b1)                   // 转为 int
+ val = TO_INTEGER<INT>(b1) // 转为 int
 ```
 
 ---

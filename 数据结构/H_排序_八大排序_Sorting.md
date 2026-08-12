@@ -64,34 +64,34 @@ $$
 
 ```mermaid
 graph TD
-    A["开始 arr[0..n-1]"] --> B["i ← 0"]
-    B --> C{"i < n-1?"}
-    C -->|No| D["结束 ✓"]
-    C -->|Yes| E["swapped ← false\nj ← 0"]
-    E --> F{"j < n-1-i?"}
-    F -->|No| G{"swapped?"}
-    G -->|No| D
-    G -->|Yes| H["i ← i+1"]
-    H --> C
-    F -->|Yes| I{"arr[j] > arr[j+1]?"}
-    I -->|Yes| J["swap(arr[j], arr[j+1])\nswapped ← true"]
-    J --> K["j ← j+1"]
-    I -->|No| K
-    K --> F
+ A["开始 arr[0..n-1]"] --> B["i ← 0"]
+ B --> C{"i < n-1?"}
+ C -->|No| D["结束 "]
+ C -->|Yes| E["swapped ← false\nj ← 0"]
+ E --> F{"j < n-1-i?"}
+ F -->|No| G{"swapped?"}
+ G -->|No| D
+ G -->|Yes| H["i ← i+1"]
+ H --> C
+ F -->|Yes| I{"arr[j] > arr[j+1]?"}
+ I -->|Yes| J["swap(arr[j], arr[j+1])\nswapped ← true"]
+ J --> K["j ← j+1"]
+ I -->|No| K
+ K --> F
 ```
 
 ```c
 void bubble_sort(int* arr, int n) {
-    for (int i = 0; i < n - 1; i++) {
-        int swapped = 0;
-        for (int j = 0; j < n - 1 - i; j++) {
-            if (arr[j] > arr[j + 1]) {
-                int t = arr[j]; arr[j] = arr[j + 1]; arr[j + 1] = t;
-                swapped = 1;
-            }
-        }
-        if (!swapped) break;
-    }
+ for (int i = 0; i < n - 1; i++) {
+ int swapped = 0;
+ for (int j = 0; j < n - 1 - i; j++) {
+ if (arr[j] > arr[j + 1]) {
+ int t = arr[j]; arr[j] = arr[j + 1]; arr[j + 1] = t;
+ swapped = 1;
+ }
+ }
+ if (!swapped) break;
+ }
 }
 ```
 
@@ -113,7 +113,7 @@ void bubble_sort(int* arr, int n) {
 | 第5轮 | j=0..2 | `[2, 1, 3, **4**, 5, 6, 7, 8]` | 1 | 2>1→交换 |
 | 第6轮 | j=0..1 | `[1, 2, **3**, 4, 5, 6, 7, 8]` | 1 | 2>1→交换 |
 | 第7轮 | j=0..0 | `[1, 2, 3, 4, 5, 6, 7, 8]` | 0 | swapped=false → 提前退出 |
-| 结果 | - | `[1, 2, 3, 4, 5, 6, 7, 8]` ✓ | 15 | 共8个数，最多C(8,2)=28次交换，实际15次 |
+| 结果 | - | `[1, 2, 3, 4, 5, 6, 7, 8]` | 15 | 共8个数，最多C(8,2)=28次交换，实际15次 |
 
 **数学分析**：
 - 比较次数：最好 O(n)，最坏 O(n²)，平均 O(n²)
@@ -124,33 +124,33 @@ void bubble_sort(int* arr, int n) {
 
 ```mermaid
 graph TD
-    A["开始 arr[0..n-1]"] --> B["i ← 0"]
-    B --> C{"i < n-1?"}
-    C -->|No| D["结束 ✓"]
-    C -->|Yes| E["min_idx ← i\nj ← i+1"]
-    E --> F{"j < n?"}
-    F -->|No| G{"min_idx ≠ i?"}
-    G -->|Yes| H["swap(arr[i], arr[min_idx])"]
-    H --> I["i ← i+1"]
-    G -->|No| I
-    I --> C
-    F -->|Yes| J{"arr[j] < arr[min_idx]?"}
-    J -->|Yes| K["min_idx ← j"]
-    K --> L["j ← j+1"]
-    J -->|No| L
-    L --> F
+ A["开始 arr[0..n-1]"] --> B["i ← 0"]
+ B --> C{"i < n-1?"}
+ C -->|No| D["结束 "]
+ C -->|Yes| E["min_idx ← i\nj ← i+1"]
+ E --> F{"j < n?"}
+ F -->|No| G{"min_idx ≠ i?"}
+ G -->|Yes| H["swap(arr[i], arr[min_idx])"]
+ H --> I["i ← i+1"]
+ G -->|No| I
+ I --> C
+ F -->|Yes| J{"arr[j] < arr[min_idx]?"}
+ J -->|Yes| K["min_idx ← j"]
+ K --> L["j ← j+1"]
+ J -->|No| L
+ L --> F
 ```
 
 ```c
 void selection_sort(int* arr, int n) {
-    for (int i = 0; i < n - 1; i++) {
-        int min_idx = i;
-        for (int j = i + 1; j < n; j++)
-            if (arr[j] < arr[min_idx]) min_idx = j;
-        if (min_idx != i) {
-            int t = arr[i]; arr[i] = arr[min_idx]; arr[min_idx] = t;
-        }
-    }
+ for (int i = 0; i < n - 1; i++) {
+ int min_idx = i;
+ for (int j = i + 1; j < n; j++)
+ if (arr[j] < arr[min_idx]) min_idx = j;
+ if (min_idx != i) {
+ int t = arr[i]; arr[i] = arr[min_idx]; arr[min_idx] = t;
+ }
+ }
 }
 ```
 
@@ -174,7 +174,7 @@ void selection_sort(int* arr, int n) {
 | 第5轮 | [4..7] min=5 | 5 | `[1, 2, 3, 4, **5**, 7, 8, 6]` | 最小值5(位置6)，与arr[4]=8交换 |
 | 第6轮 | [5..7] min=6 | 6 | `[1, 2, 3, 4, 5, **6**, 8, 7]` | 最小值6(位置7)，与arr[5]=7交换 |
 | 第7轮 | [6..7] min=7 | 7 | `[1, 2, 3, 4, 5, 6, **7**, 8]` | 最小值7(位置7)，与arr[6]=8交换 |
-| 结果 | - | - | `[1, 2, 3, 4, 5, 6, 7, 8]` ✓ | 经过7轮选择-交换，共比较28次，交换7次 |
+| 结果 | - | - | `[1, 2, 3, 4, 5, 6, 7, 8]` | 经过7轮选择-交换，共比较28次，交换7次 |
 
 **数学分析**：
 - 比较次数：∑(n-i-1) = n(n-1)/2 = O(n²)，与初始顺序无关
@@ -185,30 +185,30 @@ void selection_sort(int* arr, int n) {
 
 ```mermaid
 graph TD
-    A["开始 arr[0..n-1]"] --> B["i ← 1"]
-    B --> C{"i < n?"}
-    C -->|No| D["结束 ✓"]
-    C -->|Yes| E["key ← arr[i]\nj ← i-1"]
-    E --> F{"j ≥ 0 且 arr[j] > key?"}
-    F -->|Yes| G["arr[j+1] ← arr[j]"]
-    G --> H["j ← j-1"]
-    H --> F
-    F -->|No| I["arr[j+1] ← key"]
-    I --> J["i ← i+1"]
-    J --> C
+ A["开始 arr[0..n-1]"] --> B["i ← 1"]
+ B --> C{"i < n?"}
+ C -->|No| D["结束 "]
+ C -->|Yes| E["key ← arr[i]\nj ← i-1"]
+ E --> F{"j ≥ 0 且 arr[j] > key?"}
+ F -->|Yes| G["arr[j+1] ← arr[j]"]
+ G --> H["j ← j-1"]
+ H --> F
+ F -->|No| I["arr[j+1] ← key"]
+ I --> J["i ← i+1"]
+ J --> C
 ```
 
 ```c
 void insertion_sort(int* arr, int n) {
-    for (int i = 1; i < n; i++) {
-        int key = arr[i];
-        int j = i - 1;
-        while (j >= 0 && arr[j] > key) {
-            arr[j + 1] = arr[j];
-            j--;
-        }
-        arr[j + 1] = key;
-    }
+ for (int i = 1; i < n; i++) {
+ int key = arr[i];
+ int j = i - 1;
+ while (j >= 0 && arr[j] > key) {
+ arr[j + 1] = arr[j];
+ j--;
+ }
+ arr[j + 1] = key;
+ }
 }
 ```
 
@@ -232,7 +232,7 @@ void insertion_sort(int* arr, int n) {
 | 第5轮 | [0..5] | 7 | j=4 | `[**2, 3, 5, 6, 7, 8**, 1, 4]` | 7<8→8右移，7>6→插入arr[4] |
 | 第6轮 | [0..6] | 1 | j=0 | `[**1, 2, 3, 5, 6, 7, 8**, 4]` | 1依次与8,7,6,5,3,2比较→右移，1插入arr[0] |
 | 第7轮 | [0..7] | 4 | j=3 | `[**1, 2, 3, 4, 5, 6, 7, 8**]` | 4与8,7,6,5比较→右移，4>3→插入arr[3] |
-| 结果 | - | - | - | `[1, 2, 3, 4, 5, 6, 7, 8]` ✓ | 共7轮插入，比较+移动约20次 |
+| 结果 | - | - | - | `[1, 2, 3, 4, 5, 6, 7, 8]` | 共7轮插入，比较+移动约20次 |
 
 **数学分析**：
 - 最好情况（已有序）：每轮比较1次，O(n)
@@ -244,38 +244,38 @@ void insertion_sort(int* arr, int n) {
 
 ```mermaid
 graph TD
-    A["开始 arr[0..n-1]"] --> B["计算 gap"]
-    B --> C{"gap > 0?"}
-    C -->|No| D["结束 ✓"]
-    C -->|Yes| E["i ← gap"]
-    E --> F{"i < n?"}
-    F -->|No| G["gap ← (gap-1)/3"]
-    G --> C
-    F -->|Yes| H["temp ← arr[i]\nj ← i"]
-    H --> I{"j ≥ gap 且 arr[j-gap] > temp?"}
-    I -->|Yes| J["arr[j] ← arr[j-gap]\nj ← j-gap"]
-    J --> I
-    I -->|No| K["arr[j] ← temp"]
-    K --> L["i ← i+1"]
-    L --> F
+ A["开始 arr[0..n-1]"] --> B["计算 gap"]
+ B --> C{"gap > 0?"}
+ C -->|No| D["结束 "]
+ C -->|Yes| E["i ← gap"]
+ E --> F{"i < n?"}
+ F -->|No| G["gap ← (gap-1)/3"]
+ G --> C
+ F -->|Yes| H["temp ← arr[i]\nj ← i"]
+ H --> I{"j ≥ gap 且 arr[j-gap] > temp?"}
+ I -->|Yes| J["arr[j] ← arr[j-gap]\nj ← j-gap"]
+ J --> I
+ I -->|No| K["arr[j] ← temp"]
+ K --> L["i ← i+1"]
+ L --> F
 ```
 
 ```c
 void shell_sort(int* arr, int n) {
-    int gap = 1;
-    while (gap < n / 3) gap = 3 * gap + 1;
-    while (gap > 0) {
-        for (int i = gap; i < n; i++) {
-            int temp = arr[i];
-            int j = i;
-            while (j >= gap && arr[j - gap] > temp) {
-                arr[j] = arr[j - gap];
-                j -= gap;
-            }
-            arr[j] = temp;
-        }
-        gap = (gap - 1) / 3;
-    }
+ int gap = 1;
+ while (gap < n / 3) gap = 3 * gap + 1;
+ while (gap > 0) {
+ for (int i = gap; i < n; i++) {
+ int temp = arr[i];
+ int j = i;
+ while (j >= gap && arr[j - gap] > temp) {
+ arr[j] = arr[j - gap];
+ j -= gap;
+ }
+ arr[j] = temp;
+ }
+ gap = (gap - 1) / 3;
+ }
 }
 ```
 
@@ -335,25 +335,25 @@ gap=4 后结果: `[2, 3, 1, 4, 5, 7, 8, 6]`
 
 ```mermaid
 graph TD
-    A["arr[l..r]"] --> B{"l ≥ r?"}
-    B -->|Yes| C["返回"]
-    B -->|No| D["m ← (l+r)/2"]
-    D --> E["排序左半: merge_sort(arr,l,m)"]
-    D --> F["排序右半: merge_sort(arr,m+1,r)"]
-    E --> G["合并: merge(arr,l,m,r)"]
-    F --> G
-    G --> H["返回"]
-    subgraph merge 过程
-        I["i=l, j=m+1, k=0"] --> J{"i≤m 且 j≤r?"}
-        J -->|arr[i]≤arr[j]| K["temp[k++] = arr[i++]"]
-        J -->|arr[i]>arr[j]| L["temp[k++] = arr[j++]"]
-        K --> J
-        L --> J
-        J -->|左半有剩余| M["复制 arr[i..m]"]
-        J -->|右半有剩余| N["复制 arr[j..r]"]
-        M --> O["复制回 arr[l..r]"]
-        N --> O
-    end
+ A["arr[l..r]"] --> B{"l ≥ r?"}
+ B -->|Yes| C["返回"]
+ B -->|No| D["m ← (l+r)/2"]
+ D --> E["排序左半: merge_sort(arr,l,m)"]
+ D --> F["排序右半: merge_sort(arr,m+1,r)"]
+ E --> G["合并: merge(arr,l,m,r)"]
+ F --> G
+ G --> H["返回"]
+ subgraph merge 过程
+ I["i=l, j=m+1, k=0"] --> J{"i≤m 且 j≤r?"}
+ J -->|arr[i]≤arr[j]| K["temp[k++] = arr[i++]"]
+ J -->|arr[i]>arr[j]| L["temp[k++] = arr[j++]"]
+ K --> J
+ L --> J
+ J -->|左半有剩余| M["复制 arr[i..m]"]
+ J -->|右半有剩余| N["复制 arr[j..r]"]
+ M --> O["复制回 arr[l..r]"]
+ N --> O
+ end
 ```
 
 ```c
@@ -361,22 +361,22 @@ graph TD
 #include <string.h>
 
 static void merge(int* arr, int l, int m, int r) {
-    int* temp = malloc((r - l + 1) * sizeof(int));
-    int i = l, j = m + 1, k = 0;
-    while (i <= m && j <= r)
-        temp[k++] = (arr[i] <= arr[j]) ? arr[i++] : arr[j++];
-    while (i <= m) temp[k++] = arr[i++];
-    while (j <= r) temp[k++] = arr[j++];
-    memcpy(arr + l, temp, k * sizeof(int));
-    free(temp);
+ int* temp = malloc((r - l + 1) * sizeof(int));
+ int i = l, j = m + 1, k = 0;
+ while (i <= m && j <= r)
+ temp[k++] = (arr[i] <= arr[j]) ? arr[i++] : arr[j++];
+ while (i <= m) temp[k++] = arr[i++];
+ while (j <= r) temp[k++] = arr[j++];
+ memcpy(arr + l, temp, k * sizeof(int));
+ free(temp);
 }
 
 void merge_sort(int* arr, int l, int r) {
-    if (l >= r) return;
-    int m = l + (r - l) / 2;
-    merge_sort(arr, l, m);
-    merge_sort(arr, m + 1, r);
-    merge(arr, l, m, r);
+ if (l >= r) return;
+ int m = l + (r - l) / 2;
+ merge_sort(arr, l, m);
+ merge_sort(arr, m + 1, r);
+ merge(arr, l, m, r);
 }
 ```
 
@@ -391,13 +391,13 @@ void merge_sort(int* arr, int l, int r) {
 **递归树（分治过程）**：
 
 ```
-                    [5, 3, 8, 6, 2, 7, 1, 4]         ← 原始
-                   /                            \
-          [5, 3, 8, 6]                    [2, 7, 1, 4]       ← 第1层拆分
-         /              \                /              \
-     [5, 3]           [8, 6]         [2, 7]           [1, 4]   ← 第2层拆分
-    /      \         /      \        /      \         /      \
-  [5]     [3]      [8]     [6]     [2]     [7]      [1]     [4]  ← 第3层：单元素
+ [5, 3, 8, 6, 2, 7, 1, 4] ← 原始
+ / \
+ [5, 3, 8, 6] [2, 7, 1, 4] ← 第1层拆分
+ / \ / \
+ [5, 3] [8, 6] [2, 7] [1, 4] ← 第2层拆分
+ / \ / \ / \ / \
+ [5] [3] [8] [6] [2] [7] [1] [4] ← 第3层：单元素
 ```
 
 **合并过程（自底向上）**：
@@ -410,7 +410,7 @@ void merge_sort(int* arr, int l, int r) {
 | 第3层 | `[1,4]` | 合并 `[1]`和`[4]` | `[3, 5, 6, 8, 2, 7, **1, 4**]` |
 | 第2层 | `[3,5,6,8]` | 合并 `[3,5]`和`[6,8]` | `[**3, 5, 6, 8**, 2, 7, 1, 4]` |
 | 第2层 | `[1,2,4,7]` | 合并 `[2,7]`和`[1,4]` | `[3, 5, 6, 8, **1, 2, 4, 7**]` |
-| 第1层 | `[1..8]` | 合并 `[3,5,6,8]`和`[1,2,4,7]` | `[**1, 2, 3, 4, 5, 6, 7, 8**]` ✓ |
+| 第1层 | `[1..8]` | 合并 `[3,5,6,8]`和`[1,2,4,7]` | `[**1, 2, 3, 4, 5, 6, 7, 8**]` |
 
 **最后一步合并详解（合并 [3,5,6,8] 和 [1,2,4,7]）**：
 
@@ -428,44 +428,44 @@ void merge_sort(int* arr, int l, int r) {
 
 ```mermaid
 graph TD
-    A["quick_sort(arr,l,r)"] --> B{"l ≥ r?"}
-    B -->|Yes| C["返回"]
-    B -->|No| D["p ← partition(arr,l,r)"]
-    D --> E["quick_sort(arr,l,p-1)"]
-    D --> F["quick_sort(arr,p+1,r)"]
-    E --> C
-    F --> C
-    subgraph partition 过程
-        G["pivot ← arr[r]\ni ← l"] --> H["j ← l"]
-        H --> I{"j < r?"}
-        I -->|No| J["swap(arr[i], arr[r])"]
-        J --> K["return i"]
-        I -->|Yes| L{"arr[j] < pivot?"}
-        L -->|Yes| M["swap(arr[i], arr[j])\ni++"]
-        M --> N["j++"]
-        L -->|No| N
-        N --> I
-    end
+ A["quick_sort(arr,l,r)"] --> B{"l ≥ r?"}
+ B -->|Yes| C["返回"]
+ B -->|No| D["p ← partition(arr,l,r)"]
+ D --> E["quick_sort(arr,l,p-1)"]
+ D --> F["quick_sort(arr,p+1,r)"]
+ E --> C
+ F --> C
+ subgraph partition 过程
+ G["pivot ← arr[r]\ni ← l"] --> H["j ← l"]
+ H --> I{"j < r?"}
+ I -->|No| J["swap(arr[i], arr[r])"]
+ J --> K["return i"]
+ I -->|Yes| L{"arr[j] < pivot?"}
+ L -->|Yes| M["swap(arr[i], arr[j])\ni++"]
+ M --> N["j++"]
+ L -->|No| N
+ N --> I
+ end
 ```
 
 ```c
-    int pivot = arr[high];
-    int i = low;
-    for (int j = low; j < high; j++) {
-        if (arr[j] < pivot) {
-            int t = arr[i]; arr[i] = arr[j]; arr[j] = t;
-            i++;
-        }
-    }
-    int t = arr[i]; arr[i] = arr[high]; arr[high] = t;
-    return i;
+ int pivot = arr[high];
+ int i = low;
+ for (int j = low; j < high; j++) {
+ if (arr[j] < pivot) {
+ int t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+ i++;
+ }
+ }
+ int t = arr[i]; arr[i] = arr[high]; arr[high] = t;
+ return i;
 }
 
 void quick_sort(int* arr, int low, int high) {
-    if (low >= high) return;
-    int p = partition(arr, low, high);
-    quick_sort(arr, low, p - 1);
-    quick_sort(arr, p + 1, high);
+ if (low >= high) return;
+ int p = partition(arr, low, high);
+ quick_sort(arr, low, p - 1);
+ quick_sort(arr, p + 1, high);
 }
 ```
 
@@ -475,12 +475,12 @@ void quick_sort(int* arr, int low, int high) {
 
 ```c
 int median_of_three(int* arr, int low, int high) {
-    int mid = low + (high - low) / 2;
-    if (arr[low] > arr[mid]) { int t = arr[low]; arr[low] = arr[mid]; arr[mid] = t; }
-    if (arr[low] > arr[high]) { int t = arr[low]; arr[low] = arr[high]; arr[high] = t; }
-    if (arr[mid] > arr[high]) { int t = arr[mid]; arr[mid] = arr[high]; arr[high] = t; }
-    int t = arr[mid]; arr[mid] = arr[high]; arr[high] = t;
-    return arr[high];
+ int mid = low + (high - low) / 2;
+ if (arr[low] > arr[mid]) { int t = arr[low]; arr[low] = arr[mid]; arr[mid] = t; }
+ if (arr[low] > arr[high]) { int t = arr[low]; arr[low] = arr[high]; arr[high] = t; }
+ if (arr[mid] > arr[high]) { int t = arr[mid]; arr[mid] = arr[high]; arr[high] = t; }
+ int t = arr[mid]; arr[mid] = arr[high]; arr[high] = t;
+ return arr[high];
 }
 ```
 
@@ -503,7 +503,7 @@ int median_of_three(int* arr, int low, int high) {
 | 4 | 2 | 是 | swap(arr[1],arr[4]), i=2 | `[3, **2**, 8, 6, 5, 7, 1, **4**]` |
 | 5 | 7 | 否 | i=2不变 | `[3, 2, 8, 6, 5, 7, 1, **4**]` |
 | 6 | 1 | 是 | swap(arr[2],arr[6]), i=3 | `[3, 2, **1**, 6, 5, 7, 8, **4**]` |
-| - | last | - | swap(arr[3],arr[7]), pivot=4归位 | `[3, 2, 1, **4**, 5, 7, 8, 6]` ✓ |
+| - | last | - | swap(arr[3],arr[7]), pivot=4归位 | `[3, 2, 1, **4**, 5, 7, 8, 6]` |
 
 partition 返回 p=3，分治：
 - 左半 `[3, 2, 1]` 递归排序
@@ -515,7 +515,7 @@ partition 返回 p=3，分治：
 |:---:|:---:|:---:|:---|:---|
 | 0 | 3 | 否 | i=0 | `[3, 2, **1**]` |
 | 1 | 2 | 否 | i=0 | `[3, 2, **1**]` |
-| - | last | - | swap(arr[0],arr[2]) | `[**1**, 2, 3]` ✓ |
+| - | last | - | swap(arr[0],arr[2]) | `[**1**, 2, 3]` |
 
 p=0，左半无数据，右半 `[2, 3]` 递归
 
@@ -526,7 +526,7 @@ p=0，左半无数据，右半 `[2, 3]` 递归
 | 4 | 5 | 是 | swap(arr[4],arr[4]), i=5 | `[**5**, 7, 8, **6**]` |
 | 5 | 7 | 否 | i=5不变 | `[5, 7, 8, **6**]` |
 | 6 | 8 | 否 | i=5不变 | `[5, 7, 8, **6**]` |
-| - | last | - | swap(arr[5],arr[7]) | `[5, **6**, 8, 7]` ✓ |
+| - | last | - | swap(arr[5],arr[7]) | `[5, **6**, 8, 7]` |
 
 p=5，左半 `[5]` 已有序，右半 `[8, 7]` 递归
 
@@ -542,47 +542,47 @@ p=5，左半 `[5]` 已有序，右半 `[8, 7]` 递归
 
 ```mermaid
 graph TD
-    A["heap_sort(arr, n)"] --> B["建堆: i=n/2-1 → 0"]
-    B --> C["heapify(arr, n, i)"]
-    C --> D{"i--"}
-    D -->|i≥0| C
-    D -->|i<0| E["排序: i=n-1 → 1"]
-    E --> F["swap(arr[0], arr[i])"]
-    F --> G["heapify(arr, i, 0)"]
-    G --> H{"i--"}
-    H -->|i>0| F
-    H -->|i≤0| I["结束 ✓"]
-    subgraph heapify(arr, n, i)
-        J["largest ← i\nleft ← 2i+1, right ← 2i+2"] --> K{"arr[left] > arr[largest]?"}
-        K -->|Yes| L["largest ← left"]
-        K -->|No| M{"arr[right] > arr[largest]?"}
-        L --> M
-        M -->|Yes| N["largest ← right"]
-        M -->|No| O{"largest ≠ i?"}
-        O -->|Yes| P["swap(arr[i], arr[largest])"]
-        P --> Q["heapify(arr, n, largest)"]
-        O -->|No| R["返回"]
-    end
+ A["heap_sort(arr, n)"] --> B["建堆: i=n/2-1 → 0"]
+ B --> C["heapify(arr, n, i)"]
+ C --> D{"i--"}
+ D -->|i≥0| C
+ D -->|i<0| E["排序: i=n-1 → 1"]
+ E --> F["swap(arr[0], arr[i])"]
+ F --> G["heapify(arr, i, 0)"]
+ G --> H{"i--"}
+ H -->|i>0| F
+ H -->|i≤0| I["结束 "]
+ subgraph heapify(arr, n, i)
+ J["largest ← i\nleft ← 2i+1, right ← 2i+2"] --> K{"arr[left] > arr[largest]?"}
+ K -->|Yes| L["largest ← left"]
+ K -->|No| M{"arr[right] > arr[largest]?"}
+ L --> M
+ M -->|Yes| N["largest ← right"]
+ M -->|No| O{"largest ≠ i?"}
+ O -->|Yes| P["swap(arr[i], arr[largest])"]
+ P --> Q["heapify(arr, n, largest)"]
+ O -->|No| R["返回"]
+ end
 ```
 
 ```c
-    int largest = i;
-    int left = 2 * i + 1, right = 2 * i + 2;
-    if (left < n && arr[left] > arr[largest]) largest = left;
-    if (right < n && arr[right] > arr[largest]) largest = right;
-    if (largest != i) {
-        int t = arr[i]; arr[i] = arr[largest]; arr[largest] = t;
-        heapify(arr, n, largest);
-    }
+ int largest = i;
+ int left = 2 * i + 1, right = 2 * i + 2;
+ if (left < n && arr[left] > arr[largest]) largest = left;
+ if (right < n && arr[right] > arr[largest]) largest = right;
+ if (largest != i) {
+ int t = arr[i]; arr[i] = arr[largest]; arr[largest] = t;
+ heapify(arr, n, largest);
+ }
 }
 
 void heap_sort(int* arr, int n) {
-    for (int i = n / 2 - 1; i >= 0; i--)
-        heapify(arr, n, i);
-    for (int i = n - 1; i > 0; i--) {
-        int t = arr[0]; arr[0] = arr[i]; arr[i] = t;
-        heapify(arr, i, 0);
-    }
+ for (int i = n / 2 - 1; i >= 0; i--)
+ heapify(arr, n, i);
+ for (int i = n - 1; i > 0; i--) {
+ int t = arr[0]; arr[0] = arr[i]; arr[i] = t;
+ heapify(arr, i, 0);
+ }
 }
 ```
 
@@ -595,8 +595,8 @@ void heap_sort(int* arr, int n) {
 **建堆过程（heapify 从 i=3 到 i=0）**：
 
 ```
-初始数组:      [5, 3, 8, 6, 2, 7, 1, 4]
-二叉树下标:    0  1  2  3  4  5  6  7
+初始数组: [5, 3, 8, 6, 2, 7, 1, 4]
+二叉树下标: 0 1 2 3 4 5 6 7
 ```
 
 | i | 子树 | 操作 | 数组 |
@@ -607,7 +607,7 @@ void heap_sort(int* arr, int n) {
 | 0 | [5, 6, 8] | 8最大 → swap(5,8) | `[**8**, 6, **5**, 3, 2, 7, 1, 4]` |
 | 0续 | [5, 7, 1] | 7最大 → swap(5,7) | `[8, 6, **7**, 3, 2, **5**, 1, 4]` |
 
-建堆完成: `[8, 6, 7, 3, 2, 5, 1, 4]` ✓（最大堆）
+建堆完成: `[8, 6, 7, 3, 2, 5, 1, 4]` （最大堆）
 
 **排序过程（反复取堆顶交换到末尾）**：
 
@@ -625,7 +625,7 @@ void heap_sort(int* arr, int n) {
 | 3→2 | - | 3已最大 | `[**3**, 1, 2, 4, 5, 6, 7, 8]` | 3大于两个子节点，不交换 |
 | 2 | swap(0,2) | heapify(0..1) | `[**2**, 1, **3**, 4, 5, 6, 7, 8]` | 堆顶3→末尾，3固定 |
 | 1 | swap(0,1) | heapify(0..0) | `[**1**, **2**, 3, 4, 5, 6, 7, 8]` | 堆顶2→末尾，2固定 |
-| 0 | - | - | `[**1**, 2, 3, 4, 5, 6, 7, 8]` ✓ | 只剩1个元素，排序完成 |
+| 0 | - | - | `[**1**, 2, 3, 4, 5, 6, 7, 8]` | 只剩1个元素，排序完成 |
 
 **数学分析**：
 - 建堆：O(n)（每个非叶节点执行 heapify，实际复杂度 ∑(n/2^(h+1) * O(h)) = O(n)）
@@ -638,44 +638,44 @@ void heap_sort(int* arr, int n) {
 
 ```mermaid
 graph TD
-    A["radix_sort(arr, n)"] --> B["找到最大值 max_val"]
-    B --> C["exp ← 1"]
-    C --> D{"max_val/exp > 0?"}
-    D -->|No| E["结束 ✓"]
-    D -->|Yes| F["counting_sort_by_digit(arr, n, exp)"]
-    F --> G["exp ← exp × 10"]
-    G --> D
-    subgraph counting_sort_by_digit
-        H["count[0..9] ← 0"] --> I["统计每个数字出现次数"]
-        I --> J["前缀和 count[i] += count[i-1]"]
-        J --> K["从后往前按 count 放置到 output"]
-        K --> L["复制回 arr"]
-    end
+ A["radix_sort(arr, n)"] --> B["找到最大值 max_val"]
+ B --> C["exp ← 1"]
+ C --> D{"max_val/exp > 0?"}
+ D -->|No| E["结束 "]
+ D -->|Yes| F["counting_sort_by_digit(arr, n, exp)"]
+ F --> G["exp ← exp × 10"]
+ G --> D
+ subgraph counting_sort_by_digit
+ H["count[0..9] ← 0"] --> I["统计每个数字出现次数"]
+ I --> J["前缀和 count[i] += count[i-1]"]
+ J --> K["从后往前按 count 放置到 output"]
+ K --> L["复制回 arr"]
+ end
 ```
 
 ```c
 
 static void counting_sort_by_digit(int* arr, int n, int exp) {
-    int* output = malloc(n * sizeof(int));
-    int count[10] = {0};
-    for (int i = 0; i < n; i++) count[(arr[i] / exp) % 10]++;
-    for (int i = 1; i < 10; i++) count[i] += count[i - 1];
-    for (int i = n - 1; i >= 0; i--) {
-        int digit = (arr[i] / exp) % 10;
-        output[count[digit] - 1] = arr[i];
-        count[digit]--;
-    }
-    memcpy(arr, output, n * sizeof(int));
-    free(output);
+ int* output = malloc(n * sizeof(int));
+ int count[10] = {0};
+ for (int i = 0; i < n; i++) count[(arr[i] / exp) % 10]++;
+ for (int i = 1; i < 10; i++) count[i] += count[i - 1];
+ for (int i = n - 1; i >= 0; i--) {
+ int digit = (arr[i] / exp) % 10;
+ output[count[digit] - 1] = arr[i];
+ count[digit]--;
+ }
+ memcpy(arr, output, n * sizeof(int));
+ free(output);
 }
 
 void radix_sort(int* arr, int n) {
-    if (n == 0) return;
-    int max_val = arr[0];
-    for (int i = 1; i < n; i++)
-        if (arr[i] > max_val) max_val = arr[i];
-    for (int exp = 1; max_val / exp > 0; exp *= 10)
-        counting_sort_by_digit(arr, n, exp);
+ if (n == 0) return;
+ int max_val = arr[0];
+ for (int i = 1; i < n; i++)
+ if (arr[i] > max_val) max_val = arr[i];
+ for (int exp = 1; max_val / exp > 0; exp *= 10)
+ counting_sort_by_digit(arr, n, exp);
 }
 ```
 
@@ -692,37 +692,37 @@ void radix_sort(int* arr, int n) {
 | exp | 按位排序 | 本轮依据 | count[0..9] | 结果 |
 |:---:|:---|:---:|:---|:---|
 | 1（个位） | 按个位数稳定排序 | 个位决定本轮顺序 | [0,1,1,1,1,1,1,1,1,1] | `[91, 62, 53, 84, 45, 37, 18, 29]` |
-| 10（十位） | 按十位数稳定排序 | 十位作为主键，个位作为次键 | [1,1,1,2,1,1,0,0,1,1] | `[18, 29, 37, 45, 53, 62, 84, 91]` ✓ |
+| 10（十位） | 按十位数稳定排序 | 十位作为主键，个位作为次键 | [1,1,1,2,1,1,0,0,1,1] | `[18, 29, 37, 45, 53, 62, 84, 91]` |
 
 **逐位详解**：
 
 **exp=1（个位排序）**：
 ```
 原始: [53, 18, 62, 91, 37, 45, 84, 29]
-个位: [ 3,  8,  2,  1,  7,  5,  4,  9]
+个位: [ 3, 8, 2, 1, 7, 5, 4, 9]
 ```
 - count 统计个位数字出现次数：`[0,1,1,1,1,1,1,1,1,1]`
 - 前缀和：`[0,1,2,3,4,5,6,7,8,9]`
 - 从后往前按 count 放置：
-  - 29(个位9) → output[8]   | count[9]=9→8
-  - 84(个位4) → output[3]   | count[4]=4→3
-  - 45(个位5) → output[4]   | count[5]=5→4
-  - ...
+ - 29(个位9) → output[8] | count[9]=9→8
+ - 84(个位4) → output[3] | count[4]=4→3
+ - 45(个位5) → output[4] | count[5]=5→4
+ - ...
 - 结果：`[91, 62, 53, 84, 45, 37, 18, 29]`（按个位升序）
 
 **exp=10（十位排序）**：
 ```
 上轮结果: [91, 62, 53, 84, 45, 37, 18, 29]
-十位:     [ 9,  6,  5,  8,  4,  3,  1,  2]
+十位: [ 9, 6, 5, 8, 4, 3, 1, 2]
 ```
 - count 统计十位数字：`[0,1,1,1,1,1,1,1,1,1]`
 - 前缀和：`[0,1,2,3,4,5,6,7,8,9]`
 - 从后往前放置：
-  - 29(十位2) → output[1]   | count[2]=2→1
-  - 18(十位1) → output[0]   | count[1]=1→0
-  - 37(十位3) → output[2]   | count[3]=3→2
-  - ...
-- 结果：`[18, 29, 37, 45, 53, 62, 84, 91]` ✓ 已完全有序
+ - 29(十位2) → output[1] | count[2]=2→1
+ - 18(十位1) → output[0] | count[1]=1→0
+ - 37(十位3) → output[2] | count[3]=3→2
+ - ...
+- 结果：`[18, 29, 37, 45, 53, 62, 84, 91]` 已完全有序
 
 **对原始数组 [5, 3, 8, 6, 2, 7, 1, 4] 的基数排序**：
 
@@ -746,7 +746,7 @@ void radix_sort(int* arr, int n) {
 - arr[6]=1, digit=1 → output[count[1]-1]=output[0] | count[1]=1→0
 - ...
 
-最终结果：`[1, 2, 3, 4, 5, 6, 7, 8]` ✓
+最终结果：`[1, 2, 3, 4, 5, 6, 7, 8]` 
 
 **数学分析**：
 - 时间复杂度：O(k·n)，k 为位数（最大数字的十进制位数）

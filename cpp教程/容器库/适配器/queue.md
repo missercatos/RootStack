@@ -46,23 +46,23 @@ queue<int> q
 q.push(start)
 visited[start] = true
 while not q.empty():
-    cur = q.front()
-    q.pop()
-    for each neighbor of cur:
-        if not visited[neighbor]:
-            visited[neighbor] = true
-            q.push(neighbor)
+ cur = q.front()
+ q.pop()
+ for each neighbor of cur:
+ if not visited[neighbor]:
+ visited[neighbor] = true
+ q.push(neighbor)
 
 // 约瑟夫环
 queue<int> circle
 for i from 1 to n:
-    circle.push(i)
+ circle.push(i)
 while not circle.empty():
-    for i from 1 to m - 1:
-        circle.push(circle.front())
-        circle.pop()
-    print circle.front()
-    circle.pop()
+ for i from 1 to m - 1:
+ circle.push(circle.front())
+ circle.pop()
+ print circle.front()
+ circle.pop()
 ```
 
 ---
@@ -111,25 +111,25 @@ priority_queue<int, vector<int>, Compare> pq
 // 合并果子（小根堆）
 priority_queue<int, vector<int>, greater<int>> pq
 for each x in fruits:
-    pq.push(x)
+ pq.push(x)
 total = 0
 while pq.size() > 1:
-    a = pq.top(); pq.pop()
-    b = pq.top(); pq.pop()
-    total += a + b
-    pq.push(a + b)
+ a = pq.top(); pq.pop()
+ b = pq.top(); pq.pop()
+ total += a + b
+ pq.push(a + b)
 
 // Dijkstra 堆优化
 priority_queue<{dist, node}, vector, greater> pq
 dist[start] = 0
 pq.push({0, start})
 while not pq.empty():
-    {d, u} = pq.top(); pq.pop()
-    if d != dist[u]: continue
-    for each {v, w} of u:
-        if dist[v] > dist[u] + w:
-            dist[v] = dist[u] + w
-            pq.push({dist[v], v})
+ {d, u} = pq.top(); pq.pop()
+ if d != dist[u]: continue
+ for each {v, w} of u:
+ if dist[v] > dist[u] + w:
+ dist[v] = dist[u] + w
+ pq.push({dist[v], v})
 ```
 
 ## 相关链接

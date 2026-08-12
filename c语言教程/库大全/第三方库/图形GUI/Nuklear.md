@@ -23,10 +23,10 @@
 struct nk_context ctx;
 nk_init_default(&ctx, &font);
 if (nk_begin(&ctx, "Demo", nk_rect(50, 50, 200, 200),
-    NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
-    nk_layout_row_static(&ctx, 30, 80, 1);
-    if (nk_button_label(&ctx, "Click Me"))
-        printf("Clicked!\n");
+ NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
+ nk_layout_row_static(&ctx, 30, 80, 1);
+ if (nk_button_label(&ctx, "Click Me"))
+ printf("Clicked!\n");
 }
 nk_end(&ctx);
 nk_clear(&ctx);

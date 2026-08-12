@@ -38,50 +38,50 @@ C++ 标准库的查找与统计算法基于输入迭代器，能在任意容器�
 
 ```
 FUNCTION demo_find:
-    v = [10, 20, 30, 40, 50]
+ v = [10, 20, 30, 40, 50]
 
-    it = FIND(v, 30)
-    IF it != v.END() THEN PRINT *it         // 30
+ it = FIND(v, 30)
+ IF it != v.END() THEN PRINT *it // 30
 
-    it = FIND(v, 99)
-    IF it == v.END() THEN PRINT "not found"
+ it = FIND(v, 99)
+ IF it == v.END() THEN PRINT "not found"
 
-    it = FIND_IF(v, LAMBDA(x): RETURN x > 25)
-    PRINT *it                               // 30（第一个 >25 的元素）
+ it = FIND_IF(v, LAMBDA(x): RETURN x > 25)
+ PRINT *it // 30（第一个 >25 的元素）
 
-    it = ADJACENT_FIND([1, 2, 3, 3, 4])    // 指向第二个 3
+ it = ADJACENT_FIND([1, 2, 3, 3, 4]) // 指向第二个 3
 ```
 
 ### 统计
 
 ```
 FUNCTION demo_count:
-    v = [1, 2, 3, 2, 4, 2, 5]
+ v = [1, 2, 3, 2, 4, 2, 5]
 
-    PRINT COUNT(v, 2)                       // 3
+ PRINT COUNT(v, 2) // 3
 
-    PRINT COUNT_IF(v, LAMBDA(x):
-        RETURN x % 2 == 0                   // 偶数个数
-    )                                       // 4
+ PRINT COUNT_IF(v, LAMBDA(x):
+ RETURN x % 2 == 0 // 偶数个数
+ ) // 4
 ```
 
 ### 批量判断
 
 ```
 FUNCTION demo_all_any_none:
-    v = [10, 20, 30, 40]
+ v = [10, 20, 30, 40]
 
-    PRINT ALL_OF(v, LAMBDA(x):
-        RETURN x > 0                        // 全是正数?
-    )                                       // true
+ PRINT ALL_OF(v, LAMBDA(x):
+ RETURN x > 0 // 全是正数?
+ ) // true
 
-    PRINT ANY_OF(v, LAMBDA(x):
-        RETURN x > 35                       // 存在 >35 的?
-    )                                       // true
+ PRINT ANY_OF(v, LAMBDA(x):
+ RETURN x > 35 // 存在 >35 的?
+ ) // true
 
-    PRINT NONE_OF(v, LAMBDA(x):
-        RETURN x < 0                        // 全不是负数?
-    )                                       // true
+ PRINT NONE_OF(v, LAMBDA(x):
+ RETURN x < 0 // 全不是负数?
+ ) // true
 ```
 
 ---

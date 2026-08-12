@@ -25,8 +25,8 @@
 name-version-release.architecture.rpm
 
 例如: nginx-1.24.0-1.el9.x86_64.rpm
-      |     |      |   |    |
-      包名  上游版本 发布 发行版标签  架构
+ | | | | |
+ 包名 上游版本 发布 发行版标签 架构
 
 - name: 包名
 - version: 上游版本号
@@ -38,7 +38,7 @@ name-version-release.architecture.rpm
 
 ```bash
 # 安装
-sudo rpm -ivh package.rpm        # 安装并显示进度
+sudo rpm -ivh package.rpm # 安装并显示进度
 
 # 升级
 sudo rpm -Uvh package.rpm
@@ -47,23 +47,23 @@ sudo rpm -Uvh package.rpm
 sudo rpm -e packagename
 
 # 查询
-rpm -qa                           # 列出所有已安装的包
-rpm -q packagename                # 查看是否安装了某个包
-rpm -qi packagename               # 包详细信息
-rpm -ql packagename               # 列出包安装的文件
-rpm -qf /path/to/file             # 文件属于哪个包
-rpm -qR packagename               # 列出包的依赖
-rpm -q --changelog packagename    # 查看变更日志
+rpm -qa # 列出所有已安装的包
+rpm -q packagename # 查看是否安装了某个包
+rpm -qi packagename # 包详细信息
+rpm -ql packagename # 列出包安装的文件
+rpm -qf /path/to/file # 文件属于哪个包
+rpm -qR packagename # 列出包的依赖
+rpm -q --changelog packagename # 查看变更日志
 
 # 验证
-rpm -V packagename                # 验证包文件完整性
-rpm -Va                           # 验证所有包
+rpm -V packagename # 验证包文件完整性
+rpm -Va # 验证所有包
 
 # 检查未安装的包
-rpm -qp package.rpm               # 查询包名
-rpm -qpl package.rpm              # 列出 .rpm 中的文件
-rpm -qpi package.rpm              # 查看 .rpm 信息
-rpm -qpR package.rpm              # 查看 .rpm 依赖
+rpm -qp package.rpm # 查询包名
+rpm -qpl package.rpm # 列出 .rpm 中的文件
+rpm -qpi package.rpm # 查看 .rpm 信息
+rpm -qpR package.rpm # 查看 .rpm 依赖
 
 # 导入 GPG 密钥
 sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-*
@@ -100,14 +100,14 @@ tree ~/rpmbuild/
 
 ```
 ~/rpmbuild/
-├── BUILD/          # 源码解压并编译的目录
-├── BUILDROOT/      # 安装的虚拟根（fakeroot）
-├── RPMS/           # 生成的二进制 RPM
-│   ├── x86_64/
-│   └── noarch/
-├── SOURCES/        # 源码压缩包和补丁
-├── SPECS/          # spec 文件
-└── SRPMS/          # 源码 RPM (src.rpm)
+├── BUILD/ # 源码解压并编译的目录
+├── BUILDROOT/ # 安装的虚拟根（fakeroot）
+├── RPMS/ # 生成的二进制 RPM
+│ ├── x86_64/
+│ └── noarch/
+├── SOURCES/ # 源码压缩包和补丁
+├── SPECS/ # spec 文件
+└── SRPMS/ # 源码 RPM (src.rpm)
 ```
 
 ---
@@ -119,25 +119,25 @@ tree ~/rpmbuild/
 ```
 # spec 文件分为多个区段
 
-Name:           myapp
-Version:        1.0.0
-Release:        1%{?dist}
-Summary:        A short description
+Name: myapp
+Version: 1.0.0
+Release: 1%{?dist}
+Summary: A short description
 
-License:        MIT
-URL:            https://example.com/myapp
-Source0:        https://example.com/releases/%{name}-%{version}.tar.gz
-# Source1:        myapp.service
-# Patch0:         myapp-fix.patch
+License: MIT
+URL: https://example.com/myapp
+Source0: https://example.com/releases/%{name}-%{version}.tar.gz
+# Source1: myapp.service
+# Patch0: myapp-fix.patch
 
-BuildArch:      x86_64
-# BuildArch:      noarch
+BuildArch: x86_64
+# BuildArch: noarch
 
-BuildRequires:  gcc
-BuildRequires:  make
-BuildRequires:  pkgconfig(libfoo)
+BuildRequires: gcc
+BuildRequires: make
+BuildRequires: pkgconfig(libfoo)
 
-Requires:       libfoo >= 1.2.0
+Requires: libfoo >= 1.2.0
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
@@ -175,38 +175,38 @@ It can span multiple lines.
 
 ```bash
 # 必要字段
-Name:           # 包名（必须与 spec 文件名一致）
-Version:        # 上游版本号（不能有短横线）
-Release:        # RPM 发布号，%{?dist} 自动展开为发行版标签（如 .el9）
-Summary:        # 简短描述（不超过 80 字符）
-License:        # SPDX 标识符（MIT, GPLv3+, ASL 2.0 等）
-URL:            # 项目主页
+Name: # 包名（必须与 spec 文件名一致）
+Version: # 上游版本号（不能有短横线）
+Release: # RPM 发布号，%{?dist} 自动展开为发行版标签（如 .el9）
+Summary: # 简短描述（不超过 80 字符）
+License: # SPDX 标识符（MIT, GPLv3+, ASL 2.0 等）
+URL: # 项目主页
 
 # 源码
-Source0:        # 主源码（可以是 URL 或本地文件）
-Source1: .. N:  # 额外源码或配置文件
-Patch0: .. N:   # 补丁文件
+Source0: # 主源码（可以是 URL 或本地文件）
+Source1: .. N: # 额外源码或配置文件
+Patch0: .. N: # 补丁文件
 
 # 架构
-BuildArch:      # 目标架构：x86_64, noarch, aarch64 等
-ExclusiveArch:  # 限制只能在特定架构构建
+BuildArch: # 目标架构：x86_64, noarch, aarch64 等
+ExclusiveArch: # 限制只能在特定架构构建
 
 # 依赖
-BuildRequires:  # 编译时依赖
-Requires:       # 运行时依赖
-Requires(pre):  # %pre 脚本前需要的依赖
+BuildRequires: # 编译时依赖
+Requires: # 运行时依赖
+Requires(pre): # %pre 脚本前需要的依赖
 Requires(post): # %post 脚本前需要的依赖
 
 # 功能标记
-Provides:       # 提供的虚拟功能
-Conflicts:      # 冲突的包
-Obsoletes:      # 替代的旧包
+Provides: # 提供的虚拟功能
+Conflicts: # 冲突的包
+Obsoletes: # 替代的旧包
 
 # 推荐/建议（弱依赖）
-Recommends:     # 推荐安装
-Suggests:       # 建议安装
-Supplements:    # 补充
-Enhances:       # 增强
+Recommends: # 推荐安装
+Suggests: # 建议安装
+Supplements: # 补充
+Enhances: # 增强
 ```
 
 ### 4.3 Spec 脚本区的执行时机
@@ -332,30 +332,30 @@ rpm --eval '%{_bindir}'
 cp myapp-1.0.0.tar.gz ~/rpmbuild/SOURCES/
 
 # 或直接在 spec 中用 URL，然后：
-spectool -g -R myapp.spec         # 下载所有 Source
+spectool -g -R myapp.spec # 下载所有 Source
 ```
 
 ### 5.2 构建
 
 ```bash
 # 方式 1：从 spec 文件构建（推荐）
-rpmbuild -ba myapp.spec           # 构建二进制 + 源码 RPM
-rpmbuild -bb myapp.spec           # 只构建二进制 RPM
-rpmbuild -bs myapp.spec           # 只构建源码 RPM
+rpmbuild -ba myapp.spec # 构建二进制 + 源码 RPM
+rpmbuild -bb myapp.spec # 只构建二进制 RPM
+rpmbuild -bs myapp.spec # 只构建源码 RPM
 
 # 方式 2：从源码 RPM 构建
 rpmbuild --rebuild myapp-1.0.0-1.fc40.src.rpm
 
 # 构建选项
-rpmbuild -ba --clean myapp.spec   # 构建后清理 BUILD 目录
+rpmbuild -ba --clean myapp.spec # 构建后清理 BUILD 目录
 rpmbuild -ba --target x86_64 myapp.spec
 rpmbuild -ba --define "_topdir /custom/path" myapp.spec
 
 # 跳过构建阶段（调试用）
-rpmbuild -bp myapp.spec           # 只 %prep
-rpmbuild -bc myapp.spec           # 到 %build
-rpmbuild -bi myapp.spec           # 到 %install
-rpmbuild -bl myapp.spec           # 检查 %files 列表
+rpmbuild -bp myapp.spec # 只 %prep
+rpmbuild -bc myapp.spec # 到 %build
+rpmbuild -bi myapp.spec # 到 %install
+rpmbuild -bl myapp.spec # 检查 %files 列表
 ```
 
 ### 5.3 快速检查流程
@@ -398,8 +398,8 @@ rpmlint ~/rpmbuild/RPMS/x86_64/myapp-*.rpm
 rpmlint ~/rpmbuild/SRPMS/myapp-*.src.rpm
 
 # 详细模式
-rpmlint -i myapp.spec             # 带解释
-rpmlint -v myapp.spec             # 详细输出
+rpmlint -i myapp.spec # 带解释
+rpmlint -v myapp.spec # 详细输出
 
 # 常见 rpmlint 错误修复：
 # - "no-changelogname-tag" → 添加 %changelog
@@ -467,13 +467,13 @@ sudo dnf install nginx
 
 sudo tee /etc/nginx/conf.d/repo.conf << 'EOF'
 server {
-    listen 80;
-    server_name repo.example.com;
+ listen 80;
+ server_name repo.example.com;
 
-    location /custom/ {
-        alias /srv/repo/custom/;
-        autoindex on;
-    }
+ location /custom/ {
+ alias /srv/repo/custom/;
+ autoindex on;
+ }
 }
 EOF
 
@@ -612,15 +612,15 @@ mock -r ~/.config/mock/custom-9-x86_64.cfg myapp.spec
 1. 访问 https://copr.fedorainfracloud.org/
 2. 登录 (FAS 账号)
 3. Create New Project
-   - Name: my-tools
-   - Description: My personal tools
-   - Chroots: fedora-40-x86_64, epel-9-x86_64
-   - Create
+ - Name: my-tools
+ - Description: My personal tools
+ - Chroots: fedora-40-x86_64, epel-9-x86_64
+ - Create
 
 4. 在 Packages 标签 → New Package
-   - Package name: myapp
-   - Type: Git (提供 git URL + spec 路径)
-   - 或 Upload SRPM
+ - Package name: myapp
+ - Type: Git (提供 git URL + spec 路径)
+ - 或 Upload SRPM
 5. Build
 
 构建完成后，其他人可以通过 dnf 使用：
@@ -639,14 +639,14 @@ sudo dnf install copr-cli
 
 # 创建项目
 copr-cli create my-tools --description "My tools" \
-    --chroot fedora-40-x86_64 --chroot epel-9-x86_64
+ --chroot fedora-40-x86_64 --chroot epel-9-x86_64
 
 # 从 SRPM 构建
 copr-cli build my-tools ~/rpmbuild/SRPMS/myapp-1.0.0-1.fc40.src.rpm
 
 # 从 Git 构建
 copr-cli buildscm --clone-url https://github.com/user/repo.git \
-    --spec spec/myapp.spec --method make_srpm my-tools
+ --spec spec/myapp.spec --method make_srpm my-tools
 
 # 从 PyPI 自动生成 spec 并构建
 copr-cli buildpypi my-tools --pythonversions 3 --packagename myapp

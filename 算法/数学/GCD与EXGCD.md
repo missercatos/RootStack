@@ -6,7 +6,7 @@
 
 ```cpp
 int gcd(int a, int b) {
-  return b == 0 ? a : gcd(b, a % b);
+ return b == 0 ? a : gcd(b, a % b);
 }
 ```
 
@@ -16,10 +16,10 @@ int gcd(int a, int b) {
 
 ```cpp
 int exgcd(int a, int b, int &x, int &y) {
-  if (!b) { x = 1; y = 0; return a; }
-  int d = exgcd(b, a % b, y, x);
-  y -= a / b * x;
-  return d;
+ if (!b) { x = 1; y = 0; return a; }
+ int d = exgcd(b, a % b, y, x);
+ y -= a / b * x;
+ return d;
 }
 ```
 
@@ -39,7 +39,7 @@ int exgcd(int a, int b, int &x, int &y) {
 vector<int> inv(n + 1);
 inv[1] = 1;
 for (int i = 2; i <= n; ++i)
-  inv[i] = (long long)(p - p / i) * inv[p % i] % p;
+ inv[i] = (long long)(p - p / i) * inv[p % i] % p;
 ```
 
 **方法四：批量逆元**（$O(n + \log m)$）：预处理前缀积 $S_i$，求 $S_n^{-1}$ 后回推。

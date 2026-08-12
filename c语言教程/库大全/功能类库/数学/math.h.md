@@ -9,7 +9,7 @@
 ## 编译与链接
 
 ```bash
-gcc program.c -lm     # 必须显式链接 libm
+gcc program.c -lm # 必须显式链接 libm
 ```
 
 ---

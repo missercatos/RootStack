@@ -25,16 +25,16 @@ $$
 ```cpp
 deque<int> q;
 for (int y = 0; y < w[i]; ++y) {
-    q.clear();
-    for (int x = 0; x * w[i] + y <= W; ++x) {
-        int cur = x * w[i] + y;
-        while (!q.empty() && q.front() < x - k[i]) q.pop_front();
-        if (!q.empty())
-            f[cur] = max(f[cur], g[q.front() * w[i] + y] - q.front() * v[i] + x * v[i]);
-        while (!q.empty() && g[cur] - x * v[i] >= g[q.back() * w[i] + y] - q.back() * v[i])
-            q.pop_back();
-        q.push_back(x);
-    }
+ q.clear();
+ for (int x = 0; x * w[i] + y <= W; ++x) {
+ int cur = x * w[i] + y;
+ while (!q.empty() && q.front() < x - k[i]) q.pop_front();
+ if (!q.empty())
+ f[cur] = max(f[cur], g[q.front() * w[i] + y] - q.front() * v[i] + x * v[i]);
+ while (!q.empty() && g[cur] - x * v[i] >= g[q.back() * w[i] + y] - q.back() * v[i])
+ q.pop_back();
+ q.push_back(x);
+ }
 }
 ```
 
@@ -87,28 +87,28 @@ const int N = 200010, INF = 0x80808080;
 int n, L, R, a[N], f[N];
 
 int main() {
-    cin >> n >> L >> R;
-    for (int i = 0; i <= n; ++i) cin >> a[i];
+ cin >> n >> L >> R;
+ for (int i = 0; i <= n; ++i) cin >> a[i];
 
-    memset(f, 0x80, sizeof f);  // 负无穷
-    f[0] = a[0];
-    deque<int> q;
-    int ans = INF;
+ memset(f, 0x80, sizeof f); // 负无穷
+ f[0] = a[0];
+ deque<int> q;
+ int ans = INF;
 
-    for (int i = L; i <= n; ++i) {
-        // 候选决策 j = i - L 进入窗口
-        int j = i - L;
-        while (!q.empty() && f[q.back()] <= f[j]) q.pop_back();
-        q.push_back(j);
-        // 弹出窗口左界之外的决策 (j < i - R)
-        while (!q.empty() && q.front() < i - R) q.pop_front();
-        // 队首为最优决策
-        f[i] = f[q.front()] + a[i];
-        // 越过 n 可结束，更新答案
-        if (i + R > n) ans = max(ans, f[i]);
-    }
-    cout << ans << endl;
-    return 0;
+ for (int i = L; i <= n; ++i) {
+ // 候选决策 j = i - L 进入窗口
+ int j = i - L;
+ while (!q.empty() && f[q.back()] <= f[j]) q.pop_back();
+ q.push_back(j);
+ // 弹出窗口左界之外的决策 (j < i - R)
+ while (!q.empty() && q.front() < i - R) q.pop_front();
+ // 队首为最优决策
+ f[i] = f[q.front()] + a[i];
+ // 越过 n 可结束，更新答案
+ if (i + R > n) ans = max(ans, f[i]);
+ }
+ cout << ans << endl;
+ return 0;
 }
 ```
 
@@ -123,20 +123,20 @@ deque<int> q;
 vector<int> f(n + 1);
 
 for (int i = 1; i <= n; ++i) {
-    // Step 1: 维护窗口左界 —— 弹出过期的决策
-    while (!q.empty() && q.front() < max_left(i)) q.pop_front();
+ // Step 1: 维护窗口左界 —— 弹出过期的决策
+ while (!q.empty() && q.front() < max_left(i)) q.pop_front();
 
-    // Step 2: 取队首最优决策进行转移
-    if (!q.empty()) {
-        int j = q.front();
-        f[i] = B[i] + (f[j] + A[j]);  // 具体形式视问题而定
-    }
+ // Step 2: 取队首最优决策进行转移
+ if (!q.empty()) {
+ int j = q.front();
+ f[i] = B[i] + (f[j] + A[j]); // 具体形式视问题而定
+ }
 
-    // Step 3: 维护队列单调性 —— 弹出尾部劣于当前决策的元素
-    while (!q.empty() && better(i, q.back())) q.pop_back();
+ // Step 3: 维护队列单调性 —— 弹出尾部劣于当前决策的元素
+ while (!q.empty() && better(i, q.back())) q.pop_back();
 
-    // Step 4: 当前决策入队
-    q.push_back(i);
+ // Step 4: 当前决策入队
+ q.push_back(i);
 }
 ```
 

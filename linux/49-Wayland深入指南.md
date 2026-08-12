@@ -11,14 +11,14 @@
 X Window System（X11）诞生于 1984 年，其架构基于 C/S 模型：
 
 ```
-┌──────────┐    请求/事件    ┌──────────┐    渲染    ┌──────────┐
-│ X Client │ ◄────────────► │ X Server │ ────────► │   GPU    │
-└──────────┘                └──────────┘           └──────────┘
-                                 │
-                           ┌─────┴─────┐
-                           │  Window   │
-                           │  Manager  │
-                           └───────────┘
+┌──────────┐ 请求/事件 ┌──────────┐ 渲染 ┌──────────┐
+│ X Client │ ◄────────────► │ X Server │ ────────► │ GPU │
+└──────────┘ └──────────┘ └──────────┘
+ │
+ ┌─────┴─────┐
+ │ Window │
+ │ Manager │
+ └───────────┘
 ```
 
 X11 的主要问题：
@@ -36,11 +36,11 @@ X11 的主要问题：
 Wayland 将显示服务器和窗口管理器合二为一，称为 **合成器（Compositor）**：
 
 ```
-┌──────────┐    Wayland 协议    ┌─────────────┐    DRM/KMS    ┌──────────┐
-│  Client  │ ◄───────────────► │  Compositor │ ────────────► │   GPU    │
-└──────────┘                   │  (Server +  │              └──────────┘
-                               │   WM 合一)  │
-                               └─────────────┘
+┌──────────┐ Wayland 协议 ┌─────────────┐ DRM/KMS ┌──────────┐
+│ Client │ ◄───────────────► │ Compositor │ ────────────► │ GPU │
+└──────────┘ │ (Server + │ └──────────┘
+ │ WM 合一) │
+ └─────────────┘
 ```
 
 核心优势：
@@ -78,8 +78,8 @@ Wayland 协议基于 **对象（Object）** 和 **接口（Interface）** 的概
 
 struct wl_display *display = wl_display_connect(NULL);
 if (!display) {
-    fprintf(stderr, "无法连接到 Wayland 合成器\n");
-    return 1;
+ fprintf(stderr, "无法连接到 Wayland 合成器\n");
+ return 1;
 }
 
 // 获取文件描述符（用于事件循环集成）
@@ -103,29 +103,29 @@ wl_display_disconnect(display);
 
 ```c
 static void registry_handle_global(void *data, struct wl_registry *registry,
-                                   uint32_t name, const char *interface,
-                                   uint32_t version) {
-    if (strcmp(interface, "wl_compositor") == 0) {
-        compositor = wl_registry_bind(registry, name,
-                                      &wl_compositor_interface, 4);
-    } else if (strcmp(interface, "wl_shm") == 0) {
-        shm = wl_registry_bind(registry, name,
-                                &wl_shm_interface, 1);
-    } else if (strcmp(interface, "xdg_wm_base") == 0) {
-        xdg_wm_base = wl_registry_bind(registry, name,
-                                         &xdg_wm_base_interface, 1);
-    }
+ uint32_t name, const char *interface,
+ uint32_t version) {
+ if (strcmp(interface, "wl_compositor") == 0) {
+ compositor = wl_registry_bind(registry, name,
+ &wl_compositor_interface, 4);
+ } else if (strcmp(interface, "wl_shm") == 0) {
+ shm = wl_registry_bind(registry, name,
+ &wl_shm_interface, 1);
+ } else if (strcmp(interface, "xdg_wm_base") == 0) {
+ xdg_wm_base = wl_registry_bind(registry, name,
+ &xdg_wm_base_interface, 1);
+ }
 }
 
 static void registry_handle_global_remove(void *data,
-                                           struct wl_registry *registry,
-                                           uint32_t name) {
-    // 全局对象被移除
+ struct wl_registry *registry,
+ uint32_t name) {
+ // 全局对象被移除
 }
 
 static const struct wl_registry_listener registry_listener = {
-    .global = registry_handle_global,
-    .global_remove = registry_handle_global_remove,
+ .global = registry_handle_global,
+ .global_remove = registry_handle_global_remove,
 };
 
 struct wl_registry *registry = wl_display_get_registry(display);
@@ -180,7 +180,7 @@ struct wl_shm_pool *pool = wl_shm_create_pool(shm, fd, size);
 
 // 4. 从 pool 创建 buffer
 struct wl_buffer *buffer = wl_shm_pool_create_buffer(
-    pool, 0, width, height, stride, WL_SHM_FORMAT_ARGB8888);
+ pool, 0, width, height, stride, WL_SHM_FORMAT_ARGB8888);
 ```
 
 #### DMA-BUF（linux-dmabuf 协议）
@@ -199,23 +199,23 @@ Wayland 输入通过 `wl_seat` 对象管理：
 
 ```c
 // wl_seat 包含三类输入设备
-struct wl_pointer *pointer;   // 鼠标
+struct wl_pointer *pointer; // 鼠标
 struct wl_keyboard *keyboard; // 键盘
-struct wl_touch *touch;       // 触摸屏
+struct wl_touch *touch; // 触摸屏
 
 // 键盘事件回调
 static void keyboard_key(void *data, struct wl_keyboard *keyboard,
-                          uint32_t serial, uint32_t time,
-                          uint32_t key, uint32_t state) {
-    // key: Linux 键码（evdev）
-    // state: WL_KEYBOARD_KEY_STATE_PRESSED / RELEASED
+ uint32_t serial, uint32_t time,
+ uint32_t key, uint32_t state) {
+ // key: Linux 键码（evdev）
+ // state: WL_KEYBOARD_KEY_STATE_PRESSED / RELEASED
 }
 
 // 键盘 keymap 回调（xkbcommon 格式）
 static void keyboard_keymap(void *data, struct wl_keyboard *keyboard,
-                             uint32_t format, int fd, uint32_t size) {
-    // format == WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1
-    // fd 指向 xkb keymap 文件
+ uint32_t format, int fd, uint32_t size) {
+ // format == WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1
+ // fd 指向 xkb keymap 文件
 }
 ```
 
@@ -242,10 +242,10 @@ Wayland 核心协议非常精简，大量功能通过扩展协议提供：
 
 ```c
 struct xdg_surface *xdg_surface =
-    xdg_wm_base_get_xdg_surface(xdg_wm_base, surface);
+ xdg_wm_base_get_xdg_surface(xdg_wm_base, surface);
 
 struct xdg_toplevel *toplevel =
-    xdg_surface_get_toplevel(xdg_surface);
+ xdg_surface_get_toplevel(xdg_surface);
 
 xdg_toplevel_set_title(toplevel, "我的 Wayland 应用");
 xdg_toplevel_set_app_id(toplevel, "com.example.myapp");
@@ -259,17 +259,17 @@ wl_surface_commit(surface);
 
 ```
 ┌─────────────────────────────────┐
-│        Overlay 层（通知）        │
-│  ┌───────────────────────────┐  │
-│  │      Top 层（面板）       │  │
-│  │  ┌───────────────────┐   │  │
-│  │  │  Bottom 层（Dock） │   │  │
-│  │  │  ┌─────────────┐  │   │  │
-│  │  │  │ Background  │  │   │  │
-│  │  │  │ （壁纸）     │  │   │  │
-│  │  │  └─────────────┘  │   │  │
-│  │  └───────────────────┘   │  │
-│  └───────────────────────────┘  │
+│ Overlay 层（通知） │
+│ ┌───────────────────────────┐ │
+│ │ Top 层（面板） │ │
+│ │ ┌───────────────────┐ │ │
+│ │ │ Bottom 层（Dock） │ │ │
+│ │ │ ┌─────────────┐ │ │ │
+│ │ │ │ Background │ │ │ │
+│ │ │ │ （壁纸） │ │ │ │
+│ │ │ └─────────────┘ │ │ │
+│ │ └───────────────────┘ │ │
+│ └───────────────────────────┘ │
 └─────────────────────────────────┘
 ```
 
@@ -316,15 +316,15 @@ output eDP-1 resolution 1920x1080 position 2560,0 scale 1.25
 
 # 输入配置
 input "type:touchpad" {
-    tap enabled
-    natural_scroll enabled
-    dwt enabled
+ tap enabled
+ natural_scroll enabled
+ dwt enabled
 }
 
 input "type:keyboard" {
-    xkb_layout us
-    repeat_delay 300
-    repeat_rate 50
+ xkb_layout us
+ repeat_delay 300
+ repeat_rate 50
 }
 
 # 快捷键
@@ -342,25 +342,25 @@ monitor = DP-1, 2560x1440@165, 0x0, 1
 monitor = HDMI-A-1, 1920x1080@60, 2560x0, 1
 
 input {
-    kb_layout = us
-    follow_mouse = 1
-    touchpad {
-        natural_scroll = true
-    }
+ kb_layout = us
+ follow_mouse = 1
+ touchpad {
+ natural_scroll = true
+ }
 }
 
 general {
-    gaps_in = 5
-    gaps_out = 10
-    border_size = 2
-    col.active_border = rgba(33ccffee) rgba(00ff99ee) 45deg
+ gaps_in = 5
+ gaps_out = 10
+ border_size = 2
+ col.active_border = rgba(33ccffee) rgba(00ff99ee) 45deg
 }
 
 animations {
-    enabled = true
-    bezier = myBezier, 0.05, 0.9, 0.1, 1.05
-    animation = windows, 1, 7, myBezier
-    animation = fade, 1, 7, default
+ enabled = true
+ bezier = myBezier, 0.05, 0.9, 0.1, 1.05
+ animation = windows, 1, 7, myBezier
+ animation = fade, 1, 7, default
 }
 
 bind = SUPER, Return, exec, kitty
@@ -438,10 +438,10 @@ background-color=0xff002244
 XWayland 是一个特殊的 X 服务器，作为 Wayland 客户端运行：
 
 ```
-┌──────────┐   X11 协议   ┌──────────┐  Wayland 协议  ┌─────────────┐
-│ X11 App  │ ───────────► │ XWayland │ ─────────────► │  Wayland    │
-│          │              │ (X 服务器)│               │  Compositor │
-└──────────┘              └──────────┘               └─────────────┘
+┌──────────┐ X11 协议 ┌──────────┐ Wayland 协议 ┌─────────────┐
+│ X11 App │ ───────────► │ XWayland │ ─────────────► │ Wayland │
+│ │ │ (X 服务器)│ │ Compositor │
+└──────────┘ └──────────┘ └─────────────┘
 ```
 
 XWayland 将 X11 窗口映射为 Wayland surface，使传统 X11 应用无需修改即可运行。
@@ -459,7 +459,7 @@ xwayland enable
 # Hyprland 中配置
 # ~/.config/hypr/hyprland.conf
 xwayland {
-    force_zero_scaling = true
+ force_zero_scaling = true
 }
 ```
 
@@ -518,7 +518,7 @@ export QT_QPA_PLATFORM=wayland
 
 # 方法 2：Hyprland 的 XWayland 缩放
 xwayland {
-    force_zero_scaling = true
+ force_zero_scaling = true
 }
 # 同时设置 Xft.dpi
 env = GDK_SCALE,2
@@ -535,26 +535,26 @@ DRM（Direct Rendering Manager）和 KMS（Kernel Mode Setting）是 Linux 显�
 ```
 用户空间
 ┌────────────────────────────────┐
-│    Wayland Compositor          │
-│    ┌──────────┐ ┌───────────┐  │
-│    │ libdrm   │ │ Mesa/EGL  │  │
-│    └────┬─────┘ └─────┬─────┘  │
+│ Wayland Compositor │
+│ ┌──────────┐ ┌───────────┐ │
+│ │ libdrm │ │ Mesa/EGL │ │
+│ └────┬─────┘ └─────┬─────┘ │
 └─────────┼─────────────┼────────┘
-          │ ioctl       │ ioctl
+ │ ioctl │ ioctl
 ──────────┼─────────────┼────────── 内核边界
-          ▼             ▼
+ ▼ ▼
 ┌────────────────────────────────┐
-│         DRM 子系统              │
-│  ┌─────────┐  ┌─────────────┐  │
-│  │   KMS   │  │   GEM/TTM   │  │
-│  │ (显示)  │  │ (缓冲区)    │  │
-│  └─────────┘  └─────────────┘  │
+│ DRM 子系统 │
+│ ┌─────────┐ ┌─────────────┐ │
+│ │ KMS │ │ GEM/TTM │ │
+│ │ (显示) │ │ (缓冲区) │ │
+│ └─────────┘ └─────────────┘ │
 └────────────────────────────────┘
-          │
-          ▼
+ │
+ ▼
 ┌────────────────────────────────┐
-│     GPU 硬件驱动               │
-│  amdgpu / i915 / nouveau       │
+│ GPU 硬件驱动 │
+│ amdgpu / i915 / nouveau │
 └────────────────────────────────┘
 ```
 
@@ -571,7 +571,7 @@ KMS 的核心对象：
 ```bash
 # 查看 DRM 设备
 ls /dev/dri/
-# card0  card1  renderD128  renderD129
+# card0 card1 renderD128 renderD129
 
 # 查看 KMS 状态
 sudo cat /sys/kernel/debug/dri/0/state
@@ -592,12 +592,12 @@ GBM 提供与 EGL 集成的缓冲区分配接口：
 struct gbm_device *gbm = gbm_create_device(drm_fd);
 
 struct gbm_surface *gbm_surface = gbm_surface_create(
-    gbm, width, height, GBM_FORMAT_XRGB8888,
-    GBM_BO_USE_SCANOUT | GBM_BO_USE_RENDERING);
+ gbm, width, height, GBM_FORMAT_XRGB8888,
+ GBM_BO_USE_SCANOUT | GBM_BO_USE_RENDERING);
 
 // 与 EGL 关联
 EGLSurface egl_surface = eglCreatePlatformWindowSurface(
-    egl_display, egl_config, gbm_surface, NULL);
+ egl_display, egl_config, gbm_surface, NULL);
 ```
 
 ### EGL 与 OpenGL ES
@@ -609,14 +609,14 @@ Wayland 合成器通常使用 EGL + OpenGL ES 进行渲染和合成：
 eglinfo
 
 # 查看支持的 Wayland EGL 扩展
-EGL_WL_bind_wayland_display    # 合成器绑定 Wayland display
-EGL_EXT_image_dma_buf_import   # 导入 DMA-BUF
+EGL_WL_bind_wayland_display # 合成器绑定 Wayland display
+EGL_EXT_image_dma_buf_import # 导入 DMA-BUF
 ```
 
 ```c
 // 合成器侧 EGL 初始化
 EGLDisplay egl_display = eglGetPlatformDisplay(
-    EGL_PLATFORM_GBM_KHR, gbm_device, NULL);
+ EGL_PLATFORM_GBM_KHR, gbm_device, NULL);
 eglInitialize(egl_display, &major, &minor);
 
 // 绑定 OpenGL ES API
@@ -624,7 +624,7 @@ eglBindAPI(EGL_OPENGL_ES_API);
 
 // 创建上下文
 EGLContext ctx = eglCreateContext(egl_display, config,
-                                  EGL_NO_CONTEXT, ctx_attribs);
+ EGL_NO_CONTEXT, ctx_attribs);
 ```
 
 ### Vulkan WSI
@@ -637,17 +637,17 @@ vulkaninfo | grep -i wayland
 # VK_KHR_wayland_surface
 
 # 安装 Vulkan 驱动
-sudo pacman -S vulkan-radeon    # AMD
-sudo pacman -S vulkan-intel     # Intel
-sudo pacman -S nvidia-utils     # NVIDIA（包含 Vulkan）
+sudo pacman -S vulkan-radeon # AMD
+sudo pacman -S vulkan-intel # Intel
+sudo pacman -S nvidia-utils # NVIDIA（包含 Vulkan）
 ```
 
 ```c
 // Vulkan Wayland surface 创建
 VkWaylandSurfaceCreateInfoKHR surface_info = {
-    .sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR,
-    .display = wl_display,
-    .surface = wl_surface,
+ .sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR,
+ .display = wl_display,
+ .surface = wl_surface,
 };
 vkCreateWaylandSurfaceKHR(instance, &surface_info, NULL, &vk_surface);
 ```
@@ -662,10 +662,10 @@ xdg-desktop-portal 是 Wayland 下屏幕共享的标准机制：
 
 ```bash
 # 安装对应合成器的 portal 后端
-sudo pacman -S xdg-desktop-portal-wlr     # Sway、River 等 wlroots 合成器
+sudo pacman -S xdg-desktop-portal-wlr # Sway、River 等 wlroots 合成器
 sudo pacman -S xdg-desktop-portal-hyprland # Hyprland
-sudo pacman -S xdg-desktop-portal-gtk      # GNOME / 其他 GTK 环境
-sudo pacman -S xdg-desktop-portal-kde      # KDE Plasma
+sudo pacman -S xdg-desktop-portal-gtk # GNOME / 其他 GTK 环境
+sudo pacman -S xdg-desktop-portal-kde # KDE Plasma
 
 # 确保 portal 服务运行
 systemctl --user status xdg-desktop-portal
@@ -721,22 +721,22 @@ sudo pacman -S obs-studio
 ```bash
 # grim - 截图
 sudo pacman -S grim
-grim screenshot.png                          # 全屏截图
-grim -o eDP-1 output.png                     # 指定输出
-grim -g "100,100 500x300" region.png         # 指定区域
+grim screenshot.png # 全屏截图
+grim -o eDP-1 output.png # 指定输出
+grim -g "100,100 500x300" region.png # 指定区域
 
 # slurp - 交互式区域选择
 sudo pacman -S slurp
-grim -g "$(slurp)" screenshot.png            # 选择区域截图
+grim -g "$(slurp)" screenshot.png # 选择区域截图
 
 # 截图到剪贴板
 grim -g "$(slurp)" - | wl-copy
 
 # wf-recorder - 屏幕录制
 sudo pacman -S wf-recorder
-wf-recorder -o eDP-1 -f recording.mp4       # 录制指定输出
-wf-recorder -g "$(slurp)" -f region.mp4     # 录制选定区域
-wf-recorder -a -f with-audio.mp4            # 含音频录制
+wf-recorder -o eDP-1 -f recording.mp4 # 录制指定输出
+wf-recorder -g "$(slurp)" -f region.mp4 # 录制选定区域
+wf-recorder -a -f with-audio.mp4 # 含音频录制
 
 # wayshot - 高性能截图
 sudo pacman -S wayshot
@@ -764,7 +764,7 @@ wl-copy -t image/png < screenshot.png
 
 # 粘贴
 wl-paste
-wl-paste -n              # 不追加换行
+wl-paste -n # 不追加换行
 wl-paste -t image/png > pasted.png
 
 # 监听剪贴板变化
@@ -777,8 +777,8 @@ wl-copy --clear
 sudo pacman -S cliphist
 
 # 配合 wl-paste 使用
-wl-paste --watch cliphist store        # 后台运行存储历史
-cliphist list | wofi --dmenu | cliphist decode | wl-copy  # 选择历史
+wl-paste --watch cliphist store # 后台运行存储历史
+cliphist list | wofi --dmenu | cliphist decode | wl-copy # 选择历史
 ```
 
 Primary selection（中键粘贴）：
@@ -826,9 +826,9 @@ exec-once = fcitx5 -d --replace
 fcitx5-diagnose | grep -A5 "Wayland"
 
 # Fcitx5 支持的 Wayland 输入协议：
-# - zwp_input_method_v2    （推荐）
+# - zwp_input_method_v2 （推荐）
 # - zwp_text_input_v3
-# - zwp_input_method_v1    （旧版）
+# - zwp_input_method_v1 （旧版）
 ```
 
 Wayland 下输入法的已知限制：
@@ -852,27 +852,27 @@ code --enable-wayland-ime
 
 ```bash
 # 核心 Wayland 变量
-export WAYLAND_DISPLAY=wayland-0          # Wayland socket 名
-export XDG_SESSION_TYPE=wayland           # 会话类型
-export XDG_CURRENT_DESKTOP=sway           # 当前桌面
+export WAYLAND_DISPLAY=wayland-0 # Wayland socket 名
+export XDG_SESSION_TYPE=wayland # 会话类型
+export XDG_CURRENT_DESKTOP=sway # 当前桌面
 
 # 强制应用使用 Wayland
-export GDK_BACKEND=wayland                # GTK 应用
-export QT_QPA_PLATFORM=wayland            # Qt 应用
-export SDL_VIDEODRIVER=wayland            # SDL 应用
-export CLUTTER_BACKEND=wayland            # Clutter 应用
-export MOZ_ENABLE_WAYLAND=1               # Firefox
-export ELECTRON_OZONE_PLATFORM_HINT=auto  # Electron（Chromium 系）
+export GDK_BACKEND=wayland # GTK 应用
+export QT_QPA_PLATFORM=wayland # Qt 应用
+export SDL_VIDEODRIVER=wayland # SDL 应用
+export CLUTTER_BACKEND=wayland # Clutter 应用
+export MOZ_ENABLE_WAYLAND=1 # Firefox
+export ELECTRON_OZONE_PLATFORM_HINT=auto # Electron（Chromium 系）
 
 # XWayland 相关
-export DISPLAY=:0                          # XWayland display
-export XAUTHORITY                          # X 认证文件（XWayland 自动设置）
+export DISPLAY=:0 # XWayland display
+export XAUTHORITY # X 认证文件（XWayland 自动设置）
 
 # 调试
-export WAYLAND_DEBUG=1                    # 启用 Wayland 协议调试日志
-export WAYLAND_DEBUG=client               # 仅客户端日志
-export WAYLAND_DEBUG=server               # 仅服务端日志
-export LIBSEAT_LOGLEVEL=debug             # libseat 调试
+export WAYLAND_DEBUG=1 # 启用 Wayland 协议调试日志
+export WAYLAND_DEBUG=client # 仅客户端日志
+export WAYLAND_DEBUG=server # 仅服务端日志
+export LIBSEAT_LOGLEVEL=debug # libseat 调试
 ```
 
 检测当前会话类型的脚本：
@@ -880,15 +880,15 @@ export LIBSEAT_LOGLEVEL=debug             # libseat 调试
 ```bash
 #!/bin/bash
 if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
-    echo "当前运行在 Wayland 会话中"
-    echo "合成器: ${XDG_CURRENT_DESKTOP:-未知}"
-    echo "Socket: ${WAYLAND_DISPLAY:-wayland-0}"
-    echo "XWayland DISPLAY: ${DISPLAY:-未设置}"
+ echo "当前运行在 Wayland 会话中"
+ echo "合成器: ${XDG_CURRENT_DESKTOP:-未知}"
+ echo "Socket: ${WAYLAND_DISPLAY:-wayland-0}"
+ echo "XWayland DISPLAY: ${DISPLAY:-未设置}"
 elif [ "$XDG_SESSION_TYPE" = "x11" ]; then
-    echo "当前运行在 X11 会话中"
-    echo "DISPLAY: $DISPLAY"
+ echo "当前运行在 X11 会话中"
+ echo "DISPLAY: $DISPLAY"
 else
-    echo "未知会话类型: ${XDG_SESSION_TYPE:-未设置}"
+ echo "未知会话类型: ${XDG_SESSION_TYPE:-未设置}"
 fi
 ```
 
@@ -976,24 +976,24 @@ echo "Xft.dpi: 120" | xrdb -merge
 ```bash
 # Sway
 input "type:touchpad" {
-    tap enabled
-    natural_scroll enabled
-    scroll_method two_finger
-    pointer_accel 0.3
-    accel_profile adaptive
-    dwt enabled               # 打字时禁用触摸板
-    click_method clickfinger
-    middle_emulation enabled
+ tap enabled
+ natural_scroll enabled
+ scroll_method two_finger
+ pointer_accel 0.3
+ accel_profile adaptive
+ dwt enabled # 打字时禁用触摸板
+ click_method clickfinger
+ middle_emulation enabled
 }
 
 # Hyprland
 input {
-    touchpad {
-        natural_scroll = true
-        disable_while_typing = true
-        tap-to-click = true
-        scroll_factor = 0.8
-    }
+ touchpad {
+ natural_scroll = true
+ disable_while_typing = true
+ tap-to-click = true
+ scroll_factor = 0.8
+ }
 }
 ```
 
@@ -1024,13 +1024,13 @@ sudo pacman -S kanshi
 ```ini
 # ~/.config/kanshi/config
 profile docked {
-    output eDP-1 disable
-    output DP-1 mode 2560x1440@165Hz position 0,0
-    output HDMI-A-1 mode 1920x1080@60Hz position 2560,0
+ output eDP-1 disable
+ output DP-1 mode 2560x1440@165Hz position 0,0
+ output HDMI-A-1 mode 1920x1080@60Hz position 2560,0
 }
 
 profile undocked {
-    output eDP-1 enable mode 1920x1080 position 0,0
+ output eDP-1 enable mode 1920x1080 position 0,0
 }
 ```
 
@@ -1040,7 +1040,7 @@ profile undocked {
 # 必要的环境变量
 export GBM_BACKEND=nvidia-drm
 export __GLX_VENDOR_LIBRARY_NAME=nvidia
-export WLR_NO_HARDWARE_CURSORS=1   # 如果硬件光标有问题
+export WLR_NO_HARDWARE_CURSORS=1 # 如果硬件光标有问题
 
 # 内核参数
 # /etc/default/grub
@@ -1085,122 +1085,122 @@ static int running = 1;
 static int width = 640, height = 480;
 
 static void xdg_wm_base_ping(void *data, struct xdg_wm_base *shell,
-                               uint32_t serial) {
-    xdg_wm_base_pong(shell, serial);
+ uint32_t serial) {
+ xdg_wm_base_pong(shell, serial);
 }
 
 static const struct xdg_wm_base_listener xdg_wm_base_listener = {
-    .ping = xdg_wm_base_ping,
+ .ping = xdg_wm_base_ping,
 };
 
 static void registry_global(void *data, struct wl_registry *registry,
-                             uint32_t name, const char *interface,
-                             uint32_t version) {
-    if (strcmp(interface, wl_compositor_interface.name) == 0) {
-        compositor = wl_registry_bind(registry, name,
-                                       &wl_compositor_interface, 4);
-    } else if (strcmp(interface, wl_shm_interface.name) == 0) {
-        shm = wl_registry_bind(registry, name, &wl_shm_interface, 1);
-    } else if (strcmp(interface, xdg_wm_base_interface.name) == 0) {
-        xdg_wm_base = wl_registry_bind(registry, name,
-                                         &xdg_wm_base_interface, 1);
-        xdg_wm_base_add_listener(xdg_wm_base, &xdg_wm_base_listener, NULL);
-    }
+ uint32_t name, const char *interface,
+ uint32_t version) {
+ if (strcmp(interface, wl_compositor_interface.name) == 0) {
+ compositor = wl_registry_bind(registry, name,
+ &wl_compositor_interface, 4);
+ } else if (strcmp(interface, wl_shm_interface.name) == 0) {
+ shm = wl_registry_bind(registry, name, &wl_shm_interface, 1);
+ } else if (strcmp(interface, xdg_wm_base_interface.name) == 0) {
+ xdg_wm_base = wl_registry_bind(registry, name,
+ &xdg_wm_base_interface, 1);
+ xdg_wm_base_add_listener(xdg_wm_base, &xdg_wm_base_listener, NULL);
+ }
 }
 
 static void registry_global_remove(void *data, struct wl_registry *registry,
-                                     uint32_t name) {}
+ uint32_t name) {}
 
 static const struct wl_registry_listener registry_listener = {
-    .global = registry_global,
-    .global_remove = registry_global_remove,
+ .global = registry_global,
+ .global_remove = registry_global_remove,
 };
 
 static struct wl_buffer *create_buffer(void) {
-    int stride = width * 4;
-    int size = stride * height;
+ int stride = width * 4;
+ int size = stride * height;
 
-    char name[] = "/tmp/wl-shm-XXXXXX";
-    int fd = mkstemp(name);
-    unlink(name);
-    ftruncate(fd, size);
+ char name[] = "/tmp/wl-shm-XXXXXX";
+ int fd = mkstemp(name);
+ unlink(name);
+ ftruncate(fd, size);
 
-    uint32_t *data = mmap(NULL, size, PROT_READ | PROT_WRITE,
-                           MAP_SHARED, fd, 0);
+ uint32_t *data = mmap(NULL, size, PROT_READ | PROT_WRITE,
+ MAP_SHARED, fd, 0);
 
-    // 绘制蓝色背景
-    for (int i = 0; i < width * height; i++) {
-        data[i] = 0xFF3355AA;  // ARGB: 不透明蓝色
-    }
+ // 绘制蓝色背景
+ for (int i = 0; i < width * height; i++) {
+ data[i] = 0xFF3355AA; // ARGB: 不透明蓝色
+ }
 
-    struct wl_shm_pool *pool = wl_shm_create_pool(shm, fd, size);
-    struct wl_buffer *buffer = wl_shm_pool_create_buffer(
-        pool, 0, width, height, stride, WL_SHM_FORMAT_ARGB8888);
-    wl_shm_pool_destroy(pool);
-    close(fd);
-    munmap(data, size);
+ struct wl_shm_pool *pool = wl_shm_create_pool(shm, fd, size);
+ struct wl_buffer *buffer = wl_shm_pool_create_buffer(
+ pool, 0, width, height, stride, WL_SHM_FORMAT_ARGB8888);
+ wl_shm_pool_destroy(pool);
+ close(fd);
+ munmap(data, size);
 
-    return buffer;
+ return buffer;
 }
 
 static void xdg_surface_configure(void *data, struct xdg_surface *surface,
-                                    uint32_t serial) {
-    xdg_surface_ack_configure(surface, serial);
-    struct wl_surface *wl_surface = data;
-    struct wl_buffer *buffer = create_buffer();
-    wl_surface_attach(wl_surface, buffer, 0, 0);
-    wl_surface_commit(wl_surface);
+ uint32_t serial) {
+ xdg_surface_ack_configure(surface, serial);
+ struct wl_surface *wl_surface = data;
+ struct wl_buffer *buffer = create_buffer();
+ wl_surface_attach(wl_surface, buffer, 0, 0);
+ wl_surface_commit(wl_surface);
 }
 
 static const struct xdg_surface_listener xdg_surface_listener = {
-    .configure = xdg_surface_configure,
+ .configure = xdg_surface_configure,
 };
 
 static void xdg_toplevel_close(void *data, struct xdg_toplevel *toplevel) {
-    running = 0;
+ running = 0;
 }
 
 static void xdg_toplevel_configure(void *data, struct xdg_toplevel *toplevel,
-                                     int32_t w, int32_t h,
-                                     struct wl_array *states) {}
+ int32_t w, int32_t h,
+ struct wl_array *states) {}
 
 static const struct xdg_toplevel_listener xdg_toplevel_listener = {
-    .configure = xdg_toplevel_configure,
-    .close = xdg_toplevel_close,
+ .configure = xdg_toplevel_configure,
+ .close = xdg_toplevel_close,
 };
 
 int main(void) {
-    display = wl_display_connect(NULL);
-    if (!display) {
-        fprintf(stderr, "无法连接到 Wayland\n");
-        return 1;
-    }
+ display = wl_display_connect(NULL);
+ if (!display) {
+ fprintf(stderr, "无法连接到 Wayland\n");
+ return 1;
+ }
 
-    struct wl_registry *registry = wl_display_get_registry(display);
-    wl_registry_add_listener(registry, &registry_listener, NULL);
-    wl_display_roundtrip(display);
+ struct wl_registry *registry = wl_display_get_registry(display);
+ wl_registry_add_listener(registry, &registry_listener, NULL);
+ wl_display_roundtrip(display);
 
-    struct wl_surface *surface = wl_compositor_create_surface(compositor);
-    struct xdg_surface *xdg_surface =
-        xdg_wm_base_get_xdg_surface(xdg_wm_base, surface);
-    xdg_surface_add_listener(xdg_surface, &xdg_surface_listener, surface);
+ struct wl_surface *surface = wl_compositor_create_surface(compositor);
+ struct xdg_surface *xdg_surface =
+ xdg_wm_base_get_xdg_surface(xdg_wm_base, surface);
+ xdg_surface_add_listener(xdg_surface, &xdg_surface_listener, surface);
 
-    struct xdg_toplevel *toplevel = xdg_surface_get_toplevel(xdg_surface);
-    xdg_toplevel_set_title(toplevel, "Wayland 示例");
-    xdg_toplevel_add_listener(toplevel, &xdg_toplevel_listener, NULL);
+ struct xdg_toplevel *toplevel = xdg_surface_get_toplevel(xdg_surface);
+ xdg_toplevel_set_title(toplevel, "Wayland 示例");
+ xdg_toplevel_add_listener(toplevel, &xdg_toplevel_listener, NULL);
 
-    wl_surface_commit(surface);
+ wl_surface_commit(surface);
 
-    while (running && wl_display_dispatch(display) != -1) {
-        // 事件循环
-    }
+ while (running && wl_display_dispatch(display) != -1) {
+ // 事件循环
+ }
 
-    xdg_toplevel_destroy(toplevel);
-    xdg_surface_destroy(xdg_surface);
-    wl_surface_destroy(surface);
-    wl_display_disconnect(display);
+ xdg_toplevel_destroy(toplevel);
+ xdg_surface_destroy(xdg_surface);
+ wl_surface_destroy(surface);
+ wl_display_disconnect(display);
 
-    return 0;
+ return 0;
 }
 ```
 
@@ -1209,16 +1209,16 @@ int main(void) {
 ```bash
 # 生成 xdg-shell 协议代码
 wayland-scanner client-header \
-    /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml \
-    xdg-shell-client-protocol.h
+ /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml \
+ xdg-shell-client-protocol.h
 
 wayland-scanner private-code \
-    /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml \
-    xdg-shell-protocol.c
+ /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml \
+ xdg-shell-protocol.c
 
 # 编译
 gcc -o minimal_wayland minimal_wayland.c xdg-shell-protocol.c \
-    $(pkg-config --cflags --libs wayland-client)
+ $(pkg-config --cflags --libs wayland-client)
 
 # 运行
 ./minimal_wayland
@@ -1246,11 +1246,11 @@ gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
 
 def on_activate(app):
-    win = Gtk.ApplicationWindow(application=app, title='GTK4 Wayland')
-    win.set_default_size(400, 300)
-    label = Gtk.Label(label='Hello from Wayland!')
-    win.set_child(label)
-    win.present()
+ win = Gtk.ApplicationWindow(application=app, title='GTK4 Wayland')
+ win.set_default_size(400, 300)
+ label = Gtk.Label(label='Hello from Wayland!')
+ win.set_child(label)
+ win.present()
 
 app = Gtk.Application()
 app.connect('activate', on_activate)
@@ -1279,11 +1279,11 @@ sway -d 2> /tmp/sway.log
 hyprctl -j monitors
 
 # 检查合成器渲染后端
-echo $WLR_RENDERER      # vulkan / gles2 / pixman
+echo $WLR_RENDERER # vulkan / gles2 / pixman
 
 # GPU 信息
-glxinfo | grep "OpenGL renderer"   # XWayland
-eglinfo                             # 原生 Wayland
+glxinfo | grep "OpenGL renderer" # XWayland
+eglinfo # 原生 Wayland
 
 # 检查 DRM lease 支持（VR 设备）
 ls /dev/dri/card*
@@ -1301,15 +1301,15 @@ ls /dev/dri/card*
 □ 安装 xdg-desktop-portal（屏幕共享）
 □ 安装 PipeWire（音频 + 视频流）
 □ 替换 X11 专属工具：
-  - scrot/maim → grim + slurp
-  - xclip/xsel → wl-clipboard
-  - xdotool → wtype、ydotool
-  - xrandr → wlr-randr、kanshi
-  - picom → 内建合成
-  - dunst → mako、fnott
-  - rofi → wofi、fuzzel、tofi
-  - i3lock → swaylock、hyprlock
-  - polybar → waybar
+ - scrot/maim → grim + slurp
+ - xclip/xsel → wl-clipboard
+ - xdotool → wtype、ydotool
+ - xrandr → wlr-randr、kanshi
+ - picom → 内建合成
+ - dunst → mako、fnott
+ - rofi → wofi、fuzzel、tofi
+ - i3lock → swaylock、hyprlock
+ - polybar → waybar
 □ 设置环境变量强制应用使用 Wayland
 □ 测试常用应用的兼容性
 □ 配置多显示器布局
@@ -1336,7 +1336,7 @@ ls /dev/dri/card*
 
 ## 38.16 本章测验
 
-> [!example] 📝 自测题目
+> [!example] 自测题目
 
 > [!question]- 选择题 1：Wayland 与 X11 最核心的架构区别是什么？
 > - A. Wayland 不支持 GPU 加速
@@ -1359,11 +1359,11 @@ ls /dev/dri/card*
 > > XWayland 是一个特殊的 X Server，作为 Wayland 客户端运行，为不支持 Wayland 的 X11 应用提供运行环境，实现向后兼容。
 
 > [!question]- 判断题 3：Wayland 协议中，客户端不能访问其他客户端的输入或缓冲区，安全性优于 X11。
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > X11 中任意客户端可以截取其他窗口的输入和截屏；Wayland 协议在设计上实现了客户端之间的安全隔离，客户端只能访问自己的缓冲区。
 
 > [!question]- 选择题 4：在 Wayland 下进行屏幕共享和录制需要什么机制？
@@ -1387,11 +1387,11 @@ ls /dev/dri/card*
 > > wlroots 是一个模块化的合成器库，提供了构建 Wayland 合成器所需的通用组件（DRM/KMS、输入处理、协议实现等），Sway 和 Hyprland 等合成器基于它构建。
 
 > [!question]- 判断题 6：从 X11 迁移到 Wayland 时，xdotool 可以直接在 Wayland 原生应用上使用。
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **B. ✗ 错误**
+> > **B. 错误**
 > > xdotool 依赖 X11 协议，不能操作 Wayland 原生窗口。Wayland 下需要使用 wtype（模拟键盘输入）或 ydotool（通过 uinput 模拟）等替代工具。
 
 > [!question]- 选择题 7：Wayland 协议中 DRM/KMS 的角色是什么？
@@ -1415,11 +1415,11 @@ ls /dev/dri/card*
 > > wl-clipboard 提供了 `wl-copy` 和 `wl-paste` 命令，是 Wayland 原生的剪贴板工具，功能对应 X11 的 xclip/xsel。
 
 > [!question]- 判断题 9：NVIDIA GPU 在 Wayland 下需要额外配置（如设置 GBM 后端），比 AMD/Intel 驱动更复杂。
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > AMD 和 Intel 使用开源 Mesa 驱动，对 Wayland 支持良好；NVIDIA 需要专有驱动且需额外配置（如设置 `GBM_BACKEND=nvidia-drm`、`__GLX_VENDOR_LIBRARY_NAME=nvidia` 等环境变量）。
 
 > [!question]- 选择题 10：Wayland 相比 X11 在图形渲染上解决了什么长期问题？

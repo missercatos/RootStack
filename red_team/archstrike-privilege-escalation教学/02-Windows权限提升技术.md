@@ -8,18 +8,18 @@
 
 - [[#一、Windows提权概述|一、Windows提权概述]]
 - [[#二、winPEAS 权限分析|二、winPEAS - 权限分析神器]]
-  - [[#2.1 获取与上传|2.1 获取与上传]]
-  - [[#2.2 运行与解读|2.2 运行与解读]]
+ - [[#2.1 获取与上传|2.1 获取与上传]]
+ - [[#2.2 运行与解读|2.2 运行与解读]]
 - [[#三、PowerUp 自动化提权|三、PowerUp - 自动化提权模块]]
 - [[#四、Windows提权常用方法|四、Windows提权常用方法详解]]
-  - [[#4.1 服务权限配置错误|4.1 服务权限配置错误]]
-  - [[#4.2 未引用服务路径|4.2 未引用服务路径]]
-  - [[#4.3 AlwaysInstallElevated|4.3 AlwaysInstallElevated]]
-  - [[#4.4 Token窃取|4.4 Token窃取]]
-  - [[#4.5 UAC绕过|4.5 UAC绕过]]
-  - [[#4.6 计划任务提权|4.6 计划任务提权]]
-  - [[#4.7 凭证提取|4.7 凭证提取 - Mimikatz]]
-  - [[#4.8 其他提权向量|4.8 其他提权向量]]
+ - [[#4.1 服务权限配置错误|4.1 服务权限配置错误]]
+ - [[#4.2 未引用服务路径|4.2 未引用服务路径]]
+ - [[#4.3 AlwaysInstallElevated|4.3 AlwaysInstallElevated]]
+ - [[#4.4 Token窃取|4.4 Token窃取]]
+ - [[#4.5 UAC绕过|4.5 UAC绕过]]
+ - [[#4.6 计划任务提权|4.6 计划任务提权]]
+ - [[#4.7 凭证提取|4.7 凭证提取 - Mimikatz]]
+ - [[#4.8 其他提权向量|4.8 其他提权向量]]
 - [[#五、完整实践|五、完整实践 - Windows靶机提权]]
 - [[#六、防御建议|六、防御建议 蓝队视角]]
 
@@ -29,27 +29,27 @@ Windows权限体系与Linux有本质区别，其基于访问令牌（Access Toke
 
 ```mermaid
 flowchart TD
-    A[低权限Shell] --> B[winPEAS 信息收集]
-    B --> C{发现提权向量}
-    C --> D[Token窃取]
-    C --> E[服务配置错误]
-    C --> F[未引用路径]
-    C --> G[AlwaysInstallElevated]
-    C --> H[UAC绕过]
-    C --> I[计划任务劫持]
-    C --> J[内核漏洞]
-    D --> K{成功?}
-    E --> K
-    F --> K
-    G --> K
-    H --> K
-    I --> K
-    J --> K
-    K -->|是| L[SYSTEM权限]
-    K -->|否| M[Mimikatz凭证提取]
-    M --> N[横向移动]
-    L --> O[持久化]
-    L --> N
+ A[低权限Shell] --> B[winPEAS 信息收集]
+ B --> C{发现提权向量}
+ C --> D[Token窃取]
+ C --> E[服务配置错误]
+ C --> F[未引用路径]
+ C --> G[AlwaysInstallElevated]
+ C --> H[UAC绕过]
+ C --> I[计划任务劫持]
+ C --> J[内核漏洞]
+ D --> K{成功?}
+ E --> K
+ F --> K
+ G --> K
+ H --> K
+ I --> K
+ J --> K
+ K -->|是| L[SYSTEM权限]
+ K -->|否| M[Mimikatz凭证提取]
+ M --> N[横向移动]
+ L --> O[持久化]
+ L --> N
 ```
 
 Windows提权的典型路径：
@@ -131,15 +131,15 @@ winPEAS 颜色标记：
 重点关注区域：
 
 ```
-1. Windows Credentials  存储的凭证
+1. Windows Credentials 存储的凭证
 2. Services Information 服务信息（重点）
-3. Applications         已安装应用及版本
-4. Internet & Network   网络信息
-5. Users                用户和组信息
-6. Scheduled Tasks      计划任务
-7. System Information   系统信息
-8. Files Analysis       文件分析
-9. Credentials          浏览器/应用凭证
+3. Applications 已安装应用及版本
+4. Internet & Network 网络信息
+5. Users 用户和组信息
+6. Scheduled Tasks 计划任务
+7. System Information 系统信息
+8. Files Analysis 文件分析
+9. Credentials 浏览器/应用凭证
 ```
 
 特别关注的 winPEAS 发现：
@@ -318,9 +318,9 @@ meterpreter> getuid
 
 # 或使用getsystem
 meterpreter> getsystem
-meterpreter> getsystem -t 1  # Named Pipe
-meterpreter> getsystem -t 2  # Token Duplication
-meterpreter> getsystem -t 3  # Service
+meterpreter> getsystem -t 1 # Named Pipe
+meterpreter> getsystem -t 2 # Token Duplication
+meterpreter> getsystem -t 3 # Service
 ```
 
 **Potato家族工具：**
@@ -386,9 +386,9 @@ msf6> use exploit/windows/local/bypassuac_eventvwr
 UACME工具：
 
 ```cmd
-Akagi64.exe 1   :: 方法1
-Akagi64.exe 23  :: 方法23
-Akagi64.exe 41  :: 方法41
+Akagi64.exe 1 :: 方法1
+Akagi64.exe 23 :: 方法23
+Akagi64.exe 41 :: 方法41
 ```
 
 ### 4.6 计划任务提权

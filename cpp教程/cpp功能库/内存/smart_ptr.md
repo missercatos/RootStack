@@ -22,10 +22,10 @@ title: "C++ 功能库 — smart_ptr"
 ## 所有权模型
 
 ```
-unique_ptr:  [ptr]──→T                  独占，ptk=UQOVE 后 ptr 变空
-shared_ptr:  [ptr]──→[控制块:ref=2]──→T 共享，最后一个析构时 delete
-             [ptr]──→┘
-weak_ptr:    [ptr]──→[控制块:weak=1]    可 .lock() 提升为 shared_ptr
+unique_ptr: [ptr]──→T 独占，ptk=UQOVE 后 ptr 变空
+shared_ptr: [ptr]──→[控制块:ref=2]──→T 共享，最后一个析构时 delete
+ [ptr]──→┘
+weak_ptr: [ptr]──→[控制块:weak=1] 可 .lock() 提升为 shared_ptr
 ```
 
 ## 典型用法
@@ -34,64 +34,64 @@ weak_ptr:    [ptr]──→[控制块:weak=1]    可 .lock() 提升为 shared_pt
 
 ```
 FUNCTION demo_unique:
-    p = MAKE_UNIQUE<INT>(42)
-    PRINT *p                                    // 42
+ p = MAKE_UNIQUE<INT>(42)
+ PRINT *p // 42
 
-    p2 = MOVE(p)                                // 所有权转移
-    // p 现在为空，访问 p 是未定义行为
+ p2 = MOVE(p) // 所有权转移
+ // p 现在为空，访问 p 是未定义行为
 
-    // 自定义删除器
-    file_ptr = UNIQUE_PTR<FILE, DELETER>(
-        FOPEN("data.txt", "r"),
-        LAMBDA(f): FCLOSE(f)                    // 析构时自动调用
-    )
+ // 自定义删除器
+ file_ptr = UNIQUE_PTR<FILE, DELETER>(
+ FOPEN("data.txt", "r"),
+ LAMBDA(f): FCLOSE(f) // 析构时自动调用
+ )
 
-    // 工厂函数返回 unique_ptr
-    CREATE_OBJECT = LAMBDA(args) -> UNIQUE_PTR<Base>:
-        RETURN MAKE_UNIQUE<Derived>(args)       // 多态返回
-    END LAMBDA
+ // 工厂函数返回 unique_ptr
+ CREATE_OBJECT = LAMBDA(args) -> UNIQUE_PTR<Base>:
+ RETURN MAKE_UNIQUE<Derived>(args) // 多态返回
+ END LAMBDA
 ```
 
 ### shared_ptr —— 共享所有权
 
 ```
 FUNCTION demo_shared:
-    p1 = MAKE_SHARED<STRING>("hello")           // 一次分配
-    PRINT p1.USE_COUNT()                        // 1
+ p1 = MAKE_SHARED<STRING>("hello") // 一次分配
+ PRINT p1.USE_COUNT() // 1
 
-    p2 = p1                                     // 引用计数变 2（浅拷贝）
-    PRINT p1.USE_COUNT()                        // 2
+ p2 = p1 // 引用计数变 2（浅拷贝）
+ PRINT p1.USE_COUNT() // 2
 
-    p2.RESET()                                  // p2 释放，count = 1
-    // p1 离开作用域时 count = 0，自动 delete
+ p2.RESET() // p2 释放，count = 1
+ // p1 离开作用域时 count = 0，自动 delete
 
-    // 危险：不要用同一裸指针创建两个 shared_ptr
-    // raw = NEW INT(42)
-    // p1 = SHARED_PTR<INT>(raw)               // 控制块 A
-    // p2 = SHARED_PTR<INT>(raw)               // 控制块 B → 双重释放！
+ // 危险：不要用同一裸指针创建两个 shared_ptr
+ // raw = NEW INT(42)
+ // p1 = SHARED_PTR<INT>(raw) // 控制块 A
+ // p2 = SHARED_PTR<INT>(raw) // 控制块 B → 双重释放！
 ```
 
 ### weak_ptr —— 打破循环引用
 
 ```
 FUNCTION demo_weak:
-    CLASS Parent:
-        children = LIST<SHARED_PTR<Child>>()    // 拥有 Child
-    END CLASS
+ CLASS Parent:
+ children = LIST<SHARED_PTR<Child>>() // 拥有 Child
+ END CLASS
 
-    CLASS Child:
-        parent = WEAK_PTR<Parent>()              // 观察 Parent，不拥有
-    END CLASS
-    // 没有 weak_ptr，两者互相持有 shared_ptr → 循环引用 → 永远不释放
+ CLASS Child:
+ parent = WEAK_PTR<Parent>() // 观察 Parent，不拥有
+ END CLASS
+ // 没有 weak_ptr，两者互相持有 shared_ptr → 循环引用 → 永远不释放
 
-    sp = MAKE_SHARED<INT>(100)
-    wp = WEAK_PTR<INT>(sp)                      // 不增加引用计数
-    sp.RESET()                                  // 对象销毁
+ sp = MAKE_SHARED<INT>(100)
+ wp = WEAK_PTR<INT>(sp) // 不增加引用计数
+ sp.RESET() // 对象销毁
 
-    locked = wp.LOCK()                          // 尝试提升
-    IF locked THEN PRINT *locked
-    ELSE PRINT "对象已被销毁"
-    END IF
+ locked = wp.LOCK() // 尝试提升
+ IF locked THEN PRINT *locked
+ ELSE PRINT "对象已被销毁"
+ END IF
 ```
 
 ---

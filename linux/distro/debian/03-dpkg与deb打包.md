@@ -146,16 +146,16 @@ apt-mark showmanual > manual-pkgs.txt
 ls /var/lib/dpkg/
 
 # 主要文件和目录：
-# status          — 已安装包的完整状态
-# available       — 可安装包的缓存
-# info/           — 每个包的控制文件和脚本
-#   pkgname.list    — 包的文件列表
-#   pkgname.md5sums — 文件校验和
-#   pkgname.postinst — 安装后脚本
-#   pkgname.prerm    — 删除前脚本
-# updates/        — 未完成的更新
-# diversions      — 文件转移
-# statoverride    — 文件所有者覆盖
+# status — 已安装包的完整状态
+# available — 可安装包的缓存
+# info/ — 每个包的控制文件和脚本
+# pkgname.list — 包的文件列表
+# pkgname.md5sums — 文件校验和
+# pkgname.postinst — 安装后脚本
+# pkgname.prerm — 删除前脚本
+# updates/ — 未完成的更新
+# diversions — 文件转移
+# statoverride — 文件所有者覆盖
 ```
 
 ### 3.2 数据库查询
@@ -183,19 +183,19 @@ grep -l "filename" /var/lib/dpkg/info/*.list
 ```
 myapp-1.0.0/
 ├── DEBIAN/
-│   └── control         # 包元数据（必需）
-│   ├── preinst         # 安装前脚本（可选）
-│   ├── postinst        # 安装后脚本（可选）
-│   ├── prerm           # 删除前脚本（可选）
-│   ├── postrm          # 删除后脚本（可选）
-│   ├── conffiles       # 配置文件列表（可选）
-│   └── md5sums         # 文件校验
+│ └── control # 包元数据（必需）
+│ ├── preinst # 安装前脚本（可选）
+│ ├── postinst # 安装后脚本（可选）
+│ ├── prerm # 删除前脚本（可选）
+│ ├── postrm # 删除后脚本（可选）
+│ ├── conffiles # 配置文件列表（可选）
+│ └── md5sums # 文件校验
 └── usr/
-    ├── bin/myapp
-    ├── share/
-    │   ├── doc/myapp/copyright
-    │   └── applications/myapp.desktop
-    └── lib/myapp/
+ ├── bin/myapp
+ ├── share/
+ │ ├── doc/myapp/copyright
+ │ └── applications/myapp.desktop
+ └── lib/myapp/
 ```
 
 ### 4.2 control 文件完整字段
@@ -233,11 +233,11 @@ Installed-Size: 1524
 
 | 字段 | 必填 | 说明 |
 |------|------|------|
-| `Package` | ✓ | 包名，只能小写字母、数字、`-`、`+`、`.` |
-| `Version` | ✓ | 格式：`上游版本-Debian修订版本`，如 `1.2.3-1` |
-| `Architecture` | ✓ | `amd64`、`i386`、`arm64`、`all`、`any` |
-| `Maintainer` | ✓ | 维护者姓名和邮箱 |
-| `Description` | ✓ | 第一行是简短描述，后续段落是长描述 |
+| `Package` | | 包名，只能小写字母、数字、`-`、`+`、`.` |
+| `Version` | | 格式：`上游版本-Debian修订版本`，如 `1.2.3-1` |
+| `Architecture` | | `amd64`、`i386`、`arm64`、`all`、`any` |
+| `Maintainer` | | 维护者姓名和邮箱 |
+| `Description` | | 第一行是简短描述，后续段落是长描述 |
 | `Depends` | | 运行时强制依赖 |
 | `Pre-Depends` | | 在解包前就必须安装的依赖 |
 | `Recommends` | | 推荐安装（默认会安装） |
@@ -319,33 +319,33 @@ dpkg -I myapp_1.0.0-1_amd64.deb
 set -e
 
 case "$1" in
-    configure)
-        # 创建系统用户
-        if ! getent passwd myapp >/dev/null; then
-            adduser --system --group --home /var/lib/myapp --no-create-home myapp
-        fi
+ configure)
+ # 创建系统用户
+ if ! getent passwd myapp >/dev/null; then
+ adduser --system --group --home /var/lib/myapp --no-create-home myapp
+ fi
 
-        # 设置目录权限
-        chown -R myapp:myapp /var/lib/myapp
-        chmod 755 /var/lib/myapp
+ # 设置目录权限
+ chown -R myapp:myapp /var/lib/myapp
+ chmod 755 /var/lib/myapp
 
-        # 启动服务
-        if [ -x /bin/systemctl ]; then
-            systemctl daemon-reload
-            systemctl enable myapp.service
-            systemctl start myapp.service || true
-        fi
+ # 启动服务
+ if [ -x /bin/systemctl ]; then
+ systemctl daemon-reload
+ systemctl enable myapp.service
+ systemctl start myapp.service || true
+ fi
 
-        echo "myapp 安装完成。"
-        ;;
+ echo "myapp 安装完成。"
+ ;;
 
-    abort-upgrade|abort-remove|abort-deconfigure)
-        ;;
+ abort-upgrade|abort-remove|abort-deconfigure)
+ ;;
 
-    *)
-        echo "postinst called with unknown argument \`$1'" >&2
-        exit 1
-        ;;
+ *)
+ echo "postinst called with unknown argument \`$1'" >&2
+ exit 1
+ ;;
 esac
 
 exit 0
@@ -359,21 +359,21 @@ exit 0
 set -e
 
 case "$1" in
-    remove|upgrade|deconfigure)
-        # 停止服务
-        if [ -x /bin/systemctl ]; then
-            systemctl stop myapp.service || true
-            systemctl disable myapp.service || true
-        fi
-        ;;
+ remove|upgrade|deconfigure)
+ # 停止服务
+ if [ -x /bin/systemctl ]; then
+ systemctl stop myapp.service || true
+ systemctl disable myapp.service || true
+ fi
+ ;;
 
-    failed-upgrade)
-        ;;
+ failed-upgrade)
+ ;;
 
-    *)
-        echo "prerm called with unknown argument \`$1'" >&2
-        exit 1
-        ;;
+ *)
+ echo "prerm called with unknown argument \`$1'" >&2
+ exit 1
+ ;;
 esac
 
 exit 0
@@ -387,21 +387,21 @@ exit 0
 set -e
 
 case "$1" in
-    purge)
-        # 删除系统用户和数据（仅 purge 时）
-        if getent passwd myapp >/dev/null; then
-            userdel myapp
-        fi
-        rm -rf /var/lib/myapp
-        ;;
+ purge)
+ # 删除系统用户和数据（仅 purge 时）
+ if getent passwd myapp >/dev/null; then
+ userdel myapp
+ fi
+ rm -rf /var/lib/myapp
+ ;;
 
-    remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
-        ;;
+ remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+ ;;
 
-    *)
-        echo "postrm called with unknown argument \`$1'" >&2
-        exit 1
-        ;;
+ *)
+ echo "postrm called with unknown argument \`$1'" >&2
+ exit 1
+ ;;
 esac
 
 exit 0
@@ -446,23 +446,23 @@ dh_make -f ../myapp-1.0.0.tar.gz
 
 ```
 myapp-1.0.0/
-├── src/                    # 上游源码
+├── src/ # 上游源码
 └── debian/
-    ├── changelog           # 变更日志
-    ├── control             # 包元数据
-    ├── rules               # 构建规则（Makefile）
-    ├── copyright           # 版权信息
-    ├── compat              # debhelper 兼容性级别
-    ├── install             # 文件安装映射
-    ├── dirs                # 需要创建的目录
-    ├── links               # 符号链接
-    ├── postinst            # 安装后脚本
-    ├── prerm               # 删除前脚本
-    ├── postrm              # 删除后脚本
-    ├── conffiles           # 配置文件
-    ├── watch               # 监控上游新版本
-    └── source/
-        └── format          # 源码格式（"3.0 (quilt)"）
+ ├── changelog # 变更日志
+ ├── control # 包元数据
+ ├── rules # 构建规则（Makefile）
+ ├── copyright # 版权信息
+ ├── compat # debhelper 兼容性级别
+ ├── install # 文件安装映射
+ ├── dirs # 需要创建的目录
+ ├── links # 符号链接
+ ├── postinst # 安装后脚本
+ ├── prerm # 删除前脚本
+ ├── postrm # 删除后脚本
+ ├── conffiles # 配置文件
+ ├── watch # 监控上游新版本
+ └── source/
+ └── format # 源码格式（"3.0 (quilt)"）
 ```
 
 ### 6.3 debian/rules
@@ -498,9 +498,9 @@ override_dh_usrlocal:
 
 ```
 # 格式：<源码路径> <目标路径>
-src/myapp          usr/bin/
-src/config.yml     etc/myapp/
-src/systemd/myapp.service    lib/systemd/system/
+src/myapp usr/bin/
+src/config.yml etc/myapp/
+src/systemd/myapp.service lib/systemd/system/
 ```
 
 ### 6.5 构建包
@@ -508,8 +508,8 @@ src/systemd/myapp.service    lib/systemd/system/
 ```bash
 # 使用 debuild 构建（推荐）
 debuild -us -uc
-# -us  不签名源码包
-# -uc  不签名 .changes 文件
+# -us 不签名源码包
+# -uc 不签名 .changes 文件
 
 # 或使用 dpkg-buildpackage
 dpkg-buildpackage -us -uc -ui
@@ -528,19 +528,19 @@ lintian ../myapp_1.0.0-1_amd64.changes
 ```
 myapp (1.0.0-1) unstable; urgency=medium
 
-  * Initial release. (Closes: #123456)
-  * Added systemd service file.
-  * Fixed segmentation fault on amd64.
+ * Initial release. (Closes: #123456)
+ * Added systemd service file.
+ * Fixed segmentation fault on amd64.
 
- -- Your Name <you@example.com>  Wed, 15 Jan 2025 10:00:00 +0800
+ -- Your Name <you@example.com> Wed, 15 Jan 2025 10:00:00 +0800
 ```
 
 生成 changelog 条目：
 
 ```bash
-dch -i             # 交互式添加新条目
-dch -r ""          # 标记为 release
-dch --bpo           # 标记为 backports 版本
+dch -i # 交互式添加新条目
+dch -r "" # 标记为 release
+dch --bpo # 标记为 backports 版本
 ```
 
 ---
@@ -635,13 +635,13 @@ sudo apt-key add repo-key.asc
 # nginx 配置
 sudo tee /etc/nginx/sites-available/repo << 'EOF'
 server {
-    listen 80;
-    server_name repo.example.com;
-    root /srv/repo/debian;
+ listen 80;
+ server_name repo.example.com;
+ root /srv/repo/debian;
 
-    location / {
-        autoindex on;
-    }
+ location / {
+ autoindex on;
+ }
 }
 EOF
 
@@ -654,7 +654,7 @@ sudo nginx -t && sudo systemctl reload nginx
 ```bash
 # 添加 deb 源
 echo "deb [signed-by=/etc/apt/trusted.gpg.d/my-repo.asc] https://repo.example.com/ bookworm main" | \
-    sudo tee /etc/apt/sources.list.d/myrepo.list
+ sudo tee /etc/apt/sources.list.d/myrepo.list
 
 sudo apt update
 sudo apt install myapp
@@ -668,8 +668,8 @@ sudo apt install myapp
 # lintian — Debian 包质量检查
 sudo apt install lintian
 lintian myapp_1.0.0-1_amd64.deb
-lintian -i myapp_1.0.0-1_amd64.deb          # 带详细说明
-lintian -EviIL +pedantic myapp_1.0.0-1_amd64.deb  # 最严格
+lintian -i myapp_1.0.0-1_amd64.deb # 带详细说明
+lintian -EviIL +pedantic myapp_1.0.0-1_amd64.deb # 最严格
 
 # piuparts — 安装/升级/删除测试
 sudo apt install piuparts
@@ -687,11 +687,11 @@ sbuild -d bookworm myapp_1.0.0-1.dsc
 
 # devscripts — 打包辅助脚本集
 sudo apt install devscripts
-dch -i                    # 编辑 changelog
-uscan                     # 扫描上游新版本
-debuild                   # 构建包
-dget                      # 下载源码包
-what-patch                # 分析补丁
+dch -i # 编辑 changelog
+uscan # 扫描上游新版本
+debuild # 构建包
+dget # 下载源码包
+what-patch # 分析补丁
 ```
 
 ---

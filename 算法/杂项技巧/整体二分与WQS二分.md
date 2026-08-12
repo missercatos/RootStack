@@ -8,15 +8,15 @@
 
 ```cpp
 void solve(int l, int r, vector<Query> q) {
-  if (l == r) { for (auto &x : q) ans[x.id] = val[l]; return; }
-  int mid = (l + r) >> 1;
-  vector<Query> q1, q2;
-  int t = check(l, mid);  // 小于等于 mid 的元素个数
-  for (auto &x : q) {
-    if (x.k <= t) q1.push_back(x);
-    else x.k -= t, q2.push_back(x);
-  }
-  solve(l, mid, q1); solve(mid + 1, r, q2);
+ if (l == r) { for (auto &x : q) ans[x.id] = val[l]; return; }
+ int mid = (l + r) >> 1;
+ vector<Query> q1, q2;
+ int t = check(l, mid); // 小于等于 mid 的元素个数
+ for (auto &x : q) {
+ if (x.k <= t) q1.push_back(x);
+ else x.k -= t, q2.push_back(x);
+ }
+ solve(l, mid, q1); solve(mid + 1, r, q2);
 }
 ```
 
@@ -34,34 +34,34 @@ WQS 二分（带权二分）用于解决**恰好选 $k$ 个**的凸优化问题�
 
 ```cpp
 struct Opt {
-  int x, y, k, type, id;
+ int x, y, k, type, id;
 } q[N], q1[N], q2[N];
 
 void solve(int l, int r, int L, int R) {
-  if (l > r || L > R) return;
-  if (l == r) {
-    for (int i = L; i <= R; i++)
-      if (q[i].type == 1) ans[q[i].id] = l;
-    return;
-  }
-  int m = (l + r) >> 1, c1 = 0, c2 = 0;
-  for (int i = L; i <= R; i++) {
-    if (q[i].type == 1) {
-      int t = query(q[i].y) - query(q[i].x - 1);
-      if (q[i].k <= t) q1[++c1] = q[i];
-      else q[i].k -= t, q2[++c2] = q[i];
-    } else if (q[i].y <= m) {
-      add(q[i].x, q[i].k), q1[++c1] = q[i];
-    } else {
-      q2[++c2] = q[i];
-    }
-  }
-  for (int i = 1; i <= c1; i++)
-    if (q1[i].type == 0) add(q1[i].x, -q1[i].k);
-  for (int i = 1; i <= c1; i++) q[L + i - 1] = q1[i];
-  for (int i = 1; i <= c2; i++) q[L + c1 + i - 1] = q2[i];
-  solve(l, m, L, L + c1 - 1);
-  solve(m + 1, r, L + c1, R);
+ if (l > r || L > R) return;
+ if (l == r) {
+ for (int i = L; i <= R; i++)
+ if (q[i].type == 1) ans[q[i].id] = l;
+ return;
+ }
+ int m = (l + r) >> 1, c1 = 0, c2 = 0;
+ for (int i = L; i <= R; i++) {
+ if (q[i].type == 1) {
+ int t = query(q[i].y) - query(q[i].x - 1);
+ if (q[i].k <= t) q1[++c1] = q[i];
+ else q[i].k -= t, q2[++c2] = q[i];
+ } else if (q[i].y <= m) {
+ add(q[i].x, q[i].k), q1[++c1] = q[i];
+ } else {
+ q2[++c2] = q[i];
+ }
+ }
+ for (int i = 1; i <= c1; i++)
+ if (q1[i].type == 0) add(q1[i].x, -q1[i].k);
+ for (int i = 1; i <= c1; i++) q[L + i - 1] = q1[i];
+ for (int i = 1; i <= c2; i++) q[L + c1 + i - 1] = q2[i];
+ solve(l, m, L, L + c1 - 1);
+ solve(m + 1, r, L + c1, R);
 }
 ```
 

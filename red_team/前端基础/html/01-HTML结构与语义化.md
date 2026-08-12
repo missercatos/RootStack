@@ -27,18 +27,18 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
-  <title>页面标题</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="app.js" defer></script>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
+ <title>页面标题</title>
+ <link rel="stylesheet" href="style.css">
+ <script src="app.js" defer></script>
 </head>
 <body>
-  <div id="app">
-    <h1>Hello World</h1>
-    <p>这是一个段落</p>
-  </div>
+ <div id="app">
+ <h1>Hello World</h1>
+ <p>这是一个段落</p>
+ </div>
 </body>
 </html>
 ```
@@ -138,8 +138,8 @@
 
 ```
 HTML ──→ DOM Tree ──┐
-                      ├──→ Render Tree ──→ Layout ──→ Paint
-CSS  ──→ CSSOM Tree ──┘
+ ├──→ Render Tree ──→ Layout ──→ Paint
+CSS ──→ CSSOM Tree ──┘
 ```
 
 红队核心知识点：

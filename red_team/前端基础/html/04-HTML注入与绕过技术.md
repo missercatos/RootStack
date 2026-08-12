@@ -154,20 +154,20 @@ javascript:alert(1) onclick=alert(2)
 ### HTML实体编码
 
 ```
-字符  实体名        实体编号
-<     &lt;          &#60;
->     &gt;          &#62;
-"     &quot;        &#34;
-'     &apos;        &#39;
-&     &amp;         &#38;
-`     &DiacriticalGrave;  &#96;
+字符 实体名 实体编号
+< &lt; &#60;
+> &gt; &#62;
+" &quot; &#34;
+' &apos; &#39;
+& &amp; &#38;
+` &DiacriticalGrave; &#96;
 ```
 
 ### URL编码
 
 ```
 # 在href/src等URL属性中
-<javascript:alert(1)>   →   URL编码 →  %6A%61%76%61%73%63%72...
+<javascript:alert(1)> → URL编码 → %6A%61%76%61%73%63%72...
 # 注意：javascript: 部分编码后，浏览器仍可能解码后执行
 ```
 
@@ -280,7 +280,7 @@ DOMPurify是业界标准的客户端HTML净化库，但历史上被绕过多次�
 绕过：<svg/onload=...>, <details open ontoggle=...>
 编码：\x3cscript\x3e, &#60;script&#62;
 大小写：<ScRiPt>
-空格替换：<img/onerror=...>  (HTML5允许)
+空格替换：<img/onerror=...> (HTML5允许)
 ```
 
 ## 七、WAF层面的HTML绕过

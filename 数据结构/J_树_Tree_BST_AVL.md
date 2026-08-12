@@ -11,13 +11,13 @@
 ### 术语体系
 
 ```
-          [Root 深度=0]                ← 层 0
-         /            \
-    [A 深度=1]    [B 深度=1]          ← 层 1
-    /      \           \
- [C d=2] [D d=2]    [E d=2]          ← 层 2
- /                          \
-[F d=3]                  [G d=3]      ← 层 3 (叶子)
+ [Root 深度=0] ← 层 0
+ / \
+ [A 深度=1] [B 深度=1] ← 层 1
+ / \ \
+ [C d=2] [D d=2] [E d=2] ← 层 2
+ / \
+[F d=3] [G d=3] ← 层 3 (叶子)
 
 节点 F 的高度 = 0 (叶子), 节点 A 的高度 = 2, 树的高度 = 3
 节点 F 的深度 = 3 (从根起的边数)
@@ -36,19 +36,19 @@
 
 ```mermaid
 graph TD
-    subgraph "某棵子树"
-        ROOT["根"] --> L["左子树"]
-        ROOT --> R["右子树"]
-    end
-    subgraph "前序: 根→左→右"
-        P1["1. 访问根"] --> P2["2. 递归遍历左子树"] --> P3["3. 递归遍历右子树"]
-    end
-    subgraph "中序: 左→根→右"
-        I1["1. 递归遍历左子树"] --> I2["2. 访问根"] --> I3["3. 递归遍历右子树"]
-    end
-    subgraph "后序: 左→右→根"
-        O1["1. 递归遍历左子树"] --> O2["2. 递归遍历右子树"] --> O3["3. 访问根"]
-    end
+ subgraph "某棵子树"
+ ROOT["根"] --> L["左子树"]
+ ROOT --> R["右子树"]
+ end
+ subgraph "前序: 根→左→右"
+ P1["1. 访问根"] --> P2["2. 递归遍历左子树"] --> P3["3. 递归遍历右子树"]
+ end
+ subgraph "中序: 左→根→右"
+ I1["1. 递归遍历左子树"] --> I2["2. 访问根"] --> I3["3. 递归遍历右子树"]
+ end
+ subgraph "后序: 左→右→根"
+ O1["1. 递归遍历左子树"] --> O2["2. 递归遍历右子树"] --> O3["3. 访问根"]
+ end
 ```
 
 | 遍历方式 | 顺序 | 典型应用 |
@@ -66,19 +66,19 @@ BST 通过有序性约束将查找从 $O(n)$ 加速到 $O(\log n)$（平衡情�
 
 ```
 性质：对于任意节点 X，
-  左子树中的所有节点值 < X 的值 < 右子树中的所有节点值
+ 左子树中的所有节点值 < X 的值 < 右子树中的所有节点值
 ```
 
 ```mermaid
 graph TD
-    ROOT["8"] --> L["3"]
-    ROOT --> R["10"]
-    L --> LL["1"]
-    L --> LR["6"]
-    LR --> LRL["4"]
-    LR --> LRR["7"]
-    R --> RR["14"]
-    RR --> RRL["13"]
+ ROOT["8"] --> L["3"]
+ ROOT --> R["10"]
+ L --> LL["1"]
+ L --> LR["6"]
+ LR --> LRL["4"]
+ LR --> LRR["7"]
+ R --> RR["14"]
+ RR --> RRL["13"]
 ```
 
 中序遍历这棵 BST：1 → 3 → 4 → 6 → 7 → 8 → 10 → 13 → 14。即升序输出。
@@ -95,17 +95,17 @@ graph TD
 
 ```mermaid
 graph TD
-    subgraph "情况1: 删除叶子节点"
-        LEAF["5 → 删除 5"] --> HEALTHY["直接删除, 父节点的 left/right 置 NULL"]
-    end
-    subgraph "情况2: 单子节点"
-        ONE["删除 3, 它有子节点 4"] --> REPLACE["用节点 4 代替节点 3 在父节点中的位置"]
-    end
-    subgraph "情况3: 双子节点"
-        TWO["删除 8, 它有左/右子树"] --> FIND["找到中序后继（右子树的最小值）= 10"]
-        FIND --> COPY["将 10 的值复制到 8 的位置"]
-        COPY --> DEL10["删除值 10 的原节点（情况1或2）"]
-    end
+ subgraph "情况1: 删除叶子节点"
+ LEAF["5 → 删除 5"] --> HEALTHY["直接删除, 父节点的 left/right 置 NULL"]
+ end
+ subgraph "情况2: 单子节点"
+ ONE["删除 3, 它有子节点 4"] --> REPLACE["用节点 4 代替节点 3 在父节点中的位置"]
+ end
+ subgraph "情况3: 双子节点"
+ TWO["删除 8, 它有左/右子树"] --> FIND["找到中序后继（右子树的最小值）= 10"]
+ FIND --> COPY["将 10 的值复制到 8 的位置"]
+ COPY --> DEL10["删除值 10 的原节点（情况1或2）"]
+ end
 ```
 
 中序后继是 BST 中 key 排序下"正好比当前节点大的下一个节点"。选择它替代被删节点，可以保证 BST 性质完全保持不变——所有左子树的值 < 后继的值 < 所有右子树的值。
@@ -139,24 +139,24 @@ $$
 
 ```mermaid
 graph TD
-    subgraph "LL — 右旋"
-        LL_BEFORE["节点 X (BF=2)<br/>  /<br/> Y (BF=1)<br/> /<br/>Z<br/>失衡: 左子树的左子树太重"]
-        LL_BEFORE -->|"右旋(X)"| LL_AFTER["Y<br/>/<br/>Z  X<br/>平衡恢复"]
-    end
-    subgraph "RR — 左旋"
-        RR_BEFORE["节点 X (BF=-2)<br/>    \\<br/>    Y (BF=-1)<br/>     \\<br/>     Z<br/>失衡: 右子树的右子树太重"]
-        RR_BEFORE -->|"左旋(X)"| RR_AFTER["Y<br/>/<br/>X  Z<br/>平衡恢复"]
-    end
-    subgraph "LR — 先左旋后右旋"
-        LR_BEFORE["节点 X (BF=2)<br/>  /<br/> Y (BF=-1)<br/>  \\<br/>  Z<br/>失衡: 左子树的右子树太重"]
-        LR_BEFORE -->|"左旋(Y) → LL"| LR_MID["X (BF=2)<br/>  /<br/> Z<br/> /<br/>Y<br/>变成 LL 情形"]
-        LR_MID -->|"右旋(X)"| LR_AFTER["Z<br/>/<br/>Y  X<br/>平衡恢复"]
-    end
-    subgraph "RL — 先右旋后左旋"
-        RL_BEFORE["节点 X (BF=-2)<br/>    \\<br/>    Y (BF=1)<br/>   /<br/>  Z<br/>失衡: 右子树的左子树太重"]
-        RL_BEFORE -->|"右旋(Y) → RR"| RL_MID["X (BF=-2)<br/>    \\<br/>    Z<br/>     \\<br/>     Y<br/>变成 RR 情形"]
-        RL_MID -->|"左旋(X)"| RL_AFTER["Z<br/>/<br/>X  Y<br/>平衡恢复"]
-    end
+ subgraph "LL — 右旋"
+ LL_BEFORE["节点 X (BF=2)<br/> /<br/> Y (BF=1)<br/> /<br/>Z<br/>失衡: 左子树的左子树太重"]
+ LL_BEFORE -->|"右旋(X)"| LL_AFTER["Y<br/>/<br/>Z X<br/>平衡恢复"]
+ end
+ subgraph "RR — 左旋"
+ RR_BEFORE["节点 X (BF=-2)<br/> \\<br/> Y (BF=-1)<br/> \\<br/> Z<br/>失衡: 右子树的右子树太重"]
+ RR_BEFORE -->|"左旋(X)"| RR_AFTER["Y<br/>/<br/>X Z<br/>平衡恢复"]
+ end
+ subgraph "LR — 先左旋后右旋"
+ LR_BEFORE["节点 X (BF=2)<br/> /<br/> Y (BF=-1)<br/> \\<br/> Z<br/>失衡: 左子树的右子树太重"]
+ LR_BEFORE -->|"左旋(Y) → LL"| LR_MID["X (BF=2)<br/> /<br/> Z<br/> /<br/>Y<br/>变成 LL 情形"]
+ LR_MID -->|"右旋(X)"| LR_AFTER["Z<br/>/<br/>Y X<br/>平衡恢复"]
+ end
+ subgraph "RL — 先右旋后左旋"
+ RL_BEFORE["节点 X (BF=-2)<br/> \\<br/> Y (BF=1)<br/> /<br/> Z<br/>失衡: 右子树的左子树太重"]
+ RL_BEFORE -->|"右旋(Y) → RR"| RL_MID["X (BF=-2)<br/> \\<br/> Z<br/> \\<br/> Y<br/>变成 RR 情形"]
+ RL_MID -->|"左旋(X)"| RL_AFTER["Z<br/>/<br/>X Y<br/>平衡恢复"]
+ end
 ```
 
 **旋转的原理**——以 LL 右旋为例：将失衡节点的左子节点"提上来"成为新的子树根，原根成为新根的右子节点。旋转保持了 BST 性质（中序遍历不变），同时将左子树的高度降低了 1，右子树的高度增加了 1——左右高度从不平衡的 2 恢复到 0 或 1。
@@ -183,13 +183,13 @@ $$
 
 ```
 表达式: (3 + 4) * (5 - 2)
-表达式树:      [*]
-             /     \
-          [+]       [-]
-         /   \     /   \
-        3     4   5     2
+表达式树: [*]
+ / \
+ [+] [-]
+ / \ / \
+ 3 4 5 2
 
-后序遍历: 3 4 + 5 2 - *  → 后缀表达式 → 求值结果 21
+后序遍历: 3 4 + 5 2 - * → 后缀表达式 → 求值结果 21
 ```
 
 **线索二叉树**（Threaded Binary Tree）：将空的 left/right 指针改为指向中序的前驱/后继的线索（thread）。遍历时无需递归或栈——从第一个节点出发，沿线索可以连续访问中序后继。内存开销为每个节点 2 bit（标记 left/right 是真指针还是线索）。线索二叉树将 $O(n)$ 空间的遍历栈需求压缩到常数空间。
@@ -206,78 +206,78 @@ $$
 #include <stdlib.h>
 
 typedef struct BSTNode {
-    int data;
-    struct BSTNode* left;
-    struct BSTNode* right;
+ int data;
+ struct BSTNode* left;
+ struct BSTNode* right;
 } BSTNode;
 
 BSTNode* bst_insert(BSTNode* root, int value) {
-    if (!root) {
-        BSTNode* node = malloc(sizeof(BSTNode));
-        node->data = value;
-        node->left = node->right = NULL;
-        return node;
-    }
-    if (value < root->data)
-        root->left = bst_insert(root->left, value);
-    else if (value > root->data)
-        root->right = bst_insert(root->right, value);
-    return root;
+ if (!root) {
+ BSTNode* node = malloc(sizeof(BSTNode));
+ node->data = value;
+ node->left = node->right = NULL;
+ return node;
+ }
+ if (value < root->data)
+ root->left = bst_insert(root->left, value);
+ else if (value > root->data)
+ root->right = bst_insert(root->right, value);
+ return root;
 }
 
 BSTNode* bst_search(BSTNode* root, int value) {
-    if (!root || root->data == value) return root;
-    if (value < root->data) return bst_search(root->left, value);
-    return bst_search(root->right, value);
+ if (!root || root->data == value) return root;
+ if (value < root->data) return bst_search(root->left, value);
+ return bst_search(root->right, value);
 }
 
 // 删除节点: 返回新的子树根
 BSTNode* bst_delete(BSTNode* root, int value) {
-    if (!root) return NULL;
-    if (value < root->data)
-        root->left = bst_delete(root->left, value);
-    else if (value > root->data)
-        root->right = bst_delete(root->right, value);
-    else {
-        // 情况1/2: 叶子或单子节点
-        if (!root->left) { BSTNode* tmp = root->right; free(root); return tmp; }
-        if (!root->right) { BSTNode* tmp = root->left; free(root); return tmp; }
-        // 情况3: 双子节点 — 找中序后继
-        BSTNode* succ = root->right;
-        while (succ->left) succ = succ->left;
-        root->data = succ->data;                        // 替换值
-        root->right = bst_delete(root->right, succ->data); // 删除后继
-    }
-    return root;
+ if (!root) return NULL;
+ if (value < root->data)
+ root->left = bst_delete(root->left, value);
+ else if (value > root->data)
+ root->right = bst_delete(root->right, value);
+ else {
+ // 情况1/2: 叶子或单子节点
+ if (!root->left) { BSTNode* tmp = root->right; free(root); return tmp; }
+ if (!root->right) { BSTNode* tmp = root->left; free(root); return tmp; }
+ // 情况3: 双子节点 — 找中序后继
+ BSTNode* succ = root->right;
+ while (succ->left) succ = succ->left;
+ root->data = succ->data; // 替换值
+ root->right = bst_delete(root->right, succ->data); // 删除后继
+ }
+ return root;
 }
 
 void bst_destroy(BSTNode* root) {
-    if (!root) return;
-    bst_destroy(root->left);
-    bst_destroy(root->right);
-    free(root);
+ if (!root) return;
+ bst_destroy(root->left);
+ bst_destroy(root->right);
+ free(root);
 }
 
 // 树的三种递归遍历
 void preorder(BSTNode* root) {
-    if (!root) return;
-    printf("%d ", root->data);
-    preorder(root->left);
-    preorder(root->right);
+ if (!root) return;
+ printf("%d ", root->data);
+ preorder(root->left);
+ preorder(root->right);
 }
 
 void inorder(BSTNode* root) {
-    if (!root) return;
-    inorder(root->left);
-    printf("%d ", root->data);
-    inorder(root->right);
+ if (!root) return;
+ inorder(root->left);
+ printf("%d ", root->data);
+ inorder(root->right);
 }
 
 void postorder(BSTNode* root) {
-    if (!root) return;
-    postorder(root->left);
-    postorder(root->right);
-    printf("%d ", root->data);
+ if (!root) return;
+ postorder(root->left);
+ postorder(root->right);
+ printf("%d ", root->data);
 }
 ```
 
@@ -285,10 +285,10 @@ void postorder(BSTNode* root) {
 
 ```c
 typedef struct AVLNode {
-    int data;
-    int height;            // 该节点子树的高度 (叶子=0)
-    struct AVLNode* left;
-    struct AVLNode* right;
+ int data;
+ int height; // 该节点子树的高度 (叶子=0)
+ struct AVLNode* left;
+ struct AVLNode* right;
 } AVLNode;
 
 static int height(AVLNode* n) { return n ? n->height : -1; }
@@ -297,60 +297,60 @@ static int bf(AVLNode* n) { return height(n->left) - height(n->right); }
 
 // 右旋
 static AVLNode* rotate_right(AVLNode* y) {
-    AVLNode* x = y->left;
-    AVLNode* T2 = x->right;
-    x->right = y;
-    y->left = T2;
-    y->height = max(height(y->left), height(y->right)) + 1;
-    x->height = max(height(x->left), height(x->right)) + 1;
-    return x;   // 新根
+ AVLNode* x = y->left;
+ AVLNode* T2 = x->right;
+ x->right = y;
+ y->left = T2;
+ y->height = max(height(y->left), height(y->right)) + 1;
+ x->height = max(height(x->left), height(x->right)) + 1;
+ return x; // 新根
 }
 
 // 左旋
 static AVLNode* rotate_left(AVLNode* x) {
-    AVLNode* y = x->right;
-    AVLNode* T2 = y->left;
-    y->left = x;
-    x->right = T2;
-    x->height = max(height(x->left), height(x->right)) + 1;
-    y->height = max(height(y->left), height(y->right)) + 1;
-    return y;
+ AVLNode* y = x->right;
+ AVLNode* T2 = y->left;
+ y->left = x;
+ x->right = T2;
+ x->height = max(height(x->left), height(x->right)) + 1;
+ y->height = max(height(y->left), height(y->right)) + 1;
+ return y;
 }
 
 AVLNode* avl_insert(AVLNode* root, int value) {
-    if (!root) {
-        AVLNode* node = malloc(sizeof(AVLNode));
-        node->data = value; node->height = 0;
-        node->left = node->right = NULL;
-        return node;
-    }
-    if (value < root->data)
-        root->left = avl_insert(root->left, value);
-    else if (value > root->data)
-        root->right = avl_insert(root->right, value);
-    else
-        return root;  // 重复值不插入
+ if (!root) {
+ AVLNode* node = malloc(sizeof(AVLNode));
+ node->data = value; node->height = 0;
+ node->left = node->right = NULL;
+ return node;
+ }
+ if (value < root->data)
+ root->left = avl_insert(root->left, value);
+ else if (value > root->data)
+ root->right = avl_insert(root->right, value);
+ else
+ return root; // 重复值不插入
 
-    root->height = max(height(root->left), height(root->right)) + 1;
-    int balance = bf(root);
+ root->height = max(height(root->left), height(root->right)) + 1;
+ int balance = bf(root);
 
-    // LL: 左子树的左子树过重
-    if (balance > 1 && value < root->left->data)
-        return rotate_right(root);
-    // RR: 右子树的右子树过重
-    if (balance < -1 && value > root->right->data)
-        return rotate_left(root);
-    // LR: 左子树的右子树过重
-    if (balance > 1 && value > root->left->data) {
-        root->left = rotate_left(root->left);
-        return rotate_right(root);
-    }
-    // RL: 右子树的左子树过重
-    if (balance < -1 && value < root->right->data) {
-        root->right = rotate_right(root->right);
-        return rotate_left(root);
-    }
-    return root;
+ // LL: 左子树的左子树过重
+ if (balance > 1 && value < root->left->data)
+ return rotate_right(root);
+ // RR: 右子树的右子树过重
+ if (balance < -1 && value > root->right->data)
+ return rotate_left(root);
+ // LR: 左子树的右子树过重
+ if (balance > 1 && value > root->left->data) {
+ root->left = rotate_left(root->left);
+ return rotate_right(root);
+ }
+ // RL: 右子树的左子树过重
+ if (balance < -1 && value < root->right->data) {
+ root->right = rotate_right(root->right);
+ return rotate_left(root);
+ }
+ return root;
 }
 ```
 

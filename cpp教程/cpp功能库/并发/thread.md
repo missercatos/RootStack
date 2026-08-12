@@ -24,11 +24,11 @@ C++11 将多线程标准化后，不再需要依赖 POSIX `pthread` 或 Windows 
 ## 线程生命周期
 
 ```
-thread 创建  ──→  运行中  ──→  join()    主线程等待子线程结束
-                    │
-                    ├─→  detach()  子线程独立运行（危险：访问已销毁变量）
-                    │
-                    └─→  析构（未 join 也未 detach）→ terminate() 崩溃！
+thread 创建 ──→ 运行中 ──→ join() 主线程等待子线程结束
+ │
+ ├─→ detach() 子线程独立运行（危险：访问已销毁变量）
+ │
+ └─→ 析构（未 join 也未 detach）→ terminate() 崩溃！
 ```
 
 ## 典型用法
@@ -37,66 +37,66 @@ thread 创建  ──→  运行中  ──→  join()    主线程等待子线�
 
 ```
 FUNCTION demo_thread:
-    t = THREAD(LAMBDA:
-        PRINT "线程", THIS_THREAD::GET_ID(), "工作中"
-        THIS_THREAD::SLEEP_FOR(500ms)
-    )
+ t = THREAD(LAMBDA:
+ PRINT "线程", THIS_THREAD::GET_ID(), "工作中"
+ THIS_THREAD::SLEEP_FOR(500ms)
+ )
 
-    PRINT "主线程继续执行"
-    t.JOIN()                                    // 等待子线程结束
-    PRINT "子线程已结束"
+ PRINT "主线程继续执行"
+ t.JOIN() // 等待子线程结束
+ PRINT "子线程已结束"
 ```
 
 ### jthread —— 自动 join + 可中断
 
 ```
 FUNCTION demo_jthread:
-    jt = JTHREAD(LAMBDA(token):
-        WHILE NOT token.STOP_REQUESTED():
-            PRINT "处理中..."
-            THIS_THREAD::SLEEP_FOR(100ms)
-        END WHILE
-        PRINT "收到停止请求，退出"
-    )
+ jt = JTHREAD(LAMBDA(token):
+ WHILE NOT token.STOP_REQUESTED():
+ PRINT "处理中..."
+ THIS_THREAD::SLEEP_FOR(100ms)
+ END WHILE
+ PRINT "收到停止请求，退出"
+ )
 
-    THIS_THREAD::SLEEP_FOR(1s)
-    jt.REQUEST_STOP()                           // 请求停止
-    // jt 析构时自动 join，无需手动调用
+ THIS_THREAD::SLEEP_FOR(1s)
+ jt.REQUEST_STOP() // 请求停止
+ // jt 析构时自动 join，无需手动调用
 ```
 
 ### 创建多个工作线程
 
 ```
 FUNCTION demo_multi_thread:
-    NUM = THREAD::HARDWARE_CONCURRENCY()        // 查询核心数
-    threads = VECTOR<THREAD>()
+ NUM = THREAD::HARDWARE_CONCURRENCY() // 查询核心数
+ threads = VECTOR<THREAD>()
 
-    FOR i = 0 TO NUM - 1:
-        threads.PUSH(THREAD(LAMBDA(id = i):
-            PRINT "Worker", id, "started"
-            DO_WORK(id)
-        ))
-    END FOR
+ FOR i = 0 TO NUM - 1:
+ threads.PUSH(THREAD(LAMBDA(id = i):
+ PRINT "Worker", id, "started"
+ DO_WORK(id)
+ ))
+ END FOR
 
-    FOR t IN threads:
-        t.JOIN()                                // 等待所有线程完成
-    END FOR
+ FOR t IN threads:
+ t.JOIN() // 等待所有线程完成
+ END FOR
 ```
 
 ### 线程局部存储
 
 ```
-thread_local counter = 0                        // 每个线程独立一份
+thread_local counter = 0 // 每个线程独立一份
 
 FUNCTION demo_tls:
-    t1 = THREAD(LAMBDA:
-        counter = counter + 1                   // t1 的 counter = 1
-    )
-    t2 = THREAD(LAMBDA:
-        counter = counter + 2                   // t2 的 counter = 2
-    )
-    t1.JOIN(); t2.JOIN()
-    // 主线程的 counter 仍是 0，互不影响
+ t1 = THREAD(LAMBDA:
+ counter = counter + 1 // t1 的 counter = 1
+ )
+ t2 = THREAD(LAMBDA:
+ counter = counter + 2 // t2 的 counter = 2
+ )
+ t1.JOIN(); t2.JOIN()
+ // 主线程的 counter 仍是 0，互不影响
 ```
 
 ---

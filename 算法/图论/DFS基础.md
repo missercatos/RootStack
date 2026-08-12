@@ -14,14 +14,14 @@ DFS 最显著的特征在于其 **递归调用自身**．同时与 BFS 类似，
 
 具体地说，DFS 大致结构如下：
 
-    DFS(v) // v 可以是图中的一个顶点，也可以是抽象的概念，如 dp 状态等．
-      在 v 上打访问标记
-      for u in v 的相邻节点
-        if u 没有打过访问标记 then
-          DFS(u)
-        end
-      end
-    end
+ DFS(v) // v 可以是图中的一个顶点，也可以是抽象的概念，如 dp 状态等．
+ 在 v 上打访问标记
+ for u in v 的相邻节点
+ if u 没有打过访问标记 then
+ DFS(u)
+ end
+ end
+ end
 
 以上代码只包含了 DFS 必需的主要结构．实际的 DFS 会在以上代码基础上加入一些代码，利用 DFS 性质进行其他操作．
 
@@ -31,8 +31,8 @@ DFS 最显著的特征在于其 **递归调用自身**．同时与 BFS 类似，
 
 > 备注：目前大部分算法竞赛（包括 NOIP、大部分省选以及 CCF 举办的各项赛事）都支持 **无限栈空间**，即：栈空间不单独限制，但总内存空间仍然受题面限制．但大部分操作系统会对栈空间做额外的限制，因此在本地调试时需要一些方式来取消栈空间限制．
 >
-> -   在 Windows 上，通常的方法是在 **编译选项** 中加入 `-Wl,--stack=1000000000`，表示将栈空间限制设置为 1000000000 字节．
-> -   在 Linux 上，通常的方法是在运行程序前 **在终端内** 执行 `ulimit -s unlimited`，表示栈空间无限．每个终端只需执行一次，对之后每次程序运行都有效．
+> - 在 Windows 上，通常的方法是在 **编译选项** 中加入 `-Wl,--stack=1000000000`，表示将栈空间限制设置为 1000000000 字节．
+> - 在 Linux 上，通常的方法是在运行程序前 **在终端内** 执行 `ulimit -s unlimited`，表示栈空间无限．每个终端只需执行一次，对之后每次程序运行都有效．
 
 ## 实现
 
@@ -41,49 +41,49 @@ DFS 最显著的特征在于其 **递归调用自身**．同时与 BFS 类似，
 DFS 可以使用 [栈（Stack）](../ds/stack.md) 为遍历中节点的暂存容器来实现；这与用 [队列（Queue）](../ds/queue.md) 实现的 BFS 形成高度对应．
 
 === "C++"
-    ```cpp
-    vector<vector<int>> adj;  // 邻接表
-    vector<bool> vis;         // 记录节点是否已经遍历
-    
-    void dfs(int s) {
-      stack<int> st;
-      st.push(s);
-      vis[s] = true;
-    
-      while (!st.empty()) {
-        int u = st.top();
-        st.pop();
-    
-        for (int v : adj[u]) {
-          if (!vis[v]) {
-            vis[v] = true;  // 确保栈里没有重复元素
-            st.push(v);
-          }
-        }
-      }
-    }
-    ```
+ ```cpp
+ vector<vector<int>> adj; // 邻接表
+ vector<bool> vis; // 记录节点是否已经遍历
+ 
+ void dfs(int s) {
+ stack<int> st;
+ st.push(s);
+ vis[s] = true;
+ 
+ while (!st.empty()) {
+ int u = st.top();
+ st.pop();
+ 
+ for (int v : adj[u]) {
+ if (!vis[v]) {
+ vis[v] = true; // 确保栈里没有重复元素
+ st.push(v);
+ }
+ }
+ }
+ }
+ ```
 
 === "Python"
-    ```python
-    # adj : List[List[int]] 邻接表
-    # vis : List[bool] 记录节点是否已经遍历
-    
-    
-    def dfs(s: int) -> None:
-        stack = [s]  # 用列表来模拟栈，把起点加入栈中
-        vis[s] = True  # 起点被遍历
-    
-        while stack:  # 当栈非空时继续执行
-            u = (
-                stack.pop()
-            )  # 拿取并丢弃掉最后一个元素（栈顶的元素），可以理解为走到u这个元素
-    
-            for v in adj[u]:  # 对于与u相邻的每个元素v
-                if not vis[v]:  # 如果v在此前没有走过
-                    vis[v] = True  # 确保栈里没有重复元素
-                    stack.append(v)  # 把v加入栈中
-    ```
+ ```python
+ # adj : List[List[int]] 邻接表
+ # vis : List[bool] 记录节点是否已经遍历
+ 
+ 
+ def dfs(s: int) -> None:
+ stack = [s] # 用列表来模拟栈，把起点加入栈中
+ vis[s] = True # 起点被遍历
+ 
+ while stack: # 当栈非空时继续执行
+ u = (
+ stack.pop()
+ ) # 拿取并丢弃掉最后一个元素（栈顶的元素），可以理解为走到u这个元素
+ 
+ for v in adj[u]: # 对于与u相邻的每个元素v
+ if not vis[v]: # 如果v在此前没有走过
+ vis[v] = True # 确保栈里没有重复元素
+ stack.append(v) # 把v加入栈中
+ ```
 
 ### 递归实现
 
@@ -92,66 +92,66 @@ DFS 可以使用 [栈（Stack）](../ds/stack.md) 为遍历中节点的暂存容
 以 [邻接表（Adjacency List）](./save.md#邻接表) 作为图的存储方式：
 
 === "C++"
-    ```cpp
-    vector<vector<int>> adj;  // 邻接表
-    vector<bool> vis;         // 记录节点是否已经遍历
-    
-    void dfs(const int u) {
-      vis[u] = true;
-      for (int v : adj[u])
-        if (!vis[v]) dfs(v)
-    }
-    ```
+ ```cpp
+ vector<vector<int>> adj; // 邻接表
+ vector<bool> vis; // 记录节点是否已经遍历
+ 
+ void dfs(const int u) {
+ vis[u] = true;
+ for (int v : adj[u])
+ if (!vis[v]) dfs(v)
+ }
+ ```
 
 === "Python"
-    ```python
-    # adj : List[List[int]] 邻接表
-    # vis : List[bool] 记录节点是否已经遍历
-    
-    
-    def dfs(u: int) -> None:
-        vis[u] = True
-        for v in adj[u]:
-            if not vis[v]:
-                dfs(v)
-    ```
+ ```python
+ # adj : List[List[int]] 邻接表
+ # vis : List[bool] 记录节点是否已经遍历
+ 
+ 
+ def dfs(u: int) -> None:
+ vis[u] = True
+ for v in adj[u]:
+ if not vis[v]:
+ dfs(v)
+ ```
 
 以 [链式前向星](./save.md#链式前向星) 为例：
 
 === "C++"
-    ```cpp
-    void dfs(int u) {
-      vis[u] = 1;
-      for (int i = head[u]; i; i = e[i].x) {
-        if (!vis[e[i].t]) {
-          dfs(v);
-        }
-      }
-    }
-    ```
+ ```cpp
+ void dfs(int u) {
+ vis[u] = 1;
+ for (int i = head[u]; i; i = e[i].x) {
+ if (!vis[e[i].t]) {
+ dfs(v);
+ }
+ }
+ }
+ ```
 
 === "Java"
-    ```Java
-    public void dfs(int u) {
-        vis[u] = true;
-        for (int i = head[u]; i != 0; i = e[i].x) {
-            if (!vis[e[i].t]) {
-                dfs(v);
-            }
-        }
-    }
-    ```
+ ```Java
+ public void dfs(int u) {
+ vis[u] = true;
+ for (int i = head[u]; i != 0; i = e[i].x) {
+ if (!vis[e[i].t]) {
+ dfs(v);
+ }
+ }
+ }
+ ```
 
 === "Python"
-    ```python
-    def dfs(u):
-        vis[u] = True
-        i = head[u]
-        while i:
-            if vis[e[i].t] == False:
-                dfs(v)
-            i = e[i].x
-    ```
+ ```python
+ def dfs(u):
+ vis[u] = True
+ i = head[u]
+ while i:
+ if vis[e[i].t] == False:
+ dfs(v)
+ i = e[i].x
+ ```
 
 ### DFS 序列
 

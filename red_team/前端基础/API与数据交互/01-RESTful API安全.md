@@ -16,12 +16,12 @@
 ### RESTful资源命名
 
 ```
-GET    /api/users           # 列表
-POST   /api/users           # 创建
-GET    /api/users/123       # 详情
-PUT    /api/users/123       # 全量更新
-PATCH  /api/users/123       # 部分更新
-DELETE /api/users/123       # 删除
+GET /api/users # 列表
+POST /api/users # 创建
+GET /api/users/123 # 详情
+PUT /api/users/123 # 全量更新
+PATCH /api/users/123 # 部分更新
+DELETE /api/users/123 # 删除
 ```
 
 ### API文档与发现
@@ -39,7 +39,7 @@ curl https://target.com/v3/api-docs
 /swagger-ui.html
 /docs
 /redoc
-/graphql  (GraphQL的内省查询)
+/graphql (GraphQL的内省查询)
 ```
 
 ## 二、API认证方式
@@ -64,15 +64,15 @@ curl https://target.com/v3/api-docs
 
 // 请求API时：
 fetch('/api/data', {
-  headers: { 'Authorization': `Bearer ${accessToken}` }
+ headers: { 'Authorization': `Bearer ${accessToken}` }
 });
 
 // Token过期后：
 fetch('/api/refresh', {
-  method: 'POST',
-  credentials: 'include',  // Refresh Token在HttpOnly Cookie中
+ method: 'POST',
+ credentials: 'include', // Refresh Token在HttpOnly Cookie中
 }).then(r => r.json())
-  .then(data => { accessToken = data.access_token; });
+ .then(data => { accessToken = data.access_token; });
 ```
 
 ## 三、API参数攻击
@@ -93,7 +93,7 @@ GET /api/user?id=123&id=456
 # .NET → 数组：123,456
 
 # 利用：绕过过滤器
-GET /api/admin?id=1&id=2  # 如果过滤器检查id=1但实际执行id=2
+GET /api/admin?id=1&id=2 # 如果过滤器检查id=1但实际执行id=2
 ```
 
 ### 参数类型混淆
@@ -103,11 +103,11 @@ GET /api/admin?id=1&id=2  # 如果过滤器检查id=1但实际执行id=2
 { "id": 123 }
 
 # 类型混淆payload
-{ "id": "123" }                 # string 代替 number
-{ "id": [123] }                 # array 代替 number
-{ "id": { "$gt": 0 } }         # MongoDB注入！
-{ "id": true }                  # boolean
-{ "id": null }                  # null
+{ "id": "123" } # string 代替 number
+{ "id": [123] } # array 代替 number
+{ "id": { "$gt": 0 } } # MongoDB注入！
+{ "id": true } # boolean
+{ "id": null } # null
 ```
 
 ### 深层参数注入
@@ -132,11 +132,11 @@ GET /api/admin?id=1&id=2  # 如果过滤器检查id=1但实际执行id=2
 
 ```
 # 用户A只能看到自己的订单
-GET /api/orders/1234  → 200 OK {order for user A}
+GET /api/orders/1234 → 200 OK {order for user A}
 
 # 但可以枚举其他用户的订单
-GET /api/orders/1235  → 200 OK {order for user B}  ← IDOR！
-GET /api/orders/1236  → 200 OK {order for user C}
+GET /api/orders/1235 → 200 OK {order for user B} ← IDOR！
+GET /api/orders/1236 → 200 OK {order for user C}
 ```
 
 ### IDOR测试方法
@@ -175,11 +175,11 @@ POST /api/register
 // 批量赋值攻击
 POST /api/register
 { 
-  "username": "newuser",
-  "password": "password123",
-  "role": "admin",         // ← 注入角色字段
-  "isVerified": true,      // ← 绕过邮箱验证
-  "balance": 999999        // ← 修改余额
+ "username": "newuser",
+ "password": "password123",
+ "role": "admin", // ← 注入角色字段
+ "isVerified": true, // ← 绕过邮箱验证
+ "balance": 999999 // ← 修改余额
 }
 ```
 
@@ -206,7 +206,7 @@ POST /api/profile
 
 # 3. 检查是否有非预期行为
 GET /api/profile
-{"name": "Alice", "email": "alice@example.com", "role": "admin"}  # ← 批量赋值成功！
+{"name": "Alice", "email": "alice@example.com", "role": "admin"} # ← 批量赋值成功！
 ```
 
 ## 六、API速率限制绕过
@@ -248,7 +248,7 @@ GET /api/users?page=2&per_page=1
 /api/v2/users (开发中，可能无权限检查)
 /api/users (默认路由，可能连到过期版本)
 /api/internal/users (内部API，可能绕过鉴权)
-/api/beta/users  (Beta版本，权限不完善)
+/api/beta/users (Beta版本，权限不完善)
 ```
 
 ### 常见版本路径
@@ -266,7 +266,7 @@ GET /api/users?page=2&per_page=1
 
 # 检测各版本的权限差异
 GET /api/v1/admin/users → 403 Forbidden
-GET /api/v2/admin/users → 200 OK  ← 新版本未配置权限！
+GET /api/v2/admin/users → 200 OK ← 新版本未配置权限！
 ```
 
 ## 八、红队视角总结

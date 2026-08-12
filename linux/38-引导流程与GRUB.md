@@ -8,18 +8,18 @@
 
 ```mermaid
 graph LR
-    A["固件<br/>BIOS/UEFI"] --> B["引导加载器<br/>GRUB/systemd-boot"]
-    B --> C["Linux 内核<br/>vmlinuz"]
-    C --> D["initramfs<br/>临时根文件系统"]
-    D --> E["init 进程<br/>systemd PI= 1"]
-    E --> F["target<br/>multi-user / graphical"]
+ A["固件<br/>BIOS/UEFI"] --> B["引导加载器<br/>GRUB/systemd-boot"]
+ B --> C["Linux 内核<br/>vmlinuz"]
+ C --> D["initramfs<br/>临时根文件系统"]
+ D --> E["init 进程<br/>systemd PI= 1"]
+ E --> F["target<br/>multi-user / graphical"]
 
-    style A fill:#e1f5fe,stroke:#333
-    style B fill:#b3e5fc,stroke:#333
-    style C fill:#fff9c4,stroke:#333
-    style D fill:#ffecb3,stroke:#333
-    style E fill:#c8e6c9,stroke:#333
-    style F fill:#e8f5e9,stroke:#333
+ style A fill:#e1f5fe,stroke:#333
+ style B fill:#b3e5fc,stroke:#333
+ style C fill:#fff9c4,stroke:#333
+ style D fill:#ffecb3,stroke:#333
+ style E fill:#c8e6c9,stroke:#333
+ style F fill:#e8f5e9,stroke:#333
 ```
 
 | 阶段 | 主要任务 | 成功标志 |
@@ -40,9 +40,9 @@ ls /sys/firmware/efi
 systemd-analyze
 # Startup finished in 3.2s (firmware) + 1.1s (loader) + 0.5s (kernel) + 4.2s (userspace) = 9.0s
 
-# firmware:  BIOS/UEFI 初始化
-# loader:    引导加载器阶段
-# kernel:    内核初始化阶段
+# firmware: BIOS/UEFI 初始化
+# loader: 引导加载器阶段
+# kernel: 内核初始化阶段
 # userspace: systemd 启动服务阶段
 ```
 
@@ -54,13 +54,13 @@ systemd-analyze
 
 ```mermaid
 graph TD
-    A[电源开启] --> B[CPU 执行 BIOS ROM]
-    B --> C[POST 加电自检]
-    C --> D[初始化 CPU/内存/显卡等硬件]
-    D --> E[根据启动顺序选择可启动设备]
-    E --> F[读取 MBR 前 512 字节]
-    F --> G[执行引导代码]
-    G --> H[跳转到 Bootloader]
+ A[电源开启] --> B[CPU 执行 BIOS ROM]
+ B --> C[POST 加电自检]
+ C --> D[初始化 CPU/内存/显卡等硬件]
+ D --> E[根据启动顺序选择可启动设备]
+ E --> F[读取 MBR 前 512 字节]
+ F --> G[执行引导代码]
+ G --> H[跳转到 Bootloader]
 ```
 
 BIOS 启动特点：
@@ -73,11 +73,11 @@ BIOS 启动特点：
 
 ```mermaid
 graph TD
-    A[电源开启] --> B[CPU 执行 UEFI 固件]
-    B --> C[初始化硬件]
-    C --> D[读取 NVRAM 启动条目]
-    D --> E[从 ESP 加载 .efi 文件]
-    E --> F[执行 Bootloader 或直接引导内核]
+ A[电源开启] --> B[CPU 执行 UEFI 固件]
+ B --> C[初始化硬件]
+ C --> D[读取 NVRAM 启动条目]
+ D --> E[从 ESP 加载 .efi 文件]
+ E --> F[执行 Bootloader 或直接引导内核]
 ```
 
 UEFI 启动特点：
@@ -96,8 +96,8 @@ mount | grep -i efi
 efibootmgr -v
 # BootCurrent: 0001
 # BootOrder: 0001,0000
-# Boot0000* Fedora   HD(1,GPT,...)/File(\EFI\fedora\shimx64.efi)
-# Boot0001* Debian    HD(1,GPT,...)/File(\EFI\debian\grubx64.efi)
+# Boot0000* Fedora HD(1,GPT,...)/File(\EFI\fedora\shimx64.efi)
+# Boot0001* Debian HD(1,GPT,...)/File(\EFI\debian\grubx64.efi)
 ```
 
 ### 各发行版 ESP 挂载惯用路径
@@ -118,16 +118,16 @@ GRUB（GRand Unified Bootloader）是应用最广泛的 Linux 引导加载器，
 ### GRUB 配置文件体系
 
 ```
-/etc/default/grub              ← 主配置文件（用户编辑此文件）
-     │
-     └── grub-mkconfig ──→ /boot/grub/grub.cfg  ← 自动生成的最终配置
-     │
-/etc/grub.d/                   ← 配置脚本片段目录
-     ├── 00_header        # 标题和全局设置
-     ├── 10_linux         # 检测 Linux 内核
-     ├── 20_memtest86+    # 内存测试条目
-     ├── 30_os-prober     # 检测其他操作系统
-     └── 40_custom        # 用户自定义条目
+/etc/default/grub ← 主配置文件（用户编辑此文件）
+ │
+ └── grub-mkconfig ──→ /boot/grub/grub.cfg ← 自动生成的最终配置
+ │
+/etc/grub.d/ ← 配置脚本片段目录
+ ├── 00_header # 标题和全局设置
+ ├── 10_linux # 检测 Linux 内核
+ ├── 20_memtest86+ # 内存测试条目
+ ├── 30_os-prober # 检测其他操作系统
+ └── 40_custom # 用户自定义条目
 ```
 
 **`/etc/default/grub` 关键配置项**：
@@ -182,8 +182,8 @@ sudo update-grub
 # 等效：sudo grub-mkconfig -o /boot/grub/grub.cfg
 
 # Fedora/RHEL（UEFI 和 BIOS 路径不同）：
-sudo grub2-mkconfig -o /boot/grub2/grub.cfg              # BIOS
-sudo grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg     # UEFI
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg # BIOS
+sudo grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg # UEFI
 
 # Arch:
 sudo grub-mkconfig -o /boot/grub/grub.cfg
@@ -201,7 +201,7 @@ ls -lh /boot/vmlinuz-*
 # Debian/Ubuntu:
 sudo apt install linux-image-amd64 linux-image-cloud-amd64
 # Fedora:
-sudo dnf install kernel kernel-lt  # 来自 ELRepo
+sudo dnf install kernel kernel-lt # 来自 ELRepo
 # Arch:
 sudo pacman -S linux linux-lts
 ```
@@ -210,11 +210,11 @@ sudo pacman -S linux linux-lts
 
 ```bash
 # /etc/default/grub
-GRUB_DEFAULT=saved            # 记住上次选择
+GRUB_DEFAULT=saved # 记住上次选择
 GRUB_SAVEDEFAULT=true
 
 # 或指定子菜单中的条目：
-# GRUB_DEFAULT="1>2"          # 第二个顶级菜单下的第三个条目
+# GRUB_DEFAULT="1>2" # 第二个顶级菜单下的第三个条目
 ```
 
 ### GRUB 自定义菜单条目
@@ -227,12 +227,12 @@ exec tail -n +3 $0
 # This file provides an easy way to add custom menu entries.
 
 menuentry "Custom Linux Kernel" {
-    insmod gzio
-    insmod part_gpt
-    insmod ext2
-    search --no-floppy --fs-uuid --set=root 12345678-abcd-...
-    linux /boot/vmlinuz-custom root=UUID=12345678-abcd-... rw
-    initrd /boot/initramfs-custom.img
+ insmod gzio
+ insmod part_gpt
+ insmod ext2
+ search --no-floppy --fs-uuid --set=root 12345678-abcd-...
+ linux /boot/vmlinuz-custom root=UUID=12345678-abcd-... rw
+ initrd /boot/initramfs-custom.img
 }
 ```
 
@@ -266,15 +266,15 @@ sudo bootctl install
 # 文件结构概览
 # ESP（如 /boot 或 /efi）/
 # ├── EFI/
-# │   ├── BOOT/
-# │   │   └── BOOTX64.EFI
-# │   └── systemd/
-# │       └── systemd-bootx64.efi
+# │ ├── BOOT/
+# │ │ └── BOOTX64.EFI
+# │ └── systemd/
+# │ └── systemd-bootx64.efi
 # ├── loader/
-# │   ├── loader.conf          ← 主配置
-# │   └── entries/
-# │       ├── arch.conf        ← 启动条目
-# │       └── arch-fallback.conf
+# │ ├── loader.conf ← 主配置
+# │ └── entries/
+# │ ├── arch.conf ← 启动条目
+# │ └── arch-fallback.conf
 # ├── vmlinuz-linux
 # └── initramfs-linux.img
 ```
@@ -285,15 +285,15 @@ sudo bootctl install
 default debian.conf
 timeout 3
 console-mode max
-editor no           # 禁止在启动时编辑参数
+editor no # 禁止在启动时编辑参数
 ```
 
 **启动条目** `/boot/loader/entries/debian.conf`：
 
 ```ini
-title   Debian GNU/Linux
-linux   /vmlinuz-linux
-initrd  /initramfs-linux.img
+title Debian GNU/Linux
+linux /vmlinuz-linux
+initrd /initramfs-linux.img
 options root=UUID=12345678-abcd-efgh-ijkl-123456789012 rw quiet
 ```
 
@@ -301,8 +301,8 @@ options root=UUID=12345678-abcd-efgh-ijkl-123456789012 rw quiet
 
 ```bash
 sudo bootctl update
-bootctl status            # 查看当前状态
-bootctl list              # 列出所有启动条目
+bootctl status # 查看当前状态
+bootctl list # 列出所有启动条目
 ```
 
 ---
@@ -373,15 +373,15 @@ lsinitcpio /boot/initramfs-linux.img
 
 ```bash
 # 配置文件 /etc/initramfs-tools/initramfs.conf
-# MODULES=most          # 包含所有可能需要的模块
-# MODULES=dep           # 仅包含依赖检测到的模块
+# MODULES=most # 包含所有可能需要的模块
+# MODULES=dep # 仅包含依赖检测到的模块
 
 # /etc/initramfs-tools/modules 中添加需要预加载的模块
 echo "ext4" | sudo tee -a /etc/initramfs-tools/modules
 
 # 重新生成
-sudo update-initramfs -u -k all       # 为所有内核更新
-sudo update-initramfs -c -k $(uname -r)  # 为当前内核新建
+sudo update-initramfs -u -k all # 为所有内核更新
+sudo update-initramfs -c -k $(uname -r) # 为当前内核新建
 ```
 
 ### dracut（Fedora/RHEL/openSUSE）
@@ -493,11 +493,11 @@ systemctl default
 # 内核参数添加：systemd.unit=emergency.target 或 emergency
 
 # 在 emergency 模式下修复：
-mount -o remount,rw /       # 重新以读写方式挂载根分区
-mount -a                    # 挂载 fstab 中的所有分区
+mount -o remount,rw / # 重新以读写方式挂载根分区
+mount -a # 挂载 fstab 中的所有分区
 
 # 编辑配置文件修复问题后：
-exit   # 或 Ctrl+D 继续正常启动
+exit # 或 Ctrl+D 继续正常启动
 # reboot
 ```
 
@@ -524,8 +524,8 @@ exit   # 或 Ctrl+D 继续正常启动
 # 1. 从 Live USB 启动
 
 # 2. 挂载系统分区
-mount /dev/sda2 /mnt           # 根分区
-mount /dev/sda1 /mnt/boot      # 启动分区（或 /boot/efi）
+mount /dev/sda2 /mnt # 根分区
+mount /dev/sda1 /mnt/boot # 启动分区（或 /boot/efi）
 
 # 如果使用 Btrfs 子卷
 mount -o subvol=@ /dev/sda2 /mnt
@@ -556,13 +556,13 @@ grub-mkconfig -o /boot/grub/grub.cfg
 bootctl install
 
 # 重装内核
-apt reinstall linux-image-$(uname -r)        # Debian/Ubuntu
-dnf reinstall kernel                         # Fedora
+apt reinstall linux-image-$(uname -r) # Debian/Ubuntu
+dnf reinstall kernel # Fedora
 
 # 重建 initramfs
-update-initramfs -u -k all                   # Debian/Ubuntu
-dracut --force                               # Fedora/RHEL
-mkinitcpio -P                                # Arch
+update-initramfs -u -k all # Debian/Ubuntu
+dracut --force # Fedora/RHEL
+mkinitcpio -P # Arch
 
 # 5. 退出 chroot 并重启
 exit
@@ -591,10 +591,10 @@ Secure Boot 是 UEFI 的一项安全功能，确保只有经过签名验证的�
 
 ```
 系统固件
-  └── 验证签名 → shimx64.efi（微软签名）
-       └── 验证签名 → grubx64.efi（发行版签名）
-            └── 加载 → 内核（需签名或信任链验证）
-                 └── 加载 → 内核模块（需签名或禁用模块签名验证）
+ └── 验证签名 → shimx64.efi（微软签名）
+ └── 验证签名 → grubx64.efi（发行版签名）
+ └── 加载 → 内核（需签名或信任链验证）
+ └── 加载 → 内核模块（需签名或禁用模块签名验证）
 ```
 
 ### 各发行版 Secure Boot 支持状态
@@ -631,9 +631,9 @@ systemctl reboot --firmware-setup
 ```bash
 # 分析启动耗时
 systemd-analyze
-systemd-analyze blame                          # 各服务耗时排序
-systemd-analyze critical-chain                 # 启动关键路径
-systemd-analyze plot > /tmp/boot.svg           # 可视化启动时间线
+systemd-analyze blame # 各服务耗时排序
+systemd-analyze critical-chain # 启动关键路径
+systemd-analyze plot > /tmp/boot.svg # 可视化启动时间线
 
 # 常见优化措施
 # 1. 禁用不需要的启动服务

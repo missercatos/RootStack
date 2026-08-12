@@ -23,7 +23,7 @@
 KHASH_MAP_INIT_INT(32, char)
 khash_t(32) *h = kh_init(32);
 int ret;
-kh_put(32, h, 5, &ret);       // 插入键 5
+kh_put(32, h, 5, &ret); // 插入键 5
 khiter_t k = kh_get(32, h, 5);
 if (k != kh_end(h)) { /* 找到 */ }
 kh_destroy(32, h);

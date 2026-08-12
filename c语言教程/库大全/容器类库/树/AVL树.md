@@ -9,10 +9,10 @@
 
 ```c
 typedef struct AVLNode {
-    int key;
-    int height;        /* 节点高度（叶子为 1） */
-    struct AVLNode *left;
-    struct AVLNode *right;
+ int key;
+ int height; /* 节点高度（叶子为 1） */
+ struct AVLNode *left;
+ struct AVLNode *right;
 } AVLNode;
 ```
 
@@ -43,13 +43,13 @@ typedef struct AVLNode {
 
 ```c
 AVLNode* rotate_right(AVLNode *y) {
-    AVLNode *x = y->left;
-    AVLNode *T2 = x->right;
-    x->right = y;
-    y->left = T2;
-    y->height = 1 + max(height(y->left), height(y->right));
-    x->height = 1 + max(height(x->left), height(x->right));
-    return x;
+ AVLNode *x = y->left;
+ AVLNode *T2 = x->right;
+ x->right = y;
+ y->left = T2;
+ y->height = 1 + max(height(y->left), height(y->right));
+ x->height = 1 + max(height(x->left), height(x->right));
+ return x;
 }
 ```
 

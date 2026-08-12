@@ -34,18 +34,18 @@
 生成的 Rust 代码（全部 unsafe）：
 ```rust
 pub mod bindings_raw {
-    pub type gfp_t = core::ffi::c_uint;
-    pub const GFP_KERNEL: gfp_t = 0xcc0;
-    pub const EINVAL: i32 = 22;
-    #[repr(C)] pub struct kref { pub refcount: atomic_t, }
-    extern "C" {
-        pub fn kref_init(kref: *mut kref);
-        pub fn kref_get(kref: *mut kref);
-        pub fn kmalloc(size: usize, flags: gfp_t) -> *mut c_void;
-        pub fn kfree(ptr: *const c_void);
-        pub fn mutex_lock(lock: *mut mutex);
-        pub fn mutex_unlock(lock: *mut mutex);
-    }
+ pub type gfp_t = core::ffi::c_uint;
+ pub const GFP_KERNEL: gfp_t = 0xcc0;
+ pub const EINVAL: i32 = 22;
+ #[repr(C)] pub struct kref { pub refcount: atomic_t, }
+ extern "C" {
+ pub fn kref_init(kref: *mut kref);
+ pub fn kref_get(kref: *mut kref);
+ pub fn kmalloc(size: usize, flags: gfp_t) -> *mut c_void;
+ pub fn kfree(ptr: *const c_void);
+ pub fn mutex_lock(lock: *mut mutex);
+ pub fn mutex_unlock(lock: *mut mutex);
+ }
 }
 ```
 
@@ -60,25 +60,25 @@ pub struct Arc<T: ?Sized> { ptr: NonNull<ArcInner<T>> }
 
 #[repr(C)]
 struct ArcInner<T: ?Sized> {
-    refcount: bindings::kref,
-    data: T,
+ refcount: bindings::kref,
+ data: T,
 }
 
 impl<T> Arc<T> {
-    pub fn new(contents: T, flags: Flags) -> Result<Self> { /* 分配 + kref_init */ }
+ pub fn new(contents: T, flags: Flags) -> Result<Self> { /* 分配 + kref_init */ }
 }
 
 impl<T: ?Sized> Clone for Arc<T> {
-    fn clone(&self) -> Self {
-        unsafe { bindings::kref_get(&(*self.ptr.as_ptr()).refcount) };
-        Self { ptr: self.ptr }
-    }
+ fn clone(&self) -> Self {
+ unsafe { bindings::kref_get(&(*self.ptr.as_ptr()).refcount) };
+ Self { ptr: self.ptr }
+ }
 }
 
 impl<T: ?Sized> Drop for Arc<T> {
-    fn drop(&mut self) {
-        unsafe { bindings::kref_put(&mut (*self.ptr.as_ptr()).refcount, Some(dec_ref_and_free::<T>)); }
-    }
+ fn drop(&mut self) {
+ unsafe { bindings::kref_put(&mut (*self.ptr.as_ptr()).refcount, Some(dec_ref_and_free::<T>)); }
+ }
 }
 ```
 
@@ -90,28 +90,28 @@ impl<T: ?Sized> Drop for Arc<T> {
 
 ```rust
 pub struct Lock<T: ?Sized, B: Backend> {
-    pub(crate) state: B::State,
-    pub(crate) data: UnsafeCell<T>,
+ pub(crate) state: B::State,
+ pub(crate) data: UnsafeCell<T>,
 }
 
 pub trait Backend {
-    type State; type GuardState;
-    unsafe fn lock(ptr: *const Self::State) -> Self::GuardState;
-    unsafe fn unlock(ptr: *const Self::State, guard_state: &Self::GuardState);
+ type State; type GuardState;
+ unsafe fn lock(ptr: *const Self::State) -> Self::GuardState;
+ unsafe fn unlock(ptr: *const Self::State, guard_state: &Self::GuardState);
 }
 
 impl<T: ?Sized, B: Backend> Lock<T, B> {
-    pub fn lock(&self) -> Guard<'_, T, B> { /* ... */ }
+ pub fn lock(&self) -> Guard<'_, T, B> { /* ... */ }
 }
 
 impl<T: ?Sized, B: Backend> Drop for Guard<'_, T, B> {
-    fn drop(&mut self) { unsafe { B::unlock(self.lock.state.get(), &self.state) }; }
+ fn drop(&mut self) { unsafe { B::unlock(self.lock.state.get(), &self.state) }; }
 }
 ```
 
 具体锁类型：
 ```rust
-pub type Mutex<T> = Lock<T, MutexBackend>;     // struct mutex
+pub type Mutex<T> = Lock<T, MutexBackend>; // struct mutex
 pub type SpinLock<T> = Lock<T, SpinLockBackend>; // raw_spinlock_t
 ```
 
@@ -121,17 +121,17 @@ pub type SpinLock<T> = Lock<T, SpinLockBackend>; // raw_spinlock_t
 
 ```rust
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub struct Error(core::ffi::c_int);  // 编译后等于 i32
+pub struct Error(core::ffi::c_int); // 编译后等于 i32
 
 impl Error {
-    pub fn from_kernel_errno(errno: core::ffi::c_int) -> Error { Error(-errno) }
-    pub fn to_kernel_errno(self) -> core::ffi::c_int { self.0 }
-    pub fn to_errno(self) -> core::ffi::c_int { -self.0 }
+ pub fn from_kernel_errno(errno: core::ffi::c_int) -> Error { Error(-errno) }
+ pub fn to_kernel_errno(self) -> core::ffi::c_int { self.0 }
+ pub fn to_errno(self) -> core::ffi::c_int { -self.0 }
 
-    pub const EINVAL: Error = Error(-(bindings::EINVAL as i32));
-    pub const ENOMEM: Error = Error(-(bindings::ENOMEM as i32));
-    pub const ENODEV: Error = Error(-(bindings::ENODEV as i32));
-    // ... 更多常量
+ pub const EINVAL: Error = Error(-(bindings::EINVAL as i32));
+ pub const ENOMEM: Error = Error(-(bindings::ENOMEM as i32));
+ pub const ENODEV: Error = Error(-(bindings::ENODEV as i32));
+ // ... 更多常量
 }
 
 pub type Result<T = ()> = core::result::Result<T, Error>;
@@ -145,13 +145,13 @@ pub type Result<T = ()> = core::result::Result<T, Error>;
 pub struct CStr<'a>(&'a CoreCStr);
 
 impl<'a> CStr<'a> {
-    pub fn from_bytes_with_nul(bytes: &'a [u8]) -> Result<Self> { /* ... */ }
-    pub unsafe fn from_ptr<'b>(ptr: *const u8) -> &'b Self {
-        let core_ref = unsafe { CoreCStr::from_ptr(ptr as *const i8) };
-        unsafe { &*(core_ref as *const CoreCStr as *const CStr) }
-    }
-    pub fn as_bytes(&self) -> &[u8] { self.0.to_bytes() }
-    pub fn to_str(&self) -> Result<&str> { self.0.to_str().map_err(|_| Error::EINVAL) }
+ pub fn from_bytes_with_nul(bytes: &'a [u8]) -> Result<Self> { /* ... */ }
+ pub unsafe fn from_ptr<'b>(ptr: *const u8) -> &'b Self {
+ let core_ref = unsafe { CoreCStr::from_ptr(ptr as *const i8) };
+ unsafe { &*(core_ref as *const CoreCStr as *const CStr) }
+ }
+ pub fn as_bytes(&self) -> &[u8] { self.0.to_bytes() }
+ pub fn to_str(&self) -> Result<&str> { self.0.to_str().map_err(|_| Error::EINVAL) }
 }
 ```
 
@@ -161,9 +161,9 @@ impl<'a> CStr<'a> {
 
 ```rust
 pub unsafe trait ForeignOwnable: Sized {
-    fn into_foreign(self) -> *const core::ffi::c_void;
-    unsafe fn from_foreign(ptr: *const core::ffi::c_void) -> Self;
-    unsafe fn borrow<'a>(ptr: *const core::ffi::c_void) -> &'a Self;
+ fn into_foreign(self) -> *const core::ffi::c_void;
+ unsafe fn from_foreign(ptr: *const core::ffi::c_void) -> Self;
+ unsafe fn borrow<'a>(ptr: *const core::ffi::c_void) -> &'a Self;
 }
 
 // 对 Arc<T> 的实现
@@ -176,7 +176,7 @@ unsafe impl<T: 'static> ForeignOwnable for Box<T> { /* ... */ }
 
 ```rust
 pub trait InPlaceInit<T>: Sized {
-    fn init(self, init: impl PinInit<T, Error>) -> Result<Pin<Self>>;
+ fn init(self, init: impl PinInit<T, Error>) -> Result<Pin<Self>>;
 }
 ```
 
@@ -186,13 +186,13 @@ pub trait InPlaceInit<T>: Sized {
 
 ```rust
 pub trait FileOperations: Sized {
-    type Data: ForeignOwnable + Send + Sync;
-    type OpenData: Sync;
-    fn open(context: &Self::OpenData, file: &File) -> Result<Self::Data>;
-    fn read(data: ..., file: &File, writer: &mut impl IoBufferWriter, offset: u64) -> Result<usize>;
-    fn write(data: ..., file: &File, reader: &mut impl IoBufferReader, offset: u64) -> Result<usize>;
-    fn ioctl(data: ..., file: &File, cmd: u32, arg: usize) -> Result<u32>;
-    fn release(data: Self::Data, file: &File);
+ type Data: ForeignOwnable + Send + Sync;
+ type OpenData: Sync;
+ fn open(context: &Self::OpenData, file: &File) -> Result<Self::Data>;
+ fn read(data: ..., file: &File, writer: &mut impl IoBufferWriter, offset: u64) -> Result<usize>;
+ fn write(data: ..., file: &File, reader: &mut impl IoBufferReader, offset: u64) -> Result<usize>;
+ fn ioctl(data: ..., file: &File, cmd: u32, arg: usize) -> Result<u32>;
+ fn release(data: Self::Data, file: &File);
 }
 ```
 
@@ -205,22 +205,22 @@ pub trait FileOperations: Sized {
 ```rust
 struct KernelAllocator;
 unsafe impl GlobalAlloc for KernelAllocator {
-    unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-        let size = layout.size();
-        let ptr = if size > PAGE_SIZE {
-            unsafe { bindings::kvmalloc(size, bindings::GFP_KERNEL) }
-        } else {
-            unsafe { bindings::kmalloc(size, bindings::GFP_KERNEL) }
-        };
-        ptr as *mut u8
-    }
-    unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
-        if layout.size() > PAGE_SIZE {
-            unsafe { bindings::kvfree(ptr as *const c_void) };
-        } else {
-            unsafe { bindings::kfree(ptr as *const c_void) };
-        }
-    }
+ unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
+ let size = layout.size();
+ let ptr = if size > PAGE_SIZE {
+ unsafe { bindings::kvmalloc(size, bindings::GFP_KERNEL) }
+ } else {
+ unsafe { bindings::kmalloc(size, bindings::GFP_KERNEL) }
+ };
+ ptr as *mut u8
+ }
+ unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
+ if layout.size() > PAGE_SIZE {
+ unsafe { bindings::kvfree(ptr as *const c_void) };
+ } else {
+ unsafe { bindings::kfree(ptr as *const c_void) };
+ }
+ }
 }
 ```
 

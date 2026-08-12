@@ -18,10 +18,10 @@
 
 | 端口 | 服务 | 版本 | 潜在攻击向量 |
 |------|------|------|-------------|
-| 22   | SSH  | OpenSSH 7.4 | 弱口令/暴力破解/已知漏洞 |
-| 80   | HTTP | Apache 2.4.6| Web漏洞/目录遍历/配置泄露|
+| 22 | SSH | OpenSSH 7.4 | 弱口令/暴力破解/已知漏洞 |
+| 80 | HTTP | Apache 2.4.6| Web漏洞/目录遍历/配置泄露|
 | 8080 | HTTP | Tomcat 9.0 | 默认凭证/部署WAR/Manger App|
-| 445  | SMB  | Samba 4.7 | 匿名访问/永恒之蓝/NTLM中继|
+| 445 | SMB | Samba 4.7 | 匿名访问/永恒之蓝/NTLM中继|
 
 #### 版本号 → 漏洞的三步链
 
@@ -137,16 +137,16 @@ reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallEle
 
 ```
 Linux:
-  /root/root.txt          ← 最常见
-  /home/*/user.txt        ← 普通用户flag
-  /root/.ssh/             ← 有时藏在authorized_keys注释里
-  /etc/shadow             ← flag可能是密码哈希
+ /root/root.txt ← 最常见
+ /home/*/user.txt ← 普通用户flag
+ /root/.ssh/ ← 有时藏在authorized_keys注释里
+ /etc/shadow ← flag可能是密码哈希
 
 Windows:
-  C:\Users\Administrator\Desktop\root.txt
-  C:\Users\<username>\Desktop\user.txt
-  C:\Users\<username>\AppData\Local\Temp\
-  HKLM\SOFTWARE\          ← 注册表中有时藏flag
+ C:\Users\Administrator\Desktop\root.txt
+ C:\Users\<username>\Desktop\user.txt
+ C:\Users\<username>\AppData\Local\Temp\
+ HKLM\SOFTWARE\ ← 注册表中有时藏flag
 ```
 
 #### 不要放过这些地方
@@ -176,63 +176,63 @@ ls /var/spool/mail/
 
 ```mermaid
 flowchart TD
-    A[获得目标IP] --> B[Nmap 全端口扫描 -p-]
-    B --> C{发现Web服务?}
-    
-    C -->|是| D[Web枚举: gobuster/ffuf/whatweb]
-    C -->|否| E{有其他服务?}
-    
-    D --> F{Web有漏洞?}
-    F -->|SQL注入| G[sqlmap / 手工注入]
-    F -->|命令注入| H[反弹Shell]
-    F -->|文件上传| I[上传Webshell]
-    F -->|LFI| J[日志投毒 / php wrapper]
-    F -->|SSTI| K[模板注入RCE]
-    F -->|无发现| L[参数Fuzz / API发现 / 默认凭证]
-    
-    E -->|SSH| M[暴力破解 / 私钥 / 已知漏洞]
-    E -->|SMB| N[匿名访问 / EternalBlue / 枚举用户]
-    E -->|FTP| O[匿名登录 / 弱口令 / 已知漏洞]
-    E -->|数据库| P[弱口令 / 已知漏洞 / 配置缺陷]
-    
-    G --> Q{拿到Shell?}
-    H --> Q
-    I --> Q
-    J --> Q
-    K --> Q
-    L --> C
-    M --> Q
-    N --> Q
-    O --> Q
-    P --> Q
-    
-    Q -->|是| R[权限提升]
-    Q -->|否| S{超30分钟?}
-    S -->|是| T[回到侦察: 补UDP扫描 / 检查被忽略的端口]
-    S -->|否| U[继续当前方向 / 换Exploit版本]
-    U --> Q
-    T --> B
-    
-    R --> V{提权成功?}
-    V -->|是| W[内网侦察: ip a / route / arp -a]
-    V -->|否| X{linpeas/winPEAS 有发现?}
-    X -->|是| Y[利用发现的可疑项]
-    X -->|否| Z[手动检查: SUID / Cron / Sudo / 内核]
-    Y --> V
-    Z --> V
-    
-    W --> AA{发现内网?}
-    AA -->|是| AB[横向移动: 凭证收集 / 端口转发 / 代理]
-    AA -->|否| AC[收集Flag]
-    AB --> AD[进一步渗透内网主机]
-    AD --> AC
-    
-    AC --> AE[夺旗完成]
+ A[获得目标IP] --> B[Nmap 全端口扫描 -p-]
+ B --> C{发现Web服务?}
+ 
+ C -->|是| D[Web枚举: gobuster/ffuf/whatweb]
+ C -->|否| E{有其他服务?}
+ 
+ D --> F{Web有漏洞?}
+ F -->|SQL注入| G[sqlmap / 手工注入]
+ F -->|命令注入| H[反弹Shell]
+ F -->|文件上传| I[上传Webshell]
+ F -->|LFI| J[日志投毒 / php wrapper]
+ F -->|SSTI| K[模板注入RCE]
+ F -->|无发现| L[参数Fuzz / API发现 / 默认凭证]
+ 
+ E -->|SSH| M[暴力破解 / 私钥 / 已知漏洞]
+ E -->|SMB| N[匿名访问 / EternalBlue / 枚举用户]
+ E -->|FTP| O[匿名登录 / 弱口令 / 已知漏洞]
+ E -->|数据库| P[弱口令 / 已知漏洞 / 配置缺陷]
+ 
+ G --> Q{拿到Shell?}
+ H --> Q
+ I --> Q
+ J --> Q
+ K --> Q
+ L --> C
+ M --> Q
+ N --> Q
+ O --> Q
+ P --> Q
+ 
+ Q -->|是| R[权限提升]
+ Q -->|否| S{超30分钟?}
+ S -->|是| T[回到侦察: 补UDP扫描 / 检查被忽略的端口]
+ S -->|否| U[继续当前方向 / 换Exploit版本]
+ U --> Q
+ T --> B
+ 
+ R --> V{提权成功?}
+ V -->|是| W[内网侦察: ip a / route / arp -a]
+ V -->|否| X{linpeas/winPEAS 有发现?}
+ X -->|是| Y[利用发现的可疑项]
+ X -->|否| Z[手动检查: SUID / Cron / Sudo / 内核]
+ Y --> V
+ Z --> V
+ 
+ W --> AA{发现内网?}
+ AA -->|是| AB[横向移动: 凭证收集 / 端口转发 / 代理]
+ AA -->|否| AC[收集Flag]
+ AB --> AD[进一步渗透内网主机]
+ AD --> AC
+ 
+ AC --> AE[夺旗完成]
 
-    style A fill:#4a90d9,stroke:#2c5f8a,color:#fff
-    style AE fill:#27ae60,stroke:#1e8449,color:#fff
-    style T fill:#e74c3c,stroke:#c0392b,color:#fff
-    style S fill:#f39c12,stroke:#d68910,color:#fff
+ style A fill:#4a90d9,stroke:#2c5f8a,color:#fff
+ style AE fill:#27ae60,stroke:#1e8449,color:#fff
+ style T fill:#e74c3c,stroke:#c0392b,color:#fff
+ style S fill:#f39c12,stroke:#d68910,color:#fff
 ```
 
 
@@ -258,9 +258,9 @@ flowchart TD
 # SecLists — 必备词表集
 /usr/share/wordlists/seclists/
 # 重点:
-#   Discovery/Web-Content/  → Web目录爆破
-#   Passwords/               → 各种密码表
-#   Usernames/               → 常见用户名
+# Discovery/Web-Content/ → Web目录爆破
+# Passwords/ → 各种密码表
+# Usernames/ → 常见用户名
 
 # rockyou.txt — 哈希破解首选
 /usr/share/wordlists/rockyou.txt

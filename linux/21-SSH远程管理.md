@@ -11,15 +11,15 @@
 SSH 协议通过不安全的网络建立安全的加密通道。它取代了传统的 telnet、rlogin、rsh 等明文协议：
 
 ```
-┌──────────┐         加密通道          ┌──────────┐
-│  SSH     │  ════════════════════════  │  SSH     │
-│  Client  │    端口: 22                │  Server  │
-└──────────┘                            └──────────┘
-     │                                      │
-     ├── 远程命令执行                        │
-     ├── SFTP 文件传输                       │
-     ├── 端口转发 / 隧道                     │
-     └── X11 转发                            │
+┌──────────┐ 加密通道 ┌──────────┐
+│ SSH │ ════════════════════════ │ SSH │
+│ Client │ 端口: 22 │ Server │
+└──────────┘ └──────────┘
+ │ │
+ ├── 远程命令执行 │
+ ├── SFTP 文件传输 │
+ ├── 端口转发 / 隧道 │
+ └── X11 转发 │
 ```
 
 | 组件 | 说明 |
@@ -72,8 +72,8 @@ ssh -i ~/.ssh/my_key user@192.168.1.100
 
 # 详细输出（调试用）
 ssh -v user@192.168.1.100
-ssh -vv user@192.168.1.100   # 更详细
-ssh -vvv user@192.168.1.100  # 最详细
+ssh -vv user@192.168.1.100 # 更详细
+ssh -vvv user@192.168.1.100 # 最详细
 
 # 仅执行一条命令
 ssh user@server "uptime"
@@ -101,7 +101,7 @@ cat ~/.ssh/known_hosts
 
 # 移除某台主机的记录
 ssh-keygen -R 192.168.1.100
-ssh-keygen -R "[192.168.1.100]:2222"  # 带端口
+ssh-keygen -R "[192.168.1.100]:2222" # 带端口
 ```
 
 ---
@@ -123,15 +123,15 @@ ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 ssh-keygen -t ecdsa -b 521 -C "your_email@example.com"
 
 # 输出文件（默认）：
-# ~/.ssh/id_ed25519     私钥（绝不要分享！）
+# ~/.ssh/id_ed25519 私钥（绝不要分享！）
 # ~/.ssh/id_ed25519.pub 公钥（放到服务器上）
 ```
 
 交互式提示：
 
 ```
-Enter file in which to save the key:    # 回车使用默认路径
-Enter passphrase:                        # 设置私钥密码（推荐）
+Enter file in which to save the key: # 回车使用默认路径
+Enter passphrase: # 设置私钥密码（推荐）
 Enter same passphrase again:
 ```
 
@@ -158,8 +158,8 @@ SSH 对权限检查非常严格，权限不对会拒绝认证：
 # 在服务器上执行
 chmod 700 ~/.ssh
 chmod 600 ~/.ssh/authorized_keys
-chmod 644 ~/.ssh/id_*.pub          # 公钥可读
-chmod 600 ~/.ssh/id_*              # 私钥仅自己读写
+chmod 644 ~/.ssh/id_*.pub # 公钥可读
+chmod 600 ~/.ssh/id_* # 私钥仅自己读写
 ```
 
 | 文件 | 权限 | 说明 |
@@ -182,69 +182,69 @@ chmod 600 ~/.ssh/id_*              # 私钥仅自己读写
 
 # === 基本格式 ===
 Host myserver
-    HostName 192.168.1.100
-    Port 2222
-    User alice
-    IdentityFile ~/.ssh/id_ed25519
+ HostName 192.168.1.100
+ Port 2222
+ User alice
+ IdentityFile ~/.ssh/id_ed25519
 
 # === 通用默认值 ===
 Host *
-    ServerAliveInterval 60
-    ServerAliveCountMax 3
-    TCPKeepAlive yes
-    Compression yes
-    ForwardAgent no
-    ForwardX11 no
+ ServerAliveInterval 60
+ ServerAliveCountMax 3
+ TCPKeepAlive yes
+ Compression yes
+ ForwardAgent no
+ ForwardX11 no
 
 # === 跳板机 / 代理跳转 ===
 Host production
-    HostName 10.0.1.50
-    User deploy
-    ProxyJump jump-host
+ HostName 10.0.1.50
+ User deploy
+ ProxyJump jump-host
 
 Host jump-host
-    HostName jump.example.com
-    User admin
-    IdentityFile ~/.ssh/bastion_key
+ HostName jump.example.com
+ User admin
+ IdentityFile ~/.ssh/bastion_key
 
 # === 多级跳转 ===
 Host deep-server
-    HostName 10.0.2.100
-    User root
-    ProxyJump admin@gateway:22,root@internal:22
+ HostName 10.0.2.100
+ User root
+ ProxyJump admin@gateway:22,root@internal:22
 
 # === 不同的密钥 ===
 Host github.com
-    HostName github.com
-    User git
-    IdentityFile ~/.ssh/github_key
-    IdentitiesOnly yes
+ HostName github.com
+ User git
+ IdentityFile ~/.ssh/github_key
+ IdentitiesOnly yes
 
 Host gitlab.com
-    HostName gitlab.com
-    User git
-    IdentityFile ~/.ssh/gitlab_key
-    IdentitiesOnly yes
+ HostName gitlab.com
+ User git
+ IdentityFile ~/.ssh/gitlab_key
+ IdentitiesOnly yes
 
 # === 按网段匹配 ===
 Host 10.0.*
-    User admin
-    IdentityFile ~/.ssh/internal_key
-    StrictHostKeyChecking no          # 开发环境可放宽
-    UserKnownHostsFile /dev/null
+ User admin
+ IdentityFile ~/.ssh/internal_key
+ StrictHostKeyChecking no # 开发环境可放宽
+ UserKnownHostsFile /dev/null
 
 # === IPv6 连接 ===
 Host ipv6-server
-    HostName 2001:db8::1
-    User alice
-    AddressFamily inet6
+ HostName 2001:db8::1
+ User alice
+ AddressFamily inet6
 ```
 
 配置生效后即可简化为：
 
 ```bash
-ssh myserver           # 等同于 ssh -p 2222 -i ~/.ssh/id_ed25519 alice@192.168.1.100
-ssh production         # 自动通过跳板机
+ssh myserver # 等同于 ssh -p 2222 -i ~/.ssh/id_ed25519 alice@192.168.1.100
+ssh production # 自动通过跳板机
 ```
 
 ---
@@ -273,11 +273,11 @@ ssh -L 8080:localhost:80 -L 8443:localhost:443 user@server
 ```
 
 ```
-┌──────────┐     加密隧道          ┌──────────┐   普通连接    ┌──────────┐
-│  本地    │  ═══════════════════  │  SSH     │ ──────────-> │  目标    │
-│ :8080    │                       │  Server  │              │  :80     │
-│ 访问本地 │                       │          │              │ (内部服务) │
-└──────────┘                       └──────────┘              └──────────┘
+┌──────────┐ 加密隧道 ┌──────────┐ 普通连接 ┌──────────┐
+│ 本地 │ ═══════════════════ │ SSH │ ──────────-> │ 目标 │
+│ :8080 │ │ Server │ │ :80 │
+│ 访问本地 │ │ │ │ (内部服务) │
+└──────────┘ └──────────┘ └──────────┘
 ```
 
 ### 远程端口转发（-R）
@@ -316,11 +316,11 @@ curl https://httpbin.org/ip
 ```
 
 ```
-┌──────────┐    SOCKS5      ┌──────────┐    普通连接    ┌──────────┐
-│  本地    │  ═══════════=> │  SSH     │  ──────────>  │  Internet│
-│ 浏览器   │                │  Server  │               │          │
-│ curl     │                │          │               │          │
-└──────────┘                └──────────┘               └──────────┘
+┌──────────┐ SOCKS5 ┌──────────┐ 普通连接 ┌──────────┐
+│ 本地 │ ═══════════=> │ SSH │ ──────────> │ Internet│
+│ 浏览器 │ │ Server │ │ │
+│ curl │ │ │ │ │
+└──────────┘ └──────────┘ └──────────┘
 ```
 
 ### 后台保持隧道
@@ -342,7 +342,7 @@ autossh -M 0 -fNT -L 8080:localhost:80 user@server
 ```bash
 # 本地 → 远程
 scp file.txt user@server:/path/
-scp -r mydir user@server:/path/          # 递归目录
+scp -r mydir user@server:/path/ # 递归目录
 
 # 远程 → 本地
 scp user@server:/remote/file.txt ./local/
@@ -357,7 +357,7 @@ scp -P 2222 file.txt user@server:/path/
 scp -C large_file.bin user@server:/path/
 
 # 保留属性
-scp -p file.txt user@server:/path/       # 小写 p 保留时间戳
+scp -p file.txt user@server:/path/ # 小写 p 保留时间戳
 ```
 
 > SCP 协议已逐渐被更安全的 SFTP 协议替代。现代 scp 命令实际使用 SFTP 协议。
@@ -370,9 +370,9 @@ sftp user@server
 
 sftp> ls
 sftp> cd /var/www
-sftp> get file.txt            # 下载
-sftp> put file.txt            # 上传
-sftp> get -r mydir/           # 递归下载
+sftp> get file.txt # 下载
+sftp> put file.txt # 上传
+sftp> get -r mydir/ # 递归下载
 sftp> rm file.txt
 sftp> mkdir dirname
 sftp> bye
@@ -387,8 +387,8 @@ rsync 是更强大的文件同步工具，支持增量传输、断点续传：
 rsync -avz ./local_dir/ user@server:/remote_dir/
 
 # 常用参数
-rsync -avzP /src/ user@server:/dst/     # P=进度+断点续传
-rsync -avz --delete /src/ user@server:/dst/   # 镜像同步
+rsync -avzP /src/ user@server:/dst/ # P=进度+断点续传
+rsync -avz --delete /src/ user@server:/dst/ # 镜像同步
 rsync -avz --exclude='node_modules' --exclude='.cache' /src/ server:/dst/
 
 # 通过自定义端口
@@ -435,51 +435,51 @@ sudo sshd -T
 # /etc/ssh/sshd_config（推荐的安全配置）
 
 # === 端口 ===
-Port 22                              # 可改为非标准端口减少扫描噪
+Port 22 # 可改为非标准端口减少扫描噪
 
 # === 监听 ===
-ListenAddress 0.0.0.0               # 限制监听特定 IP
+ListenAddress 0.0.0.0 # 限制监听特定 IP
 # ListenAddress 192.168.1.100
 
 # === 用户认证 ===
-PermitRootLogin no                   # 禁止 root 直接登录
-PubkeyAuthentication yes             # 启用密钥认证
-PasswordAuthentication no            # 禁用密码认证（密钥认证就绪后）
-ChallengeResponseAuthentication no   # 禁用挑战响应
-UsePAM yes                           # 使用 PAM 认证
+PermitRootLogin no # 禁止 root 直接登录
+PubkeyAuthentication yes # 启用密钥认证
+PasswordAuthentication no # 禁用密码认证（密钥认证就绪后）
+ChallengeResponseAuthentication no # 禁用挑战响应
+UsePAM yes # 使用 PAM 认证
 
 # === 限制登录 ===
-AllowUsers alice bob                 # 白名单（推荐）
-AllowGroups sshusers                 # 按组白名单
-# DenyUsers baduser                  # 黑名单
+AllowUsers alice bob # 白名单（推荐）
+AllowGroups sshusers # 按组白名单
+# DenyUsers baduser # 黑名单
 # DenyGroups badgroup
 
 # === 登录限制 ===
-MaxAuthTries 3                       # 最大认证尝试次数
-MaxSessions 10                       # 单连接最大会话数
-LoginGraceTime 30                    # 登录超时（秒）
+MaxAuthTries 3 # 最大认证尝试次数
+MaxSessions 10 # 单连接最大会话数
+LoginGraceTime 30 # 登录超时（秒）
 
 # === 密钥认证 ===
 AuthorizedKeysFile .ssh/authorized_keys
 HostKey /etc/ssh/ssh_host_ed25519_key
 
 # === 保活 ===
-ClientAliveInterval 300              # 每 5 分钟发一次保活包
-ClientAliveCountMax 2                # 连续 2 次无响应则断开
+ClientAliveInterval 300 # 每 5 分钟发一次保活包
+ClientAliveCountMax 2 # 连续 2 次无响应则断开
 
 # === 转发控制 ===
-X11Forwarding no                     # 禁用 X11 转发
-AllowAgentForwarding no              # 禁用 agent 转发（多用户场景）
-AllowTcpForwarding yes               # 端口转发（按需）
-GatewayPorts no                      # 禁止远程端口转发绑定 0.0.0.0
+X11Forwarding no # 禁用 X11 转发
+AllowAgentForwarding no # 禁用 agent 转发（多用户场景）
+AllowTcpForwarding yes # 端口转发（按需）
+GatewayPorts no # 禁止远程端口转发绑定 0.0.0.0
 
 # === SFTP 隔离 ===
-# Subsystem sftp internal-sftp        # 使用内部 SFTP
-# Match Group sftponly               # 限制 SFTP 用户
-#     ChrootDirectory /srv/sftp
-#     ForceCommand internal-sftp
-#     X11Forwarding no
-#     AllowTcpForwarding no
+# Subsystem sftp internal-sftp # 使用内部 SFTP
+# Match Group sftponly # 限制 SFTP 用户
+# ChrootDirectory /srv/sftp
+# ForceCommand internal-sftp
+# X11Forwarding no
+# AllowTcpForwarding no
 
 # === 加密算法（现代安全级别）===
 KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512
@@ -488,7 +488,7 @@ MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com
 
 # === 日志 ===
 SyslogFacility AUTH
-LogLevel VERBOSE                     # 记录指纹方便审计
+LogLevel VERBOSE # 记录指纹方便审计
 ```
 
 ### 配置变更后
@@ -532,13 +532,13 @@ eval $(ssh-agent)
 
 # 添加密钥
 ssh-add ~/.ssh/id_ed25519
-ssh-add -l                    # 列出已加载的密钥
-ssh-add -L                    # 列出已加载的公钥
-ssh-add -d ~/.ssh/id_ed25519  # 删除指定密钥
-ssh-add -D                    # 删除所有密钥
+ssh-add -l # 列出已加载的密钥
+ssh-add -L # 列出已加载的公钥
+ssh-add -d ~/.ssh/id_ed25519 # 删除指定密钥
+ssh-add -D # 删除所有密钥
 
 # 设置密钥有效期
-ssh-add -t 3600 ~/.ssh/id_ed25519  # 1 小时后自动移除
+ssh-add -t 3600 ~/.ssh/id_ed25519 # 1 小时后自动移除
 ```
 
 ### Agent 转发（谨慎使用）
@@ -551,7 +551,7 @@ ssh -A user@server
 
 # 方式二：配置文件
 Host server
-    ForwardAgent yes
+ ForwardAgent yes
 ```
 
 > **安全警告**：Agent 转发存在安全风险。如果有 root 权限的恶意用户登录了同一台跳板机，可以利用你的 agent socket 进行认证。生产环境建议使用 ProxyJump 或 `ssh -J` 代替 agent 转发。
@@ -564,7 +564,7 @@ ssh -J user@jump-host user@target-host
 
 # ~/.ssh/config 配置
 Host target
-    ProxyJump jump-host
+ ProxyJump jump-host
 ```
 
 ---
@@ -578,23 +578,23 @@ Host target
 ```bash
 # 安装
 # Debian/Ubuntu: sudo apt install tmux
-# RHEL/Fedora:   sudo dnf install tmux
-# Arch:          sudo pacman -S tmux
+# RHEL/Fedora: sudo dnf install tmux
+# Arch: sudo pacman -S tmux
 
 # 基本操作
-tmux                       # 创建新会话
-tmux new -s mywork         # 命名会话
-tmux ls                    # 列出所有会话
-tmux attach -t mywork      # 重新连接会话
+tmux # 创建新会话
+tmux new -s mywork # 命名会话
+tmux ls # 列出所有会话
+tmux attach -t mywork # 重新连接会话
 
 # 常用快捷键（默认前缀 Ctrl+b）：
-# Ctrl+b %    水平分割窗口
-# Ctrl+b "    垂直分割窗口
-# Ctrl+b 方向键  切换窗格
-# Ctrl+b d    脱离会话（detach）
-# Ctrl+b c    创建新窗口
-# Ctrl+b [    进入滚动模式
-# Ctrl+b x    关闭当前窗格
+# Ctrl+b % 水平分割窗口
+# Ctrl+b " 垂直分割窗口
+# Ctrl+b 方向键 切换窗格
+# Ctrl+b d 脱离会话（detach）
+# Ctrl+b c 创建新窗口
+# Ctrl+b [ 进入滚动模式
+# Ctrl+b x 关闭当前窗格
 ```
 
 ### screen 快速入门
@@ -602,18 +602,18 @@ tmux attach -t mywork      # 重新连接会话
 ```bash
 # 安装
 # Debian/Ubuntu: sudo apt install screen
-# RHEL/Fedora:   sudo dnf install screen
+# RHEL/Fedora: sudo dnf install screen
 
-screen -S mywork        # 创建命名会话
-screen -ls              # 列出会话
-screen -r mywork        # 重新连接
-screen -d mywork        # 强制分离
+screen -S mywork # 创建命名会话
+screen -ls # 列出会话
+screen -r mywork # 重新连接
+screen -d mywork # 强制分离
 
 # 快捷键（默认前缀 Ctrl+a）：
-# Ctrl+a c    创建新窗口
-# Ctrl+a d    脱离会话
-# Ctrl+a "    窗口列表
-# Ctrl+a '    切换窗口
+# Ctrl+a c 创建新窗口
+# Ctrl+a d 脱离会话
+# Ctrl+a " 窗口列表
+# Ctrl+a ' 切换窗口
 ```
 
 ### SSH + tmux 最佳实践
@@ -624,10 +624,10 @@ ssh user@server -t 'tmux new -A -s work'
 
 # 在 ~/.ssh/config 中配置
 Host myserver
-    HostName 192.168.1.100
-    User alice
-    RequestTTY yes
-    RemoteCommand tmux new -A -s work
+ HostName 192.168.1.100
+ User alice
+ RequestTTY yes
+ RemoteCommand tmux new -A -s work
 ```
 
 ---
@@ -638,7 +638,7 @@ Host myserver
 
 ```bash
 # 1. 检查密钥配置
-ssh-keygen -l -f ~/.ssh/id_ed25519      # 查看密钥指纹
+ssh-keygen -l -f ~/.ssh/id_ed25519 # 查看密钥指纹
 sudo cat /var/log/auth.log | grep "Failed password"
 
 # 2. 检查 sshd 配置
@@ -686,30 +686,30 @@ ssh-keygen -k -f /etc/ssh/revoked_keys ~/ssh_ca -u user_id.id_revoke
 
 ```bash
 # SSH 连接超时
-ssh -v user@server                         # 查看调试输出
-ping server_ip                             # 检查网络连通性
-sudo ss -tlnp | grep 22                    # 确认 sshd 监听
+ssh -v user@server # 查看调试输出
+ping server_ip # 检查网络连通性
+sudo ss -tlnp | grep 22 # 确认 sshd 监听
 
 # 权限问题
-ls -la ~/.ssh/                             # 检查客户端权限
+ls -la ~/.ssh/ # 检查客户端权限
 # 服务端日志
-sudo journalctl -u sshd -f                 # systemd 系统
-sudo tail -f /var/log/auth.log             # Debian/Ubuntu
-sudo tail -f /var/log/secure               # RHEL/Fedora
+sudo journalctl -u sshd -f # systemd 系统
+sudo tail -f /var/log/auth.log # Debian/Ubuntu
+sudo tail -f /var/log/secure # RHEL/Fedora
 
 # 密钥被拒绝
 ssh -vvv user@server 2>&1 | grep -i "permission\|auth\|key"
-ssh-keygen -y -f ~/.ssh/id_ed25519         # 从私钥提取公钥验证
+ssh-keygen -y -f ~/.ssh/id_ed25519 # 从私钥提取公钥验证
 
 # 加密算法不兼容
-ssh -Q cipher                              # 列出支持的加密算法
-ssh -Q mac                                 # 列出支持的 MAC 算法
-ssh -Q kex                                 # 列出支持的密钥交换算法
+ssh -Q cipher # 列出支持的加密算法
+ssh -Q mac # 列出支持的 MAC 算法
+ssh -Q kex # 列出支持的密钥交换算法
 
 # 主机密钥变更警告
 # WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!
 # 可能是正当的（服务器重装）也可能是 MITM 攻击
-ssh-keygen -R hostname                     # 删除旧记录
+ssh-keygen -R hostname # 删除旧记录
 # 联系管理员确认新的主机指纹
 ```
 

@@ -31,15 +31,15 @@ BIT 的核心是对数组下标进行二进制分解。定义 $\text{lowbit}(i) 
 
 ```mermaid
 graph TD
-    subgraph "更新 a[3] 时更新的 BIT 节点"
-        T3["BIT[3] 更新"] --> T4["BIT[4] 更新 (3+1=4)"]
-        T4 --> T8["BIT[8] 更新 (4+4=8)"]
-        T8 --> T16["BIT[16] 更新 (8+8=16)"]
-    end
-    subgraph "查询前缀和 S(6) 时的累加路径"
-        Q6["BIT[6] 累加"] --> Q4["BIT[4] 累加 (6-2=4)"]
-        Q4 --> Q0["结束 (4-4=0)"]
-    end
+ subgraph "更新 a[3] 时更新的 BIT 节点"
+ T3["BIT[3] 更新"] --> T4["BIT[4] 更新 (3+1=4)"]
+ T4 --> T8["BIT[8] 更新 (4+4=8)"]
+ T8 --> T16["BIT[16] 更新 (8+8=16)"]
+ end
+ subgraph "查询前缀和 S(6) 时的累加路径"
+ Q6["BIT[6] 累加"] --> Q4["BIT[4] 累加 (6-2=4)"]
+ Q4 --> Q0["结束 (4-4=0)"]
+ end
 ```
 
 ### 区间修改 + 单点查询（差分 BIT）
@@ -112,49 +112,49 @@ BIT[i] 管理的区间为 [i - lowbit(i) + 1, i]。
 #define LOWBIT(x) ((x) & -(x))
 
 typedef struct {
-    int* tree;
-    int n;
+ int* tree;
+ int n;
 } BIT;
 
 void bit_init(BIT* b, int size) {
-    b->n = size;
-    b->tree = calloc(size + 1, sizeof(int));
+ b->n = size;
+ b->tree = calloc(size + 1, sizeof(int));
 }
 
 void bit_destroy(BIT* b) {
-    free(b->tree);
+ free(b->tree);
 }
 
 // O(n) 建树
 void bit_build(BIT* b, const int* arr, int n) {
-    b->n = n;
-    free(b->tree);
-    b->tree = calloc(n + 1, sizeof(int));
-    for (int i = 1; i <= n; i++) {
-        b->tree[i] += arr[i - 1];
-        int parent = i + LOWBIT(i);
-        if (parent <= n) b->tree[parent] += b->tree[i];
-    }
+ b->n = n;
+ free(b->tree);
+ b->tree = calloc(n + 1, sizeof(int));
+ for (int i = 1; i <= n; i++) {
+ b->tree[i] += arr[i - 1];
+ int parent = i + LOWBIT(i);
+ if (parent <= n) b->tree[parent] += b->tree[i];
+ }
 }
 
 void bit_add(BIT* b, int pos, int delta) {
-    while (pos <= b->n) {
-        b->tree[pos] += delta;
-        pos += LOWBIT(pos);
-    }
+ while (pos <= b->n) {
+ b->tree[pos] += delta;
+ pos += LOWBIT(pos);
+ }
 }
 
 int bit_prefix_sum(BIT* b, int pos) {
-    int sum = 0;
-    while (pos > 0) {
-        sum += b->tree[pos];
-        pos -= LOWBIT(pos);
-    }
-    return sum;
+ int sum = 0;
+ while (pos > 0) {
+ sum += b->tree[pos];
+ pos -= LOWBIT(pos);
+ }
+ return sum;
 }
 
 int bit_range_sum(BIT* b, int l, int r) {
-    return bit_prefix_sum(b, r) - bit_prefix_sum(b, l - 1);
+ return bit_prefix_sum(b, r) - bit_prefix_sum(b, l - 1);
 }
 ```
 
@@ -162,30 +162,30 @@ int bit_range_sum(BIT* b, int l, int r) {
 
 ```c
 typedef struct {
-    int* tree;
-    int n;
+ int* tree;
+ int n;
 } DiffBIT;
 
 void diff_bit_init(DiffBIT* b, int size) {
-    b->n = size;
-    b->tree = calloc(size + 1, sizeof(int));
+ b->n = size;
+ b->tree = calloc(size + 1, sizeof(int));
 }
 
 void diff_bit_destroy(DiffBIT* b) { free(b->tree); }
 
 static void diff_add(DiffBIT* b, int pos, int delta) {
-    while (pos <= b->n) { b->tree[pos] += delta; pos += LOWBIT(pos); }
+ while (pos <= b->n) { b->tree[pos] += delta; pos += LOWBIT(pos); }
 }
 
 void diff_bit_range_add(DiffBIT* b, int l, int r, int val) {
-    diff_add(b, l, val);
-    diff_add(b, r + 1, -val);
+ diff_add(b, l, val);
+ diff_add(b, r + 1, -val);
 }
 
 int diff_bit_point_query(DiffBIT* b, int pos) {
-    int sum = 0;
-    while (pos > 0) { sum += b->tree[pos]; pos -= LOWBIT(pos); }
-    return sum;
+ int sum = 0;
+ while (pos > 0) { sum += b->tree[pos]; pos -= LOWBIT(pos); }
+ return sum;
 }
 ```
 
@@ -193,42 +193,42 @@ int diff_bit_point_query(DiffBIT* b, int pos) {
 
 ```c
 typedef struct {
-    long long* t1;   // diff[i]
-    long long* t2;   // i * diff[i]
-    int n;
+ long long* t1; // diff[i]
+ long long* t2; // i * diff[i]
+ int n;
 } RangeBIT;
 
 void range_bit_init(RangeBIT* b, int size) {
-    b->n = size;
-    b->t1 = calloc(size + 1, sizeof(long long));
-    b->t2 = calloc(size + 1, sizeof(long long));
+ b->n = size;
+ b->t1 = calloc(size + 1, sizeof(long long));
+ b->t2 = calloc(size + 1, sizeof(long long));
 }
 
 void range_bit_destroy(RangeBIT* b) { free(b->t1); free(b->t2); }
 
 static void range_add_arr(long long* t, int n, int pos, long long delta) {
-    while (pos <= n) { t[pos] += delta; pos += LOWBIT(pos); }
+ while (pos <= n) { t[pos] += delta; pos += LOWBIT(pos); }
 }
 
 static long long range_sum_arr(long long* t, int pos) {
-    long long s = 0;
-    while (pos > 0) { s += t[pos]; pos -= LOWBIT(pos); }
-    return s;
+ long long s = 0;
+ while (pos > 0) { s += t[pos]; pos -= LOWBIT(pos); }
+ return s;
 }
 
 void range_bit_add(RangeBIT* b, int l, int r, long long val) {
-    range_add_arr(b->t1, b->n, l, val);
-    range_add_arr(b->t1, b->n, r + 1, -val);
-    range_add_arr(b->t2, b->n, l, val * (l - 1));
-    range_add_arr(b->t2, b->n, r + 1, -val * r);
+ range_add_arr(b->t1, b->n, l, val);
+ range_add_arr(b->t1, b->n, r + 1, -val);
+ range_add_arr(b->t2, b->n, l, val * (l - 1));
+ range_add_arr(b->t2, b->n, r + 1, -val * r);
 }
 
 long long range_bit_prefix_sum(RangeBIT* b, int pos) {
-    return range_sum_arr(b->t1, pos) * pos - range_sum_arr(b->t2, pos);
+ return range_sum_arr(b->t1, pos) * pos - range_sum_arr(b->t2, pos);
 }
 
 long long range_bit_range_sum(RangeBIT* b, int l, int r) {
-    return range_bit_prefix_sum(b, r) - range_bit_prefix_sum(b, l - 1);
+ return range_bit_prefix_sum(b, r) - range_bit_prefix_sum(b, l - 1);
 }
 ```
 
@@ -236,32 +236,32 @@ long long range_bit_range_sum(RangeBIT* b, int l, int r) {
 
 ```c
 typedef struct {
-    int* tree;
-    int n;
+ int* tree;
+ int n;
 } KthBIT;
 
 void kth_bit_init(KthBIT* b, int max_val) {
-    b->n = max_val;
-    b->tree = calloc(max_val + 1, sizeof(int));
+ b->n = max_val;
+ b->tree = calloc(max_val + 1, sizeof(int));
 }
 
 void kth_bit_destroy(KthBIT* b) { free(b->tree); }
 
 void kth_bit_add(KthBIT* b, int val, int delta) {
-    for (int i = val; i <= b->n; i += LOWBIT(i))
-        b->tree[i] += delta;
+ for (int i = val; i <= b->n; i += LOWBIT(i))
+ b->tree[i] += delta;
 }
 
 int kth_bit_kth(KthBIT* b, int k) {
-    int pos = 0;
-    for (int i = 20; i >= 0; i--) {
-        int next = pos + (1 << i);
-        if (next <= b->n && b->tree[next] < k) {
-            k -= b->tree[next];
-            pos = next;
-        }
-    }
-    return pos + 1;
+ int pos = 0;
+ for (int i = 20; i >= 0; i--) {
+ int next = pos + (1 << i);
+ if (next <= b->n && b->tree[next] < k) {
+ k -= b->tree[next];
+ pos = next;
+ }
+ }
+ return pos + 1;
 }
 ```
 

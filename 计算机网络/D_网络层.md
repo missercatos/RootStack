@@ -4,15 +4,15 @@
 
 ```mermaid
 flowchart LR
-    subgraph 数据平面
-        direction TB
-        F[转发 Forwarding<br/>按转发表逐跳转发<br/>路由器本地决策]
-    end
-    subgraph 控制平面
-        direction TB
-        R[路由 Routing<br/>计算路由表<br/>分布式/集中式]
-    end
-    R -->|填充转发表| F
+ subgraph 数据平面
+ direction TB
+ F[转发 Forwarding<br/>按转发表逐跳转发<br/>路由器本地决策]
+ end
+ subgraph 控制平面
+ direction TB
+ R[路由 Routing<br/>计算路由表<br/>分布式/集中式]
+ end
+ R -->|填充转发表| F
 ```
 
 ---
@@ -35,16 +35,16 @@ flowchart LR
 
 ```mermaid
 packet-beta
-    title IPv4 数据报头部 (20~60 字节)
-    0-3: "Version(4b)<br/>IHL(4b)"
-    4-7: "TOS/DSCP(8b)"
-    8-15: "Total Length(16b)"
-    16-31: "Identification(16b)<br/>Flags(3b)|FragOffset(13b)"
-    32-39: "TTL(8b)<br/>Protocol(8b)"
-    40-55: "Header Checksum(16b)"
-    56-87: "Source IP<br/>(32 bits)"
-    88-119: "Dest IP<br/>(32 bits)"
-    120-127: "Options<br/>(0~40B, padded)"
+ title IPv4 数据报头部 (20~60 字节)
+ 0-3: "Version(4b)<br/>IHL(4b)"
+ 4-7: "TOS/DSCP(8b)"
+ 8-15: "Total Length(16b)"
+ 16-31: "Identification(16b)<br/>Flags(3b)|FragOffset(13b)"
+ 32-39: "TTL(8b)<br/>Protocol(8b)"
+ 40-55: "Header Checksum(16b)"
+ 56-87: "Source IP<br/>(32 bits)"
+ 88-119: "Dest IP<br/>(32 bits)"
+ 120-127: "Options<br/>(0~40B, padded)"
 ```
 
 | 字段 | 位数 | 含义 |
@@ -70,42 +70,42 @@ packet-beta
 #include <stdint.h>
 
 uint16_t ip_checksum(void *ip_header, int ihl_bytes) {
-    uint32_t sum = 0;
-    uint16_t *p = (uint16_t *)ip_header;
+ uint32_t sum = 0;
+ uint16_t *p = (uint16_t *)ip_header;
 
-    for (int i = 0; i < ihl_bytes / 2; i++) {
-        sum += p[i];
-        if (sum > 0xFFFF) {    // 进位回卷 (wrap-around carry)
-            sum = (sum & 0xFFFF) + (sum >> 16);
-        }
-    }
-    return (uint16_t)(~sum);   // 取反码
+ for (int i = 0; i < ihl_bytes / 2; i++) {
+ sum += p[i];
+ if (sum > 0xFFFF) { // 进位回卷 (wrap-around carry)
+ sum = (sum & 0xFFFF) + (sum >> 16);
+ }
+ }
+ return (uint16_t)(~sum); // 取反码
 }
 
 /* 验证: 对整个头部 (含 checksum 字段) 计算应得 0xFFFF */
 int verify_ip_checksum(void *ip_header, int ihl_bytes) {
-    return ip_checksum(ip_header, ihl_bytes) == 0;
+ return ip_checksum(ip_header, ihl_bytes) == 0;
 }
 ```
 
 **工作示例**: IPv4 头部 (20B, 不含 checksum 字段)
 
 ```
-字段                     16-bit组 (hex)
-Version/IHL/TOS:         4500
-Total Length:            003C (60)
-Identification:          1C46
-Flags/FragOffset:        4000
-TTL/Protocol:            4006 (TTL=64, TCP)
-Src IP 高16位:           AC10
-Src IP 低16位:           0A63
-Dst IP 高16位:           AC10
-Dst IP 低16位:           0A0C
+字段 16-bit组 (hex)
+Version/IHL/TOS: 4500
+Total Length: 003C (60)
+Identification: 1C46
+Flags/FragOffset: 4000
+TTL/Protocol: 4006 (TTL=64, TCP)
+Src IP 高16位: AC10
+Src IP 低16位: 0A63
+Dst IP 高16位: AC10
+Dst IP 低16位: 0A0C
 
 sum = 0x4500+0x003C+0x1C46+0x4000+0x4006+0xAC10+0x0A63+0xAC10+0x0A0C
-    = 0x2_9675
+ = 0x2_9675
 wrap: 0x9675 + 0x0002 = 0x9677
-checksum = ~0x9677 = 0x6988  → 填入头部
+checksum = ~0x9677 = 0x6988 → 填入头部
 ```
 
 ---
@@ -125,21 +125,21 @@ checksum = ~0x9677 = 0x6988  → 填入头部
 原始数据报: ID=123, Total=4020B (头20B + 数据4000B), MTU=1500B。
 
 ```
-MTU=1500 → 每片数据最多 1500-20=1480B, 且必须是8的倍数 → 1480 ✓
-                                         (1480/8=185, 1480%8=0 ✓)
+MTU=1500 → 每片数据最多 1500-20=1480B, 且必须是8的倍数 → 1480 
+ (1480/8=185, 1480%8=0 )
 
 分片表:
 ┌──────┬──────┬────────┬──────┬───────┬──────────┐
-│ 分片  │  ID  │ 总长   │  MF  │ Offset│ 数据范围  │
+│ 分片 │ ID │ 总长 │ MF │ Offset│ 数据范围 │
 ├──────┼──────┼────────┼──────┼───────┼──────────┤
-│   1  │ 123  │ 1500   │  1   │   0   │  0~1479  │
-│   2  │ 123  │ 1500   │  1   │ 185   │ 1480~2959│
-│   3  │ 123  │ 1060   │  0   │ 370   │ 2960~3999│
-│      │      │(20+1040)│     │       │          │
+│ 1 │ 123 │ 1500 │ 1 │ 0 │ 0~1479 │
+│ 2 │ 123 │ 1500 │ 1 │ 185 │ 1480~2959│
+│ 3 │ 123 │ 1060 │ 0 │ 370 │ 2960~3999│
+│ │ │(20+1040)│ │ │ │
 └──────┴──────┴────────┴──────┴───────┴──────────┘
 
-验证: 0×8=0B, 185×8=1480B, 370×8=2960B ✓
-验证: 1480+1480+1040=4000B ✓
+验证: 0×8=0B, 185×8=1480B, 370×8=2960B 
+验证: 1480+1480+1040=4000B 
 ```
 
 #### 工作示例 2: 多次分片
@@ -148,11 +148,11 @@ MTU=1500 → 每片数据最多 1500-20=1480B, 且必须是8的倍数 → 1480 �
 
 经过第一跳 MTU=1500:
 ```
-片1: 1480B data, Offset=0,   MF=1, Total=1500
+片1: 1480B data, Offset=0, MF=1, Total=1500
 片2: 1480B data, Offset=185, MF=1, Total=1500
 片3: 1480B data, Offset=370, MF=1, Total=1500
-片4: 320B  data, Offset=555, MF=0, Total=340
-       (4760 - 3×1480 = 4760-4440 = 320)
+片4: 320B data, Offset=555, MF=0, Total=340
+ (4760 - 3×1480 = 4760-4440 = 320)
 ```
 
 经过第二跳 MTU=640:
@@ -161,7 +161,7 @@ MTU=1500 → 每片数据最多 1500-20=1480B, 且必须是8的倍数 → 1480 �
 片1-1: 616B, Offset=185, MF=1, Total=636
 片1-2: 616B, Offset=185+77=262, MF=1, Total=636
 片1-3: 248B, Offset=185+154=339, MF=1, Total=268
-  (1480-2×616=248, 248%8=0 ✓)
+ (1480-2×616=248, 248%8=0 )
 
 片2 (原片3): 类似分片逻辑...
 ```
@@ -170,18 +170,18 @@ MTU=1500 → 每片数据最多 1500-20=1480B, 且必须是8的倍数 → 1480 �
 
 ```mermaid
 sequenceDiagram
-    participant S as 源主机
-    participant R1 as 路由器1<br/>(MTU=1500)
-    participant R2 as 路由器2<br/>(MTU=576)
-    participant D as 目的主机
+ participant S as 源主机
+ participant R1 as 路由器1<br/>(MTU=1500)
+ participant R2 as 路由器2<br/>(MTU=576)
+ participant D as 目的主机
 
-    S->>R1: IPv4, DF=1, 1500B
-    R1->>R2: 转发, DF=1, 1500B
-    R2-->>S: ICMP Type3 Code4<br/>"Frag Needed, MTU=576"
-    Note over S: 重发, DF=1, 576B
-    S->>R1: IPv4, DF=1, 576B
-    R1->>R2: 转发, DF=1, 576B
-    R2->>D: 到达!
+ S->>R1: IPv4, DF=1, 1500B
+ R1->>R2: 转发, DF=1, 1500B
+ R2-->>S: ICMP Type3 Code4<br/>"Frag Needed, MTU=576"
+ Note over S: 重发, DF=1, 576B
+ S->>R1: IPv4, DF=1, 576B
+ R1->>R2: 转发, DF=1, 576B
+ R2->>D: 到达!
 ```
 
 ---
@@ -207,9 +207,9 @@ $$2^{\text{32-prefix}} = \text{主机地址数}$$
 **工作示例**:
 
 ```
-192.168.1.0/24  → 子网掩码 255.255.255.0 → 2^8 = 256 个地址 (254主机)
-172.16.0.0/12   → 子网掩码 255.240.0.0   → 2^20 = 1,048,576 个地址
-10.10.0.0/16    → 子网掩码 255.255.0.0   → 2^16 = 65,536 个地址
+192.168.1.0/24 → 子网掩码 255.255.255.0 → 2^8 = 256 个地址 (254主机)
+172.16.0.0/12 → 子网掩码 255.240.0.0 → 2^20 = 1,048,576 个地址
+10.10.0.0/16 → 子网掩码 255.255.0.0 → 2^16 = 65,536 个地址
 ```
 
 #### 子网划分 (Subnetting)
@@ -218,15 +218,15 @@ $$2^{\text{32-prefix}} = \text{主机地址数}$$
 
 ```
 需要: 4 subnet → 借 bits: ceil(log2(4)) = 2
-新前缀: 24+2 = /26 → 每子网 2^6-2 = 62 主机 (>50 ✓)
+新前缀: 24+2 = /26 → 每子网 2^6-2 = 62 主机 (>50 )
 子网掩码: 255.255.255.192
 广播地址: 主机位全1
 
 子网列表:
-  192.168.1.0/26    (1~62, 广播 .63)
-  192.168.1.64/26   (65~126, 广播 .127)
-  192.168.1.128/26  (129~190, 广播 .191)
-  192.168.1.192/26  (193~254, 广播 .255)
+ 192.168.1.0/26 (1~62, 广播 .63)
+ 192.168.1.64/26 (65~126, 广播 .127)
+ 192.168.1.128/26 (129~190, 广播 .191)
+ 192.168.1.192/26 (193~254, 广播 .255)
 ```
 
 #### 路由聚合 (Supernetting)
@@ -260,20 +260,20 @@ $$2^{\text{32-prefix}} = \text{主机地址数}$$
 
 ```mermaid
 flowchart TD
-    subgraph 内网 ["内网 (Private IP)"]
-        H1[192.168.1.10:3456]
-        H2[192.168.1.11:3457]
-    end
-    subgraph NAT路由器
-        NT["NAT 转换表<br/>───────────<br/>内IP:Port → 外IP:Port<br/>192.168.1.10:3456 → 203.0.113.5:10001<br/>192.168.1.11:3457 → 203.0.113.5:10002"]
-    end
-    subgraph 外网 ["公网 (Public IP)"]
-        S[服务器<br/>93.184.216.34:80]
-    end
-    H1 -->|dst:93.184.216.34:80<br/>src:192.168.1.10:3456| NT
-    NT -->|dst:93.184.216.34:80<br/>src:203.0.113.5:10001| S
-    S -->|dst:203.0.113.5:10001| NT
-    NT -->|dst:192.168.1.10:3456| H1
+ subgraph 内网 ["内网 (Private IP)"]
+ H1[192.168.1.10:3456]
+ H2[192.168.1.11:3457]
+ end
+ subgraph NAT路由器
+ NT["NAT 转换表<br/>───────────<br/>内IP:Port → 外IP:Port<br/>192.168.1.10:3456 → 203.0.113.5:10001<br/>192.168.1.11:3457 → 203.0.113.5:10002"]
+ end
+ subgraph 外网 ["公网 (Public IP)"]
+ S[服务器<br/>93.184.216.34:80]
+ end
+ H1 -->|dst:93.184.216.34:80<br/>src:192.168.1.10:3456| NT
+ NT -->|dst:93.184.216.34:80<br/>src:203.0.113.5:10001| S
+ S -->|dst:203.0.113.5:10001| NT
+ NT -->|dst:192.168.1.10:3456| H1
 ```
 
 | NAT 类型 | 特点 | 转换粒度 |
@@ -288,11 +288,11 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[主机A要向 192.168.1.20 发数据] --> B[查ARP表]
-    B -->|找到| C[直接用该MAC封装帧]
-    B -->|未找到| D[广播 ARP Request<br/>'Who has 192.168.1.20?']
-    D --> E[主机B: 192.168.1.20<br/>单播 ARP Reply<br/>'I am at AA:BB:CC:DD:EE:FF']
-    E --> F[更新ARP表<br/>封装帧发送]
+ A[主机A要向 192.168.1.20 发数据] --> B[查ARP表]
+ B -->|找到| C[直接用该MAC封装帧]
+ B -->|未找到| D[广播 ARP Request<br/>'Who has 192.168.1.20?']
+ D --> E[主机B: 192.168.1.20<br/>单播 ARP Reply<br/>'I am at AA:BB:CC:DD:EE:FF']
+ E --> F[更新ARP表<br/>封装帧发送]
 ```
 
 **ARP 报文格式 (28 字节)**:
@@ -326,36 +326,36 @@ flowchart TD
 
 ```mermaid
 sequenceDiagram
-    participant H as Host A
-    participant T as Target B
-    H->>T: ICMP Echo Request (Type 8)<br/>TTL=64, ID=0x1234, Seq=1
-    T->>H: ICMP Echo Reply (Type 0)<br/>ID=0x1234, Seq=1
-    Note over H: RTT = T_recv - T_send
+ participant H as Host A
+ participant T as Target B
+ H->>T: ICMP Echo Request (Type 8)<br/>TTL=64, ID=0x1234, Seq=1
+ T->>H: ICMP Echo Reply (Type 0)<br/>ID=0x1234, Seq=1
+ Note over H: RTT = T_recv - T_send
 ```
 
 #### Traceroute 过程
 
 ```mermaid
 sequenceDiagram
-    participant S as 源主机
-    participant R1 as 路由器1
-    participant R2 as 路由器2
-    participant D as 目的主机
+ participant S as 源主机
+ participant R1 as 路由器1
+ participant R2 as 路由器2
+ participant D as 目的主机
 
-    S->>R1: UDP, TTL=1, Port=33434
-    R1-->>S: ICMP TTL Expired (Type 11)
-    Note over S: RTT to hop 1
+ S->>R1: UDP, TTL=1, Port=33434
+ R1-->>S: ICMP TTL Expired (Type 11)
+ Note over S: RTT to hop 1
 
-    S->>R2: UDP, TTL=2, Port=33435
-    R1->>R2: 转发
-    R2-->>S: ICMP TTL Expired (Type 11)
-    Note over S: RTT to hop 2
+ S->>R2: UDP, TTL=2, Port=33435
+ R1->>R2: 转发
+ R2-->>S: ICMP TTL Expired (Type 11)
+ Note over S: RTT to hop 2
 
-    S->>D: UDP, TTL=3, Port=33436
-    R1->>R2: 转发
-    R2->>D: 转发
-    D-->>S: ICMP Port Unreachable (Type 3 Code 3)
-    Note over S: Destination reached!
+ S->>D: UDP, TTL=3, Port=33436
+ R1->>R2: 转发
+ R2->>D: 转发
+ D-->>S: ICMP Port Unreachable (Type 3 Code 3)
+ Note over S: Destination reached!
 ```
 
 ---
@@ -364,22 +364,22 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant C as Client (0.0.0.0:68)
-    participant S as Server (255.255.255.255:67)
+ participant C as Client (0.0.0.0:68)
+ participant S as Server (255.255.255.255:67)
 
-    Note over C: DHCPDISCOVER
-    C->>S: UDP: 0.0.0.0:68 → 255.255.255.255:67<br/>Broadcast<br/>"I need an IP!"
+ Note over C: DHCPDISCOVER
+ C->>S: UDP: 0.0.0.0:68 → 255.255.255.255:67<br/>Broadcast<br/>"I need an IP!"
 
-    Note over S: DHCPOFFER
-    S->>C: UDP: server_ip:67 → 255.255.255.255:68<br/>Broadcast<br/>"Use 192.168.1.10 for 86400s"
+ Note over S: DHCPOFFER
+ S->>C: UDP: server_ip:67 → 255.255.255.255:68<br/>Broadcast<br/>"Use 192.168.1.10 for 86400s"
 
-    Note over C: DHCPREQUEST
-    C->>S: UDP: 0.0.0.0:68 → 255.255.255.255:67<br/>Broadcast<br/>"I'll take 192.168.1.10"
+ Note over C: DHCPREQUEST
+ C->>S: UDP: 0.0.0.0:68 → 255.255.255.255:67<br/>Broadcast<br/>"I'll take 192.168.1.10"
 
-    Note over S: DHCPACK
-    S->>C: UDP: server_ip:67 → 255.255.255.255:68<br/>Broadcast<br/>"Confirmed: 192.168.1.10<br/>Mask: 255.255.255.0<br/>Gw: 192.168.1.1<br/>DNS: 8.8.8.8<br/>Lease: 86400s"
+ Note over S: DHCPACK
+ S->>C: UDP: server_ip:67 → 255.255.255.255:68<br/>Broadcast<br/>"Confirmed: 192.168.1.10<br/>Mask: 255.255.255.0<br/>Gw: 192.168.1.1<br/>DNS: 8.8.8.8<br/>Lease: 86400s"
 
-    Note over C: 绑定完成 (Bound state)
+ Note over C: 绑定完成 (Bound state)
 ```
 
 **DORA 四步骤**: Discover → Offer → Request → Acknowledge
@@ -392,15 +392,15 @@ sequenceDiagram
 
 ```mermaid
 graph LR
-    A((A)) ---|4| B((B))
-    A ---|2| C((C))
-    B ---|1| C
-    B ---|5| D((D))
-    C ---|8| D
-    C ---|10| E((E))
-    D ---|2| E
-    D ---|6| F((F))
-    E ---|3| F
+ A((A)) ---|4| B((B))
+ A ---|2| C((C))
+ B ---|1| C
+ B ---|5| D((D))
+ C ---|8| D
+ C ---|10| E((E))
+ D ---|2| E
+ D ---|6| F((F))
+ E ---|3| F
 ```
 
 **Dijkstra 工作示例** (源=A):
@@ -439,9 +439,9 @@ $$
 
 | 节点 | A | B | C | D |
 |------|---|---|---|---|
-| A | 0 | 1 | 3 | ∞ |  (via A→B→C = 1+2=3)
-| B | 1 | 0 | 2 | 3 |  (via B→C→D = 2+1=3)
-| C | 3 | 2 | 0 | 1 |  (via C→B→A = 2+1=3)
+| A | 0 | 1 | 3 | ∞ | (via A→B→C = 1+2=3)
+| B | 1 | 0 | 2 | 3 | (via B→C→D = 2+1=3)
+| C | 3 | 2 | 0 | 1 | (via C→B→A = 2+1=3)
 | D | ∞ | 3 | 1 | 0 |
 
 **无穷计数 (Count-to-Infinity) 问题**:
@@ -451,9 +451,9 @@ $$
 A认为到C: A→B→C = 2
 
 若B-C链路断开:
-  B收到C的无穷通告 → B到C: ∞
-  但A的DV说 '我到C=2' → B认为 'A→B→C需要A到B(1) + A告知到C(2)=3' (!!)
-  → B更新为3, 告知A → A更新为4... → 无限递增 → 计到无穷
+ B收到C的无穷通告 → B到C: ∞
+ 但A的DV说 '我到C=2' → B认为 'A→B→C需要A到B(1) + A告知到C(2)=3' (!!)
+ → B更新为3, 告知A → A更新为4... → 无限递增 → 计到无穷
 ```
 
 **解决方案**:
@@ -490,18 +490,18 @@ A认为到C: A→B→C = 2
 
 ```mermaid
 graph TD
-    subgraph Area0["Area 0 (Backbone)"]
-        ABR1[ABR Router A]
-        ABR2[ABR Router B]
-    end
-    subgraph Area1["Area 1 (Stub)"]
-        R1[Router X] --- ABR1
-        R2[Router Y] --- ABR1
-    end
-    subgraph Area2["Area 2"]
-        ABR2 --- R3[Router Z]
-    end
-    ABR1 <-->|Inter-Area Routes| ABR2
+ subgraph Area0["Area 0 (Backbone)"]
+ ABR1[ABR Router A]
+ ABR2[ABR Router B]
+ end
+ subgraph Area1["Area 1 (Stub)"]
+ R1[Router X] --- ABR1
+ R2[Router Y] --- ABR1
+ end
+ subgraph Area2["Area 2"]
+ ABR2 --- R3[Router Z]
+ end
+ ABR1 <-->|Inter-Area Routes| ABR2
 ```
 
 | LSA 类型 | 名称 | 通告者 | 泛洪范围 |
@@ -522,11 +522,11 @@ graph TD
 - **路径矢量** 协议, TCP 端口 179
 - eBGP: 不同 AS 间, 直连邻居; iBGP: 同一 AS 内, full mesh 或 Route Reflector
 - **属性**:
-  - AS_PATH: 经过的 AS 列表 (防环 + 路径选择)
-  - NEXT_HOP: 下一跳 IP
-  - LOCAL_PREF: 本地偏好 (值大优先), AS 内有效
-  - MED (Multi-Exit Discriminator): 多出口区分 (值小优先), 发给邻居 AS
-  - Origin: IGP < EGP < Incomplete
+ - AS_PATH: 经过的 AS 列表 (防环 + 路径选择)
+ - NEXT_HOP: 下一跳 IP
+ - LOCAL_PREF: 本地偏好 (值大优先), AS 内有效
+ - MED (Multi-Exit Discriminator): 多出口区分 (值小优先), 发给邻居 AS
+ - Origin: IGP < EGP < Incomplete
 
 #### 三层路由协议对比
 
@@ -584,39 +584,39 @@ CNI (Container Network Interface) 插件负责为容器分配 IP 地址:
 
 ```json
 {
-  "cniVersion": "0.3.1",
-  "name": "mynet",
-  "type": "bridge",
-  "bridge": "cni0",
-  "ipam": {
-    "type": "host-local",
-    "subnet": "10.244.0.0/16",
-    "rangeStart": "10.244.1.1",
-    "rangeEnd": "10.244.1.254",
-    "routes": [
-      { "dst": "0.0.0.0/0" }
-    ]
-  }
+ "cniVersion": "0.3.1",
+ "name": "mynet",
+ "type": "bridge",
+ "bridge": "cni0",
+ "ipam": {
+ "type": "host-local",
+ "subnet": "10.244.0.0/16",
+ "rangeStart": "10.244.1.1",
+ "rangeEnd": "10.244.1.254",
+ "routes": [
+ { "dst": "0.0.0.0/0" }
+ ]
+ }
 }
 ```
 
 #### Overlay 路由
 
 ```
-Pod A (10.244.1.5) on Node-1  →  Pod B (10.244.2.6) on Node-2
+Pod A (10.244.1.5) on Node-1 → Pod B (10.244.2.6) on Node-2
 
 Flannel VXLAN:
-  ┌──────────┐         ┌──────────┐
-  │ Node-1   │         │ Node-2   │
-  │  ┌─────┐ │         │  ┌─────┐ │
-  │  │Pod A│ │ VXLAN   │  │Pod B│ │
-  │  └──┬──┘ │ tunnel  │  └──┬──┘ │
-  │     │    │<=======>│     │    │
-  │  flannel1│         │  flannel1│
-  │ 10.244.1.0/24      │ 10.244.2.0/24
-  │     │    │         │     │    │
-  │   eth0   │         │   eth0   │
-  └──────────┘         └──────────┘
+ ┌──────────┐ ┌──────────┐
+ │ Node-1 │ │ Node-2 │
+ │ ┌─────┐ │ │ ┌─────┐ │
+ │ │Pod A│ │ VXLAN │ │Pod B│ │
+ │ └──┬──┘ │ tunnel │ └──┬──┘ │
+ │ │ │<=======>│ │ │
+ │ flannel1│ │ flannel1│
+ │ 10.244.1.0/24 │ 10.244.2.0/24
+ │ │ │ │ │ │
+ │ eth0 │ │ eth0 │
+ └──────────┘ └──────────┘
 ```
 
 原始 IP 包 (10.244.1.5 → 10.244.2.6) 被封装在 VXLAN (UDP 4789) 中，外层 IP = Node 物理 IP。
@@ -625,18 +625,18 @@ Flannel VXLAN:
 
 ```mermaid
 flowchart LR
-    subgraph iptables模式
-        direction TB
-        I1["SERVICE Chain<br/>-j KUBE-SVC-xxx"]
-        I2["KUBE-SVC-xxx<br/>random --probability<br/>-j KUBE-SEP-yyy"]
-        I3["KUBE-SEP-yyy<br/>DNAT to Pod IP:Port"]
-    end
-    subgraph IPVS模式
-        direction TB
-        P1["IPVS Virtual Server<br/>VIP:Port"]
-        P2["Scheduler: rr/wrr/lc/..."
-        P3["Real Server: Pod IP:Port"]
-    end
+ subgraph iptables模式
+ direction TB
+ I1["SERVICE Chain<br/>-j KUBE-SVC-xxx"]
+ I2["KUBE-SVC-xxx<br/>random --probability<br/>-j KUBE-SEP-yyy"]
+ I3["KUBE-SEP-yyy<br/>DNAT to Pod IP:Port"]
+ end
+ subgraph IPVS模式
+ direction TB
+ P1["IPVS Virtual Server<br/>VIP:Port"]
+ P2["Scheduler: rr/wrr/lc/..."
+ P3["Real Server: Pod IP:Port"]
+ end
 ```
 
 | 维度 | iptables | IPVS |
@@ -659,24 +659,24 @@ flowchart LR
 #include <arpa/inet.h>
 
 int main() {
-    int sock = socket(AF_INET, SOCK_DGRAM, 0);
+ int sock = socket(AF_INET, SOCK_DGRAM, 0);
 
-    int ttl;
-    socklen_t len = sizeof(ttl);
-    if (getsockopt(sock, IPPROTO_IP, IP_TTL, &ttl, &len) == 0)
-        printf("Default TTL: %d\n", ttl);
+ int ttl;
+ socklen_t len = sizeof(ttl);
+ if (getsockopt(sock, IPPROTO_IP, IP_TTL, &ttl, &len) == 0)
+ printf("Default TTL: %d\n", ttl);
 
-    /* 等价于 cat /proc/sys/net/ipv4/ip_default_ttl */
+ /* 等价于 cat /proc/sys/net/ipv4/ip_default_ttl */
 
-    int forwarding;
-    len = sizeof(forwarding);
-    if (getsockopt(sock, IPPROTO_IP, IP_RECVERR, &forwarding, &len) == 0)
-        printf("(sent dummy query...)\n");
+ int forwarding;
+ len = sizeof(forwarding);
+ if (getsockopt(sock, IPPROTO_IP, IP_RECVERR, &forwarding, &len) == 0)
+ printf("(sent dummy query...)\n");
 
-    /* 等价于 cat /proc/sys/net/ipv4/ip_forward */
+ /* 等价于 cat /proc/sys/net/ipv4/ip_forward */
 
-    close(sock);
-    return 0;
+ close(sock);
+ return 0;
 }
 ```
 

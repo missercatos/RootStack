@@ -9,12 +9,12 @@
 
 ```mermaid
 graph LR
-    C1["客户端 1"] -->|"请求"| S["服务器 (固定IP+端口)"]
-    C2["客户端 2"] -->|"请求"| S
-    C3["客户端 3"] -->|"请求"| S
-    S -->|"响应"| C1
-    S -->|"响应"| C2
-    S -->|"响应"| C3
+ C1["客户端 1"] -->|"请求"| S["服务器 (固定IP+端口)"]
+ C2["客户端 2"] -->|"请求"| S
+ C3["客户端 3"] -->|"请求"| S
+ S -->|"响应"| C1
+ S -->|"响应"| C2
+ S -->|"响应"| C3
 ```
 
 | 优点 | 缺点 |
@@ -27,11 +27,11 @@ graph LR
 
 ```mermaid
 graph LR
-    A["Peer A"] <-->|"直接通信"| B["Peer B"]
-    A <--> C["Peer C"]
-    B <--> C
-    B <--> D["Peer D"]
-    C <--> D
+ A["Peer A"] <-->|"直接通信"| B["Peer B"]
+ A <--> C["Peer C"]
+ B <--> C
+ B <--> D["Peer D"]
+ C <--> D
 ```
 
 **非结构化 P2P**（Gnutella）：泛洪式查询，TTL 限制。简单但扩展性差。
@@ -40,13 +40,13 @@ graph LR
 
 ```mermaid
 graph TD
-    N0["N0 (0-3)"] --> N3["N3 (3-7)"]
-    N3 --> N7["N7 (7-11)"]
-    N7 --> N14["N14 (11-0)"]
-    N14 --> N0
-    N0 -.->|"finger[1]=N3"| N3
-    N0 -.->|"finger[2]=N7"| N7
-    N0 -.->|"finger[3]=N14"| N14
+ N0["N0 (0-3)"] --> N3["N3 (3-7)"]
+ N3 --> N7["N7 (7-11)"]
+ N7 --> N14["N14 (11-0)"]
+ N14 --> N0
+ N0 -.->|"finger[1]=N3"| N3
+ N0 -.->|"finger[2]=N7"| N7
+ N0 -.->|"finger[3]=N14"| N14
 ```
 
 Chord 环：节点 ID 和 key 都用 SHA-1 散列到 m-bit 空间。查找 key 时沿环顺时针传递，finger table 实现 O(log N) 跳查找。[[../数据结构/D_容器_Container|散列表与一致性哈希]] 是 DHT 的核心数据结构。
@@ -65,11 +65,11 @@ DNS (RFC 1034/1035) 将人类可读的域名解析为机器可路由的 IP 地�
 ```
 根域 (.)
 └── 顶级域 (TLD): .com .org .net .cn .io .dev ...
-    ├── 二级域: example.com, google.com
-    │   ├── 子域: www.example.com
-    │   │   └── 更深子域: api.www.example.com
-    │   └── mail.example.com
-    └── ...
+ ├── 二级域: example.com, google.com
+ │ ├── 子域: www.example.com
+ │ │ └── 更深子域: api.www.example.com
+ │ └── mail.example.com
+ └── ...
 ```
 
 FQDN (Fully Qualified Domain Name) 以点结尾：`www.example.com.`
@@ -78,22 +78,22 @@ FQDN (Fully Qualified Domain Name) 以点结尾：`www.example.com.`
 
 ```mermaid
 sequenceDiagram
-    participant C as 客户端 (stub resolver)
-    participant LR as 本地 DNS (递归解析器)
-    participant ROOT as 根 DNS (.root-servers.net)
-    participant TLD as .com TLD DNS
-    participant AUTH as example.com 权威 DNS
+ participant C as 客户端 (stub resolver)
+ participant LR as 本地 DNS (递归解析器)
+ participant ROOT as 根 DNS (.root-servers.net)
+ participant TLD as .com TLD DNS
+ participant AUTH as example.com 权威 DNS
 
-    C->>LR: A? www.example.com (递归查询)
-    LR->>ROOT: A? www.example.com (迭代查询)
-    ROOT-->>LR: 去问 .com NS (a.gtld-servers.net)
-    LR->>TLD: A? www.example.com (迭代查询)
-    TLD-->>LR: 去问 example.com NS (ns1.example.com)
-    LR->>AUTH: A? www.example.com (迭代查询)
-    AUTH-->>LR: A = 93.184.216.34
-    LR-->>C: A = 93.184.216.34 (递归结果)
+ C->>LR: A? www.example.com (递归查询)
+ LR->>ROOT: A? www.example.com (迭代查询)
+ ROOT-->>LR: 去问 .com NS (a.gtld-servers.net)
+ LR->>TLD: A? www.example.com (迭代查询)
+ TLD-->>LR: 去问 example.com NS (ns1.example.com)
+ LR->>AUTH: A? www.example.com (迭代查询)
+ AUTH-->>LR: A = 93.184.216.34
+ LR-->>C: A = 93.184.216.34 (递归结果)
 
-    Note over LR: 缓存: example.com NS, www.example.com A (TTL=300s)
+ Note over LR: 缓存: example.com NS, www.example.com A (TTL=300s)
 ```
 
 #### 递归 vs 迭代查询
@@ -146,8 +146,8 @@ packet-beta
 
 ```bash
 # Linux 上 local stub resolver 缓存由 systemd-resolved 或 nscd 管理
-resolvectl query example.com     # systemd-resolved
-systemd-resolve --flush-caches   # 清除缓存
+resolvectl query example.com # systemd-resolved
+systemd-resolve --flush-caches # 清除缓存
 
 # DNS TTL 由权威服务器设定
 # 递归解析器按 TTL 续缓存记录
@@ -165,7 +165,7 @@ systemd-resolve --flush-caches   # 清除缓存
 ```bash
 # DoH 示例 (curl)
 curl -H 'accept: application/dns-json' \
-  'https://cloudflare-dns.com/dns-query?name=example.com&type=A'
+ 'https://cloudflare-dns.com/dns-query?name=example.com&type=A'
 ```
 
 #### 红队视角
@@ -205,18 +205,18 @@ packet-beta
 
 ```
 请求格式:
-  METHOD /path HTTP/1.1\r\n
-  Header-Field: value\r\n
-  ...
-  \r\n
-  [body]
+ METHOD /path HTTP/1.1\r\n
+ Header-Field: value\r\n
+ ...
+ \r\n
+ [body]
 
 响应格式:
-  HTTP/1.1 200 OK\r\n
-  Header-Field: value\r\n
-  ...
-  \r\n
-  [body]
+ HTTP/1.1 200 OK\r\n
+ Header-Field: value\r\n
+ ...
+ \r\n
+ [body]
 ```
 
 #### HTTP 请求方法
@@ -265,13 +265,13 @@ packet-beta
 
 ```mermaid
 sequenceDiagram
-    participant C as 浏览器
-    participant S as 服务器
-    C->>S: POST /login (username+password)
-    S-->>C: Set-Cookie: session_id=K7x9...; HttpOnly; Secure
-    Note over C: 存储 Cookie
-    C->>S: GET /dashboard\nCookie: session_id=K7x9...
-    S-->>C: 200 OK (识别用户身份)
+ participant C as 浏览器
+ participant S as 服务器
+ C->>S: POST /login (username+password)
+ S-->>C: Set-Cookie: session_id=K7x9...; HttpOnly; Secure
+ Note over C: 存储 Cookie
+ C->>S: GET /dashboard\nCookie: session_id=K7x9...
+ S-->>C: 200 OK (识别用户身份)
 ```
 
 | Cookie 属性 | 含义 |
@@ -297,23 +297,23 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant C as FTP 客户端
-    participant S as FTP 服务器
-    Note over C,S: 控制连接: port 21 (持久)
-    C->>S: TCP connect to port 21
-    S-->>C: 220 Welcome
+ participant C as FTP 客户端
+ participant S as FTP 服务器
+ Note over C,S: 控制连接: port 21 (持久)
+ C->>S: TCP connect to port 21
+ S-->>C: 220 Welcome
 
-    Note over C: 主动模式 (Active)
-    C->>S: PORT 192,168,1,5,14,178\n(IP=192.168.1.5, Port=14*256+178=3762)
-    S-->>C: 200 PORT command OK
-    S->>C: TCP connect from port 20 to 192.168.1.5:3762
-    Note over C,S: 数据连接: S 的 port 20 → C 的随机端口
+ Note over C: 主动模式 (Active)
+ C->>S: PORT 192,168,1,5,14,178\n(IP=192.168.1.5, Port=14*256+178=3762)
+ S-->>C: 200 PORT command OK
+ S->>C: TCP connect from port 20 to 192.168.1.5:3762
+ Note over C,S: 数据连接: S 的 port 20 → C 的随机端口
 
-    Note over C: 被动模式 (Passive) -- 常用
-    C->>S: PASV
-    S-->>C: 227 Entering Passive Mode (192,168,1,10,15,100)\n(Port=15*256+100=3940)
-    C->>S: TCP connect to 192.168.1.10:3940
-    Note over C,S: 数据连接: C 的随机端口 → S 的随机端口
+ Note over C: 被动模式 (Passive) -- 常用
+ C->>S: PASV
+ S-->>C: 227 Entering Passive Mode (192,168,1,10,15,100)\n(Port=15*256+100=3940)
+ C->>S: TCP connect to 192.168.1.10:3940
+ Note over C,S: 数据连接: C 的随机端口 → S 的随机端口
 ```
 
 | 模式 | 谁监听 | 谁连接 | 防火墙友好度 |
@@ -325,18 +325,18 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant UA as 发件人 MUA (邮件客户端)
-    participant MSA as 发送方 SMTP 服务器 (MSA, :587)
-    participant MX as 接收方 MX 服务器 (:25)
-    participant MDA as 接收方邮件存储 (MDA)
-    participant UA2 as 收件人 MUA (邮件客户端)
+ participant UA as 发件人 MUA (邮件客户端)
+ participant MSA as 发送方 SMTP 服务器 (MSA, :587)
+ participant MX as 接收方 MX 服务器 (:25)
+ participant MDA as 接收方邮件存储 (MDA)
+ participant UA2 as 收件人 MUA (邮件客户端)
 
-    UA->>MSA: SMTP AUTH + MAIL FROM + RCPT TO + DATA
-    Note over UA,MSA: MIME 编码附件 (Base64)
-    MSA->>MX: SMTP 中继 (DNS MX 记录路由)
-    MX->>MDA: 投递到邮箱 (本地投递: LMTP/procmail)
-    UA2->>MDA: POP3 (:110) 或 IMAP (:143) 收取
-    MDA-->>UA2: 返回邮件列表/内容
+ UA->>MSA: SMTP AUTH + MAIL FROM + RCPT TO + DATA
+ Note over UA,MSA: MIME 编码附件 (Base64)
+ MSA->>MX: SMTP 中继 (DNS MX 记录路由)
+ MX->>MDA: 投递到邮箱 (本地投递: LMTP/procmail)
+ UA2->>MDA: POP3 (:110) 或 IMAP (:143) 收取
+ MDA-->>UA2: 返回邮件列表/内容
 ```
 
 #### 协议对比
@@ -379,18 +379,18 @@ DHCP (RFC 2131) 为终端自动分配 IP 地址、子网掩码、网关、DNS。
 
 ```mermaid
 sequenceDiagram
-    participant C as 客户端 (无IP, 广播)
-    participant RELAY as 中继代理 (路由接口)
-    participant DHCP as DHCP 服务器 (远端)
+ participant C as 客户端 (无IP, 广播)
+ participant RELAY as 中继代理 (路由接口)
+ participant DHCP as DHCP 服务器 (远端)
 
-    C->>RELAY: DHCP Discover (UD P广播, src=0.0.0.0:68, dst=255.255.255.255:67)
-    RELAY->>DHCP: DHCP Discover (单播, GIADDR=RELAY_IP, 通过GIADDR告知服务器客户端所在子网)
-    DHCP-->>RELAY: DHCP Offer (单播)
-    RELAY-->>C: DHCP Offer (广播/单播到客户端子网)
-    C->>RELAY: DHCP Request
-    RELAY->>DHCP: DHCP Request (单播)
-    DHCP-->>RELAY: DHCP ACK
-    RELAY-->>C: DHCP ACK
+ C->>RELAY: DHCP Discover (UD P广播, src=0.0.0.0:68, dst=255.255.255.255:67)
+ RELAY->>DHCP: DHCP Discover (单播, GIADDR=RELAY_IP, 通过GIADDR告知服务器客户端所在子网)
+ DHCP-->>RELAY: DHCP Offer (单播)
+ RELAY-->>C: DHCP Offer (广播/单播到客户端子网)
+ C->>RELAY: DHCP Request
+ RELAY->>DHCP: DHCP Request (单播)
+ DHCP-->>RELAY: DHCP ACK
+ RELAY-->>C: DHCP ACK
 ```
 
 ### 对容器的意义
@@ -408,30 +408,30 @@ sequenceDiagram
 ```bash
 # 进入 Pod 的 DNS 配置
 cat /etc/resolv.conf
-# nameserver 10.96.0.10  (kube-dns service ClusterIP)
+# nameserver 10.96.0.10 (kube-dns service ClusterIP)
 # search default.svc.cluster.local svc.cluster.local cluster.local
-# ndots:5  (非 FQDN 的超时重试策略)
+# ndots:5 (非 FQDN 的超时重试策略)
 ```
 
 **HTTP 负载均衡与服务网格**：
 
 ```mermaid
 graph LR
-    USER["外部用户"] -->|HTTPS| LB["K8s Ingress / LoadBalancer"]
-    LB -->|HTTP| SVC["Service (ClusterIP)"]
-    SVC --> P1["Pod 1 (app: v1)"]
-    SVC --> P2["Pod 2 (app: v1)"]
-    SVC --> P3["Pod 3 (app: v1)"]
+ USER["外部用户"] -->|HTTPS| LB["K8s Ingress / LoadBalancer"]
+ LB -->|HTTP| SVC["Service (ClusterIP)"]
+ SVC --> P1["Pod 1 (app: v1)"]
+ SVC --> P2["Pod 2 (app: v1)"]
+ SVC --> P3["Pod 3 (app: v1)"]
 
-    SIDECAR1["Envoy sidecar"] -.-> P1
-    SIDECAR2["Envoy sidecar"] -.-> P2
-    SIDECAR3["Envoy sidecar"] -.-> P3
+ SIDECAR1["Envoy sidecar"] -.-> P1
+ SIDECAR2["Envoy sidecar"] -.-> P2
+ SIDECAR3["Envoy sidecar"] -.-> P3
 
-    subgraph "Service Mesh (Istio)"
-        SIDECAR1
-        SIDECAR2
-        SIDECAR3
-    end
+ subgraph "Service Mesh (Istio)"
+ SIDECAR1
+ SIDECAR2
+ SIDECAR3
+ end
 ```
 
 Ingress 实现 L7 负载均衡（基于 Host/Path 路由），Envoy/Istio 在应用层代理间实现 mTLS、流量分担、熔断、可观测性。所有机制均构建在 HTTP/1.1 和 HTTP/2 协议之上。

@@ -9,19 +9,19 @@
 ```
 QuickShell ≠ 合成器
 QuickShell = Wayland 协议客户端的高级 Rust 封装
-            让你像写 Flutter/DOM 一样写 Wayland 组件
+ 让你像写 Flutter/DOM 一样写 Wayland 组件
 
 可以构建：
 ┌──────────────┬──────────────────────┐
-│ 面板/任务栏  │ waybar 替代          │
-│ 启动器       │ fuzzel/rofi 替代     │
-│ 通知中心     │ mako/dunst 替代      │
-│ 锁屏         │ swaylock 替代        │
-│ OSD 音量     │ 音量弹窗             │
-│ 桌面对话框   │ zenity 替代          │
-│ 日历弹出窗   │                      │
-│ 剪贴板管理   │ clipman 替代         │
-│ 键盘布局指示 │                      │
+│ 面板/任务栏 │ waybar 替代 │
+│ 启动器 │ fuzzel/rofi 替代 │
+│ 通知中心 │ mako/dunst 替代 │
+│ 锁屏 │ swaylock 替代 │
+│ OSD 音量 │ 音量弹窗 │
+│ 桌面对话框 │ zenity 替代 │
+│ 日历弹出窗 │ │
+│ 剪贴板管理 │ clipman 替代 │
+│ 键盘布局指示 │ │
 └──────────────┴──────────────────────┘
 ```
 
@@ -48,9 +48,9 @@ quickshell = "0.2"
 use quickshell::prelude::*;
 
 fn main() {
-    // 初始化 Wayland 连接
-    let app = QmlApplication::new("my-shell");
-    app.run();
+ // 初始化 Wayland 连接
+ let app = QmlApplication::new("my-shell");
+ app.run();
 }
 ```
 
@@ -66,15 +66,15 @@ cargo run
 ```
 场景图 (Scene Graph) 架构：
 
-Window  ← 窗口（layer shell / xdg toplevel）
-  └── Item  ← 可渲染元素
-       ├── Text      ← 文本渲染
-       ├── Rectangle ← 矩形（颜色/渐变/圆角）
-       ├── Image     ← 图片
-       ├── Row       ← 水平布局
-       ├── Column    ← 垂直布局
-       ├── Layout    ← 自定义布局
-       └── MouseArea ← 鼠标交互
+Window ← 窗口（layer shell / xdg toplevel）
+ └── Item ← 可渲染元素
+ ├── Text ← 文本渲染
+ ├── Rectangle ← 矩形（颜色/渐变/圆角）
+ ├── Image ← 图片
+ ├── Row ← 水平布局
+ ├── Column ← 垂直布局
+ ├── Layout ← 自定义布局
+ └── MouseArea ← 鼠标交互
 
 属性系统（类似 QML 绑定）：
 - 属性值变化自动重新渲染
@@ -88,84 +88,84 @@ Window  ← 窗口（layer shell / xdg toplevel）
 
 ```rust
 use quickshell::{
-    prelude::*,
-    wayland::layer_shell::{LayerShell, Anchor, Layer, KeyboardInteractivity},
-    widgets::{Rectangle, Row, Text, MouseArea},
-    properties::{prop, Property},
-    build::*,
+ prelude::*,
+ wayland::layer_shell::{LayerShell, Anchor, Layer, KeyboardInteractivity},
+ widgets::{Rectangle, Row, Text, MouseArea},
+ properties::{prop, Property},
+ build::*,
 };
 
 fn main() {
-    let app = QmlApplication::new("mypanel");
+ let app = QmlApplication::new("mypanel");
 
-    // 创建面板窗口（使用 Layer Shell 协议）
-    let panel = LayerShell::new(Anchor::TOP | Anchor::LEFT | Anchor::RIGHT);
+ // 创建面板窗口（使用 Layer Shell 协议）
+ let panel = LayerShell::new(Anchor::TOP | Anchor::LEFT | Anchor::RIGHT);
 
-    // 设置高度
-    panel.set_exclusive_zone(36);    // 独占 36px 高度
-    panel.set_layer(Layer::Top);     // 顶层（在窗口之上）
+ // 设置高度
+ panel.set_exclusive_zone(36); // 独占 36px 高度
+ panel.set_layer(Layer::Top); // 顶层（在窗口之上）
 
-    // 键盘交互（需要的话）
-    panel.set_keyboard_interactivity(KeyboardInteractivity::OnDemand);
+ // 键盘交互（需要的话）
+ panel.set_keyboard_interactivity(KeyboardInteractivity::OnDemand);
 
-    // 背景
-    let background = Rectangle::new();
-    background.set_color(prop!(#1E1E2E));
-    background.set_height(prop!(36));
-    background.set_width(panel.width.clone());  // 绑定 = 面板宽度
+ // 背景
+ let background = Rectangle::new();
+ background.set_color(prop!(#1E1E2E));
+ background.set_height(prop!(36));
+ background.set_width(panel.width.clone()); // 绑定 = 面板宽度
 
-    // 水平布局
-    let row = Row::new();
-    row.set_height(prop!(36));
-    row.set_spacing(prop!(8.0));
-    row.set_padding(prop!([4, 8]));
+ // 水平布局
+ let row = Row::new();
+ row.set_height(prop!(36));
+ row.set_spacing(prop!(8.0));
+ row.set_padding(prop!([4, 8]));
 
-    // 左对齐的工作区
-    let workspaces = WorkspaceWidget::new();
-    row.add_child(workspaces);
+ // 左对齐的工作区
+ let workspaces = WorkspaceWidget::new();
+ row.add_child(workspaces);
 
-    // 弹性空间（推右边）
-    let spacer = Item::new();
-    spacer.set_expand(prop!(true));
-    row.add_child(spacer);
+ // 弹性空间（推右边）
+ let spacer = Item::new();
+ spacer.set_expand(prop!(true));
+ row.add_child(spacer);
 
-    // 右对齐的时钟
-    let clock = ClockWidget::new();
-    row.add_child(clock);
+ // 右对齐的时钟
+ let clock = ClockWidget::new();
+ row.add_child(clock);
 
-    // 组装
-    background.add_child(row);
-    panel.set_body(background);
+ // 组装
+ background.add_child(row);
+ panel.set_body(background);
 
-    app.run();
+ app.run();
 }
 
 // 时钟小组件
 struct ClockWidget {
-    item: Item,
-    text: Text,
+ item: Item,
+ text: Text,
 }
 
 impl ClockWidget {
-    fn new() -> Self {
-        let item = Item::new();
-        let text = Text::new();
-        text.set_text(prop!("Loading..."));
-        text.set_color(prop!(#CDD6F4));
-        text.set_font_size(prop!(14.0));
-        item.add_child(text);
+ fn new() -> Self {
+ let item = Item::new();
+ let text = Text::new();
+ text.set_text(prop!("Loading..."));
+ text.set_color(prop!(#CDD6F4));
+ text.set_font_size(prop!(14.0));
+ item.add_child(text);
 
-        // 定时器更新
-        let text_ref = text.clone();
-        std::thread::spawn(move || loop {
-            let now = chrono::Local::now();
-            let time_str = now.format("%H:%M").to_string();
-            text_ref.set_text(prop!(time_str));
-            std::thread::sleep(std::time::Duration::from_secs(30));
-        });
+ // 定时器更新
+ let text_ref = text.clone();
+ std::thread::spawn(move || loop {
+ let now = chrono::Local::now();
+ let time_str = now.format("%H:%M").to_string();
+ text_ref.set_text(prop!(time_str));
+ std::thread::sleep(std::time::Duration::from_secs(30));
+ });
 
-        Self { item, text }
-    }
+ Self { item, text }
+ }
 }
 ```
 
@@ -203,13 +203,13 @@ println!("{}", label.get()); // "Count: 5"
 let x = Var::new(10.0);
 let y = Var::new(20.0);
 let distance = Var::bind(&x, &y, |x, y| {
-    (x.powi(2) + y.powi(2)).sqrt()
+ (x.powi(2) + y.powi(2)).sqrt()
 });
 
 // ===== 应用到组件 =====
 let rect = Rectangle::new();
-rect.set_width(x.clone());           // 绑定到属性
-rect.set_height(distance.clone());   // 绑定到计算值
+rect.set_width(x.clone()); // 绑定到属性
+rect.set_height(distance.clone()); // 绑定到计算值
 ```
 
 ---
@@ -219,88 +219,88 @@ rect.set_height(distance.clone());   // 绑定到计算值
 ```rust
 // 完整启动器示例 — 类似 fuzzel
 use quickshell::{
-    prelude::*,
-    wayland::layer_shell::{LayerShell, Anchor, Layer, KeyboardInteractivity},
-    widgets::*,
-    properties::*,
+ prelude::*,
+ wayland::layer_shell::{LayerShell, Anchor, Layer, KeyboardInteractivity},
+ widgets::*,
+ properties::*,
 };
 
 struct AppEntry {
-    name: String,
-    exec: String,
-    icon: Option<String>,
+ name: String,
+ exec: String,
+ icon: Option<String>,
 }
 
 fn load_desktop_entries() -> Vec<AppEntry> {
-    // 解析 /usr/share/applications/*.desktop
-    let mut apps = Vec::new();
-    for entry in glob::glob("/usr/share/applications/*.desktop").unwrap() {
-        if let Ok(path) = entry {
-            if let Ok(content) = std::fs::read_to_string(&path) {
-                let mut name = String::new();
-                let mut exec = String::new();
-                for line in content.lines() {
-                    if line.starts_with("Name=") {
-                        name = line[5..].to_string();
-                    }
-                    if line.starts_with("Exec=") {
-                        exec = line[5..].to_string()
-                            .replace("%u", "")
-                            .replace("%U", "")
-                            .replace("%f", "")
-                            .replace("%F", "");
-                    }
-                }
-                if !name.is_empty() && !exec.is_empty() {
-                    apps.push(AppEntry { name, exec, icon: None });
-                }
-            }
-        }
-    }
-    apps
+ // 解析 /usr/share/applications/*.desktop
+ let mut apps = Vec::new();
+ for entry in glob::glob("/usr/share/applications/*.desktop").unwrap() {
+ if let Ok(path) = entry {
+ if let Ok(content) = std::fs::read_to_string(&path) {
+ let mut name = String::new();
+ let mut exec = String::new();
+ for line in content.lines() {
+ if line.starts_with("Name=") {
+ name = line[5..].to_string();
+ }
+ if line.starts_with("Exec=") {
+ exec = line[5..].to_string()
+ .replace("%u", "")
+ .replace("%U", "")
+ .replace("%f", "")
+ .replace("%F", "");
+ }
+ }
+ if !name.is_empty() && !exec.is_empty() {
+ apps.push(AppEntry { name, exec, icon: None });
+ }
+ }
+ }
+ }
+ apps
 }
 
 fn main() {
-    let app = QmlApplication::new("launcher");
+ let app = QmlApplication::new("launcher");
 
-    let window = LayerShell::new(
-        Anchor::TOP | Anchor::BOTTOM | Anchor::LEFT | Anchor::RIGHT
-    );
-    window.set_layer(Layer::Overlay);
-    window.set_keyboard_interactivity(KeyboardInteractivity::Exclusive);
+ let window = LayerShell::new(
+ Anchor::TOP | Anchor::BOTTOM | Anchor::LEFT | Anchor::RIGHT
+ );
+ window.set_layer(Layer::Overlay);
+ window.set_keyboard_interactivity(KeyboardInteractivity::Exclusive);
 
-    // 搜索框
-    let search_input = TextInput::new();
-    search_input.set_placeholder(prop!("Search..."));
-    search_input.set_font_size(prop!(18.0));
+ // 搜索框
+ let search_input = TextInput::new();
+ search_input.set_placeholder(prop!("Search..."));
+ search_input.set_font_size(prop!(18.0));
 
-    // 结果列表
-    let results_list = Column::new();
+ // 结果列表
+ let results_list = Column::new();
 
-    // 过滤逻辑
-    let all_apps = load_desktop_entries();
-    let query = Var::new(String::new());
+ // 过滤逻辑
+ let all_apps = load_desktop_entries();
+ let query = Var::new(String::new());
 
-    // search_input.on_text_changed → 更新 query
-    // query 变化 → 过滤 all_apps → 重建 results_list 子元素
+ // search_input.on_text_changed → 更新 query
+ // query 变化 → 过滤 all_apps → 重建 results_list 子元素
 
-    // 主布局
-    let main_col = Column::new();
-    main_col.set_alignment(Alignment::Center);
+ // 主布局
+ let main_col = Column::new();
+ main_col.set_alignment(Alignment::Center);
 
-    let container = Rectangle::new();
-    container.set_color(prop!(#1E1E2E));
-    container.set_width(prop!(600.0));
-    container.set_radius(prop!(12.0));
+ let container = Rectangle::new();
+ container.set_color(prop!(#1E1E2E));
+ container.set_width(prop!(600.0));
+ container.set_radius(prop!(12.0));
 
-    let inner = Column::new();
-    inner.add_child(search_input);
-    inner.add_child(results_list);
-    container.add_child(inner);
-    main_col.add_child(container);
+ let inner = Column::new();
+ inner.add_child(search_input);
+ inner.add_child(results_list);
+ container.add_child(inner);
+ main_col.add_child(container);
 
-    window.set_body(main_col);
-    app.run();
+ window.set_body(main_col);
+ app.run();
 }
 ```
 
@@ -314,39 +314,39 @@ use quickshell::dbus::*;
 use quickshell::widgets::*;
 
 struct NotificationWidget {
-    container: Rectangle,
-    title: Text,
-    body: Text,
-    icon: Image,
-    timeout: u32,
+ container: Rectangle,
+ title: Text,
+ body: Text,
+ icon: Image,
+ timeout: u32,
 }
 
 struct NotificationCenter {
-    notifications: Vec<NotificationWidget>,
-    list: Column,
-    // DBus 连接
-    dbus: DBusConnection,
+ notifications: Vec<NotificationWidget>,
+ list: Column,
+ // DBus 连接
+ dbus: DBusConnection,
 }
 
 impl NotificationCenter {
-    fn new() -> Self {
-        let dbus = DBusConnection::session();
+ fn new() -> Self {
+ let dbus = DBusConnection::session();
 
-        // 注册通知回调
-        dbus.register_notification_handler(|id, app_name, summary, body, timeout| {
-            let widget = NotificationWidget {
-                container: Rectangle::new(),
-                title: Text::new(prop!(summary)),
-                body: Text::new(prop!(body)),
-                icon: Image::new(),
-                timeout,
-            };
-            // 添加到通知列表
-            // ...
-        });
+ // 注册通知回调
+ dbus.register_notification_handler(|id, app_name, summary, body, timeout| {
+ let widget = NotificationWidget {
+ container: Rectangle::new(),
+ title: Text::new(prop!(summary)),
+ body: Text::new(prop!(body)),
+ icon: Image::new(),
+ timeout,
+ };
+ // 添加到通知列表
+ // ...
+ });
 
-        Self { notifications: Vec::new(), list: Column::new(), dbus }
-    }
+ Self { notifications: Vec::new(), list: Column::new(), dbus }
+ }
 }
 ```
 
@@ -359,75 +359,75 @@ impl NotificationCenter {
 use quickshell::wayland::workspace::*;
 
 struct WorkspaceIndicator {
-    row: Row,
-    current: Property<i32>,
+ row: Row,
+ current: Property<i32>,
 }
 
 impl WorkspaceIndicator {
-    fn new() -> Self {
-        let row = Row::new();
-        let current = Property::new(1);
+ fn new() -> Self {
+ let row = Row::new();
+ let current = Property::new(1);
 
-        // 监听工作区变化（需要合成器支持 hyprland-workspaces 或 ext-workspace）
-        // Hyprland 专用 IPC：
-        let socket = std::os::unix::net::UnixStream::connect(
-            format!("/tmp/hypr/{}/.socket2.sock",
-                    std::env::var("HYPRLAND_INSTANCE_SIGNATURE").unwrap())
-        ).unwrap();
+ // 监听工作区变化（需要合成器支持 hyprland-workspaces 或 ext-workspace）
+ // Hyprland 专用 IPC：
+ let socket = std::os::unix::net::UnixStream::connect(
+ format!("/tmp/hypr/{}/.socket2.sock",
+ std::env::var("HYPRLAND_INSTANCE_SIGNATURE").unwrap())
+ ).unwrap();
 
-        let current_ref = current.clone();
-        let row_ref = row.clone();
-        std::thread::spawn(move || {
-            use std::io::BufRead;
-            let reader = std::io::BufReader::new(socket);
-            for line in reader.lines() {
-                if let Ok(line) = line {
-                    if line.starts_with("workspace>>") {
-                        let ws: i32 = line[11..].parse().unwrap_or(1);
-                        current_ref.set(ws);
-                        // 更新工作区按钮高亮
-                    }
-                }
-            }
-        });
+ let current_ref = current.clone();
+ let row_ref = row.clone();
+ std::thread::spawn(move || {
+ use std::io::BufRead;
+ let reader = std::io::BufReader::new(socket);
+ for line in reader.lines() {
+ if let Ok(line) = line {
+ if line.starts_with("workspace>>") {
+ let ws: i32 = line[11..].parse().unwrap_or(1);
+ current_ref.set(ws);
+ // 更新工作区按钮高亮
+ }
+ }
+ }
+ });
 
-        // 创建 1-10 工作区按钮
-        for i in 1..=10 {
-            let button = WorkspaceButton::new(i, current.clone());
-            row.add_child(button);
-        }
+ // 创建 1-10 工作区按钮
+ for i in 1..=10 {
+ let button = WorkspaceButton::new(i, current.clone());
+ row.add_child(button);
+ }
 
-        Self { row, current }
-    }
+ Self { row, current }
+ }
 }
 
 struct WorkspaceButton {
-    item: Item,
-    text: Text,
-    num: i32,
+ item: Item,
+ text: Text,
+ num: i32,
 }
 
 impl WorkspaceButton {
-    fn new(num: i32, current: Property<i32>) -> Self {
-        let item = MouseArea::new();
-        let text = Text::new(prop!(num.to_string()));
+ fn new(num: i32, current: Property<i32>) -> Self {
+ let item = MouseArea::new();
+ let text = Text::new(prop!(num.to_string()));
 
-        // 绑定颜色：当前工作区高亮
-        let text_ref = text.clone();
-        current.watch(move |cur| {
-            if cur == num {
-                text_ref.set_color(prop!(#89B4FA));  // 高亮蓝色
-            } else {
-                text_ref.set_color(prop!(#585B70));  // 灰色
-            }
-        });
+ // 绑定颜色：当前工作区高亮
+ let text_ref = text.clone();
+ current.watch(move |cur| {
+ if cur == num {
+ text_ref.set_color(prop!(#89B4FA)); // 高亮蓝色
+ } else {
+ text_ref.set_color(prop!(#585B70)); // 灰色
+ }
+ });
 
-        // 点击切换工作区
-        let num_copy = num;
-        // item.on_click(move || dispatch_workspace(num_copy));
+ // 点击切换工作区
+ let num_copy = num;
+ // item.on_click(move || dispatch_workspace(num_copy));
 
-        Self { item, text, num }
-    }
+ Self { item, text, num }
+ }
 }
 ```
 
@@ -474,7 +474,7 @@ WantedBy=graphical-session.target
 // ===== Row（水平）=====
 let row = Row::new();
 row.set_spacing(prop!(8.0));
-row.set_padding(prop!([2, 8, 2, 8]));  // [top, right, bottom, left]
+row.set_padding(prop!([2, 8, 2, 8])); // [top, right, bottom, left]
 
 // ===== Column（垂直）=====
 let col = Column::new();
@@ -483,7 +483,7 @@ col.set_alignment(Alignment::Center);
 
 // ===== 弹性空间（Flexbox 风格）=====
 let spacer = Item::new();
-spacer.set_expand(prop!(true));           // 占据所有剩余空间
+spacer.set_expand(prop!(true)); // 占据所有剩余空间
 row.add_child(spacer);
 
 // ===== 嵌套 =====
@@ -500,9 +500,9 @@ row.add_child(close_button);
 // ===== 绝对定位 =====
 let overlay = Item::new();
 let popup = Rectangle::new();
-popup.set_x(prop!(100.0));      // 绝对位置
+popup.set_x(prop!(100.0)); // 绝对位置
 popup.set_y(prop!(50.0));
-popup.set_z(prop!(10));         // Z-序
+popup.set_z(prop!(10)); // Z-序
 overlay.add_child(popup);
 ```
 
@@ -518,7 +518,7 @@ let opacity = Animation::new(0.0, 1.0, Duration::from_millis(300));
 
 // 位置动画
 let x = Animation::new(-200.0, 0.0, Duration::from_millis(250))
-    .with_easing(Easing::OutCubic);
+ .with_easing(Easing::OutCubic);
 
 // 应用到组件
 let popup = Rectangle::new();
@@ -530,7 +530,7 @@ x.start();
 // 过渡（属性变化时自动动画）
 let is_open = Var::new(false);
 let height = is_open.transition(|open| {
-    if open { 200.0 } else { 0.0 }
+ if open { 200.0 } else { 0.0 }
 }, Duration::from_millis(300));
 ```
 
@@ -541,42 +541,42 @@ let height = is_open.transition(|open| {
 ```rust
 // 定义主题结构
 struct Theme {
-    bg: Color,
-    fg: Color,
-    accent: Color,
-    radius: f64,
-    font_size: f64,
-    font_family: String,
+ bg: Color,
+ fg: Color,
+ accent: Color,
+ radius: f64,
+ font_size: f64,
+ font_family: String,
 }
 
 impl Theme {
-    fn catppuccin_mocha() -> Self {
-        Self {
-            bg: Color::from_hex("#1E1E2E"),
-            fg: Color::from_hex("#CDD6F4"),
-            accent: Color::from_hex("#89B4FA"),
-            radius: 12.0,
-            font_size: 13.0,
-            font_family: "JetBrainsMono Nerd Font".into(),
-        }
-    }
+ fn catppuccin_mocha() -> Self {
+ Self {
+ bg: Color::from_hex("#1E1E2E"),
+ fg: Color::from_hex("#CDD6F4"),
+ accent: Color::from_hex("#89B4FA"),
+ radius: 12.0,
+ font_size: 13.0,
+ font_family: "JetBrainsMono Nerd Font".into(),
+ }
+ }
 
-    fn tokyo_night() -> Self {
-        Self {
-            bg: Color::from_hex("#1A1B26"),
-            fg: Color::from_hex("#A9B1D6"),
-            accent: Color::from_hex("#7AA2F7"),
-            radius: 8.0,
-            font_size: 14.0,
-            font_family: "FiraCode Nerd Font".into(),
-        }
-    }
+ fn tokyo_night() -> Self {
+ Self {
+ bg: Color::from_hex("#1A1B26"),
+ fg: Color::from_hex("#A9B1D6"),
+ accent: Color::from_hex("#7AA2F7"),
+ radius: 8.0,
+ font_size: 14.0,
+ font_family: "FiraCode Nerd Font".into(),
+ }
+ }
 }
 
 // 加载主题配置（从文件）
 fn load_theme(path: &str) -> Theme {
-    let content = std::fs::read_to_string(path).unwrap();
-    serde_json::from_str(&content).unwrap_or(Theme::catppuccin_mocha())
+ let content = std::fs::read_to_string(path).unwrap();
+ serde_json::from_str(&content).unwrap_or(Theme::catppuccin_mocha())
 }
 ```
 
@@ -591,41 +591,41 @@ use quickshell::wayland::layer_shell::*;
 use quickshell::widgets::*;
 use quickshell::properties::*;
 
-mod modules;  // clock, workspace, battery, network, tray
+mod modules; // clock, workspace, battery, network, tray
 
 fn main() {
-    let app = QmlApplication::new("mypanel");
-    let theme = Theme::load("~/.config/mypanel/theme.toml");
+ let app = QmlApplication::new("mypanel");
+ let theme = Theme::load("~/.config/mypanel/theme.toml");
 
-    let panel = LayerShell::new(Anchor::TOP | Anchor::LEFT | Anchor::RIGHT);
-    panel.set_exclusive_zone(theme.height);
-    panel.set_layer(Layer::Top);
+ let panel = LayerShell::new(Anchor::TOP | Anchor::LEFT | Anchor::RIGHT);
+ panel.set_exclusive_zone(theme.height);
+ panel.set_layer(Layer::Top);
 
-    let bg = Rectangle::new();
-    bg.set_color(prop!(theme.bg));
-    bg.set_height(prop!(theme.height));
+ let bg = Rectangle::new();
+ bg.set_color(prop!(theme.bg));
+ bg.set_height(prop!(theme.height));
 
-    let row = Row::new();
-    row.set_spacing(prop!(12.0));
-    row.set_padding(prop!([0, 12, 0, 12]));
+ let row = Row::new();
+ row.set_spacing(prop!(12.0));
+ row.set_padding(prop!([0, 12, 0, 12]));
 
-    // 左侧模块
-    row.add_child(modules::workspace::new());
-    row.add_child(modules::window_title::new());
+ // 左侧模块
+ row.add_child(modules::workspace::new());
+ row.add_child(modules::window_title::new());
 
-    // 弹性空间
-    let spacer = Item::new();
-    spacer.set_expand(prop!(true));
-    row.add_child(spacer);
+ // 弹性空间
+ let spacer = Item::new();
+ spacer.set_expand(prop!(true));
+ row.add_child(spacer);
 
-    // 右侧模块
-    row.add_child(modules::network::new());
-    row.add_child(modules::battery::new());
-    row.add_child(modules::clock::new());
+ // 右侧模块
+ row.add_child(modules::network::new());
+ row.add_child(modules::battery::new());
+ row.add_child(modules::clock::new());
 
-    bg.add_child(row);
-    panel.set_body(bg);
-    app.run();
+ bg.add_child(row);
+ panel.set_body(bg);
+ app.run();
 }
 ```
 
@@ -637,27 +637,27 @@ use quickshell::widgets::*;
 use quickshell::properties::*;
 
 pub struct Clock {
-    item: Item,
-    text: Text,
+ item: Item,
+ text: Text,
 }
 
 impl Clock {
-    pub fn new() -> Self {
-        let item = Item::new();
-        let text = Text::new();
-        text.set_font_size(prop!(13.0));
+ pub fn new() -> Self {
+ let item = Item::new();
+ let text = Text::new();
+ text.set_font_size(prop!(13.0));
 
-        // 定时更新
-        let t = text.clone();
-        std::thread::spawn(move || loop {
-            let now = chrono::Local::now();
-            t.set_text(prop!(now.format("%H:%M:%S").to_string()));
-            std::thread::sleep(std::time::Duration::from_secs(1));
-        });
+ // 定时更新
+ let t = text.clone();
+ std::thread::spawn(move || loop {
+ let now = chrono::Local::now();
+ t.set_text(prop!(now.format("%H:%M:%S").to_string()));
+ std::thread::sleep(std::time::Duration::from_secs(1));
+ });
 
-        item.add_child(text);
-        Self { item, text }
-    }
+ item.add_child(text);
+ Self { item, text }
+ }
 }
 ```
 
@@ -692,10 +692,10 @@ cargo watch -x run
 | | QuickShell | EWW | AGS | Waybar |
 |------|-----------|-----|-----|--------|
 | 语言 | Rust | Yuck(自定义) | TypeScript | JSON |
-| Wayland 原生 | ✓ | ✓ | ✓ | ✓ |
+| Wayland 原生 | | | | |
 | 自定义组件 | 完全自由 | Widget 系统 | Widget 系统 | 固定模块 |
 | 学习曲线 | 中（需 Rust） | 低 | 中（TS+GTK） | 低 |
-| 动画 | ✓ | ✓ 基础 | ✓ | ✗ |
+| 动画 | | 基础 | | |
 | 打包 | cargo + AUR | eww 解释器 | ags 运行 | waybar 配置 |
 | 适合场景 | 深度自定义面板/启动器 | 小工具/OSD | Widget 系统 | 简单状态栏 |
 ```
@@ -704,7 +704,7 @@ cargo watch -x run
 
 ## 15.16 本章测验
 
-> [!example] 📝 自测题目
+> [!example] 自测题目
 
 > [!question]- 选择题 1：QuickShell 是用什么语言编写的？
 > - A. C++
@@ -737,11 +737,11 @@ cargo watch -x run
 > > QuickShell 使用 Layer Shell 协议创建面板，通过设置 Anchor、exclusive_zone、Layer 等属性控制面板的位置和行为。
 
 > [!question]- 判断题 4：QuickShell 的属性系统支持自动绑定——一个属性值变化时，依赖它的属性会自动更新
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > QuickShell 的属性系统类似 QML 绑定，支持 Property、Var、map、watch 等机制，属性值变化自动触发依赖更新和重新渲染。
 
 > [!question]- 选择题 5：LayerShell 中 set_exclusive_zone(36) 的含义是什么？
@@ -775,11 +775,11 @@ cargo watch -x run
 > > OutCubic 缓动曲线表示先快后慢（减速效果），开始时快速运动然后逐渐减速到停止。
 
 > [!question]- 判断题 8：QuickShell 可以通过 cargo watch -x run 实现开发时热重载
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > 开发 QuickShell 组件时可以搭配 `cargo watch -x run` 实现代码变更后自动重新编译运行，模拟热重载体验。
 
 > [!question]- 选择题 9：QuickShell 相比 Waybar 的主要优势是什么？
@@ -793,9 +793,9 @@ cargo watch -x run
 > > QuickShell 允许完全自由地构建自定义组件（面板、启动器、通知中心等），而 Waybar 只提供固定模块的 JSON 配置。
 
 > [!question]- 判断题 10：QuickShell 中 Layer::Overlay 层级在 Layer::Top 之上，常用于需要独占键盘的启动器
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > Overlay 层在所有其他层之上，启动器通常使用 Layer::Overlay 并设置 KeyboardInteractivity::Exclusive 来独占键盘输入。

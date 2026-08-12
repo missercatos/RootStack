@@ -27,73 +27,73 @@ C++ 数值模块汇集了除随机数和时间之外的数学工具：`complex` 
 
 ```
 FUNCTION demo_complex:
-    a = COMPLEX<DOUBLE>(3.0, 4.0)              // 3 + 4i
-    b = COMPLEX<DOUBLE>(1.0, -2.0)             // 1 - 2i
+ a = COMPLEX<DOUBLE>(3.0, 4.0) // 3 + 4i
+ b = COMPLEX<DOUBLE>(1.0, -2.0) // 1 - 2i
 
-    c = a + b                                   // (4 + 2i)
-    d = a * b                                   // (3+4i)(1-2i) = 11 - 2i
+ c = a + b // (4 + 2i)
+ d = a * b // (3+4i)(1-2i) = 11 - 2i
 
-    mag = ABS(a)                                // |a| = 5
-    phase = ARG(a)                              // atan2(4,3) 弧度
-    conj = CONJ(a)                              // 共轭: 3 - 4i
-    PRINT a.REAL(), a.IMAG()                    // 3  4
+ mag = ABS(a) // |a| = 5
+ phase = ARG(a) // atan2(4,3) 弧度
+ conj = CONJ(a) // 共轭: 3 - 4i
+ PRINT a.REAL(), a.IMAG() // 3 4
 ```
 
 ### numeric_limits —— 类型边界
 
 ```
 FUNCTION demo_limits:
-    PRINT NUMERIC_LIMITS<INT>::MAX()            // 2147483647
-    PRINT NUMERIC_LIMITS<INT>::MIN()            // -2147483648
-    PRINT NUMERIC_LIMITS<DOUBLE>::EPSILON()     // 最小精度差
-    PRINT NUMERIC_LIMITS<DOUBLE>::INFINITY()
-    PRINT NUMERIC_LIMITS<DOUBLE>::QUIET_NAN()
+ PRINT NUMERIC_LIMITS<INT>::MAX() // 2147483647
+ PRINT NUMERIC_LIMITS<INT>::MIN() // -2147483648
+ PRINT NUMERIC_LIMITS<DOUBLE>::EPSILON() // 最小精度差
+ PRINT NUMERIC_LIMITS<DOUBLE>::INFINITY()
+ PRINT NUMERIC_LIMITS<DOUBLE>::QUIET_NAN()
 
-    IF NUMERIC_LIMITS<USHORT>::IS_SIGNED THEN
-        PRINT "有符号"
-    END IF
+ IF NUMERIC_LIMITS<USHORT>::IS_SIGNED THEN
+ PRINT "有符号"
+ END IF
 
-    PRINT "小数位数:", NUMERIC_LIMITS<DOUBLE>::DIGITS10  // 15
+ PRINT "小数位数:", NUMERIC_LIMITS<DOUBLE>::DIGITS10 // 15
 ```
 
 ### ratio —— 编译期有理数
 
 ```
 FUNCTION demo_ratio:
-    USING milli = RATIO<1, 1000>                // 1/1000
-    USING kilo  = RATIO<1000, 1>                // 1000/1
+ USING milli = RATIO<1, 1000> // 1/1000
+ USING kilo = RATIO<1000, 1> // 1000/1
 
-    // ratio 用于 chrono 的时长类型定义
-    // seconds  = duration<INT64, ratio<1>>
-    // milli    = duration<INT64, ratio<1,1000>>
+ // ratio 用于 chrono 的时长类型定义
+ // seconds = duration<INT64, ratio<1>>
+ // milli = duration<INT64, ratio<1,1000>>
 
-    // 编译期计算，零运行时开销
-    USING ratio_sum = RATIO_ADD<kilo, RATIO<500,1>>  // 1500/1
+ // 编译期计算，零运行时开销
+ USING ratio_sum = RATIO_ADD<kilo, RATIO<500,1>> // 1500/1
 ```
 
 ### C++20 numbers 常量
 
 ```
 FUNCTION demo_numbers:
-    PRINT PI                                     // 3.141592653589793...
-    PRINT E                                      // 2.718281828459045...
-    PRINT SQRT2                                  // 1.414213562373095...
-    PRINT PHI                                    // 1.618033988749895...
+ PRINT PI // 3.141592653589793...
+ PRINT E // 2.718281828459045...
+ PRINT SQRT2 // 1.414213562373095...
+ PRINT PHI // 1.618033988749895...
 
-    area = PI * r * r                           // 不再需要 #define PI
+ area = PI * r * r // 不再需要 #define PI
 ```
 
 ### valarray —— 数值数组
 
 ```
 FUNCTION demo_valarray:
-    a = VALARRAY<DOUBLE>({1.0, 2.0, 3.0})
-    b = VALARRAY<DOUBLE>({4.0, 5.0, 6.0})
+ a = VALARRAY<DOUBLE>({1.0, 2.0, 3.0})
+ b = VALARRAY<DOUBLE>({4.0, 5.0, 6.0})
 
-    c = a + b                                   // [5, 7, 9]（逐元素）
-    d = a * b                                   // [4, 10, 18]
-    e = a * 2.0                                 // [2, 4, 6]（标量广播）
-    f = a.APPLY(LAMBDA(x): RETURN x*x)          // [1, 4, 9]
+ c = a + b // [5, 7, 9]（逐元素）
+ d = a * b // [4, 10, 18]
+ e = a * 2.0 // [2, 4, 6]（标量广播）
+ f = a.APPLY(LAMBDA(x): RETURN x*x) // [1, 4, 9]
 ```
 
 ---

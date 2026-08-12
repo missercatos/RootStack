@@ -12,28 +12,28 @@
 
 ```
 用户输入 www.example.com
-        │
-        ▼
+ │
+ ▼
 ┌─────────────────────┐
-│  本地缓存           │  ← 浏览器缓存 / 系统缓存
-│  (stub resolver)    │
+│ 本地缓存 │ ← 浏览器缓存 / 系统缓存
+│ (stub resolver) │
 └─────────┬───────────┘
-          │ 未命中
-          ▼
+ │ 未命中
+ ▼
 ┌─────────────────────┐
-│  /etc/hosts         │  ← 本地静态映射
+│ /etc/hosts │ ← 本地静态映射
 └─────────┬───────────┘
-          │ 未命中
-          ▼
+ │ 未命中
+ ▼
 ┌─────────────────────┐
-│  DNS 递归解析器     │  ← 如 8.8.8.8 / 系统 DNS
-│  (recursive)        │
+│ DNS 递归解析器 │ ← 如 8.8.8.8 / 系统 DNS
+│ (recursive) │
 └─────────┬───────────┘
-          │
-          ▼ (迭代查询)
+ │
+ ▼ (迭代查询)
 ┌─────────┴─────────┬──────────┬──────────┐
-│ 根域名服务器 (.)   │ → .com   │ → example.com │ → www.example.com
-│                    │ NS 记录  │ NS 记录      │ A 记录: 93.184.216.34
+│ 根域名服务器 (.) │ → .com │ → example.com │ → www.example.com
+│ │ NS 记录 │ NS 记录 │ A 记录: 93.184.216.34
 └────────────────────┴──────────┴──────────────┴─────────────
 ```
 
@@ -87,12 +87,12 @@ options rotate timeout:2 attempts:3
 静态主机名到 IP 的映射，在 DNS 之前查询：
 
 ```bash
-127.0.0.1   localhost localhost.localdomain
-::1         localhost localhost.localdomain
+127.0.0.1 localhost localhost.localdomain
+::1 localhost localhost.localdomain
 
-192.168.1.100   myserver.lan myserver
-192.168.1.101   database.lan  db
-10.0.0.1        internal-api.example.com
+192.168.1.100 myserver.lan myserver
+192.168.1.101 database.lan db
+10.0.0.1 internal-api.example.com
 ```
 
 ### /etc/nsswitch.conf
@@ -102,9 +102,9 @@ options rotate timeout:2 attempts:3
 ```bash
 # 查看当前配置
 cat /etc/nsswitch.conf | grep hosts
-# hosts: files dns               # 先查 /etc/hosts，再查 DNS
-# hosts: files mdns4_minimal dns  # macOS 风格：先本地再 mDNS 再 DNS
-# hosts: resolve [!UNAVAIL=return] files  # systemd-resolved 模式
+# hosts: files dns # 先查 /etc/hosts，再查 DNS
+# hosts: files mdns4_minimal dns # macOS 风格：先本地再 mDNS 再 DNS
+# hosts: resolve [!UNAVAIL=return] files # systemd-resolved 模式
 ```
 
 ---
@@ -221,17 +221,17 @@ apk add bind-tools
 dig google.com
 
 # 查询特定记录类型
-dig example.com A                    # IPv4 地址
-dig example.com AAAA                 # IPv6 地址
-dig example.com MX                   # 邮件服务器
-dig example.com CNAME                # 别名
-dig example.com TXT                  # 文本记录
-dig example.com NS                   # 权威域名服务器
-dig example.com SOA                  # 权威起始记录
-dig example.com ANY                  # 所有记录（可能被过滤）
+dig example.com A # IPv4 地址
+dig example.com AAAA # IPv6 地址
+dig example.com MX # 邮件服务器
+dig example.com CNAME # 别名
+dig example.com TXT # 文本记录
+dig example.com NS # 权威域名服务器
+dig example.com SOA # 权威起始记录
+dig example.com ANY # 所有记录（可能被过滤）
 
 # 反向查询
-dig -x 8.8.8.8                       # PTR 记录
+dig -x 8.8.8.8 # PTR 记录
 dig -x 2001:4860:4860::8888
 
 # 指定 DNS 服务器
@@ -271,26 +271,26 @@ dig +noall +answer example.com
 dig +stats example.com
 
 # 多种输出格式
-dig +noall +answer +comments example.com  # 结果 + 注释
-dig +noall +answer +question example.com  # 结果 + 问题
+dig +noall +answer +comments example.com # 结果 + 注释
+dig +noall +answer +question example.com # 结果 + 问题
 ```
 
 ### 理解 dig 输出
 
 ```
 ;; ANSWER SECTION:
-example.com.        3600    IN    A    93.184.216.34
-   │                  │      │    │        │
-   │                  │      │    │        └─ 解析结果
-   │                  │      │    └─ 记录类型
-   │                  │      └─ 网络类别（Internet）
-   │                  └─ TTL（该记录可缓存 3600 秒）
-   └─ 查询的域名
+example.com. 3600 IN A 93.184.216.34
+ │ │ │ │ │
+ │ │ │ │ └─ 解析结果
+ │ │ │ └─ 记录类型
+ │ │ └─ 网络类别（Internet）
+ │ └─ TTL（该记录可缓存 3600 秒）
+ └─ 查询的域名
 
-;; Query time: 23 msec          ← 查询耗时
-;; SERVER: 8.8.8.8#53(8.8.8.8)  ← 使用的 DNS 服务器
+;; Query time: 23 msec ← 查询耗时
+;; SERVER: 8.8.8.8#53(8.8.8.8) ← 使用的 DNS 服务器
 ;; WHEN: Mon Jan 01 12:00:00 UTC 2024
-;; MSG SIZE  rcvd: 56           ← 响应大小
+;; MSG SIZE rcvd: 56 ← 响应大小
 ```
 
 ### 常用查询示例
@@ -309,7 +309,7 @@ dig @9.9.9.9 google.com | grep "Query time"
 
 # 批量查询
 for domain in google.com github.com archlinux.org; do
-    echo "$domain: $(dig +short $domain)"
+ echo "$domain: $(dig +short $domain)"
 done
 
 # CAA 记录（证书颁发授权）
@@ -325,12 +325,12 @@ dig example.com CAA
 ```bash
 # 基本查询
 nslookup example.com
-nslookup example.com 8.8.8.8           # 指定服务器
+nslookup example.com 8.8.8.8 # 指定服务器
 
 # 交互模式
 nslookup
-> server 8.8.8.8                        # 切换 DNS 服务器
-> set type=MX                           # 设置查询类型
+> server 8.8.8.8 # 切换 DNS 服务器
+> set type=MX # 设置查询类型
 > example.com
 > set type=A
 > www.example.com
@@ -342,11 +342,11 @@ nslookup
 ### host（简洁）
 
 ```bash
-host example.com                        # A 和 AAAA
-host -t MX example.com                  # 指定类型
+host example.com # A 和 AAAA
+host -t MX example.com # 指定类型
 host -t TXT example.com
-host 8.8.8.8                            # 自动反向解析
-host -v example.com                     # 详细输出
+host 8.8.8.8 # 自动反向解析
+host -v example.com # 详细输出
 ```
 
 ---
@@ -398,7 +398,7 @@ resolvectl status | grep "DNS over TLS"
 # 安装
 # Debian: sudo apt install dnscrypt-proxy
 # Fedora: sudo dnf install dnscrypt-proxy
-# Arch:   sudo pacman -S dnscrypt-proxy
+# Arch: sudo pacman -S dnscrypt-proxy
 
 # 编辑 /etc/dnscrypt-proxy/dnscrypt-proxy.toml
 # 选择 DoH/DoT 服务器，启用 DNSSEC，配置过滤规则
@@ -411,8 +411,8 @@ resolvectl status | grep "DNS over TLS"
 
 ```bash
 # 安装
-sudo apt install stubby                    # Debian/Ubuntu
-sudo dnf install stubby                    # Fedora
+sudo apt install stubby # Debian/Ubuntu
+sudo dnf install stubby # Fedora
 
 # 配置 /etc/stubby/stubby.yml
 # 启动后监听 127.0.0.1:53，上游使用 DoT
@@ -444,10 +444,10 @@ sudo systemctl enable --now stubby
 ```bash
 # 1. 确认是否可达目标服务器
 ping -c 3 8.8.8.8
-ping -c 3 google.com              # 如果 IP 通但域名不通 → DNS 问题
+ping -c 3 google.com # 如果 IP 通但域名不通 → DNS 问题
 
 # 2. 测试 DNS 服务器响应
-dig @8.8.8.8 google.com          # 指定 DNS 测试
+dig @8.8.8.8 google.com # 指定 DNS 测试
 nslookup google.com 1.1.1.1
 
 # 3. 检查 /etc/resolv.conf
@@ -455,7 +455,7 @@ cat /etc/resolv.conf
 # 确保 nameserver 指向正确的 DNS 服务器
 
 # 4. 查看 DNS 查询过程
-dig +trace google.com            # 从根追溯
+dig +trace google.com # 从根追溯
 dig +short google.com @127.0.0.1 # 测试本地 DNS 代理
 
 # 5. 检查 systemd-resolved 状态
@@ -463,12 +463,12 @@ resolvectl status
 sudo systemctl status systemd-resolved
 
 # 6. 查看 DNS 缓存
-resolvectl statistics            # systemd-resolved
+resolvectl statistics # systemd-resolved
 sudo systemd-resolve --flush-caches
 
 # 7. 检查 DNS 端口连通性
-nc -zvu 8.8.8.8 53               # UDP 53
-nc -z 8.8.8.8 53                  # TCP 53（备用传输）
+nc -zvu 8.8.8.8 53 # UDP 53
+nc -z 8.8.8.8 53 # TCP 53（备用传输）
 ```
 
 ### 常见问题
@@ -486,8 +486,8 @@ nc -z 8.8.8.8 53                  # TCP 53（备用传输）
 ```bash
 # 批量测试 DNS 响应时间
 for dns in 1.1.1.1 8.8.8.8 9.9.9.9 114.114.114.114; do
-    echo -n "$dns: "
-    dig +time=2 +tries=1 @$dns google.com | grep "Query time" | awk '{print $4 " " $5}'
+ echo -n "$dns: "
+ dig +time=2 +tries=1 @$dns google.com | grep "Query time" | awk '{print $4 " " $5}'
 done
 
 # 使用专门的 DNS 测速工具
@@ -512,13 +512,13 @@ done
 ```bash
 # systemd-resolved 缓存统计
 resolvectl statistics
-resolvectl flush-caches              # 清空缓存
+resolvectl flush-caches # 清空缓存
 
 # dnsmasq 缓存
-sudo systemctl restart dnsmasq       # 清空缓存
+sudo systemctl restart dnsmasq # 清空缓存
 
 # nscd 缓存
-sudo systemctl restart nscd          # 清空 nscd 缓存
+sudo systemctl restart nscd # 清空 nscd 缓存
 ```
 
 ---

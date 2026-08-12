@@ -18,16 +18,16 @@ systemd 是内核启动后执行的第一个用户空间进程（PID 1），它�
 
 ```mermaid
 graph TD
-    KERNEL[Linux 内核] --> INITRAMFS[initramfs]
-    INITRAMFS --> PID1["systemd (PID 1)"]
-    PID1 --> JOURN["systemd-journald<br/>日志"]
-    PID1 --> LOGIN["systemd-logind<br/>会话管理"]
-    PID1 --> RESOLV["systemd-resolved<br/>DNS 解析"]
-    PID1 --> NETWRK["systemd-networkd<br/>网络管理"]
-    PID1 --> UDEV["systemd-udevd<br/>设备管理"]
-    PID1 --> TIMER["systemd timer<br/>定时任务"]
-    PID1 --> CRASH["systemd-coredump<br/>崩溃转储"]
-    PID1 --> OOM["systemd-oomd<br/>内存压力管理"]
+ KERNEL[Linux 内核] --> INITRAMFS[initramfs]
+ INITRAMFS --> PID1["systemd (PID 1)"]
+ PID1 --> JOURN["systemd-journald<br/>日志"]
+ PID1 --> LOGIN["systemd-logind<br/>会话管理"]
+ PID1 --> RESOLV["systemd-resolved<br/>DNS 解析"]
+ PID1 --> NETWRK["systemd-networkd<br/>网络管理"]
+ PID1 --> UDEV["systemd-udevd<br/>设备管理"]
+ PID1 --> TIMER["systemd timer<br/>定时任务"]
+ PID1 --> CRASH["systemd-coredump<br/>崩溃转储"]
+ PID1 --> OOM["systemd-oomd<br/>内存压力管理"]
 ```
 
 **systemd 组件一览：**
@@ -55,29 +55,29 @@ graph TD
 
 ```bash
 # --- 服务启停 ---
-sudo systemctl start nginx.service      # 启动
-sudo systemctl stop nginx.service       # 停止
-sudo systemctl restart nginx.service    # 重启
-sudo systemctl reload nginx.service     # 重载配置（不中断服务）
+sudo systemctl start nginx.service # 启动
+sudo systemctl stop nginx.service # 停止
+sudo systemctl restart nginx.service # 重启
+sudo systemctl reload nginx.service # 重载配置（不中断服务）
 sudo systemctl try-restart nginx.service # 仅在已运行时重启
 
 # --- 开机自启 ---
-sudo systemctl enable nginx.service     # 设为开机自启
-sudo systemctl disable nginx.service    # 取消开机自启
-sudo systemctl enable --now nginx       # 启用并立即启动
-sudo systemctl disable --now nginx      # 禁用并立即停止
+sudo systemctl enable nginx.service # 设为开机自启
+sudo systemctl disable nginx.service # 取消开机自启
+sudo systemctl enable --now nginx # 启用并立即启动
+sudo systemctl disable --now nginx # 禁用并立即停止
 
 # --- 状态查询 ---
-systemctl status nginx.service          # 完整状态（推荐）
-systemctl is-active nginx.service       # 是否正在运行
-systemctl is-enabled nginx.service      # 是否开机自启
-systemctl is-failed nginx.service       # 是否处于失败状态
+systemctl status nginx.service # 完整状态（推荐）
+systemctl is-active nginx.service # 是否正在运行
+systemctl is-enabled nginx.service # 是否开机自启
+systemctl is-failed nginx.service # 是否处于失败状态
 
 # --- 列出 Unit ---
-systemctl list-units                    # 列出所有已加载的 Unit
-systemctl list-units --type=service     # 只列 service 类型
-systemctl list-units --type=service --state=running  # 正在运行的
-systemctl list-units --failed           # 处于失败状态的
+systemctl list-units # 列出所有已加载的 Unit
+systemctl list-units --type=service # 只列 service 类型
+systemctl list-units --type=service --state=running # 正在运行的
+systemctl list-units --failed # 处于失败状态的
 
 # --- 列出 Unit 文件（包括未加载的） ---
 systemctl list-unit-files
@@ -92,7 +92,7 @@ systemctl list-unit-files --type=service
 sudo systemctl mask NetworkManager.service
 # 等价于: ln -s /dev/null /etc/systemd/system/NetworkManager.service
 
-sudo systemctl unmask NetworkManager.service  # 取消屏蔽
+sudo systemctl unmask NetworkManager.service # 取消屏蔽
 ```
 
 ### 辅助命令
@@ -160,13 +160,13 @@ Target 是 systemd 的"运行级别"机制，比传统 SysV init 的 runlevel �
 systemctl get-default
 
 # 设置默认 target
-sudo systemctl set-default multi-user.target   # 命令行模式
-sudo systemctl set-default graphical.target    # 图形界面
+sudo systemctl set-default multi-user.target # 命令行模式
+sudo systemctl set-default graphical.target # 图形界面
 
 # 临时切换 target
 sudo systemctl isolate multi-user.target
-sudo systemctl isolate rescue.target           # 救援模式（单用户）
-sudo systemctl isolate emergency.target        # 紧急模式（最小环境）
+sudo systemctl isolate rescue.target # 救援模式（单用户）
+sudo systemctl isolate emergency.target # 紧急模式（最小环境）
 ```
 
 | Target | 对应功能 | 类似 SysV |
@@ -218,9 +218,9 @@ ConditionMemory=>=2G
 AssertPathExists=/usr/bin/myapp
 
 # 启动失败控制
-StartLimitIntervalSec=60       # 在此时间窗口内
-StartLimitBurst=5              # 最多启动失败次数
-StartLimitAction=reboot        # 超过后执行的动作
+StartLimitIntervalSec=60 # 在此时间窗口内
+StartLimitBurst=5 # 最多启动失败次数
+StartLimitAction=reboot # 超过后执行的动作
 
 # 失败通知
 OnFailure=notify-admin@%n.service
@@ -242,11 +242,11 @@ OnFailure=notify-admin@%n.service
 
 ```ini
 [Service]
-Type=simple                      # 服务类型
-User=myapp                       # 运行用户
-Group=myapp                      # 运行组
-DynamicUser=yes                  # 动态创建临时用户（更安全）
-WorkingDirectory=/opt/myapp      # 工作目录
+Type=simple # 服务类型
+User=myapp # 运行用户
+Group=myapp # 运行组
+DynamicUser=yes # 动态创建临时用户（更安全）
+WorkingDirectory=/opt/myapp # 工作目录
 
 # 启动/停止/重载命令
 ExecStart=/usr/bin/myapp serve --config /etc/myapp/config.toml
@@ -262,8 +262,8 @@ TimeoutStartSec=30
 TimeoutStopSec=30
 
 # 重启策略
-Restart=on-failure               # 仅异常退出时重启
-RestartSec=5                     # 重启前等待 5 秒
+Restart=on-failure # 仅异常退出时重启
+RestartSec=5 # 重启前等待 5 秒
 # 可选值: no, on-success, on-failure, on-abnormal, on-watchdog, on-abort, always
 
 # 看门狗（需服务周期性调用 sd_notify(WATCHDOG=1)）
@@ -271,15 +271,15 @@ WatchdogSec=30
 
 # 环境变量
 Environment=NODE_ENV=production
-EnvironmentFile=/etc/myapp/env   # 从文件加载
+EnvironmentFile=/etc/myapp/env # 从文件加载
 
 # 标准输出/错误
 StandardOutput=journal
 StandardError=journal
 
 # 资源限制
-LimitNOFILE=65536                # 文件描述符上限
-LimitNPROC=4096                  # 进程数上限
+LimitNOFILE=65536 # 文件描述符上限
+LimitNPROC=4096 # 进程数上限
 
 # PID 文件（Type=forking 时必需）
 PIDFile=/run/myapp.pid
@@ -292,10 +292,10 @@ RemoveIPC=yes
 
 ```ini
 [Install]
-WantedBy=multi-user.target       # 被哪个 target 间接拉入
-RequiredBy=critical-app.target   # 强依赖版本（少用）
-Alias=myapp.service              # 别名
-Also=myapp-worker.service        # 同时启用的相关 Unit
+WantedBy=multi-user.target # 被哪个 target 间接拉入
+RequiredBy=critical-app.target # 强依赖版本（少用）
+Alias=myapp.service # 别名
+Also=myapp-worker.service # 同时启用的相关 Unit
 ```
 
 ### 完整示例
@@ -362,7 +362,7 @@ Description=Run Once After Boot
 
 [Service]
 Type=oneshot
-RemainAfterExit=yes              # 退出后仍视为 active
+RemainAfterExit=yes # 退出后仍视为 active
 ExecStart=/usr/local/bin/init.sh
 ExecStop=/usr/local/bin/cleanup.sh
 
@@ -377,7 +377,7 @@ WantedBy=multi-user.target
 修改 Unit 文件后必须重载：
 
 ```bash
-sudo systemctl daemon-reload      # 重新读取所有 Unit 文件
+sudo systemctl daemon-reload # 重新读取所有 Unit 文件
 ```
 
 **Drop-in 覆盖**（推荐方式，不修改软件包源文件）：
@@ -484,8 +484,8 @@ journalctl --since "1 hour ago"
 journalctl --since yesterday --until today
 
 # 按优先级
-journalctl -p err                  # 仅错误及以上
-journalctl -p warning..err         # 警告到错误
+journalctl -p err # 仅错误及以上
+journalctl -p warning..err # 警告到错误
 
 # 按进程/用户
 journalctl _PID=1234
@@ -495,13 +495,13 @@ journalctl _UID=1000
 journalctl -k
 
 # 输出格式
-journalctl -o json-pretty          # JSON 格式
-journalctl -o short-full           # 完整时间戳
-journalctl -o cat                  # 仅消息正文
+journalctl -o json-pretty # JSON 格式
+journalctl -o short-full # 完整时间戳
+journalctl -o cat # 仅消息正文
 
 # 磁盘管理
-journalctl --disk-usage            # 查看占用
-sudo journalctl --vacuum-time=30d  # 删除 30 天前日志
+journalctl --disk-usage # 查看占用
+sudo journalctl --vacuum-time=30d # 删除 30 天前日志
 sudo journalctl --vacuum-size=500M # 限制总大小 500M
 
 # 验证日志完整性
@@ -531,15 +531,15 @@ MaxRetentionSec=1month
 ## 9.9 systemd-analyze 启动分析
 
 ```bash
-systemd-analyze                      # 总启动时间
-systemd-analyze blame                # 各服务启动耗时排行
-systemd-analyze critical-chain       # 关键路径（阻塞链）
-systemd-analyze critical-chain nginx.service  # 特定服务的关键链
-systemd-analyze plot > boot.svg      # SVG 启动时序图
+systemd-analyze # 总启动时间
+systemd-analyze blame # 各服务启动耗时排行
+systemd-analyze critical-chain # 关键路径（阻塞链）
+systemd-analyze critical-chain nginx.service # 特定服务的关键链
+systemd-analyze plot > boot.svg # SVG 启动时序图
 
 # 安全审计
-systemd-analyze security             # 所有服务安全评分
-systemd-analyze security nginx.service  # 特定服务安全评分
+systemd-analyze security # 所有服务安全评分
+systemd-analyze security nginx.service # 特定服务安全评分
 
 # Unit 文件验证
 systemd-analyze verify /etc/systemd/system/myapp.service
@@ -564,10 +564,10 @@ systemd timer 可替代传统 cron，优势：与 journald 集成日志、支持
 Description=Run Backup Every 6 Hours
 
 [Timer]
-OnBootSec=15min                    # 开机后 15 分钟
-OnUnitActiveSec=6h                # 上次执行后 6 小时
-AccuracySec=1min                   # 触发精度
-RandomizedDelaySec=30min           # 随机延迟
+OnBootSec=15min # 开机后 15 分钟
+OnUnitActiveSec=6h # 上次执行后 6 小时
+AccuracySec=1min # 触发精度
+RandomizedDelaySec=30min # 随机延迟
 
 [Install]
 WantedBy=timers.target
@@ -582,7 +582,7 @@ Description=Daily Report at 2:30 AM
 
 [Timer]
 OnCalendar=*-*-* 02:30:00
-Persistent=true                   # 错过后补偿执行
+Persistent=true # 错过后补偿执行
 
 [Install]
 WantedBy=timers.target
@@ -615,24 +615,24 @@ systemd 通过 cgroup v2 精细控制每个服务的资源使用：
 ```ini
 [Service]
 # CPU
-CPUQuota=150%                     # 最多使用 1.5 个 CPU 核心
-CPUWeight=100                     # CPU 权重（默认 100）
-CPUAffinity=0-3                   # 绑定到 CPU 0-3
-AllowedCPUs=0-3                   # 限制可用 CPU
+CPUQuota=150% # 最多使用 1.5 个 CPU 核心
+CPUWeight=100 # CPU 权重（默认 100）
+CPUAffinity=0-3 # 绑定到 CPU 0-3
+AllowedCPUs=0-3 # 限制可用 CPU
 
 # 内存
-MemoryMax=4G                      # 硬限制
-MemoryHigh=3G                     # 软上限（超限后逐步回收）
-MemoryLow=512M                    # 低于此值时优先保护
-MemorySwapMax=1G                  # Swap 上限
+MemoryMax=4G # 硬限制
+MemoryHigh=3G # 软上限（超限后逐步回收）
+MemoryLow=512M # 低于此值时优先保护
+MemorySwapMax=1G # Swap 上限
 
 # IO
-IOWeight=100                      # IO 权重
-IOReadBandwidthMax=/dev/sda 100M  # 读带宽上限
-IOWriteBandwidthMax=/dev/sda 50M  # 写带宽上限
+IOWeight=100 # IO 权重
+IOReadBandwidthMax=/dev/sda 100M # 读带宽上限
+IOWriteBandwidthMax=/dev/sda 50M # 写带宽上限
 
 # 任务数
-TasksMax=512                      # 最大进程/线程数
+TasksMax=512 # 最大进程/线程数
 ```
 
 **运行时修改（无需重启服务）：**
@@ -655,44 +655,44 @@ systemd 提供了丰富的安全隔离能力，无需额外安装 AppArmor 或 S
 ```ini
 [Service]
 # 文件系统隔离
-ProtectSystem=strict              # / 和 /usr 只读
-ProtectHome=yes                   # /home、/root、/run/user 不可访问
-PrivateTmp=yes                    # 私有 /tmp 和 /var/tmp
-ReadWritePaths=/var/lib/myapp     # 在白名单之外唯一可写路径
-ReadOnlyPaths=/etc/myapp/config   # 指定只读路径
-InaccessiblePaths=/mnt/secret     # 完全不可见
+ProtectSystem=strict # / 和 /usr 只读
+ProtectHome=yes # /home、/root、/run/user 不可访问
+PrivateTmp=yes # 私有 /tmp 和 /var/tmp
+ReadWritePaths=/var/lib/myapp # 在白名单之外唯一可写路径
+ReadOnlyPaths=/etc/myapp/config # 指定只读路径
+InaccessiblePaths=/mnt/secret # 完全不可见
 
 # 权限与能力限制
-NoNewPrivileges=yes               # 禁止提升权限（最重要）
-CapabilityBoundingSet=CAP_NET_BIND_SERVICE  # 仅保留绑定特权端口能力
+NoNewPrivileges=yes # 禁止提升权限（最重要）
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE # 仅保留绑定特权端口能力
 AmbientCapabilities=CAP_NET_BIND_SERVICE
 
 # 命名空间隔离
-PrivateNetwork=yes                # 独立网络命名空间
-PrivateDevices=yes                # 私有 /dev（仅基本设备）
-PrivateUsers=yes                  # 独立用户命名空间
-PrivateIPC=yes                    # 独立 IPC 命名空间
+PrivateNetwork=yes # 独立网络命名空间
+PrivateDevices=yes # 私有 /dev（仅基本设备）
+PrivateUsers=yes # 独立用户命名空间
+PrivateIPC=yes # 独立 IPC 命名空间
 
 # 内核接口保护
-ProtectKernelTunables=yes         # /proc/sys 只读
-ProtectKernelModules=yes          # 禁止加载内核模块
-ProtectKernelLogs=yes             # 禁止读取内核日志
-ProtectControlGroups=yes          # cgroup 只读
-ProtectHostname=yes               # 禁止修改主机名
-ProtectClock=yes                  # 禁止修改系统时钟
+ProtectKernelTunables=yes # /proc/sys 只读
+ProtectKernelModules=yes # 禁止加载内核模块
+ProtectKernelLogs=yes # 禁止读取内核日志
+ProtectControlGroups=yes # cgroup 只读
+ProtectHostname=yes # 禁止修改主机名
+ProtectClock=yes # 禁止修改系统时钟
 
 # 系统调用过滤
-SystemCallFilter=@system-service  # 允许系统服务常用调用
-SystemCallFilter=~@mount @privileged @obsolete  # 禁止危险调用
-SystemCallArchitectures=native    # 仅允许本机架构
+SystemCallFilter=@system-service # 允许系统服务常用调用
+SystemCallFilter=~@mount @privileged @obsolete # 禁止危险调用
+SystemCallArchitectures=native # 仅允许本机架构
 
 # SUID/SGID 限制
-RestrictSUIDSGID=yes              # 禁止创建 SUID/SGID 文件
-RestrictNamespaces=yes            # 禁止创建新命名空间
-RestrictRealtime=yes              # 禁止实时调度
-LockPersonality=yes               # 锁定进程个性
-MemoryDenyWriteExecute=yes        # W^X 内存保护
-RemoveIPC=yes                     # 退出时清理 System V IPC
+RestrictSUIDSGID=yes # 禁止创建 SUID/SGID 文件
+RestrictNamespaces=yes # 禁止创建新命名空间
+RestrictRealtime=yes # 禁止实时调度
+LockPersonality=yes # 锁定进程个性
+MemoryDenyWriteExecute=yes # W^X 内存保护
+RemoveIPC=yes # 退出时清理 System V IPC
 
 # 地址族限制
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
@@ -717,8 +717,8 @@ Socket 激活允许 systemd 预先监听端口/套接字，当有连接时才启
 Description=MyApp Socket
 
 [Socket]
-ListenStream=8080                 # 监听 TCP 端口
-ListenStream=/run/myapp.sock      # 监听 Unix 套接字
+ListenStream=8080 # 监听 TCP 端口
+ListenStream=/run/myapp.sock # 监听 Unix 套接字
 SocketMode=0660
 SocketUser=myapp
 SocketGroup=myapp
@@ -735,7 +735,7 @@ Requires=myapp.socket
 After=myapp.socket
 
 [Service]
-Type=notify                       # 或 simple
+Type=notify # 或 simple
 ExecStart=/usr/bin/myapp
 NonBlocking=true
 # 服务通过 sd_listen_fds() 或 $LISTEN_FDS 获取文件描述符

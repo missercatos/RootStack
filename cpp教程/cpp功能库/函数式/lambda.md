@@ -12,9 +12,9 @@ C++14 引入泛型 lambda（`auto` 参数），C++17 使其可用于 `constexpr`
 
 ```
 [捕获](参数列表) 可选说明符 → 返回类型 { 函数体 }
-  └┬┘  └──┬──┘  ┌──────────────┐  └──┬──┘  └──┬──┘
-  捕获  参数   mutable/constexpr  返回类型  函数体
-              noexcept/consteval
+ └┬┘ └──┬──┘ ┌──────────────┐ └──┬──┘ └──┬──┘
+ 捕获 参数 mutable/constexpr 返回类型 函数体
+ noexcept/consteval
 ```
 
 ## 捕获模式
@@ -38,71 +38,71 @@ C++14 引入泛型 lambda（`auto` 参数），C++17 使其可用于 `constexpr`
 
 ```
 FUNCTION demo_basic:
-    hello = LAMBDA: PRINT "hello"               // 无参无返回
-    hello()
+ hello = LAMBDA: PRINT "hello" // 无参无返回
+ hello()
 
-    add = LAMBDA(a, b): RETURN a + b
-    PRINT add(3, 5)                             // 8
+ add = LAMBDA(a, b): RETURN a + b
+ PRINT add(3, 5) // 8
 
-    // 指定返回类型（通常可省略）
-    divide = LAMBDA(a, b) -> DOUBLE:
-        RETURN a / DOUBLE(b)
-    END LAMBDA
+ // 指定返回类型（通常可省略）
+ divide = LAMBDA(a, b) -> DOUBLE:
+ RETURN a / DOUBLE(b)
+ END LAMBDA
 ```
 
 ### 泛型 lambda (C++14)
 
 ```
 FUNCTION demo_generic:
-    add = LAMBDA(x, y): RETURN x + y            // auto 参数（泛型）
-    PRINT add(1, 2)                             // 3
-    PRINT add(1.5, 2.3)                         // 3.8
-    PRINT add(STRING("a"), STRING("b"))         // "ab"
+ add = LAMBDA(x, y): RETURN x + y // auto 参数（泛型）
+ PRINT add(1, 2) // 3
+ PRINT add(1.5, 2.3) // 3.8
+ PRINT add(STRING("a"), STRING("b")) // "ab"
 ```
 
 ### 捕获语义
 
 ```
 FUNCTION demo_capture:
-    x = 10
-    by_val = LAMBDA: RETURN x + 5               // x 是副本
-    by_ref = LAMBDA: RETURN x + 5               // x 是引用
+ x = 10
+ by_val = LAMBDA: RETURN x + 5 // x 是副本
+ by_ref = LAMBDA: RETURN x + 5 // x 是引用
 
-    x = 20
-    PRINT by_val()                              // 15（旧的 10+5）
-    PRINT by_ref()                              // 25（新的 20+5）
+ x = 20
+ PRINT by_val() // 15（旧的 10+5）
+ PRINT by_ref() // 25（新的 20+5）
 
-    // 初始化捕获 (C++14)
-    p = LAMBDA(ptr = MOVE(UNIQUE_PTR)):
-        PRINT *ptr
-    END LAMBDA                                  // 移动 unique_ptr 进 lambda
+ // 初始化捕获 (C++14)
+ p = LAMBDA(ptr = MOVE(UNIQUE_PTR)):
+ PRINT *ptr
+ END LAMBDA // 移动 unique_ptr 进 lambda
 ```
 
 ### mutable lambda
 
 ```
 FUNCTION demo_mutable:
-    x = 0
-    // 默认 lambda operator() 是 const，不能修改值捕获的变量
-    counter = LAMBDA MUTABLE: RETURN x++         // mutable 允许修改
-    PRINT counter()                              // 0
-    PRINT counter()                              // 1
-    PRINT x                                      // 还是 0（x 是副本）
+ x = 0
+ // 默认 lambda operator() 是 const，不能修改值捕获的变量
+ counter = LAMBDA MUTABLE: RETURN x++ // mutable 允许修改
+ PRINT counter() // 0
+ PRINT counter() // 1
+ PRINT x // 还是 0（x 是副本）
 ```
 
 ### 立即执行 lambda (IILE)
 
 ```
 FUNCTION demo_iile:
-    // 立即调用：初始化 const 变量时做复杂计算
-    val = LAMBDA:
-        result = 0
-        FOR i = 1 TO 100:
-            result = result + i * i
-        END FOR
-        RETURN result
-    ()                                           // 立即调用
-    PRINT val                                    // 338350
+ // 立即调用：初始化 const 变量时做复杂计算
+ val = LAMBDA:
+ result = 0
+ FOR i = 1 TO 100:
+ result = result + i * i
+ END FOR
+ RETURN result
+ () // 立即调用
+ PRINT val // 338350
 ```
 
 ---

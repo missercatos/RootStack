@@ -21,7 +21,7 @@ grep "net_error -202" ~/.local/share/Steam/logs/cef_log.txt | tail
 
 # 输出示例
 # [102223:102240:0801/160144.140422:ERROR:ssl_client_socket_impl.cc(878)]
-#   handshake failed; returned -1, SSL error code 1, net_error -202
+# handshake failed; returned -1, SSL error code 1, net_error -202
 ```
 
 ```
@@ -46,23 +46,23 @@ Steam Linux 客户端由三部分构成：
 ```
 steam (主进程)
  └── steamwebhelper（CEF 内嵌浏览器，运行在 pressure-vessel 容器内）
-      └── NSS（证书校验）→ libnssckbi.so（信任根库）
+ └── NSS（证书校验）→ libnssckbi.so（信任根库）
 ```
 
 容器由 `srt-bwrap` 创建，其根文件系统来自运行时镜像：
 
 ```
 ~/.local/share/Steam/steamrt64/pv-runtime/steam-runtime-steamrt/
-├── steamrt3c_platform_3c.0.<版本>.246540/   # 运行时镜像（多个版本并存）
-│   ├── files/                               # 镜像文件树（修改需写这里）
-│   │   ├── bin → tmp/usr/bin                # 扁平化布局，对应容器内 /usr/*
-│   │   ├── lib → tmp/usr/lib
-│   │   ├── etc → tmp/usr/etc
-│   │   └── ...
-│   ├── usr-mtree.txt.gz                     # 容器 /etc 内容清单（决定哪些文件进容器）
-│   └── files/var/                           # 会话挂载点
-│       └── tmp-XXXXXXXX/usr/                # 每次容器启动重建（硬链接副本）
-└── var/tmp-*/usr/                           # 当前会话实际挂载到容器 /usr
+├── steamrt3c_platform_3c.0.<版本>.246540/ # 运行时镜像（多个版本并存）
+│ ├── files/ # 镜像文件树（修改需写这里）
+│ │ ├── bin → tmp/usr/bin # 扁平化布局，对应容器内 /usr/*
+│ │ ├── lib → tmp/usr/lib
+│ │ ├── etc → tmp/usr/etc
+│ │ └── ...
+│ ├── usr-mtree.txt.gz # 容器 /etc 内容清单（决定哪些文件进容器）
+│ └── files/var/ # 会话挂载点
+│ └── tmp-XXXXXXXX/usr/ # 每次容器启动重建（硬链接副本）
+└── var/tmp-*/usr/ # 当前会话实际挂载到容器 /usr
 ```
 
 关键机制：
@@ -80,7 +80,7 @@ Chromium/CEF 用 NSS 校验证书，默认加载 `libnssckbi.so`（内置信任�
 |---|---|---|
 | `libnssckbi.so` 身份 | 符号链接 → `/usr/lib/pkcs11/p11-kit-trust.so` | 真实的静态内置根库 |
 | 信任来源 | p11-kit 实时合并 `/etc/ca-certificates/trust-source/` 全部 CA | 仅编译期内置的公共根证书 |
-| 用户安装的 CA（如 Steamcommunity302） | ✅ 自动生效 | ❌ 永远缺失 |
+| 用户安装的 CA（如 Steamcommunity302） | 自动生效 | 永远缺失 |
 
 ```bash
 # 宿主侧验证：libnssckbi.so 是 p11-kit-trust 的链接
@@ -142,20 +142,20 @@ cp "$IMGDIR/usr-mtree.txt.gz" /tmp/usr-mtree.bak.gz
 
 # 2. 用宿主 p11-kit-trust.so 的内容覆盖容器 libnssckbi.so
 cp /usr/lib/pkcs11/p11-kit-trust.so \
-   "$FILES/lib/x86_64-linux-gnu/nss/libnssckbi.so"
+ "$FILES/lib/x86_64-linux-gnu/nss/libnssckbi.so"
 
 # 3. 放置 CA 到镜像 trust-source 目录
 mkdir -p "$FILES/etc/ca-certificates/trust-source/anchors"
 cp /etc/ca-certificates/trust-source/anchors/steamcommunityCA.crt \
-   "$FILES/etc/ca-certificates/trust-source/anchors/"
+ "$FILES/etc/ca-certificates/trust-source/anchors/"
 
 # 4. 在 mtree 中登记（目录 + 文件条目，格式参考同目录既有条目）
-#    解压 → 在 ./etc/ca-certificates/update.d 之后插入：
-#    ./etc/ca-certificates/trust-source type=dir
-#    ./etc/ca-certificates/trust-source/anchors type=dir
-#    ./etc/ca-certificates/trust-source/anchors/steamcommunityCA.crt \
-#        type=file mode=644 time=<unix时间>.0 size=1302 sha256=<哈希>
-#    重新压缩为 usr-mtree.txt.gz
+# 解压 → 在 ./etc/ca-certificates/update.d 之后插入：
+# ./etc/ca-certificates/trust-source type=dir
+# ./etc/ca-certificates/trust-source/anchors type=dir
+# ./etc/ca-certificates/trust-source/anchors/steamcommunityCA.crt \
+# type=file mode=644 time=<unix时间>.0 size=1302 sha256=<哈希>
+# 重新压缩为 usr-mtree.txt.gz
 
 # 5. 重启 webhelper（触发容器重建；不要重启 Steam 主进程！）
 pkill -f steamwebhelper
@@ -174,9 +174,9 @@ ls -la /proc/$WH/root/usr/lib/x86_64-linux-gnu/nss/libnssckbi.so
 ls /proc/$WH/root/etc/ca-certificates/trust-source/anchors/
 
 # 2. CEF 日志不再出现新的 -202
-grep -c "net_error -202" ~/.local/share/Steam/logs/cef_log.txt   # 记下当前值
+grep -c "net_error -202" ~/.local/share/Steam/logs/cef_log.txt # 记下当前值
 sleep 120
-grep -c "net_error -202" ~/.local/share/Steam/logs/cef_log.txt   # 不应增长
+grep -c "net_error -202" ~/.local/share/Steam/logs/cef_log.txt # 不应增长
 
 # 3. webhelper 与 S302 保持活动连接
 ss -tnp | grep "127.0.0.1:443"
@@ -246,18 +246,18 @@ cp "$CA_SRC" "$FILES/etc/ca-certificates/trust-source/anchors/"
 mkdir -p /tmp/steamfix.$$
 zcat "$IMG/usr-mtree.txt.gz" > /tmp/steamfix.$$/mtree
 if ! grep -q "trust-source/anchors/steamcommunityCA.crt" /tmp/steamfix.$$/mtree; then
-  SIZE=$(stat -c %s "$CA_SRC")
-  TIME=$(stat -c %Y "$CA_SRC")
-  SHA=$(sha256sum "$CA_SRC" | awk '{print $1}')
-  awk -v t="$TIME" -v s="$SIZE" -v h="$SHA" \
-    '1; /^\.\/etc\/ca-certificates\/update.d type=dir$/ {
-       print "./etc/ca-certificates/trust-source type=dir";
-       print "./etc/ca-certificates/trust-source/anchors type=dir";
-       printf "./etc/ca-certificates/trust-source/anchors/steamcommunityCA.crt type=file mode=644 time=%d.0 size=%d sha256=%s\n", t, s, h }' \
-    /tmp/steamfix.$$/mtree | gzip > "$IMG/usr-mtree.txt.gz"
-  echo "mtree 已更新"
+ SIZE=$(stat -c %s "$CA_SRC")
+ TIME=$(stat -c %Y "$CA_SRC")
+ SHA=$(sha256sum "$CA_SRC" | awk '{print $1}')
+ awk -v t="$TIME" -v s="$SIZE" -v h="$SHA" \
+ '1; /^\.\/etc\/ca-certificates\/update.d type=dir$/ {
+ print "./etc/ca-certificates/trust-source type=dir";
+ print "./etc/ca-certificates/trust-source/anchors type=dir";
+ printf "./etc/ca-certificates/trust-source/anchors/steamcommunityCA.crt type=file mode=644 time=%d.0 size=%d sha256=%s\n", t, s, h }' \
+ /tmp/steamfix.$$/mtree | gzip > "$IMG/usr-mtree.txt.gz"
+ echo "mtree 已更新"
 else
-  echo "mtree 已包含 CA 条目，跳过"
+ echo "mtree 已包含 CA 条目，跳过"
 fi
 rm -rf /tmp/steamfix.$$
 
@@ -269,10 +269,10 @@ sleep 15
 # 6. 验证
 WH=$(pgrep -f "steamwebhelper -nocrashdialog" | head -1 || true)
 if [ -n "$WH" ]; then
-  echo "webhelper PID=$WH"
-  ls -l "/proc/$WH/root/etc/ca-certificates/trust-source/anchors/steamcommunityCA.crt"
+ echo "webhelper PID=$WH"
+ ls -l "/proc/$WH/root/etc/ca-certificates/trust-source/anchors/steamcommunityCA.crt"
 else
-  echo "警告：webhelper 未在 15 秒内重启，请手动检查"
+ echo "警告：webhelper 未在 15 秒内重启，请手动检查"
 fi
 echo "完成。商店页若仍空白，请检查 cef_log.txt 中是否还有 net_error -202。"
 ```

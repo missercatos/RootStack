@@ -23,16 +23,16 @@
 
 ```
 nixpkgs/
-├── pkgs/                    # 所有包的 derivation
-│   ├── development/
-│   ├── tools/
-│   ├── applications/
-│   ├── os-specific/
-│   └── top-level/
-│       └── all-packages.nix # 将所有包聚合在一起
-├── lib/                     # nixpkgs 库函数
-├── nixos/                   # NixOS 模块
-│   └── modules/
+├── pkgs/ # 所有包的 derivation
+│ ├── development/
+│ ├── tools/
+│ ├── applications/
+│ ├── os-specific/
+│ └── top-level/
+│ └── all-packages.nix # 将所有包聚合在一起
+├── lib/ # nixpkgs 库函数
+├── nixos/ # NixOS 模块
+│ └── modules/
 ├── pkgs/top-level/default.nix
 └── flake.nix
 ```
@@ -202,27 +202,27 @@ nix-shell --pure -p python312
 { pkgs ? import <nixpkgs> {} }:
 
 pkgs.mkShell {
-  buildInputs = with pkgs; [
-    python312
-    python312Packages.pip
-    python312Packages.virtualenv
+ buildInputs = with pkgs; [
+ python312
+ python312Packages.pip
+ python312Packages.virtualenv
 
-    nodejs_22
-    nodePackages.pnpm
+ nodejs_22
+ nodePackages.pnpm
 
-    go
-    gcc
-    cmake
+ go
+ gcc
+ cmake
 
-    postgresql_16
-  ];
+ postgresql_16
+ ];
 
-  shellHook = ''
-    export PS1="[dev] $PS1"
-    echo "Dev shell ready. Python: $(python --version), Node: $(node --version)"
-  '';
+ shellHook = ''
+ export PS1="[dev] $PS1"
+ echo "Dev shell ready. Python: $(python --version), Node: $(node --version)"
+ '';
 
-  PROJECT_NAME = "my-web-app";
+ PROJECT_NAME = "my-web-app";
 }
 ```
 
@@ -302,37 +302,37 @@ nix build -L nixpkgs#python312
 }:
 
 stdenv.mkDerivation rec {
-  pname = "myapp";
-  version = "1.0.0";
+ pname = "myapp";
+ version = "1.0.0";
 
-  src = fetchFromGitHub {
-    owner = "user";
-    repo = "myapp";
-    rev = "v${version}";
-    sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
-  };
+ src = fetchFromGitHub {
+ owner = "user";
+ repo = "myapp";
+ rev = "v${version}";
+ sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+ };
 
-  nativeBuildInputs = [
-    cmake
-    pkg-config
-  ];
+ nativeBuildInputs = [
+ cmake
+ pkg-config
+ ];
 
-  buildInputs = [
-    openssl
-    zlib
-  ];
+ buildInputs = [
+ openssl
+ zlib
+ ];
 
-  cmakeFlags = [
-    "-DBUILD_TESTS=OFF"
-  ];
+ cmakeFlags = [
+ "-DBUILD_TESTS=OFF"
+ ];
 
-  meta = with lib; {
-    description = "My application description";
-    homepage = "https://example.com/myapp";
-    license = licenses.mit;
-    platforms = platforms.linux;
-    maintainers = with maintainers; [ yourname ];
-  };
+ meta = with lib; {
+ description = "My application description";
+ homepage = "https://example.com/myapp";
+ license = licenses.mit;
+ platforms = platforms.linux;
+ maintainers = with maintainers; [ yourname ];
+ };
 }
 ```
 
@@ -342,100 +342,100 @@ stdenv.mkDerivation rec {
 # Go
 { stdenv, lib, buildGoModule, fetchFromGitHub }:
 buildGoModule rec {
-  pname = "my-go-app";
-  version = "1.0.0";
+ pname = "my-go-app";
+ version = "1.0.0";
 
-  src = fetchFromGitHub {
-    owner = "user";
-    repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256-...=";
-  };
+ src = fetchFromGitHub {
+ owner = "user";
+ repo = pname;
+ rev = "v${version}";
+ sha256 = "sha256-...=";
+ };
 
-  vendorHash = "sha256-...=";  # 或 vendorHash = ""; 首次构建
+ vendorHash = "sha256-...="; # 或 vendorHash = ""; 首次构建
 
-  meta = with lib; {
-    description = "Go application";
-    license = licenses.mit;
-  };
+ meta = with lib; {
+ description = "Go application";
+ license = licenses.mit;
+ };
 }
 
 # Rust
 { stdenv, lib, rustPlatform, fetchFromGitHub, pkg-config, openssl }:
 rustPlatform.buildRustPackage rec {
-  pname = "my-rust-app";
-  version = "1.0.0";
+ pname = "my-rust-app";
+ version = "1.0.0";
 
-  src = fetchFromGitHub {
-    owner = "user";
-    repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256-...=";
-  };
+ src = fetchFromGitHub {
+ owner = "user";
+ repo = pname;
+ rev = "v${version}";
+ sha256 = "sha256-...=";
+ };
 
-  cargoHash = "sha256-...=";
+ cargoHash = "sha256-...=";
 
-  nativeBuildInputs = [ pkg-config ];
-  buildInputs = [ openssl ];
+ nativeBuildInputs = [ pkg-config ];
+ buildInputs = [ openssl ];
 
-  meta = with lib; {
-    description = "Rust application";
-    license = licenses.mit;
-  };
+ meta = with lib; {
+ description = "Rust application";
+ license = licenses.mit;
+ };
 }
 
 # Python
 { lib, python3Packages, fetchFromGitHub }:
 python3Packages.buildPythonApplication rec {
-  pname = "my-python-app";
-  version = "1.0.0";
+ pname = "my-python-app";
+ version = "1.0.0";
 
-  src = fetchFromGitHub {
-    owner = "user";
-    repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256-...=";
-  };
+ src = fetchFromGitHub {
+ owner = "user";
+ repo = pname;
+ rev = "v${version}";
+ sha256 = "sha256-...=";
+ };
 
-  propagatedBuildInputs = with python3Packages; [
-    requests
-    click
-  ];
+ propagatedBuildInputs = with python3Packages; [
+ requests
+ click
+ ];
 
-  nativeCheckInputs = with python3Packages; [
-    pytest
-  ];
+ nativeCheckInputs = with python3Packages; [
+ pytest
+ ];
 
-  meta = with lib; {
-    description = "Python application";
-    license = licenses.mit;
-  };
+ meta = with lib; {
+ description = "Python application";
+ license = licenses.mit;
+ };
 }
 
 # Node.js
 { lib, buildNpmPackage, fetchFromGitHub }:
 buildNpmPackage rec {
-  pname = "my-js-app";
-  version = "1.0.0";
+ pname = "my-js-app";
+ version = "1.0.0";
 
-  src = fetchFromGitHub {
-    owner = "user";
-    repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256-...=";
-  };
+ src = fetchFromGitHub {
+ owner = "user";
+ repo = pname;
+ rev = "v${version}";
+ sha256 = "sha256-...=";
+ };
 
-  npmDepsHash = "sha256-...=";
+ npmDepsHash = "sha256-...=";
 
-  # Makefile 或自定义 build 阶段
-  postInstall = ''
-    ln -s $out/lib/node_modules/my-js-app/bin/cli.js $out/bin/my-js-app
-  '';
+ # Makefile 或自定义 build 阶段
+ postInstall = ''
+ ln -s $out/lib/node_modules/my-js-app/bin/cli.js $out/bin/my-js-app
+ '';
 
-  meta = with lib; {
-    description = "JavaScript application";
-    license = licenses.mit;
-  };
+ meta = with lib; {
+ description = "JavaScript application";
+ license = licenses.mit;
+ };
 }
 ```
 
@@ -447,12 +447,12 @@ nix build --impure --expr 'with import <nixpkgs> {}; callPackage ./myapp.nix {}'
 
 # 或在 flake 中导出
 {
-  outputs = { self, nixpkgs }: {
-    packages.x86_64-linux.myapp = import ./myapp.nix {
-      inherit (nixpkgs.legacyPackages.x86_64-linux)
-        lib stdenv fetchFromGitHub cmake pkg-config openssl zlib;
-    };
-  };
+ outputs = { self, nixpkgs }: {
+ packages.x86_64-linux.myapp = import ./myapp.nix {
+ inherit (nixpkgs.legacyPackages.x86_64-linux)
+ lib stdenv fetchFromGitHub cmake pkg-config openssl zlib;
+ };
+ };
 }
 ```
 
@@ -465,21 +465,21 @@ nix build --impure --expr 'with import <nixpkgs> {}; callPackage ./myapp.nix {}'
 ```nix
 # override — 修改 derivation 的参数
 let
-  pkgs = import <nixpkgs> {};
-  myNginx = pkgs.nginx.override {
-    # 修改 nginx 的参数
-    modules = [ pkgs.nginxModules.rtmp ];
-  };
+ pkgs = import <nixpkgs> {};
+ myNginx = pkgs.nginx.override {
+ # 修改 nginx 的参数
+ modules = [ pkgs.nginxModules.rtmp ];
+ };
 in myNginx
 
 # overrideAttrs — 修改 derivation 的属性
 let
-  pkgs = import <nixpkgs> {};
-  customVim = pkgs.vim.overrideAttrs (oldAttrs: {
-    version = "custom-version";
-    src = fetchFromGitHub { ... };
-    patches = oldAttrs.patches ++ [ ./my-fix.patch ];
-  });
+ pkgs = import <nixpkgs> {};
+ customVim = pkgs.vim.overrideAttrs (oldAttrs: {
+ version = "custom-version";
+ src = fetchFromGitHub { ... };
+ patches = oldAttrs.patches ++ [ ./my-fix.patch ];
+ });
 in customVim
 ```
 
@@ -492,28 +492,28 @@ in customVim
 # ~/.config/nixpkgs/overlays/custom.nix
 self: super: {
 
-  # 添加新包
-  myCustomApp = self.callPackage ./myapp.nix {};
+ # 添加新包
+ myCustomApp = self.callPackage ./myapp.nix {};
 
-  # 覆盖已有包
-  vim = super.vim.overrideAttrs (oldAttrs: rec {
-    version = "custom-${oldAttrs.version}";
-    src = self.fetchFromGitHub {
-      owner = "vim";
-      repo = "vim";
-      rev = "v9.1.0000";
-      sha256 = "sha256-...=";
-    };
-  });
+ # 覆盖已有包
+ vim = super.vim.overrideAttrs (oldAttrs: rec {
+ version = "custom-${oldAttrs.version}";
+ src = self.fetchFromGitHub {
+ owner = "vim";
+ repo = "vim";
+ rev = "v9.1.0000";
+ sha256 = "sha256-...=";
+ };
+ });
 
-  # 覆盖 Python 包
-  python312 = super.python312.override {
-    packageOverrides = pySelf: pySuper: {
-      numpy = pySuper.numpy.overridePythonAttrs (oldAttrs: {
-        # 修改 numpy
-      });
-    };
-  };
+ # 覆盖 Python 包
+ python312 = super.python312.override {
+ packageOverrides = pySelf: pySuper: {
+ numpy = pySuper.numpy.overridePythonAttrs (oldAttrs: {
+ # 修改 numpy
+ });
+ };
+ };
 }
 ```
 
@@ -522,21 +522,21 @@ self: super: {
 ```nix
 # NixOS configuration.nix 中全局启用
 nixpkgs.overlays = [
-  (import ./overlays/custom.nix)
+ (import ./overlays/custom.nix)
 ];
 
 # 在 flake 中
 {
-  nixpkgs.overlays = [ self.overlays.default ];
+ nixpkgs.overlays = [ self.overlays.default ];
 }
 
 # 在 shell.nix 中
 let
-  pkgs = import <nixpkgs> {
-    overlays = [
-      (import ./overlays/custom.nix)
-    ];
-  };
+ pkgs = import <nixpkgs> {
+ overlays = [
+ (import ./overlays/custom.nix)
+ ];
+ };
 in pkgs.myCustomApp
 ```
 
@@ -545,29 +545,29 @@ in pkgs.myCustomApp
 ```nix
 self: super: {
 
-  # 使用最新版本替代
-  neovim = super.neovim-unwrapped;
+ # 使用最新版本替代
+ neovim = super.neovim-unwrapped;
 
-  # 应用补丁
-  fzf = super.fzf.overrideAttrs (old: {
-    patches = (old.patches or []) ++ [ ./fzf-fix.patch ];
-  });
+ # 应用补丁
+ fzf = super.fzf.overrideAttrs (old: {
+ patches = (old.patches or []) ++ [ ./fzf-fix.patch ];
+ });
 
-  # 从不同源构建
-  gimp = super.gimp.overrideAttrs (old: rec {
-    version = "2.99.18";
-    src = self.fetchurl {
-      url = "https://download.gimp.org/gimp/v2.99/gimp-${version}.tar.xz";
-      sha256 = "sha256-...=";
-    };
-  });
+ # 从不同源构建
+ gimp = super.gimp.overrideAttrs (old: rec {
+ version = "2.99.18";
+ src = self.fetchurl {
+ url = "https://download.gimp.org/gimp/v2.99/gimp-${version}.tar.xz";
+ sha256 = "sha256-...=";
+ };
+ });
 
-  # 启用额外特性
-  gitFull = super.gitFull.override {
-    sendEmailSupport = true;
-    svnSupport = true;
-    guiSupport = true;
-  };
+ # 启用额外特性
+ gitFull = super.gitFull.override {
+ sendEmailSupport = true;
+ svnSupport = true;
+ guiSupport = true;
+ };
 }
 ```
 
@@ -591,14 +591,14 @@ Nix 的构建可以两种方式获得结果：
 ```nix
 # /etc/nixos/configuration.nix 或 ~/.config/nix/nix.conf
 nix.settings.substituters = [
-  "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
-  "https://cache.nixos.org"
-  "https://my-org.cachix.org"
+ "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
+ "https://cache.nixos.org"
+ "https://my-org.cachix.org"
 ];
 
 nix.settings.trusted-public-keys = [
-  "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-  "my-org.cachix.org-1:..."
+ "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+ "my-org.cachix.org-1:..."
 ];
 ```
 

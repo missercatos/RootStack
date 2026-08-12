@@ -24,24 +24,24 @@ CPython 是 Python 语言的参考实现，用 C 编写。它的"内核"是一�
 ```c
 // 所有 Python 对象的"基类"——纯 C 结构体
 typedef struct _object {
-    Py_ssize_t ob_refcnt;         // 引用计数
-    PyTypeObject *ob_type;         // 指向类型对象的指针 (类似 vtable)
+ Py_ssize_t ob_refcnt; // 引用计数
+ PyTypeObject *ob_type; // 指向类型对象的指针 (类似 vtable)
 } PyObject;
 
 // Python int (任意精度)
 typedef struct {
-    PyObject_HEAD
-    int32_t *digits;               // 指向 lims 数组的指针
-    size_t length;                 // 数组长度 (以 digit 为单位)
-    int sign;                      // 符号位
+ PyObject_HEAD
+ int32_t *digits; // 指向 lims 数组的指针
+ size_t length; // 数组长度 (以 digit 为单位)
+ int sign; // 符号位
 } PyLongObject;
 
 // Python list
 typedef struct {
-    PyObject_HEAD
-    Py_ssize_t ob_size;
-    PyObject **ob_item;            // 指向 C 指针数组的指针
-    Py_ssize_t allocated;          // 分配的容量
+ PyObject_HEAD
+ Py_ssize_t ob_size;
+ PyObject **ob_item; // 指向 C 指针数组的指针
+ Py_ssize_t allocated; // 分配的容量
 } PyListObject;
 ```
 
@@ -50,24 +50,24 @@ typedef struct {
 ```python
 # 简化版 CPython GC 逻辑 (Python 视角)
 def increment_refcount(obj):
-    obj.ob_refcnt += 1
+ obj.ob_refcnt += 1
 
 def decrement_refcount(obj):
-    obj.ob_refcnt -= 1
-    if obj.ob_refcnt == 0:
-        # 立即释放内存
-        obj.tp_dealloc(obj)
-        # 递归减少该对象引用其他对象的计数
-        for child in obj.tp_traverse():
-            decrement_refcount(child)
+ obj.ob_refcnt -= 1
+ if obj.ob_refcnt == 0:
+ # 立即释放内存
+ obj.tp_dealloc(obj)
+ # 递归减少该对象引用其他对象的计数
+ for child in obj.tp_traverse():
+ decrement_refcount(child)
 
 # 分代 GC: 检测引用计数无法回收的循环引用
 def collect_generation(gen):
-    # STW (Stop The World): 暂停所有线程
-    # 标记: 遍历 gen 中的容器对象
-    # 清除: 回收不可达的循环引用
-    # 分代: gen0 最频繁, gen1 次之, gen2 最慢
-    pass
+ # STW (Stop The World): 暂停所有线程
+ # 标记: 遍历 gen 中的容器对象
+ # 清除: 回收不可达的循环引用
+ # 分代: gen0 最频繁, gen1 次之, gen2 最慢
+ pass
 ```
 
 ## GIL (Global Interpreter Lock)
@@ -79,28 +79,28 @@ def collect_generation(gen):
 
 // Python 伪代码表示字节码执行循环
 while (1) {
-    opcode = *next_instr++;
+ opcode = *next_instr++;
 
-    switch (opcode) {
-        case LOAD_FAST:    // 加载局部变量
-            PUSH(GETLOCAL(oparg));
-            break;
-        case BINARY_ADD:   // 加法
-            x = POP(); y = TOP();
-            SET_TOP(PyNumber_Add(y, x));
-            break;
-        case CALL_FUNCTION: // 函数调用
-            // 构建新栈帧, 递归调用解释器
-            break;
-        // ... 200+ 条字节码
-    }
+ switch (opcode) {
+ case LOAD_FAST: // 加载局部变量
+ PUSH(GETLOCAL(oparg));
+ break;
+ case BINARY_ADD: // 加法
+ x = POP(); y = TOP();
+ SET_TOP(PyNumber_Add(y, x));
+ break;
+ case CALL_FUNCTION: // 函数调用
+ // 构建新栈帧, 递归调用解释器
+ break;
+ // ... 200+ 条字节码
+ }
 
-    // 每执行 100 条指令检查是否需要释放 GIL
-    if (--eval_breaker == 0) {
-        // 释放 GIL, 让其他线程有机会运行
-        release_gil();
-        acquire_gil();
-    }
+ // 每执行 100 条指令检查是否需要释放 GIL
+ if (--eval_breaker == 0) {
+ // 释放 GIL, 让其他线程有机会运行
+ release_gil();
+ acquire_gil();
+ }
 }
 ```
 
@@ -108,19 +108,19 @@ while (1) {
 
 ```
 import numpy as np
-    |
-    v
-sys.modules["numpy"]?  --Y--> 返回已缓存的 module
-    |N
-    v
+ |
+ v
+sys.modules["numpy"]? --Y--> 返回已缓存的 module
+ |N
+ v
 遍历 sys.path 中的每个路径:
-    对于每个 sys.meta_path 中的 finder:
-        spec = finder.find_spec("numpy")
-        如果找到加载器 (loader):
-            module = loader.create_module(spec)
-            loader.exec_module(module)         # 执行字节码初始化
-            sys.modules["numpy"] = module
-            返回 module
+ 对于每个 sys.meta_path 中的 finder:
+ spec = finder.find_spec("numpy")
+ 如果找到加载器 (loader):
+ module = loader.create_module(spec)
+ loader.exec_module(module) # 执行字节码初始化
+ sys.modules["numpy"] = module
+ 返回 module
 ```
 
 ---

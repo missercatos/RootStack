@@ -30,103 +30,103 @@ title: "C++ 功能库 — optional / variant / any / expected"
 
 ```
 FUNCTION demo_optional:
-    // 作为返回值
-    FIND_USER = LAMBDA(id) -> OPTIONAL<STRING>:
-        IF id IN database:
-            RETURN database[id]
-        ELSE:
-            RETURN NULLOPT                 // 空
-        END IF
-    END LAMBDA
+ // 作为返回值
+ FIND_USER = LAMBDA(id) -> OPTIONAL<STRING>:
+ IF id IN database:
+ RETURN database[id]
+ ELSE:
+ RETURN NULLOPT // 空
+ END IF
+ END LAMBDA
 
-    result = FIND_USER(42)
-    IF result.HAS_VALUE():
-        PRINT result.VALUE()
-    ELSE:
-        PRINT result.VALUE_OR("Unknown")   // 提供默认值
-    END IF
+ result = FIND_USER(42)
+ IF result.HAS_VALUE():
+ PRINT result.VALUE()
+ ELSE:
+ PRINT result.VALUE_OR("Unknown") // 提供默认值
+ END IF
 
-    // 安全解引用
-    IF result: PRINT *result                // bool 转换
-    p = result.PTR()                       // 返回 T*（指向值或 nullptr）
+ // 安全解引用
+ IF result: PRINT *result // bool 转换
+ p = result.PTR() // 返回 T*（指向值或 nullptr）
 ```
 
 ### variant —— 类型安全联合体
 
 ```
 FUNCTION demo_variant:
-    USING Value = VARIANT<INT, DOUBLE, STRING>
+ USING Value = VARIANT<INT, DOUBLE, STRING>
 
-    v = Value(42)                           // 持有 int
-    v = 3.14                                // 持有 double（替换）
-    v = STRING("hello")                     // 持有 string
+ v = Value(42) // 持有 int
+ v = 3.14 // 持有 double（替换）
+ v = STRING("hello") // 持有 string
 
-    // 按类型取
-    IF HOLDS<STRING>(v):
-        PRINT GET<STRING>(v)
-    END IF
+ // 按类型取
+ IF HOLDS<STRING>(v):
+ PRINT GET<STRING>(v)
+ END IF
 
-    // visit: 必须覆盖所有类型
-    VISIT(LAMBDA(x):
-        PRINT "值是:", x, ENDL
-    , v)
+ // visit: 必须覆盖所有类型
+ VISIT(LAMBDA(x):
+ PRINT "值是:", x, ENDL
+ , v)
 
-    // visit 带返回值
-    len = VISIT(LAMBDA(x) -> SIZE_T:
-        IF TYPEOF(x) IS STRING: RETURN x.SIZE()
-        ELSE IF T == INT: RETURN NUM_DIGITS(x)
-        ELSE: RETURN 0
-    , v)
+ // visit 带返回值
+ len = VISIT(LAMBDA(x) -> SIZE_T:
+ IF TYPEOF(x) IS STRING: RETURN x.SIZE()
+ ELSE IF T == INT: RETURN NUM_DIGITS(x)
+ ELSE: RETURN 0
+ , v)
 
-    // 错误取值抛异常: get<INT>(v) 当 v 是 string 时 → bad_variant_access
+ // 错误取值抛异常: get<INT>(v) 当 v 是 string 时 → bad_variant_access
 ```
 
 ### any —— 任意类型容器
 
 ```
 FUNCTION demo_any:
-    a = ANY(42)
-    a = STRING("hello")
-    a = 3.14
+ a = ANY(42)
+ a = STRING("hello")
+ a = 3.14
 
-    // 必须知道当前类型才能取值
-    IF a.TYPE() == TYPEID(INT):
-        PRINT ANY_CAST<INT>(a)
-    ELSE IF a.TYPE() == TYPEID(STRING):
-        PRINT ANY_CAST<STRING>(a)
-    END IF
+ // 必须知道当前类型才能取值
+ IF a.TYPE() == TYPEID(INT):
+ PRINT ANY_CAST<INT>(a)
+ ELSE IF a.TYPE() == TYPEID(STRING):
+ PRINT ANY_CAST<STRING>(a)
+ END IF
 
-    // 存储不同类型的消息
-    messages = VECTOR<ANY>()
-    messages.PUSH(ANY(42))
-    messages.PUSH(ANY(STRING("text")))
-    messages.PUSH(ANY(PAIR<INT, INT>{1, 2}))
+ // 存储不同类型的消息
+ messages = VECTOR<ANY>()
+ messages.PUSH(ANY(42))
+ messages.PUSH(ANY(STRING("text")))
+ messages.PUSH(ANY(PAIR<INT, INT>{1, 2}))
 ```
 
 ### expected —— 带错误的值 (C++23)
 
 ```
 FUNCTION demo_expected:
-    DIVIDE_SAFE = LAMBDA(a, b) -> EXPECTED<DOUBLE, STRING>:
-        IF b == 0:
-            RETURN UNEXPECTED("div by zero")
-        ELSE:
-            RETURN a / DOUBLE(b)
-        END IF
-    END LAMBDA
+ DIVIDE_SAFE = LAMBDA(a, b) -> EXPECTED<DOUBLE, STRING>:
+ IF b == 0:
+ RETURN UNEXPECTED("div by zero")
+ ELSE:
+ RETURN a / DOUBLE(b)
+ END IF
+ END LAMBDA
 
-    result = DIVIDE_SAFE(10, 2)
-    IF result:
-        PRINT result.VALUE()               // 5.0
-    ELSE:
-        PRINT "error:", result.ERROR()
-    END IF
+ result = DIVIDE_SAFE(10, 2)
+ IF result:
+ PRINT result.VALUE() // 5.0
+ ELSE:
+ PRINT "error:", result.ERROR()
+ END IF
 
-    // 链式处理
-    PRINT result.VALUE_OR(-1.0)             // 错误时默认值
-    result.AND_THEN(LAMBDA(x):
-        RETURN x * 2                        // 有值时继续
-    )
+ // 链式处理
+ PRINT result.VALUE_OR(-1.0) // 错误时默认值
+ result.AND_THEN(LAMBDA(x):
+ RETURN x * 2 // 有值时继续
+ )
 ```
 
 ---

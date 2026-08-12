@@ -9,10 +9,10 @@
 
 ```mermaid
 flowchart LR
-    F["IF 取指<br/>PC→MAR<br/>Mem[MAR]→MDR→IR<br/>PC+4→PC (顺序下一条)"] --> D["ID 译码<br/>opcode→控制信号<br/>Reg[rs1]→A, Reg[rs2]→B<br/>立即数扩展→Imm"]
-    D --> E["EX 执行<br/>ALU计算:<br/>R-type: A+B<br/>Load/Store: A+Imm<br/>Branch: A−B, 条件判断"]
-    E --> M["MEM 访存<br/>Load: Mem[ALUOut]→MDR<br/>Store: B→Mem[ALUOut]<br/>R-type: 无操作"]
-    M --> W["WB 写回<br/>Load: MDR→Reg[rd]<br/>R-type: ALUOut→Reg[rd]<br/>Store/Branch: 无操作"]
+ F["IF 取指<br/>PC→MAR<br/>Mem[MAR]→MDR→IR<br/>PC+4→PC (顺序下一条)"] --> D["ID 译码<br/>opcode→控制信号<br/>Reg[rs1]→A, Reg[rs2]→B<br/>立即数扩展→Imm"]
+ D --> E["EX 执行<br/>ALU计算:<br/>R-type: A+B<br/>Load/Store: A+Imm<br/>Branch: A−B, 条件判断"]
+ E --> M["MEM 访存<br/>Load: Mem[ALUOut]→MDR<br/>Store: B→Mem[ALUOut]<br/>R-type: 无操作"]
+ M --> W["WB 写回<br/>Load: MDR→Reg[rd]<br/>R-type: ALUOut→Reg[rd]<br/>Store/Branch: 无操作"]
 ```
 
 各阶段的寄存器转移与数据流动：
@@ -33,30 +33,30 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    PC["程序计数器 PC"] --> MUX1["MUX (2:1)"]
-    GPRS["通用寄存器组<br/>(R0~R31)<br/>1个读端口 + 1个写端口"] --> MUX1
-    MUX1 --> BUS["内部共享总线"]
-    IR["指令寄存器 IR"] -.->|"立即数"| BUS
-    BUS --> MAR["存储器地址寄存器 MAR"]
-    BUS --> MDR["存储器数据寄存器 MDR"]
-    BUS --> ALU_A["暂存器 A"]
-    BUS --> ALU_B["暂存器 B"]
-    ALU_A --> ALU
-    ALU_B --> ALU
-    ALU["算术逻辑单元 ALU"] --> ALUOUT["暂存器 ALUOut"]
-    ALUOUT --> BUS
-    BUS --> GPRS
-    BUS --> PC
-    BUS --> MAR
+ PC["程序计数器 PC"] --> MUX1["MUX (2:1)"]
+ GPRS["通用寄存器组<br/>(R0~R31)<br/>1个读端口 + 1个写端口"] --> MUX1
+ MUX1 --> BUS["内部共享总线"]
+ IR["指令寄存器 IR"] -.->|"立即数"| BUS
+ BUS --> MAR["存储器地址寄存器 MAR"]
+ BUS --> MDR["存储器数据寄存器 MDR"]
+ BUS --> ALU_A["暂存器 A"]
+ BUS --> ALU_B["暂存器 B"]
+ ALU_A --> ALU
+ ALU_B --> ALU
+ ALU["算术逻辑单元 ALU"] --> ALUOUT["暂存器 ALUOut"]
+ ALUOUT --> BUS
+ BUS --> GPRS
+ BUS --> PC
+ BUS --> MAR
 ```
 
 完成一次 `ADD R1, R2, R3` 需要三个时钟节拍：
 
 ```
-T1: 总线 ← Reg[R2]; A ← 总线          (取第一个操作数)
-T2: 总线 ← Reg[R3]; B ← 总线          (取第二个操作数)
-T3: ALUOut ← A + B; 总线 ← ALUOut;    (执行并写回)
-    Reg[R1] ← 总线
+T1: 总线 ← Reg[R2]; A ← 总线 (取第一个操作数)
+T2: 总线 ← Reg[R3]; B ← 总线 (取第二个操作数)
+T3: ALUOut ← A + B; 总线 ← ALUOut; (执行并写回)
+ Reg[R1] ← 总线
 ```
 
 优势：控制信号最少，硬件成本最低；劣势：每条 R-type 指令至少 3 个周期，速度慢。适合早期 8 位微处理器。
@@ -67,24 +67,24 @@ T3: ALUOut ← A + B; 总线 ← ALUOut;    (执行并写回)
 
 ```mermaid
 flowchart TD
-    BUS_A["总线 A"] --> ALU_A["ALU 输入 A"]
-    BUS_B["总线 B"] --> ALU_B["ALU 输入 B"]
-    PC["PC"] --> BUS_A
-    PC --> BUS_B
-    GPRS["寄存器组<br/>(2个读端口 + 1个写端口)"] --> BUS_A
-    GPRS --> BUS_B
-    ALU["ALU"] --> ALUOUT["ALUOut"]
-    ALUOUT --> BUS_W["写回总线"]
-    BUS_W --> GPRS
-    BUS_W --> PC
-    MDR["MDR"] --> BUS_A & BUS_B
-    MAR --> BUS_A & BUS_B
+ BUS_A["总线 A"] --> ALU_A["ALU 输入 A"]
+ BUS_B["总线 B"] --> ALU_B["ALU 输入 B"]
+ PC["PC"] --> BUS_A
+ PC --> BUS_B
+ GPRS["寄存器组<br/>(2个读端口 + 1个写端口)"] --> BUS_A
+ GPRS --> BUS_B
+ ALU["ALU"] --> ALUOUT["ALUOut"]
+ ALUOUT --> BUS_W["写回总线"]
+ BUS_W --> GPRS
+ BUS_W --> PC
+ MDR["MDR"] --> BUS_A & BUS_B
+ MAR --> BUS_A & BUS_B
 ```
 
 ```
 ADD R1, R2, R3 (双总线, 2 个节拍):
-T1: 总线 A ← Reg[R2]; 总线 B ← Reg[R3]     (同时读取两操作数)
-T2: ALUOut ← A + B; Reg[R1] ← ALUOut        (执行+写回合并为一个节拍)
+T1: 总线 A ← Reg[R2]; 总线 B ← Reg[R3] (同时读取两操作数)
+T2: ALUOut ← A + B; Reg[R1] ← ALUOut (执行+写回合并为一个节拍)
 ```
 
 相比单总线减少一个节拍。寄存器组需要两个读端口。
@@ -95,24 +95,24 @@ T2: ALUOut ← A + B; Reg[R1] ← ALUOut        (执行+写回合并为一个节
 
 ```mermaid
 flowchart TD
-    BUS_A["总线 A (操作数1)"] --- ALU_IN_A["ALU 输入 A"]
-    BUS_B["总线 B (操作数2)"] --- ALU_IN_B["ALU 输入 B"]
-    BUS_C["总线 C (写回)"] --- ALU_OUT["ALU 输出"]
-    
-    GPRS["寄存器组<br/>(2个读端口 + 1个写端口)"] --> BUS_A
-    GPRS --> BUS_B
-    ALU_OUT --> BUS_C
-    BUS_C --> GPRS
-    PC["PC"] --- BUS_A & BUS_B & BUS_C
-    MUX_A["MUX"] --> BUS_A
-    MUX_B["MUX"] --> BUS_B
+ BUS_A["总线 A (操作数1)"] --- ALU_IN_A["ALU 输入 A"]
+ BUS_B["总线 B (操作数2)"] --- ALU_IN_B["ALU 输入 B"]
+ BUS_C["总线 C (写回)"] --- ALU_OUT["ALU 输出"]
+ 
+ GPRS["寄存器组<br/>(2个读端口 + 1个写端口)"] --> BUS_A
+ GPRS --> BUS_B
+ ALU_OUT --> BUS_C
+ BUS_C --> GPRS
+ PC["PC"] --- BUS_A & BUS_B & BUS_C
+ MUX_A["MUX"] --> BUS_A
+ MUX_B["MUX"] --> BUS_B
 ```
 
 ```
 ADD R1, R2, R3 (三总线, 1 个节拍):
-    Reg[R2] → 总线 A → ALU 输入
-    Reg[R3] → 总线 B → ALU 输入
-    ALU(A+B) → 总线 C → Reg[R1] ← 同时完成
+ Reg[R2] → 总线 A → ALU 输入
+ Reg[R3] → 总线 B → ALU 输入
+ ALU(A+B) → 总线 C → Reg[R1] ← 同时完成
 ```
 
 要求 ALU 组合逻辑延迟在单周期内完成 (约 1~2ns 量级)，适合高性能处理器。
@@ -136,20 +136,20 @@ ADD R1, R2, R3 (三总线, 1 个节拍):
 
 ```mermaid
 flowchart TD
-    OP["IR[opcode]<br/>(6 位操作码)"] --> DEC["指令译码器<br/>(PLA 或组合逻辑阵列)"]
-    FUNCT["IR[funct]<br/>(6 位功能码)"] --> DEC
-    FLAGS["标志寄存器<br/>(Zero, Carry, Overflow, Negative)"] --> DEC
-    
-    CLOCK["时钟"] --> STEP_CNT["节拍计数器<br/>(环形/扭环计数器)"]
-    STEP_CNT --> DEC
-    
-    DEC --> CTRL["控制信号输出 (~30~60 条控制线)"]
-    CTRL --> ALU_CTRL["ALUop[3:0] — 选择 ALU 操作"]
-    CTRL --> REG_WRITE["RegWrite — 寄存器写使能"]
-    CTRL --> ALU_SRC["ALUSrc — 选择 ALU 第二操作数来源"]
-    CTRL --> MEM_CTRL["MemRead / MemWrite"]
-    CTRL --> PC_SRC["PCSrc — 选择下一条 PC 来源"]
-    CTRL --> REG_DST["RegDst — 选择写回目标寄存器编号"]
+ OP["IR[opcode]<br/>(6 位操作码)"] --> DEC["指令译码器<br/>(PLA 或组合逻辑阵列)"]
+ FUNCT["IR[funct]<br/>(6 位功能码)"] --> DEC
+ FLAGS["标志寄存器<br/>(Zero, Carry, Overflow, Negative)"] --> DEC
+ 
+ CLOCK["时钟"] --> STEP_CNT["节拍计数器<br/>(环形/扭环计数器)"]
+ STEP_CNT --> DEC
+ 
+ DEC --> CTRL["控制信号输出 (~30~60 条控制线)"]
+ CTRL --> ALU_CTRL["ALUop[3:0] — 选择 ALU 操作"]
+ CTRL --> REG_WRITE["RegWrite — 寄存器写使能"]
+ CTRL --> ALU_SRC["ALUSrc — 选择 ALU 第二操作数来源"]
+ CTRL --> MEM_CTRL["MemRead / MemWrite"]
+ CTRL --> PC_SRC["PCSrc — 选择下一条 PC 来源"]
+ CTRL --> REG_DST["RegDst — 选择写回目标寄存器编号"]
 ```
 
 一节拍的控制信号组合示例 (R-type 的 EX 阶段)：
@@ -169,21 +169,21 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    OP["IR[opcode]"] --> MAP_ROM["微地址映射<br/>(MAP ROM / PLA)"]
-    MAP_ROM --> MUX["MUX (3:1)"]
-    
-    SEQ["微程序定序器"] --> MUX
-    FLAGS["条件码<br/>(Z, C, V, N)"] --> COND_EVAL["条件求值逻辑"]
-    COND_EVAL --> MUX
-    
-    MUX --> UAR["μAR (微地址寄存器)<br/>指向下一条微指令"]
-    UAR --> CM["控制存储器 CM<br/>(ROM/EPROM/Flash)"]
-    CM --> UIR["μIR (微指令寄存器)"]
-    
-    UIR --> DECODE["微命令译码器"]
-    DECODE --> CTRL["控制信号输出"]
-    
-    UIR -->|"下址字段"| SEQ
+ OP["IR[opcode]"] --> MAP_ROM["微地址映射<br/>(MAP ROM / PLA)"]
+ MAP_ROM --> MUX["MUX (3:1)"]
+ 
+ SEQ["微程序定序器"] --> MUX
+ FLAGS["条件码<br/>(Z, C, V, N)"] --> COND_EVAL["条件求值逻辑"]
+ COND_EVAL --> MUX
+ 
+ MUX --> UAR["μAR (微地址寄存器)<br/>指向下一条微指令"]
+ UAR --> CM["控制存储器 CM<br/>(ROM/EPROM/Flash)"]
+ CM --> UIR["μIR (微指令寄存器)"]
+ 
+ UIR --> DECODE["微命令译码器"]
+ DECODE --> CTRL["控制信号输出"]
+ 
+ UIR -->|"下址字段"| SEQ
 ```
 
 微指令格式 (水平型微指令 — 每个控制位独立控制一个数据通路元素)：
@@ -262,27 +262,27 @@ x86-64 的 EFLAGS 有效位 (简列)：
 以三总线数据通路跟踪 `ADD R1, R2, R3` (R[rd] ← R[rs1] + R[rs2])：
 
 ```
-阶段 IF  (取指, 从指令缓存取 32-bit 指令字):
-  MAR   ← PC              ; PC 值 → 地址总线
-  MDR   ← I-Cache[PC]     ; 从指令缓存读取 32 位指令字 (假设命中)
-  IR    ← MDR             ; 锁存到指令寄存器
-  PC    ← PC + 4          ; 加法器提前计算 PC+4
+阶段 IF (取指, 从指令缓存取 32-bit 指令字):
+ MAR ← PC ; PC 值 → 地址总线
+ MDR ← I-Cache[PC] ; 从指令缓存读取 32 位指令字 (假设命中)
+ IR ← MDR ; 锁存到指令寄存器
+ PC ← PC + 4 ; 加法器提前计算 PC+4
 
-阶段 ID  (译码, 读取寄存器):
-  A     ← GPR[IR[rs1]]    ; 读寄存器 R2 → ALU 输入端口 A
-  B     ← GPR[IR[rs2]]    ; 读寄存器 R3 → ALU 输入端口 B
-  控制  ← Decode(IR[opcode:funct])  ; 确定 RegWrite=1, ALUop=ADD, RegDst=rd
-  
-阶段 EX  (执行, ALU 运算):
-  ALUOut ← A + B          ; 组合逻辑: A + B, 同时生成标志 (Z, C, V, N)
-  写回数据 ← ALUOut       ; 将结果放到写回总线
+阶段 ID (译码, 读取寄存器):
+ A ← GPR[IR[rs1]] ; 读寄存器 R2 → ALU 输入端口 A
+ B ← GPR[IR[rs2]] ; 读寄存器 R3 → ALU 输入端口 B
+ 控制 ← Decode(IR[opcode:funct]) ; 确定 RegWrite=1, ALUop=ADD, RegDst=rd
+ 
+阶段 EX (执行, ALU 运算):
+ ALUOut ← A + B ; 组合逻辑: A + B, 同时生成标志 (Z, C, V, N)
+ 写回数据 ← ALUOut ; 将结果放到写回总线
 
 阶段 MEM (访存 — R-type 无操作):
-  (nop — ALUOut 直接旁路到写回级)
+ (nop — ALUOut 直接旁路到写回级)
 
-阶段 WB  (写回, 更新寄存器):
-  GPR[IR[rd]] ← ALUOut    ; 将结果写入 R1, 同时 RegWrite 信号有效
-  → 此时 R1 的值已更新，下一条指令可立即通过 forwarding 读到
+阶段 WB (写回, 更新寄存器):
+ GPR[IR[rd]] ← ALUOut ; 将结果写入 R1, 同时 RegWrite 信号有效
+ → 此时 R1 的值已更新，下一条指令可立即通过 forwarding 读到
 ```
 
 ### 本章与其他模块的链接

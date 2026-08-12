@@ -33,53 +33,53 @@ title: "C++ 功能库 — filesystem"
 
 ```
 FUNCTION demo_path:
-    p = PATH("/home/user/docs")
-    full = p / "subdir" / "file.txt"         // 拼接
+ p = PATH("/home/user/docs")
+ full = p / "subdir" / "file.txt" // 拼接
 
-    PRINT full.FILENAME()                     // "file.txt"
-    PRINT full.STEM()                         // "file"（无后缀）
-    PRINT full.EXTENSION()                    // ".txt"
-    PRINT full.PARENT_PATH()                  // "/home/user/docs/subdir"
+ PRINT full.FILENAME() // "file.txt"
+ PRINT full.STEM() // "file"（无后缀）
+ PRINT full.EXTENSION() // ".txt"
+ PRINT full.PARENT_PATH() // "/home/user/docs/subdir"
 
-    IF EXISTS(full) THEN
-        PRINT "文件存在, 大小=", FILE_SIZE(full)
-    END IF
+ IF EXISTS(full) THEN
+ PRINT "文件存在, 大小=", FILE_SIZE(full)
+ END IF
 ```
 
 ### 目录遍历
 
 ```
 FUNCTION demo_iterate:
-    p = PATH("/home/user/project")
+ p = PATH("/home/user/project")
 
-    FOR entry IN DIRECTORY_ITERATOR(p):
-        path = entry.PATH()
-        IF entry.IS_DIRECTORY() THEN
-            PRINT "[DIR] ", path.FILENAME()
-        ELSE
-            PRINT "      ", path.FILENAME(), " (", entry.FILE_SIZE(), "b)"
-        END IF
-    END FOR
+ FOR entry IN DIRECTORY_ITERATOR(p):
+ path = entry.PATH()
+ IF entry.IS_DIRECTORY() THEN
+ PRINT "[DIR] ", path.FILENAME()
+ ELSE
+ PRINT " ", path.FILENAME(), " (", entry.FILE_SIZE(), "b)"
+ END IF
+ END FOR
 ```
 
 ### 文件操作
 
 ```
 FUNCTION demo_ops:
-    // 创建目录（含父目录）
-    CREATE_DIRECTORIES("/tmp/a/b/c")
+ // 创建目录（含父目录）
+ CREATE_DIRECTORIES("/tmp/a/b/c")
 
-    // 拷贝
-    COPY("/tmp/src.txt", "/tmp/dst.txt")
+ // 拷贝
+ COPY("/tmp/src.txt", "/tmp/dst.txt")
 
-    // 移动/重命名
-    RENAME("/tmp/old.txt", "/tmp/new.txt")
+ // 移动/重命名
+ RENAME("/tmp/old.txt", "/tmp/new.txt")
 
-    // 删除文件
-    REMOVE("/tmp/new.txt")
+ // 删除文件
+ REMOVE("/tmp/new.txt")
 
-    // 递归删除目录
-    REMOVE_ALL("/tmp/a")
+ // 递归删除目录
+ REMOVE_ALL("/tmp/a")
 ```
 
 ---

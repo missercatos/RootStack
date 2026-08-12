@@ -269,11 +269,11 @@ Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
 # apt pinning 控制从哪个仓库安装特定包
 # 优先级：1-1000，值越高越优先
 # 默认优先级：
-#   990 — 来自目标发行版的包
-#   500 — 来自其他发行版的包
-#   100 — 已安装但不在仓库中的包
-#    1  — 实验性包
-#   -1  — 禁止安装
+# 990 — 来自目标发行版的包
+# 500 — 来自其他发行版的包
+# 100 — 已安装但不在仓库中的包
+# 1 — 实验性包
+# -1 — 禁止安装
 ```
 
 ### 5.2 配置 pinning
@@ -326,14 +326,14 @@ apt-cache policy pkgname
 
 # 示例输出：
 # nginx:
-#   Installed: 1.22.1-9
-#   Candidate: 1.22.1-9
-#   Version table:
-#      1.24.0-1~bpo12+1 100
-#         100 http://deb.debian.org/debian bookworm-backports/main amd64 Packages
-#  *** 1.22.1-9 990
-#         990 http://deb.debian.org/debian bookworm/main amd64 Packages
-#         100 /var/lib/dpkg/status
+# Installed: 1.22.1-9
+# Candidate: 1.22.1-9
+# Version table:
+# 1.24.0-1~bpo12+1 100
+# 100 http://deb.debian.org/debian bookworm-backports/main amd64 Packages
+# *** 1.22.1-9 990
+# 990 http://deb.debian.org/debian bookworm/main amd64 Packages
+# 100 /var/lib/dpkg/status
 ```
 
 ### 5.4 从 Backports 安装
@@ -356,7 +356,7 @@ sudo apt install linux-image-amd64
 ```bash
 # 添加到 /etc/apt/sources.list 或 sources.list.d/
 echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bookworm-backports main contrib non-free non-free-firmware" | \
-    sudo tee /etc/apt/sources.list.d/backports.list
+ sudo tee /etc/apt/sources.list.d/backports.list
 
 sudo apt update
 ```
@@ -406,18 +406,18 @@ sudo vim /etc/apt/apt.conf.d/50unattended-upgrades
 ```
 // 基础配置
 Unattended-Upgrade::Allowed-Origins {
-    "${distro_id}:${distro_codename}";
-    "${distro_id}:${distro_codename}-security";
-    "${distro_id}ESMApps:${distro_codename}-apps-security";
-    "${distro_id}ESM:${distro_codename}-infra-security";
-    "${distro_id}:${distro_codename}-updates";
+ "${distro_id}:${distro_codename}";
+ "${distro_id}:${distro_codename}-security";
+ "${distro_id}ESMApps:${distro_codename}-apps-security";
+ "${distro_id}ESM:${distro_codename}-infra-security";
+ "${distro_id}:${distro_codename}-updates";
 };
 
 // 黑名单（禁止自动升级的包）
 Unattended-Upgrade::Package-Blacklist {
-    "linux-image-amd64";
-    "linux-headers-amd64";
-    "nvidia-driver";
+ "linux-image-amd64";
+ "linux-headers-amd64";
+ "nvidia-driver";
 };
 
 // 自动删除不需要的依赖
@@ -453,9 +453,9 @@ APT::Periodic::AutocleanInterval "7";
 EOF
 
 # 参数说明：
-# Update-Package-Lists "1"       每天更新包列表
-# Unattended-Upgrade "1"         每天执行无人值守升级
-# AutocleanInterval "7"          每 7 天清理一次缓存
+# Update-Package-Lists "1" 每天更新包列表
+# Unattended-Upgrade "1" 每天执行无人值守升级
+# AutocleanInterval "7" 每 7 天清理一次缓存
 
 # 手动测试无人值守升级
 sudo unattended-upgrade --dry-run --debug

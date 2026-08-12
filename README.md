@@ -2,36 +2,37 @@
 <h1 align="center">RootStack</h1>
 
 <p align="center">
-  <em>以 C 作为出发点，覆盖多领域、多计算机语言的百科全书式教程 —— C、C++、Python、Rust、数据结构与算法、Linux 系统、系统内核、汇编、安全攻防、以及完整的408考研四科体系（数据结构、组成原理、操作系统、计算机网络）</em>
+ <em>以 C 作为出发点，覆盖多领域、多计算机语言的百科全书式教程 —— C、C++、Python、Rust、数据结构与算法、Linux 系统、系统内核、汇编、安全攻防、以及完整的408考研四科体系（数据结构、组成原理、操作系统、计算机网络）</em>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/C-00599C?style=flat-square&logo=c&logoColor=white" alt="C"/>
-  <img src="https://img.shields.io/badge/C++-00599C?style=flat-square&logo=cplusplus&logoColor=white" alt="C++"/>
-  <img src="https://img.shields.io/badge/Rust-000000?style=flat-square&logo=rust&logoColor=white" alt="Rust"/>
-  <img src="https://img.shields.io/badge/Lua-2C2D72?style=flat-square&logo=lua&logoColor=white" alt="Lua"/>
-  <img src="https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black" alt="Linux"/>
-  <img src="https://img.shields.io/badge/Assembly-525252?style=flat-square&logo=assemblermips&logoColor=white" alt="Assembly"/>
-  <img src="https://img.shields.io/badge/数据结构-339933?style=flat-square" alt="数据结构"/>
-  <img src="https://img.shields.io/badge/算法-FF6F00?style=flat-square" alt="算法"/>
+ <img src="https://img.shields.io/badge/C-00599C?style=flat-square&logo=c&logoColor=white" alt="C"/>
+ <img src="https://img.shields.io/badge/C++-00599C?style=flat-square&logo=cplusplus&logoColor=white" alt="C++"/>
+ <img src="https://img.shields.io/badge/Rust-000000?style=flat-square&logo=rust&logoColor=white" alt="Rust"/>
+ <img src="https://img.shields.io/badge/Lua-2C2D72?style=flat-square&logo=lua&logoColor=white" alt="Lua"/>
+ <img src="https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black" alt="Linux"/>
+ <img src="https://img.shields.io/badge/Assembly-525252?style=flat-square&logo=assemblermips&logoColor=white" alt="Assembly"/>
+ <img src="https://img.shields.io/badge/数据结构-339933?style=flat-square" alt="数据结构"/>
+ <img src="https://img.shields.io/badge/算法-FF6F00?style=flat-square" alt="算法"/>
+  <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"/>
   <img src="https://img.shields.io/badge/网络安全-E34F26?style=flat-square" alt="网络安全"/>
-  <img src="https://img.shields.io/badge/408考研-全覆盖-9cf?style=flat-square" alt="408"/>
-  <img src="https://img.shields.io/badge/版本-0.10.0-blue?style=flat-square" alt="version"/>
+ <img src="https://img.shields.io/badge/408考研-全覆盖-9cf?style=flat-square" alt="408"/>
+  <img src="https://img.shields.io/badge/版本-0.11.0-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
-  🌐 <b><a href="https://rootstack.misser.top">rootstack.misser.top</a></b> — 免代理访问的在线教程
+ <b><a href="https://rootstack.misser.top">rootstack.misser.top</a></b> — 免代理访问的在线教程
 </p>
 
 <p align="center">
-  <a href="./git.md">Git 指南</a> · <a href="./github-settings.md">GitHub 设置</a> · <a href="./科学上网.md">科学上网</a> · <a href="./linux/">Linux 教程</a> · <a href="./国际付费操作.md">国际付费</a> · <a href="./red_team/总目录与快速查询.md">红队知识库</a> · <a href="./计算机网络/计算机网络_索引.md">计算机网络</a> · <a href="./路径-考研408方向.md">考研408方向</a> · <a href="./ISSUES.md">参与贡献</a>
+ <a href="./git.md">Git 指南</a> · <a href="./github-settings.md">GitHub 设置</a> · <a href="./科学上网.md">科学上网</a> · <a href="./linux/">Linux 教程</a> · <a href="./国际付费操作.md">国际付费</a> · <a href="./red_team/总目录与快速查询.md">红队知识库</a> · <a href="./计算机网络/计算机网络_索引.md">计算机网络</a> · <a href="./路径-考研408方向.md">考研408方向</a> · <a href="./ISSUES.md">参与贡献</a>
 </p>
 
 <p align="center">
-  <img src="assets/help.png" alt="我们需要你的帮助" style="max-width: 100%;">
+ <img src="assets/help.png" alt="我们需要你的帮助" style="max-width: 100%;">
 </p>
 <p align="center" style="margin-top: 12px;">
-  <a href="#加入交流群" style="display: inline-block; background: #a29bfe; color: #ffffff; padding: 12px 40px; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(162, 155, 254, 0.4);">加入我们 ♡</a>
+ <a href="#加入交流群" style="display: inline-block; background: #a29bfe; color: #ffffff; padding: 12px 40px; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(162, 155, 254, 0.4);">加入我们 </a>
 </p>
 
 ---
@@ -121,104 +122,111 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/                          ├ v0.8.0
-├── README.md                    ← 你在这里
+RootStack/ ├ v0.8.0
+├── README.md ← 你在这里
 │
-├── 路径A-C主线.md               C 主线: 从零到内核
-├── 路径B-CPP主线.md             C++ 主线: 从零到应用开发
-├── 路径C-C向下兼容C++.md        C → C++ 向下兼容
-├── 路径D-DSA算法刷题.md         竞赛策略完全路线图 (力扣 + 多OJ)
-├── 路径E-红队职业路径.md        网络安全职业路径 (含CTF→SRC/比赛分化)
-├── 路径F-Rust学习路径.md        Rust 学习路径 (含力扣练习与竞赛OJ)
-├── 路径-考研408方向.md          408考研统一入口（四科阅读方向 + 章节索引整合）
-├── 路径-工程化底层方向.md       底层系统工程化路径 (C/汇编/OS/内核)
-├── 路径-工程化应用方向.md       应用层工程化路径 (C++/前后端/数据库)
+├── 路径A-C主线.md C 主线: 从零到内核
+├── 路径B-CPP主线.md C++ 主线: 从零到应用开发
+├── 路径C-C向下兼容C++.md C → C++ 向下兼容
+├── 路径D-DSA算法刷题.md 竞赛策略完全路线图 (力扣 + 多OJ)
+├── 路径E-红队职业路径.md 网络安全职业路径 (含CTF→SRC/比赛分化)
+├── 路径F-Rust学习路径.md Rust 学习路径 (含力扣练习与竞赛OJ)
+├── 路径-考研408方向.md 408考研统一入口（四科阅读方向 + 章节索引整合）
+├── 路径-工程化底层方向.md 底层系统工程化路径 (C/汇编/OS/内核)
+├── 路径-工程化应用方向.md 应用层工程化路径 (C++/前后端/数据库)
 │
-├── linux/                         Linux 百科全书式教程 (63章 + 4发行版完整指南)
-│   ├── README.md                  Linux 教程总览与学习路线
-│   ├── 01-Linux概述与历史.md          → 63-包管理器崩溃恢复与驱动管理通用指南.md (63章主线)
-│   ├── distro/
-│   │   ├── arch/                  Arch Linux 完整指南（含 NVIDIA Legacy 驱动迁移与故障恢复）
-│   │   ├── debian/                Debian/Ubuntu 完整指南
-│   │   ├── redhat/                RHEL/CentOS/Fedora/Rocky 完整指南
-│   │   └── nix/                   NixOS 声明式配置指南
-│   └── resources/                 命令速查表 + 术语对照表
+├── linux/ Linux 百科全书式教程 (63章 + 4发行版完整指南)
+│ ├── README.md Linux 教程总览与学习路线
+│ ├── 01-Linux概述与历史.md → 63-包管理器崩溃恢复与驱动管理通用指南.md (63章主线)
+│ ├── distro/
+│ │ ├── arch/ Arch Linux 完整指南（含 NVIDIA Legacy 驱动迁移与故障恢复）
+│ │ ├── debian/ Debian/Ubuntu 完整指南
+│ │ ├── redhat/ RHEL/CentOS/Fedora/Rocky 完整指南
+│ │ └── nix/ NixOS 声明式配置指南
+│ └── resources/ 命令速查表 + 术语对照表
 │
-├── 算法/                         算法竞赛内容 (仅供 Path D 学习者)
-│   ├── 算法技巧/ (28篇)          基础算法技巧 (数组/搜索/DP/图论等)
-│   ├── 数学/ (5篇)               数论/组合数学/CRT (Phase 7)
-│   ├── 搜索进阶/ (3篇)           双向搜索/A*/IDA* (Phase 8)
-│   ├── DP优化/ (3篇)             单调队列/斜率/四边形不等式 (Phase 9)
-│   ├── DP进阶/ (9篇)             区间DP/背包DP/树形DP/状压DP等 (Phase 6)
-│   ├── 图论/ (15篇)              最短路/MST/拓扑排序/SCC/LCA/网络流等 (Phase 4)
-│   ├── 字符串扩展/ (8篇)         Trie/SA/SAM/Z函数/回文自动机等 (Phase 6)
-│   ├── 杂项技巧/ (4篇)           莫队/CDQ/整体二分/ODT (Phase 10)
-│   ├── 题目/ (8篇)               算法题目存档
-│   └── 计算几何/ (3篇)           二维几何/凸包/半平面交 (Phase 11)
+├── 算法/ 算法竞赛内容 (仅供 Path D 学习者)
+│ ├── 算法技巧/ (28篇) 基础算法技巧 (数组/搜索/DP/图论等)
+│ ├── 数学/ (5篇) 数论/组合数学/CRT (Phase 7)
+│ ├── 搜索进阶/ (3篇) 双向搜索/A*/IDA* (Phase 8)
+│ ├── DP优化/ (3篇) 单调队列/斜率/四边形不等式 (Phase 9)
+│ ├── DP进阶/ (9篇) 区间DP/背包DP/树形DP/状压DP等 (Phase 6)
+│ ├── 图论/ (15篇) 最短路/MST/拓扑排序/SCC/LCA/网络流等 (Phase 4)
+│ ├── 字符串扩展/ (8篇) Trie/SA/SAM/Z函数/回文自动机等 (Phase 6)
+│ ├── 杂项技巧/ (4篇) 莫队/CDQ/整体二分/ODT (Phase 10)
+│ ├── 题目/ (8篇) 算法题目存档
+│ └── 计算几何/ (3篇) 二维几何/凸包/半平面交 (Phase 11)
 │
-├── c语言教程/                   C 语言: 入门 → 深化 → 库大全
-│   ├── c目录.md
-│   ├── 1入门/ (10篇)  2深化/ (9篇)  3数据结构/ (9篇)
-│   └── 库大全/ → 容器类库/ 功能类库/ 第三方库/
+├── c语言教程/ C 语言: 入门 → 深化 → 库大全
+│ ├── c目录.md
+│ ├── 1入门/ (10篇) 2深化/ (9篇) 3数据结构/ (9篇)
+│ └── 库大全/ → 容器类库/ 功能类库/ 第三方库/
 │
-├── cpp教程/                  C++ 教程: 基础 → 深化 → 容器库 → 功能库 → 第三方库
-│   ├── cpp目录.md
-│   ├── cpp基础教程/ (11篇)        cpp深化教程/ (16篇)
-│   ├── 容器库/ (5子目录)       cpp功能库/ (8子目录)  cpp第三方库/ (11子目录)
+├── cpp教程/ C++ 教程: 基础 → 深化 → 容器库 → 功能库 → 第三方库
+│ ├── cpp目录.md
+│ ├── cpp基础教程/ (11篇) cpp深化教程/ (16篇)
+│ ├── 容器库/ (5子目录) cpp功能库/ (8子目录) cpp第三方库/ (11子目录)
 │
-├── rust/                       Rust 教程: 入门 → 深入 → 实践 → 工程 → 重构
-│   ├── rust目录.md
-│   ├── 1入门/ (14篇)             2深入/ (11篇)           3实践/ (6篇)
-│   ├── 4工程/ (12篇)              5重构/ (6篇)
+├── rust/ Rust 教程: 入门 → 深入 → 实践 → 工程 → 重构
+│ ├── rust目录.md
+│ ├── 1入门/ (14篇) 2深入/ (11篇) 3实践/ (6篇)
+│ ├── 4工程/ (12篇) 5重构/ (6篇)
 │
-├── lua-tutorial/ (7篇)          Lua 教程: 简介 → 安装 → 基础 → 进阶 → 集成
-│   ├── 00-lua简介.md             01-安装与环境配置.md    02-基础入门.md
-│   ├── 03-进阶教程.md            04-C与C++集成.md
+├── lua-tutorial/ (7篇) Lua 教程: 简介 → 安装 → 基础 → 进阶 → 集成
+│ ├── 00-lua简介.md 01-安装与环境配置.md 02-基础入门.md
+│ ├── 03-进阶教程.md 04-C与C++集成.md
 │   └── 05-Neovim示例.md          06-Love2D示例.md
 │
+├── python/ (~60篇)              Python 教程: 入门 → 精通 → 实战 → 专项工具
+│   ├── python目录.md
+│   ├── 1入门/ (7篇)               2精通/ (8篇)             3实战/ (5篇)
+│   ├── 4库/                       5工程化/ (6篇)           6量化分析/ (6篇)
+│   ├── 7科学计算/ (5篇)           8数据可视化/ (5篇)       9图形处理/ (4篇)
+│   └── 10web应用/ (5篇)           11人工智能/ (6篇)
+│
 ├── 数据结构/ (21篇)             语言无关的数据结构教程 + DSA学习路线
-│   ├── A_数组_Array → T_图的高级算法 (共20篇，A-T连续编号)
+│ ├── A_数组_Array → T_图的高级算法 (共20篇，A-T连续编号)
 │
-├── 操作系统/ (10篇)             大学本科操作系统课标 + 深入底层扩展
-│   ├── 操作系统_索引.md
-│   ├── A_操作系统概述 / B_进程管理 / C_线程与并发 / D_CPU调度
-│   ├── E_同步与死锁 / F_内存管理 / G_内存分配器 / H_文件系统 / I_进程间通信
-│   └── J_IO管理
+├── 操作系统/ (10篇) 大学本科操作系统课标 + 深入底层扩展
+│ ├── 操作系统_索引.md
+│ ├── A_操作系统概述 / B_进程管理 / C_线程与并发 / D_CPU调度
+│ ├── E_同步与死锁 / F_内存管理 / G_内存分配器 / H_文件系统 / I_进程间通信
+│ └── J_IO管理
 │
-├── 计算机原理/ (10篇)           大学本科计算机组成原理课标 + 深入底层扩展
-│   ├── 计算机原理_索引.md
-│   ├── A_数据表示 / B_缓存层级 / C_CPU架构 / D_内存层次结构 / E_指令集体系结构
-│   ├── F_总线系统 / G_输入输出系统 / H_CPU数据通路与控制器 / I_流水线与指令流水
-│   └── J_运算方法与运算器
+├── 计算机原理/ (10篇) 大学本科计算机组成原理课标 + 深入底层扩展
+│ ├── 计算机原理_索引.md
+│ ├── A_数据表示 / B_缓存层级 / C_CPU架构 / D_内存层次结构 / E_指令集体系结构
+│ ├── F_总线系统 / G_输入输出系统 / H_CPU数据通路与控制器 / I_流水线与指令流水
+│ └── J_运算方法与运算器
 │
-├── 计算机网络/ (7篇)            大学本科计算机网络课标 + 深入底层扩展 (408全覆盖)
-│   ├── 计算机网络_索引.md
-│   └── A_体系结构 / B_物理层 / C_数据链路层 / D_网络层 / E_传输层 / F_应用层
+├── 计算机网络/ (7篇) 大学本科计算机网络课标 + 深入底层扩展 (408全覆盖)
+│ ├── 计算机网络_索引.md
+│ └── A_体系结构 / B_物理层 / C_数据链路层 / D_网络层 / E_传输层 / F_应用层
 │
-├── 内核/ (~35篇)               四种内核 + C与Rust新时代 + Rust内核开发
-│   ├── 系统内核/ (7篇)         语言运行时内核/ (7篇)
-│   ├── 工具内核/ (7篇)         游戏引擎内核/ (7篇)
-│   ├── Rust内核/ (6篇)         Rust 在内核中的实践
-│   └── 内核索引.md              C与Rust的内核新时代.md
+├── 内核/ (~35篇) 四种内核 + C与Rust新时代 + Rust内核开发
+│ ├── 系统内核/ (7篇) 语言运行时内核/ (7篇)
+│ ├── 工具内核/ (7篇) 游戏引擎内核/ (7篇)
+│ ├── Rust内核/ (6篇) Rust 在内核中的实践
+│ └── 内核索引.md C与Rust的内核新时代.md
 │
-├── 汇编基础/ (~16篇)             x86/ARM 汇编教程 + 硬件直接操作
-│   ├── 汇编目录.md
-│   ├── 1基础/ (4篇)               2硬件操作/ (11篇)
+├── 汇编基础/ (~16篇) x86/ARM 汇编教程 + 硬件直接操作
+│ ├── 汇编目录.md
+│ ├── 1基础/ (4篇) 2硬件操作/ (11篇)
 │
-├── red_team/ (~151篇)          网络安全红队职业路径 (ArchStrike体系)
-│   ├── 网安基础知识/ (10篇)      渗透测试方法论
-│   ├── 前端基础/ (25篇)          实战教程/ (13篇，含14天实训)
-│   ├── archstrike-*教学/ (48篇) 10组ArchStrike工具教程
-│   ├── 服务器部署与运维/ (4篇)   QQ Bot攻防实战
-│   └── ctf_trea/ (~35篇)         CTF竞赛知识库
-│       ├── Web/Web前置技能/          (HTTP协议/操作系统/数据库/HTML-CSS/程序语言)
-│       ├── Web/Web工具配置/          (虚拟机/BurpSuite/Chrome/WebShell/菜刀/端口扫描/远程连接/目录爆破)
-│       └── Web/信息泄露/             (目录遍历)
+├── red_team/ (~151篇) 网络安全红队职业路径 (ArchStrike体系)
+│ ├── 网安基础知识/ (10篇) 渗透测试方法论
+│ ├── 前端基础/ (25篇) 实战教程/ (13篇，含14天实训)
+│ ├── archstrike-*教学/ (48篇) 10组ArchStrike工具教程
+│ ├── 服务器部署与运维/ (4篇) QQ Bot攻防实战
+│ └── ctf_trea/ (~35篇) CTF竞赛知识库
+│ ├── Web/Web前置技能/ (HTTP协议/操作系统/数据库/HTML-CSS/程序语言)
+│ ├── Web/Web工具配置/ (虚拟机/BurpSuite/Chrome/WebShell/菜刀/端口扫描/远程连接/目录爆破)
+│ └── Web/信息泄露/ (目录遍历)
 │
-├── git.md                       Git 与 GitHub 终端操作指南 (17节)
-├── github-settings.md           GitHub 网页端设置指南（新增）
-├── VERSION                      项目版本号: 0.8.0
-└── ISSUES.md                   问题讨论与贡献指南
+├── git.md Git 与 GitHub 终端操作指南 (17节)
+├── github-settings.md GitHub 网页端设置指南（新增）
+├── VERSION                      项目版本号: 0.11.0
+└── ISSUES.md 问题讨论与贡献指南
 ```
 
 ---
@@ -346,6 +354,8 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 |------|------|------|
 | C 语言 | [[c语言教程/c目录|C 教程目录]] | 入门→深化→3数据结构→库大全 |
 | C++ | [[cpp教程/cpp目录|C++ 教程目录]] | 基础→深化→容器库→功能库→第三方库 |
+| Python | [[python/python目录|Python 教程目录]] | 入门→精通→实战→库→工程化→专项工具 |
+| Vim | [[vim教程|Vim 编辑器教程]] | Windows安装+快捷键大全+:指令大全 |
 | 数据结构 | [[数据结构/DSA学习路线|DSA 学习路线]] | 20个主题, Phase 0→6, 力扣题目 |
 | 算法技巧 | [[算法/算法技巧/动态规划|动态规划]] | ~50个算法专题, 语言无关 |
 | 操作系统 | [[操作系统/操作系统_索引\|操作系统教程]] | 大学本科课标 + 深入底层 (10篇) |
@@ -364,7 +374,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 
 本教程体系以 [力扣 (LeetCode)](https://leetcode.cn/) 为推荐的日常练习平台。各语言基础、数据结构章节末尾附带对应力扣题目类型指引。
 
-**学习路线** → 力扣 (适合求职/工程/理解数据结构)  
+**学习路线** → 力扣 (适合求职/工程/理解数据结构) 
 **竞赛路线** → 洛谷 + Codeforces + POJ/HDU + AtCoder (适合走算法竞赛的选手)
 
 郑重提醒：刷题的意义在于**自检**，不在于数量和排名。每学完一个主题做 2-4 道题验证理解即可。关于 AI 与刷题的边界：用 AI 讨论题目思路是好的，但直接复制 AI 生成的代码提交有被检测和封号的风险。
@@ -379,7 +389,7 @@ RootStack 欢迎任何人贡献内容、修正错误或提出建议。
 
 1. **Fork 本项目** — 打开 GitHub 项目页，点击右上角 `Fork` 按钮
 2. **提建议** — 点击仓库上方的 `Issues` 标签 → `New Issue`，描述你的问题或想法
-3. **在线修改并提交 PR** — 在 GitHub 网页上浏览到要修改的文件，点击  编辑按钮 → 修改 → `Commit changes` → 选择 `Create a new branch` → `Propose changes` → 点击 `Create Pull Request`
+3. **在线修改并提交 PR** — 在 GitHub 网页上浏览到要修改的文件，点击 编辑按钮 → 修改 → `Commit changes` → 选择 `Create a new branch` → `Propose changes` → 点击 `Create Pull Request`
 4. **Fork 后如何同步上游** — 在 GitHub 网页上，你的 fork 仓库页点击 `Sync fork` → `Update branch`
 
 ### 终端操作（专业流程）
@@ -412,9 +422,9 @@ git push origin my-feature
 
 ---
 
-## ⭐ 求 Star
+## 求 Star
 
-如果这个项目对你有帮助，欢迎在 [GitHub](https://github.com/missercatos/RootStack) 点个 **Star** ⭐ (｡>﹏<｡) 你的支持是我们更新的动力！
+如果这个项目对你有帮助，欢迎在 [GitHub](https://github.com/missercatos/RootStack) 点个 **Star** (｡>﹏<｡) 你的支持是我们更新的动力！
 
 ---
 
@@ -430,8 +440,8 @@ git push origin my-feature
 ---
 ## 近期任务
 
-  主要是两大任务：撰写密码学部分与继续完善数据结构及各模块深度。
-  本教程大部分内容需要手动筛查和优化，即使有AI辅助也很难做完。另外本教程还有一些是没有被开源的教程，我们需要自己去探索撰写。有意向者欢迎加入我们QQ群！
+ 主要是两大任务：撰写密码学部分与继续完善数据结构及各模块深度。
+ 本教程大部分内容需要手动筛查和优化，即使有AI辅助也很难做完。另外本教程还有一些是没有被开源的教程，我们需要自己去探索撰写。有意向者欢迎加入我们QQ群！
 
 
 ---
@@ -439,23 +449,26 @@ git push origin my-feature
 
 > 以下为项目管理员维护的更新日志。新增内容、删除内容、重大修改请在此处简要记录。
 
-| 日期   | 变更类型      | 说明                                                                                                    |
+| 日期 | 变更类型 | 说明 |
 | ---- | --------- | ----------------------------------------------------------------------------------------------------- |
-| 7.13 | 首次提交项目    | 将作者以前的cpp_deep,c-learning项目整合起来并删减整理形成的一套教程                                                           |
-| 7.17 | 新增职业路径    | red_team/网络安全模块(~125篇, ArchStrike体系), 路径E红队职业路径, 学习/职业路径区分                                            |
-| 7.18 | OI-wiki移植 | 从 OI-wiki 移植 32 篇算法文件: 图论(15篇) + 字符串扩展(8篇) + DP进阶(9篇), 新建 算法/图论/ 算法/字符串扩展/ 算法/DP进阶/                   |
-| 7.18 | Rust 教程整合 | 新增 Rust 教程体系 (~55篇: 入门14+深入11+实践6+工程12+重构6)，路径F-Rust学习路径，rust目录.md 索引，Rust内核融入 内核/Rust内核/，跨模块双链接      |
-| 7.20 | 新增密码学     | 密码学是计算领域的一门重要学科，所以创建密码学部分。专门列一个类目。                                                                    |
-| 7.22 | 网站上线      | 部署至 Cloudflare Pages，域名 rootstack.misser.top，GitHub Actions 自动发布                                      |
-| 7.22 | 内容更新      | Linux 推荐改为 Mint，新增网安发行版说明，增加求 Star 链接，版本升至 0.5.0                                                      |
-| 7.23 | 重写数据结构    | 数据结构内容太过碎片化。而且涵盖不完全。有些内容是超出大学本科课程。有些则是没有涵盖到大学本科课程。我们这里以本科课程为标准是因为考虑到大多数阅读教程者是本科生。因此将做到涵盖本科教程的基础上深入底层。 |
+| 7.13 | 首次提交项目 | 将作者以前的cpp_deep,c-learning项目整合起来并删减整理形成的一套教程 |
+| 7.17 | 新增职业路径 | red_team/网络安全模块(~125篇, ArchStrike体系), 路径E红队职业路径, 学习/职业路径区分 |
+| 7.18 | OI-wiki移植 | 从 OI-wiki 移植 32 篇算法文件: 图论(15篇) + 字符串扩展(8篇) + DP进阶(9篇), 新建 算法/图论/ 算法/字符串扩展/ 算法/DP进阶/ |
+| 7.18 | Rust 教程整合 | 新增 Rust 教程体系 (~55篇: 入门14+深入11+实践6+工程12+重构6)，路径F-Rust学习路径，rust目录.md 索引，Rust内核融入 内核/Rust内核/，跨模块双链接 |
+| 7.20 | 新增密码学 | 密码学是计算领域的一门重要学科，所以创建密码学部分。专门列一个类目。 |
+| 7.22 | 网站上线 | 部署至 Cloudflare Pages，域名 rootstack.misser.top，GitHub Actions 自动发布 |
+| 7.22 | 内容更新 | Linux 推荐改为 Mint，新增网安发行版说明，增加求 Star 链接，版本升至 0.5.0 |
+| 7.23 | 重写数据结构 | 数据结构内容太过碎片化。而且涵盖不完全。有些内容是超出大学本科课程。有些则是没有涵盖到大学本科课程。我们这里以本科课程为标准是因为考虑到大多数阅读教程者是本科生。因此将做到涵盖本科教程的基础上深入底层。 |
 | 7.23 | 新增操作系统 + 计算机原理 | 新建操作系统/ (10篇) 和 计算机原理/ (6篇) 两个目录。涵盖大学本科课标，并进一步深入硬件底层和分配器架构。双链接接入数据结构、路径A、README。版本升至 0.6.0。 |
 | 7.24 | 重排数据结构 | 数据结构 A-T 全部重新编号排序，按教学逻辑从数组→字符串→稀疏矩阵→容器→链表→栈→队列→排序→堆→树→红黑树→Trie→B树→哈希→并查集→跳表→线段树→树状数组→图→图高级。修复全部双链接。重写 DSA学习路线，删除"大学课标"用语。14个章节新增动手实验题、洛谷练习题全面替换为力扣。版本升至 0.7.0。 |
 | 7.24 | Linux 教程全面重构 | linux-tutorial/ → linux/，全面重构为百科全书式 Linux 教程 (~94篇)。从 Arch 拆分扩展到 4 大发行版 (Arch/Debian/RedHat/Nix)，新增 Shell 编程深入 (16~20)、操作系统原理 (27~35)、服务器运维 (54~62) 等板块。主教程 62章 + 4个 distro/ 发行版完整指南。 |
-| 7.31 | 新增Lua教程     | 新增 lua-tutorial/ (7篇: 简介+安装+基础+进阶+C/C++集成+Neovim+Love2D)，双链接接入 README/index，版本升至 0.8.0 |
-| 8.2  | CTF Web扩展 | ctf_trea 新增 18 篇：Web前置技能 (302跳转/Cookie/基本认证/源代码/操作系统/数据库/HTML-CSS/程序语言) + Web工具配置 (虚拟机/BurpSuite/Chrome/WebShell/菜刀/端口扫描/远程连接/目录爆破) + 使用习惯。双链接闭环，官网自动部署。 |
-| 8.6  | 408考研体系 + 计算机网络 | 操作系统 新增 J_IO管理 (932行)；计算机原理 新增 F-J 5篇 (总线/IO系统/数据通路/流水线/运算器)；新建 计算机网络/ (7篇, 408全覆盖：体系结构/物理层/数据链路层/网络层/传输层/应用层)；新建 408统考索引.md (四科考点全覆盖交叉映射)；新建 3条路径 (考研408方向/工程化底层/工程化应用)；README 路径大修。版本升至 0.9.0。 |
-| 8.8  | 408体系重构 | 章节去考化：计算机网络/操作系统/计算机原理 各章节移除 408 考研对照表述，改为学科学习导向；408统考索引.md 删除，内容合并进 路径-考研408方向.md (四科阅读方向 + 逐考点章节索引整合为 408 唯一入口)；全库链接统一改为 [[路径-考研408方向]]。 |
+| 7.31 | 新增Lua教程 | 新增 lua-tutorial/ (7篇: 简介+安装+基础+进阶+C/C++集成+Neovim+Love2D)，双链接接入 README/index，版本升至 0.8.0 |
+| 8.2 | CTF Web扩展 | ctf_trea 新增 18 篇：Web前置技能 (302跳转/Cookie/基本认证/源代码/操作系统/数据库/HTML-CSS/程序语言) + Web工具配置 (虚拟机/BurpSuite/Chrome/WebShell/菜刀/端口扫描/远程连接/目录爆破) + 使用习惯。双链接闭环，官网自动部署。 |
+| 8.6 | 408考研体系 + 计算机网络 | 操作系统 新增 J_IO管理 (932行)；计算机原理 新增 F-J 5篇 (总线/IO系统/数据通路/流水线/运算器)；新建 计算机网络/ (7篇, 408全覆盖：体系结构/物理层/数据链路层/网络层/传输层/应用层)；新建 408统考索引.md (四科考点全覆盖交叉映射)；新建 3条路径 (考研408方向/工程化底层/工程化应用)；README 路径大修。版本升至 0.9.0。 |
+| 8.8 | 408体系重构 | 章节去考化：计算机网络/操作系统/计算机原理 各章节移除 408 考研对照表述，改为学科学习导向；408统考索引.md 删除，内容合并进 路径-考研408方向.md (四科阅读方向 + 逐考点章节索引整合为 408 唯一入口)；全库链接统一改为 [[路径-考研408方向]]。 |
+| 8.11 | 新增Python教程 | 新增 python/ (~60篇)，定位为C程序员的Python工具手册。入门7+精通8+实战5+库索引+工程化6+量化分析6+科学计算5+可视化5+图形4+Web5+AI6，C↔Python互操作为核心特色。版本升至 0.9.0。 |
+| 8.12 | 汇编重构+硬件操作 | 汇编基础/ 重构为分目录体系 (1基础/4篇 + 2硬件操作/11篇)，以"直接操作硬件"为核心，覆盖Port I/O/MMIO/特权级/内联汇编/中断IDT/UART/VGA/PIT/键盘/引导/ARM，QEMU 可跑示例。版本升至 0.10.0。 |
+| 8.13 | 全库规范性修订 | 全库 141 文件去除 emoji 表情符号；python/汇编 选择题→力扣题目链接 (~770道)；ASCII 字符画 → Mermaid 渲染图 (~20处)；README/index 双链接修复、补 python 条目；python 教程新增"写在教程之前"(三平台下载+编辑器)、全章补充 Windows/macOS 处理方式；新增 vim教程.md (Windows PATH + 快捷键大全 + :指令大全)。版本升至 0.11.0。 |
 
 
 ## 加入交流群

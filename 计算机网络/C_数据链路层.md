@@ -4,34 +4,34 @@
 
 ```mermaid
 mindmap
-  root((数据链路层))
-    组帧
-      字符计数
-      字符填充
-      零比特填充
-      违规编码
-    差错控制
-      奇偶校验
-      CRC 循环冗余
-      海明码
-    可靠传输
-      Stop-and-Wait
-      GBN 后退N帧
-      SR 选择重传
-    MAC 子层
-      ALOHA
-      CSMA/CD
-      CSMA/CA
-      Token Ring
-    以太网
-      802.3 帧格式
-      MAC 地址
-      交换机
-      VLAN
-    PPP
-      LCP
-      NCP
-      字节填充
+ root((数据链路层))
+ 组帧
+ 字符计数
+ 字符填充
+ 零比特填充
+ 违规编码
+ 差错控制
+ 奇偶校验
+ CRC 循环冗余
+ 海明码
+ 可靠传输
+ Stop-and-Wait
+ GBN 后退N帧
+ SR 选择重传
+ MAC 子层
+ ALOHA
+ CSMA/CD
+ CSMA/CA
+ Token Ring
+ 以太网
+ 802.3 帧格式
+ MAC 地址
+ 交换机
+ VLAN
+ PPP
+ LCP
+ NCP
+ 字节填充
 ```
 
 ---
@@ -44,26 +44,26 @@ mindmap
 
 ```mermaid
 flowchart LR
-    subgraph 法1["字符计数法"]
-        direction TB
-        C1["帧头: 计数字段<br/>记录帧总长度<br/>入: 5 3 2 4 1 → <br/>帧1=3字节,帧2=2字节<br/>缺点: 计数字段若出错<br/>=灾难故障"]
-    end
-    subgraph 法2["字符填充法"]
-        direction TB
-        C2["Flag byte: 7E (01111110)<br/>转义字节: 7D<br/>若数据含7E→7D5E<br/>若数据含7D→7D5D"]
-    end
+ subgraph 法1["字符计数法"]
+ direction TB
+ C1["帧头: 计数字段<br/>记录帧总长度<br/>入: 5 3 2 4 1 → <br/>帧1=3字节,帧2=2字节<br/>缺点: 计数字段若出错<br/>=灾难故障"]
+ end
+ subgraph 法2["字符填充法"]
+ direction TB
+ C2["Flag byte: 7E (01111110)<br/>转义字节: 7D<br/>若数据含7E→7D5E<br/>若数据含7D→7D5D"]
+ end
 ```
 
 ```mermaid
 flowchart LR
-    subgraph 法3["零比特填充"]
-        direction TB
-        C3["Flag: 01111110 (6个连1)<br/>发方: 数据中出现5个连1<br/>→ 自动插入0<br/>收方: 5个连1后若是0→去掉<br/>若是1→检查后续=flag"]
-    end
-    subgraph 法4["违规编码"]
-        direction TB
-        C4["物理层编码中<br/>定义非法符号作为帧定界<br/>例: 曼彻斯特编码<br/>H-H 或 L-L 非法<br/>→ 用作帧起始/结束"]
-    end
+ subgraph 法3["零比特填充"]
+ direction TB
+ C3["Flag: 01111110 (6个连1)<br/>发方: 数据中出现5个连1<br/>→ 自动插入0<br/>收方: 5个连1后若是0→去掉<br/>若是1→检查后续=flag"]
+ end
+ subgraph 法4["违规编码"]
+ direction TB
+ C4["物理层编码中<br/>定义非法符号作为帧定界<br/>例: 曼彻斯特编码<br/>H-H 或 L-L 非法<br/>→ 用作帧起始/结束"]
+ end
 ```
 
 | 方法 | 优点 | 缺点 | 代表协议 |
@@ -76,13 +76,13 @@ flowchart LR
 #### 零比特填充示例
 
 ```
-原始数据:   ...1 1 1 1 1 1 0 1 0...     ← 6个连1  (注意:末尾是flag的情况)
-                   ↑ 此处数据中有7个1 → 会触发填充
+原始数据: ...1 1 1 1 1 1 0 1 0... ← 6个连1 (注意:末尾是flag的情况)
+ ↑ 此处数据中有7个1 → 会触发填充
 例:
-原始:  01111110 10111111001
-           ↑flag
-填充后: 01111110 1011111 0 1001  ← 在第5个1后插入0
-         |flag|  |---data----|
+原始: 01111110 10111111001
+ ↑flag
+填充后: 01111110 1011111 0 1001 ← 在第5个1后插入0
+ |flag| |---data----|
 ```
 
 **要点**: 判断填充后总长度 = 原数据长度 + 插入的 0-bit 个数。
@@ -112,23 +112,23 @@ flowchart LR
 2. 模2除法:
 
 ```
-        11010110110000
-   G=10011)11010110110000
-           10011           ← XOR
-           01001
-            10011
-            -------
-            00000
-             10011
-             -----
-             00000
-              10011
-              -----
-              00000
-               10110
-               10011
-               -----
-                0101  (余数4位)
+ 11010110110000
+ G=10011)11010110110000
+ 10011 ← XOR
+ 01001
+ 10011
+ -------
+ 00000
+ 10011
+ -----
+ 00000
+ 10011
+ -----
+ 00000
+ 10110
+ 10011
+ -----
+ 0101 (余数4位)
 ```
 
 3. 发送帧 = `1101011011` + `0101` = `11010110110101`
@@ -186,15 +186,15 @@ $$
 数据位填入: 位3=D0, 位5=D1, 位6=D2, 位7=D3
 We have data 1011, 即 D3 D2 D1 D0 = 1 0 1 1
 
-填入:  位3=D0=1, 位5=D1=1, 位6=D2=0, 位7=D3=1
+填入: 位3=D0=1, 位5=D1=1, 位6=D2=0, 位7=D3=1
 
 P1 覆盖 {3,5,7}: 期望偶校验 → P1 = D0⊕D1⊕D3 = 1⊕1⊕1 = 1
 P2 覆盖 {3,6,7}: P2 = D0⊕D2⊕D3 = 1⊕0⊕1 = 0
 P3 覆盖 {5,6,7}: P3 = D1⊕D2⊕D3 = 1⊕0⊕1 = 0
 
-最终海明码 (7位): P1=1  P2=0  D0=1  P3=0  D1=1  D2=0  D3=1
-         位号:   1     2     3     4     5     6     7
-         值:     1     0     1     0     1     0     1
+最终海明码 (7位): P1=1 P2=0 D0=1 P3=0 D1=1 D2=0 D3=1
+ 位号: 1 2 3 4 5 6 7
+ 值: 1 0 1 0 1 0 1
 ```
 
 **纠错过程**: 重新计算校验位并与收到的比对 → 异或得错误位编号。
@@ -217,15 +217,15 @@ C3 = P3⊕D1⊕D2⊕D3 = 0⊕0⊕0⊕1 = 1
 
 ```mermaid
 sequenceDiagram
-    participant S as 发送方
-    participant R as 接收方
-    S->>R: 帧0 (seq=0)
-    Note over S: 启动定时器
-    R->>S: ACK0
-    Note over S: 取消定时器, 滑到帧1
-    S->>R: 帧1 (seq=1)
-    S-->>R: 定时器超时, 重传帧1
-    R->>S: ACK1
+ participant S as 发送方
+ participant R as 接收方
+ S->>R: 帧0 (seq=0)
+ Note over S: 启动定时器
+ R->>S: ACK0
+ Note over S: 取消定时器, 滑到帧1
+ S->>R: 帧1 (seq=1)
+ S-->>R: 定时器超时, 重传帧1
+ R->>S: ACK1
 ```
 
 **信道利用率 (U)**:
@@ -252,22 +252,22 @@ U = 5.33 / (5.33 + 2×45) = 5.33 / 95.33 ≈ 0.056 = 5.6%
 
 ```mermaid
 sequenceDiagram
-    participant S as 发送方
-    participant R as 接收方
-    Note over S: 窗口 [0,1,2,3]<br/>发送 0,1,2,3
-    S->>R: 帧0
-    S->>R: 帧1
-    S->>R: 帧2 (=丢失!)
-    S->>R: 帧3
-    R->>S: ACK0 (对0的确认)
-    R->>S: ACK1 (对1的累计确认)
-    Note over S: 收ACK1→窗口滑到[2,3,4,5]
-    Note over R: 后续帧2丢失, 丢弃帧3<br/>等帧2
-    Note over S: 帧2定时器超时
-    S->>R: 帧2 (重传)
-    S->>R: 帧3 (重传)
-    S->>R: 帧4 (重传)
-    Note over S: 回退到丢失帧N之后全部
+ participant S as 发送方
+ participant R as 接收方
+ Note over S: 窗口 [0,1,2,3]<br/>发送 0,1,2,3
+ S->>R: 帧0
+ S->>R: 帧1
+ S->>R: 帧2 (=丢失!)
+ S->>R: 帧3
+ R->>S: ACK0 (对0的确认)
+ R->>S: ACK1 (对1的累计确认)
+ Note over S: 收ACK1→窗口滑到[2,3,4,5]
+ Note over R: 后续帧2丢失, 丢弃帧3<br/>等帧2
+ Note over S: 帧2定时器超时
+ S->>R: 帧2 (重传)
+ S->>R: 帧3 (重传)
+ S->>R: 帧4 (重传)
+ Note over S: 回退到丢失帧N之后全部
 ```
 
 **关键约束**:
@@ -282,20 +282,20 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant S as 发送方
-    participant R as 接收方
-    S->>R: 帧0
-    S->>R: 帧1
-    S->>R: 帧2 (丢失)
-    S->>R: 帧3
-    R->>S: ACK0
-    R->>S: ACK1
-    Note over R: 缓存帧3 (窗口[2,3,4,5])
-    R->>S: ACK3 (只确认3)
-    Note over S: 只重传帧2
-    S->>R: 帧2 (重传)
-    R->>S: ACK2
-    Note over R: 整理帧0,1,2,3 → 向上递交
+ participant S as 发送方
+ participant R as 接收方
+ S->>R: 帧0
+ S->>R: 帧1
+ S->>R: 帧2 (丢失)
+ S->>R: 帧3
+ R->>S: ACK0
+ R->>S: ACK1
+ Note over R: 缓存帧3 (窗口[2,3,4,5])
+ R->>S: ACK3 (只确认3)
+ Note over S: 只重传帧2
+ S->>R: 帧2 (重传)
+ R->>S: ACK2
+ Note over R: 整理帧0,1,2,3 → 向上递交
 ```
 
 **关键约束**:
@@ -333,16 +333,16 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    A[有帧要发送] --> B{侦听信道}
-    B -->|空闲| C{1-persistent?}
-    C -->|是| D[立即发送]
-    C -->|非持续| E[等待随机时间再侦听]
-    D --> F{发生冲突?}
-    B -->|忙| E
-    F -->|是| G[发送JAM信号<br/>binary exponential backoff]
-    G --> H[等待重传<br/>k = min(retries, 10)<br/>随机从 0..2^k-1 选]<br/>退避时间 = r × 512bit-time]
-    H --> A
-    F -->|否| I[发送成功]
+ A[有帧要发送] --> B{侦听信道}
+ B -->|空闲| C{1-persistent?}
+ C -->|是| D[立即发送]
+ C -->|非持续| E[等待随机时间再侦听]
+ D --> F{发生冲突?}
+ B -->|忙| E
+ F -->|是| G[发送JAM信号<br/>binary exponential backoff]
+ G --> H[等待重传<br/>k = min(retries, 10)<br/>随机从 0..2^k-1 选]<br/>退避时间 = r × 512bit-time]
+ H --> A
+ F -->|否| I[发送成功]
 ```
 
 **冲突检测条件**: 站必须在发送期间能检测到冲突 → 帧长必须足够长。
@@ -371,20 +371,20 @@ L_min = 51.2μs × 10Mbps = 512 bits = 64 字节
 
 ```mermaid
 sequenceDiagram
-    participant Src as 发送方
-    participant AP as 接入点
-    participant Dst as 接收方
+ participant Src as 发送方
+ participant AP as 接入点
+ participant Dst as 接收方
 
-    Note over Src: 信道空闲 DIFS
-    Src->>AP: RTS (请求发送)
-    Note over AP: 等待 SIFS
-    AP->>Src: CTS (允许发送)
-    Note over Src: 等待 SIFS
-    Src->>Dst: DATA 帧
-    Note over Dst: 等待 SIFS
-    Dst->>Src: ACK
+ Note over Src: 信道空闲 DIFS
+ Src->>AP: RTS (请求发送)
+ Note over AP: 等待 SIFS
+ AP->>Src: CTS (允许发送)
+ Note over Src: 等待 SIFS
+ Src->>Dst: DATA 帧
+ Note over Dst: 等待 SIFS
+ Dst->>Src: ACK
 
-    Note over AP: CTS 含NAV → 其他站推迟发送
+ Note over AP: CTS 含NAV → 其他站推迟发送
 ```
 
 | IFS 类型 | 时长 | 用途 |
@@ -402,14 +402,14 @@ sequenceDiagram
 
 ```mermaid
 packet-beta
-    title 802.3 MAC 帧 (以太网)
-    0-6: "Preamble<br/>(7 Bytes — 10101010...)"
-    7: "SFD<br/>(1B, 10101011)"
-    8-13: "Dest MAC<br/>(6 Bytes)"
-    14-19: "Src MAC<br/>(6 Bytes)"
-    20-21: "Type/Length<br/>(2 Bytes)"
-    22-41: "Data<br/>(46~1500 Bytes)"
-    42-45: "FCS/CRC<br/>(4 Bytes)"
+ title 802.3 MAC 帧 (以太网)
+ 0-6: "Preamble<br/>(7 Bytes — 10101010...)"
+ 7: "SFD<br/>(1B, 10101011)"
+ 8-13: "Dest MAC<br/>(6 Bytes)"
+ 14-19: "Src MAC<br/>(6 Bytes)"
+ 20-21: "Type/Length<br/>(2 Bytes)"
+ 22-41: "Data<br/>(46~1500 Bytes)"
+ 42-45: "FCS/CRC<br/>(4 Bytes)"
 ```
 
 - **Preamble + SFD**: 8 字节，用于时钟同步和帧起始定界
@@ -429,13 +429,13 @@ packet-beta
 
 ```mermaid
 flowchart TD
-    A[帧从端口X到达] --> B{查MAC转发表}
-    B -->|目的MAC未知| C[洪泛: 向除X外的所有端口转发]
-    B -->|已知且端口=Y| D{端口Y是否等于X?}
-    D -->|否: Y≠X| E[转发到端口Y]
-    D -->|是: Y=X| F[丢弃/过滤]
-    C --> G[更新转发表<br/>记录 源MAC → 端口X<br/>设置老化定时器]
-    E --> G
+ A[帧从端口X到达] --> B{查MAC转发表}
+ B -->|目的MAC未知| C[洪泛: 向除X外的所有端口转发]
+ B -->|已知且端口=Y| D{端口Y是否等于X?}
+ D -->|否: Y≠X| E[转发到端口Y]
+ D -->|是: Y=X| F[丢弃/过滤]
+ C --> G[更新转发表<br/>记录 源MAC → 端口X<br/>设置老化定时器]
+ E --> G
 ```
 
 **自学习**: 每收到一帧，记录 `{源MAC, 端口, TTL}` 到转发表。老化时间通常 300s。
@@ -452,13 +452,13 @@ flowchart TD
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Dead
-    Dead --> Establish : 物理层Up
-    Establish --> Authenticate : LCP协商完成
-    Authenticate --> Network : 认证成功
-    Network --> Terminate : NCP完成或关闭
-    Terminate --> Dead : 连接拆除
-    Network --> Terminate : 线路故障
+ [*] --> Dead
+ Dead --> Establish : 物理层Up
+ Establish --> Authenticate : LCP协商完成
+ Authenticate --> Network : 认证成功
+ Network --> Terminate : NCP完成或关闭
+ Terminate --> Dead : 连接拆除
+ Network --> Terminate : 线路故障
 ```
 
 - **LCP** (Link Control Protocol): 建立/拆除链路，协商 MRU/认证协议/压缩等选项
@@ -482,31 +482,31 @@ stateDiagram-v2
 #include <net/if.h>
 
 int create_bridge(const char *brname) {
-    int fd = socket(AF_INET, SOCK_DGRAM, 0);
-    struct ifreq ifr;
-    memset(&ifr, 0, sizeof(ifr));
-    strncpy(ifr.ifr_name, brname, IFNAMSIZ - 1);
+ int fd = socket(AF_INET, SOCK_DGRAM, 0);
+ struct ifreq ifr;
+ memset(&ifr, 0, sizeof(ifr));
+ strncpy(ifr.ifr_name, brname, IFNAMSIZ - 1);
 
-    /* ioctl 创建 bridge 设备 */
-    return ioctl(fd, SIOCBRADDBR, &ifr);
+ /* ioctl 创建 bridge 设备 */
+ return ioctl(fd, SIOCBRADDBR, &ifr);
 }
 
 int add_if_to_bridge(const char *brname, const char *ifname) {
-    int fd = socket(AF_INET, SOCK_DGRAM, 0);
-    struct ifreq ifr;
-    memset(&ifr, 0, sizeof(ifr));
-    strncpy(ifr.ifr_name, brname, IFNAMSIZ - 1);
+ int fd = socket(AF_INET, SOCK_DGRAM, 0);
+ struct ifreq ifr;
+ memset(&ifr, 0, sizeof(ifr));
+ strncpy(ifr.ifr_name, brname, IFNAMSIZ - 1);
 
-    struct __bridge_if {
-        int ifindex;
-        int flags;
-    } bif;
+ struct __bridge_if {
+ int ifindex;
+ int flags;
+ } bif;
 
-    bif.ifindex = if_nametoindex(ifname);
-    bif.flags = 0;
-    ifr.ifr_data = (char *)&bif;
+ bif.ifindex = if_nametoindex(ifname);
+ bif.flags = 0;
+ ifr.ifr_data = (char *)&bif;
 
-    return ioctl(fd, SIOCBRADDIF, &ifr);
+ return ioctl(fd, SIOCBRADDIF, &ifr);
 }
 ```
 
@@ -522,19 +522,19 @@ int add_if_to_bridge(const char *brname, const char *ifname) {
 
 ```
 默认 docker0 bridge:
-  ┌─────────────┐   ┌─────────────┐
-  │ Container A │   │ Container B │
-  │ veth0       │   │ veth1       │
-  └──────┬──────┘   └──────┬──────┘
-         │                 │
-    ┌────▼─────────────────▼────┐
-    │     docker0 bridge         │
-    │  (MAC self-learning switch)│
-    └────────────┬───────────────┘
-                 │              NAT/Port Forwarding
-         ┌───────▼────────┐
-         │   eth0 (Host)   │
-         └────────────────┘
+ ┌─────────────┐ ┌─────────────┐
+ │ Container A │ │ Container B │
+ │ veth0 │ │ veth1 │
+ └──────┬──────┘ └──────┬──────┘
+ │ │
+ ┌────▼─────────────────▼────┐
+ │ docker0 bridge │
+ │ (MAC self-learning switch)│
+ └────────────┬───────────────┘
+ │ NAT/Port Forwarding
+ ┌───────▼────────┐
+ │ eth0 (Host) │
+ └────────────────┘
 ```
 
 ---

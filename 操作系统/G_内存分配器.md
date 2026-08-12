@@ -7,15 +7,15 @@
 
 ```mermaid
 graph TD
-    A["C 程序: malloc(1024)"] --> B["ptmalloc 用户态分配器"]
-    B -->|"有可用的 chunk"| C["从 bin 中分配，返回指针"]
-    B -->|"无可用 chunk"| D{"请求大小?"}
-    D -->|"< 128KB"| E["sbrk() 扩展堆顶"]
-    D -->|">= 128KB"| F["mmap() 映射匿名页"]
-    E --> C
-    F --> C
-    G["free(ptr)"] --> H["放回 bin，合并相邻空闲 chunk"]
-    H -.->|"不归还 OS"| B
+ A["C 程序: malloc(1024)"] --> B["ptmalloc 用户态分配器"]
+ B -->|"有可用的 chunk"| C["从 bin 中分配，返回指针"]
+ B -->|"无可用 chunk"| D{"请求大小?"}
+ D -->|"< 128KB"| E["sbrk() 扩展堆顶"]
+ D -->|">= 128KB"| F["mmap() 映射匿名页"]
+ E --> C
+ F --> C
+ G["free(ptr)"] --> H["放回 bin，合并相邻空闲 chunk"]
+ H -.->|"不归还 OS"| B
 ```
 
 关键点：
@@ -27,11 +27,11 @@ graph TD
 
 ```mermaid
 graph TD
-    A["释放的 chunk"] --> B["大小判断"]
-    B -->|"<= 80B (fastbin max)"| C["Fast bin<br/>LIFO, 单链表<br/>不合并"]
-    B -->|"> 80B 且 <= 1024B"| D["Small bin<br/>FIFO, 双链表<br/>相邻合并"]
-    B -->|"> 1024B 且 < 128KB"| E["Large bin<br/>排序, 双链表<br/>相邻合并"]
-    B -->|">= 128KB"| F["直接 munmap<br/>归还 OS"]
+ A["释放的 chunk"] --> B["大小判断"]
+ B -->|"<= 80B (fastbin max)"| C["Fast bin<br/>LIFO, 单链表<br/>不合并"]
+ B -->|"> 80B 且 <= 1024B"| D["Small bin<br/>FIFO, 双链表<br/>相邻合并"]
+ B -->|"> 1024B 且 < 128KB"| E["Large bin<br/>排序, 双链表<br/>相邻合并"]
+ B -->|">= 128KB"| F["直接 munmap<br/>归还 OS"]
 ```
 
 | Bin 类型 | 大小范围 | 数据结构 | 合并 | 归还 OS |
@@ -81,7 +81,7 @@ graph TD
 堆布局示例（灰色 = 已占用，白色 = 空闲）:
 [sbrk 分配的范围]
 [████████░░░░████░░████████░░████░░██████░░░░░]
-     ↑ 每小块空闲分散在各处 → 总计很大但无法合并
+ ↑ 每小块空闲分散在各处 → 总计很大但无法合并
 ```
 
 - vector 的 realloc 释放旧内存 → 旧内存成为一个内部空间的可合并 chunk（若前后也是空闲）

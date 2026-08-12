@@ -32,20 +32,20 @@ const int N = 1e6 + 5;
 int tr[N][26], fail[N], cnt[N], tot;
 
 void build() {
-    queue<int> q;
-    for (int i = 0; i < 26; i++)
-        if (tr[0][i]) q.push(tr[0][i]);
-    while (!q.empty()) {
-        int u = q.front(); q.pop();
-        for (int i = 0; i < 26; i++) {
-            if (tr[u][i]) {
-                fail[tr[u][i]] = tr[fail[u]][i];
-                q.push(tr[u][i]);
-            } else {
-                tr[u][i] = tr[fail[u]][i];
-            }
-        }
-    }
+ queue<int> q;
+ for (int i = 0; i < 26; i++)
+ if (tr[0][i]) q.push(tr[0][i]);
+ while (!q.empty()) {
+ int u = q.front(); q.pop();
+ for (int i = 0; i < 26; i++) {
+ if (tr[u][i]) {
+ fail[tr[u][i]] = tr[fail[u]][i];
+ q.push(tr[u][i]);
+ } else {
+ tr[u][i] = tr[fail[u]][i];
+ }
+ }
+ }
 }
 ```
 
@@ -61,15 +61,15 @@ void build() {
 
 ```cpp
 int query(const char t[]) {
-    int u = 0, res = 0;
-    for (int i = 0; t[i]; i++) {
-        u = tr[u][t[i] - 'a'];
-        for (int j = u; j && cnt[j] != -1; j = fail[j]) {
-            res += cnt[j];
-            cnt[j] = -1;  // 避免重复统计
-        }
-    }
-    return res;
+ int u = 0, res = 0;
+ for (int i = 0; t[i]; i++) {
+ u = tr[u][t[i] - 'a'];
+ for (int j = u; j && cnt[j] != -1; j = fail[j]) {
+ res += cnt[j];
+ cnt[j] = -1; // 避免重复统计
+ }
+ }
+ return res;
 }
 ```
 

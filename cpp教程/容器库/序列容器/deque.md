@@ -41,21 +41,21 @@ deque<int> dq
 // 双端插入
 dq.push_back(1)
 dq.push_back(2)
-dq.push_front(0)        // 现在: 0, 1, 2
+dq.push_front(0) // 现在: 0, 1, 2
 
 // 随机访问
-print dq[1]             // 输出 1
+print dq[1] // 输出 1
 
 // 滑动窗口最小值（单调队列）
-deque<int> win           // 存下标，对应值单调递增
+deque<int> win // 存下标，对应值单调递增
 for i from 1 to n:
-    while win not empty and a[win.back()] >= a[i]:
-        win.pop_back()
-    win.push_back(i)
-    if win.front() <= i - k:
-        win.pop_front()
-    if i >= k:
-        print a[win.front()]
+ while win not empty and a[win.back()] >= a[i]:
+ win.pop_back()
+ win.push_back(i)
+ if win.front() <= i - k:
+ win.pop_front()
+ if i >= k:
+ print a[win.front()]
 ```
 
 ## 相关链接

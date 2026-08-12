@@ -49,18 +49,18 @@ EAP方法类型：
 
 ```mermaid
 sequenceDiagram
-    participant V as 受害者
-    participant A as 攻击者(Rogue AP)
-    participant R as 攻击者(RADIUS)
+ participant V as 受害者
+ participant A as 攻击者(Rogue AP)
+ participant R as 攻击者(RADIUS)
 
-    V->>A: 连接到CorpWiFi(同SSID)
-    A->>V: 发送攻击者证书
-    Note over V: 客户端不验证证书←弱点!
-    A-->>V: TLS隧道建立
-    V->>A: MSCHAPv2凭证(在TLS内)
-    A->>R: 转发凭证(或直接记录)
-    Note over A: 收割: username + challenge + response
-    A->>A: 离线破解MSCHAPv2
+ V->>A: 连接到CorpWiFi(同SSID)
+ A->>V: 发送攻击者证书
+ Note over V: 客户端不验证证书←弱点!
+ A-->>V: TLS隧道建立
+ V->>A: MSCHAPv2凭证(在TLS内)
+ A->>R: 转发凭证(或直接记录)
+ Note over A: 收割: username + challenge + response
+ A->>A: 离线破解MSCHAPv2
 ```
 
 攻击原理：
@@ -201,14 +201,14 @@ hashcat -m 5500 hash.txt rockyou.txt
 
 ```mermaid
 flowchart TD
-    A[扫描周围WiFi] --> B[选择目标网络]
-    B --> C[发送Deauth强制客户端断开]
-    C --> D[启动伪造AP 同SSID 开放网络]
-    D --> E[用户发现WiFi断开 看到同名开放网络]
-    E --> F[用户手动连接]
-    F --> G[弹出钓鱼页面]
-    G --> H[用户输入WiFi密码]
-    H --> I[密码已记录 停止Rogue AP]
+ A[扫描周围WiFi] --> B[选择目标网络]
+ B --> C[发送Deauth强制客户端断开]
+ C --> D[启动伪造AP 同SSID 开放网络]
+ D --> E[用户发现WiFi断开 看到同名开放网络]
+ E --> F[用户手动连接]
+ F --> G[弹出钓鱼页面]
+ G --> H[用户输入WiFi密码]
+ H --> I[密码已记录 停止Rogue AP]
 ```
 
 ### 4.2 基本使用
@@ -220,9 +220,9 @@ sudo wifiphisher
 交互流程:
 1. 选择无线接口
 2. 选择攻击模式：
-   - Network Manager (仿路由器管理)
-   - Firmware Update (仿固件升级)
-   - OAuth Login (仿社交登录)
+ - Network Manager (仿路由器管理)
+ - Firmware Update (仿固件升级)
+ - OAuth Login (仿社交登录)
 3. 选择目标WiFi网络
 4. 自动启动攻击
 
@@ -370,16 +370,16 @@ sudo dnsmasq -i at0 --dhcp-range=10.0.0.10,10.0.0.100
 
 ```mermaid
 sequenceDiagram
-    participant Phone as 手机/客户端
-    participant Attacker as 攻击者(Karma)
-    participant Real as 真实AP
+ participant Phone as 手机/客户端
+ participant Attacker as 攻击者(Karma)
+ participant Real as 真实AP
 
-    Note over Phone: 发送Probe Request广播
-    Phone->>Attacker: Probe: "HomeWiFi"
-    Attacker->>Phone: Probe Response: "Yes, I'm HomeWiFi!"
-    Note over Phone: 手机显示HomeWiFi为可用
-    Phone->>Attacker: 连接请求
-    Note over Attacker: 收割凭据/拦截流量
+ Note over Phone: 发送Probe Request广播
+ Phone->>Attacker: Probe: "HomeWiFi"
+ Attacker->>Phone: Probe Response: "Yes, I'm HomeWiFi!"
+ Note over Phone: 手机显示HomeWiFi为可用
+ Phone->>Attacker: 连接请求
+ Note over Attacker: 收割凭据/拦截流量
 ```
 
 ### 7.2 airbase-ng Karma模式

@@ -12,23 +12,23 @@ BPF（Berkeley Packet Filter）最初于 1992 年被设计为一种高效的网�
 
 ```mermaid
 graph LR
-    subgraph cbpf["经典 BPF (cBPF)"]
-        A1["2 个 32-bit 寄存器"]
-        A2["有限指令集"]
-        A3["仅用于包过滤"]
-        A4["无 map 支持"]
-        A5["解释执行"]
-    end
-    subgraph ebpf["扩展 BPF (eBPF)"]
-        B1["11 个 64-bit 寄存器"]
-        B2["丰富指令集 (接近原生)"]
-        B3["网络/追踪/安全/调度等多场景"]
-        B4["支持多种 map 数据结构"]
-        B5["JIT 编译为原生代码"]
-    end
-    cbpf -->|演进| ebpf
-    style cbpf fill:#fff9c4,stroke:#333
-    style ebpf fill:#c8e6c9,stroke:#333
+ subgraph cbpf["经典 BPF (cBPF)"]
+ A1["2 个 32-bit 寄存器"]
+ A2["有限指令集"]
+ A3["仅用于包过滤"]
+ A4["无 map 支持"]
+ A5["解释执行"]
+ end
+ subgraph ebpf["扩展 BPF (eBPF)"]
+ B1["11 个 64-bit 寄存器"]
+ B2["丰富指令集 (接近原生)"]
+ B3["网络/追踪/安全/调度等多场景"]
+ B4["支持多种 map 数据结构"]
+ B5["JIT 编译为原生代码"]
+ end
+ cbpf -->|演进| ebpf
+ style cbpf fill:#fff9c4,stroke:#333
+ style ebpf fill:#c8e6c9,stroke:#333
 ```
 
 ### 35.1.2 从 cBPF 到 eBPF 的演进
@@ -50,21 +50,21 @@ eBPF 的核心架构由以下组件组成：
 
 ```mermaid
 graph LR
-    subgraph userspace["用户空间"]
-        SRC["BPF 程序源码<br/>(C / Rust)"] --> BYTE["编译为 BPF 字节码"]
-        UAPP["用户态程序<br/>(读取数据)"]
-    end
-    subgraph kernel["内核空间"]
-        VERIFY["验证器<br/>Verifier"] --> JIT["JIT 编译器"]
-        JIT --> PROG["BPF 程序<br/>(挂载到钩子点)<br/>kprobe / tracepoint / XDP"]
-        PROG --> HELPER["Helper 函数<br/>(内核提供)"]
-    end
-    BYTE -->|"bpf() syscall"| VERIFY
-    UAPP <-->|"map 数据共享"| PROG
-    style userspace fill:#e1f5fe,stroke:#333
-    style kernel fill:#fff9c4,stroke:#333
-    style PROG fill:#c8e6c9,stroke:#333
-    style VERIFY fill:#ffecb3,stroke:#333
+ subgraph userspace["用户空间"]
+ SRC["BPF 程序源码<br/>(C / Rust)"] --> BYTE["编译为 BPF 字节码"]
+ UAPP["用户态程序<br/>(读取数据)"]
+ end
+ subgraph kernel["内核空间"]
+ VERIFY["验证器<br/>Verifier"] --> JIT["JIT 编译器"]
+ JIT --> PROG["BPF 程序<br/>(挂载到钩子点)<br/>kprobe / tracepoint / XDP"]
+ PROG --> HELPER["Helper 函数<br/>(内核提供)"]
+ end
+ BYTE -->|"bpf() syscall"| VERIFY
+ UAPP <-->|"map 数据共享"| PROG
+ style userspace fill:#e1f5fe,stroke:#333
+ style kernel fill:#fff9c4,stroke:#333
+ style PROG fill:#c8e6c9,stroke:#333
+ style VERIFY fill:#ffecb3,stroke:#333
 ```
 
 **验证器 (Verifier)**：确保 BPF 程序安全运行，不会崩溃内核：
@@ -93,38 +93,38 @@ graph LR
 
 ```c
 // 常见 helper 函数
-bpf_map_lookup_elem()      // 查找 map 元素
-bpf_map_update_elem()      // 更新 map 元素
-bpf_map_delete_elem()      // 删除 map 元素
-bpf_probe_read()           // 安全读取内核内存
-bpf_probe_read_user()      // 安全读取用户空间内存
-bpf_ktime_get_ns()         // 获取内核时间戳
+bpf_map_lookup_elem() // 查找 map 元素
+bpf_map_update_elem() // 更新 map 元素
+bpf_map_delete_elem() // 删除 map 元素
+bpf_probe_read() // 安全读取内核内存
+bpf_probe_read_user() // 安全读取用户空间内存
+bpf_ktime_get_ns() // 获取内核时间戳
 bpf_get_current_pid_tgid() // 获取当前 PID/TGID
-bpf_get_current_comm()     // 获取当前进程名
-bpf_perf_event_output()    // 向用户空间发送事件
-bpf_ringbuf_output()       // 通过 ringbuf 发送事件
-bpf_trace_printk()         // 调试输出到 trace_pipe
-bpf_get_stackid()          // 获取栈 ID
-bpf_skb_load_bytes()       // 从网络包读取数据
+bpf_get_current_comm() // 获取当前进程名
+bpf_perf_event_output() // 向用户空间发送事件
+bpf_ringbuf_output() // 通过 ringbuf 发送事件
+bpf_trace_printk() // 调试输出到 trace_pipe
+bpf_get_stackid() // 获取栈 ID
+bpf_skb_load_bytes() // 从网络包读取数据
 ```
 
 ### 35.1.4 eBPF 程序类型
 
 ```
-程序类型                    挂载点           用途
+程序类型 挂载点 用途
 ────────────────────────────────────────────────────────
-BPF_PROG_TYPE_KPROBE       内核函数入口/返回   动态追踪内核函数
-BPF_PROG_TYPE_TRACEPOINT   内核静态追踪点      稳定的内核事件追踪
-BPF_PROG_TYPE_RAW_TRACEPOINT 原始追踪点        低开销追踪
-BPF_PROG_TYPE_PERF_EVENT   perf 事件          性能计数器/采样
-BPF_PROG_TYPE_XDP          网络设备驱动入口    高性能网络包处理
-BPF_PROG_TYPE_SCHED_CLS    TC 分类器          流量控制
-BPF_PROG_TYPE_CGROUP_SKB   cgroup 网络        cgroup 级网络过滤
-BPF_PROG_TYPE_CGROUP_SOCK  cgroup socket      socket 级别控制
-BPF_PROG_TYPE_LSM          LSM 钩子           安全策略
-BPF_PROG_TYPE_STRUCT_OPS   内核结构体操作      替换内核调度器等
-BPF_PROG_TYPE_FENTRY       函数入口（BTF）     低开销函数追踪
-BPF_PROG_TYPE_FEXIT        函数出口（BTF）     函数返回值追踪
+BPF_PROG_TYPE_KPROBE 内核函数入口/返回 动态追踪内核函数
+BPF_PROG_TYPE_TRACEPOINT 内核静态追踪点 稳定的内核事件追踪
+BPF_PROG_TYPE_RAW_TRACEPOINT 原始追踪点 低开销追踪
+BPF_PROG_TYPE_PERF_EVENT perf 事件 性能计数器/采样
+BPF_PROG_TYPE_XDP 网络设备驱动入口 高性能网络包处理
+BPF_PROG_TYPE_SCHED_CLS TC 分类器 流量控制
+BPF_PROG_TYPE_CGROUP_SKB cgroup 网络 cgroup 级网络过滤
+BPF_PROG_TYPE_CGROUP_SOCK cgroup socket socket 级别控制
+BPF_PROG_TYPE_LSM LSM 钩子 安全策略
+BPF_PROG_TYPE_STRUCT_OPS 内核结构体操作 替换内核调度器等
+BPF_PROG_TYPE_FENTRY 函数入口（BTF） 低开销函数追踪
+BPF_PROG_TYPE_FEXIT 函数出口（BTF） 函数返回值追踪
 ```
 
 ### 35.1.5 为什么 eBPF 是 Linux 观测性的未来
@@ -146,17 +146,17 @@ BPF 最初就是为了高效过滤网络数据包而设计的。传统抓包需�
 
 ```mermaid
 flowchart LR
-    subgraph traditional["传统抓包流程"]
-        direction LR
-        T1[网卡] --> T2[内核] --> T3["复制全部包<br/>到用户空间"] --> T4[用户空间过滤] --> T5[显示]
-    end
-    subgraph bpf["BPF 抓包流程"]
-        direction LR
-        B1[网卡] --> B2[内核] --> B3["BPF 过滤<br/>(内核中执行)"] --> B4["仅复制匹配包<br/>到用户空间"] --> B5[显示]
-    end
-    style traditional fill:#ffecb3,stroke:#333
-    style bpf fill:#c8e6c9,stroke:#333
-    style B3 fill:#a5d6a7,stroke:#333
+ subgraph traditional["传统抓包流程"]
+ direction LR
+ T1[网卡] --> T2[内核] --> T3["复制全部包<br/>到用户空间"] --> T4[用户空间过滤] --> T5[显示]
+ end
+ subgraph bpf["BPF 抓包流程"]
+ direction LR
+ B1[网卡] --> B2[内核] --> B3["BPF 过滤<br/>(内核中执行)"] --> B4["仅复制匹配包<br/>到用户空间"] --> B5[显示]
+ end
+ style traditional fill:#ffecb3,stroke:#333
+ style bpf fill:#c8e6c9,stroke:#333
+ style B3 fill:#a5d6a7,stroke:#333
 ```
 
 ### 35.2.2 BPF 过滤语法
@@ -170,22 +170,22 @@ BPF 过滤表达式是一种人类可读的语法，由 `libpcap` 库编译为 B
 # 协议限定词：ether, ip, ip6, arp, tcp, udp, icmp
 
 # 过滤语法示例
-host 192.168.1.1              # 源或目标为指定 IP
-src host 10.0.0.1             # 源 IP
-dst host 10.0.0.1             # 目标 IP
-net 192.168.1.0/24            # 子网
-port 80                       # 源或目标端口
-src port 443                  # 源端口
-portrange 8000-9000           # 端口范围
-tcp                           # TCP 协议
-udp                           # UDP 协议
-icmp                          # ICMP 协议
+host 192.168.1.1 # 源或目标为指定 IP
+src host 10.0.0.1 # 源 IP
+dst host 10.0.0.1 # 目标 IP
+net 192.168.1.0/24 # 子网
+port 80 # 源或目标端口
+src port 443 # 源端口
+portrange 8000-9000 # 端口范围
+tcp # TCP 协议
+udp # UDP 协议
+icmp # ICMP 协议
 
 # 逻辑组合
-host 10.0.0.1 and port 80              # AND
-host 10.0.0.1 or host 10.0.0.2         # OR
-not port 22                             # NOT
-(host 10.0.0.1 or host 10.0.0.2) and port 80  # 括号分组
+host 10.0.0.1 and port 80 # AND
+host 10.0.0.1 or host 10.0.0.2 # OR
+not port 22 # NOT
+(host 10.0.0.1 or host 10.0.0.2) and port 80 # 括号分组
 ```
 
 ### 35.2.3 查看编译后的 BPF 字节码
@@ -195,10 +195,10 @@ not port 22                             # NOT
 tcpdump -d 'tcp port 80'
 
 # 输出示例：
-# (000) ldh      [12]
-# (001) jeq      #0x86dd          jt 2    jf 8
-# (002) ldb      [20]
-# (003) jeq      #0x6             jt 4    jf 19
+# (000) ldh [12]
+# (001) jeq #0x86dd jt 2 jf 8
+# (002) ldb [20]
+# (003) jeq #0x6 jt 4 jf 19
 # ...
 ```
 
@@ -233,9 +233,9 @@ sudo tcpdump -i eth0 -n
 sudo tcpdump -i eth0 -nn
 
 # 显示详细信息
-sudo tcpdump -i eth0 -v    # 详细
-sudo tcpdump -i eth0 -vv   # 更详细
-sudo tcpdump -i eth0 -vvv  # 最详细
+sudo tcpdump -i eth0 -v # 详细
+sudo tcpdump -i eth0 -vv # 更详细
+sudo tcpdump -i eth0 -vvv # 最详细
 
 # 显示数据包内容（十六进制 + ASCII）
 sudo tcpdump -i eth0 -X
@@ -247,8 +247,8 @@ sudo tcpdump -i eth0 -xx
 sudo tcpdump -i eth0 -e
 
 # 设置抓包长度（snaplen）
-sudo tcpdump -i eth0 -s 0     # 抓取完整包
-sudo tcpdump -i eth0 -s 96    # 只抓前 96 字节
+sudo tcpdump -i eth0 -s 0 # 抓取完整包
+sudo tcpdump -i eth0 -s 96 # 只抓前 96 字节
 
 # 抓取所有接口
 sudo tcpdump -i any
@@ -316,8 +316,8 @@ sudo tcpdump -i eth0 'vlan 100'
 sudo tcpdump -i eth0 'vlan and host 192.168.1.1'
 
 # === 数据包大小过滤 ===
-sudo tcpdump -i eth0 'greater 1000'    # 大于 1000 字节
-sudo tcpdump -i eth0 'less 100'        # 小于 100 字节
+sudo tcpdump -i eth0 'greater 1000' # 大于 1000 字节
+sudo tcpdump -i eth0 'less 100' # 小于 100 字节
 
 # === 基于字节偏移的过滤 ===
 # 过滤 HTTP GET 请求（TCP 载荷以 "GET " 开头）
@@ -385,7 +385,7 @@ ss -tnp | grep nginx
 sudo tcpdump -i eth0 -nn 'tcp port 80 or tcp port 443'
 
 # === 排查网络不通问题 ===
-sudo tcpdump -i eth0 -nn 'host 10.0.0.1' -e  # 包含 MAC 地址
+sudo tcpdump -i eth0 -nn 'host 10.0.0.1' -e # 包含 MAC 地址
 ```
 
 ### 35.3.6 与 Wireshark/tshark 配合
@@ -406,34 +406,34 @@ ssh root@remote-server 'tcpdump -i eth0 -w - -c 500' > remote_capture.pcap
 wireshark remote_capture.pcap
 
 # tshark 常用分析命令
-tshark -r capture.pcap -q -z conv,tcp           # TCP 会话统计
-tshark -r capture.pcap -q -z io,stat,1          # 每秒流量统计
-tshark -r capture.pcap -q -z http,tree          # HTTP 请求统计
-tshark -r capture.pcap -q -z dns,tree           # DNS 查询统计
-tshark -r capture.pcap -Y 'http.request'        # 显示 HTTP 请求
-tshark -r capture.pcap -Y 'tcp.analysis.retransmission'  # 重传包
+tshark -r capture.pcap -q -z conv,tcp # TCP 会话统计
+tshark -r capture.pcap -q -z io,stat,1 # 每秒流量统计
+tshark -r capture.pcap -q -z http,tree # HTTP 请求统计
+tshark -r capture.pcap -q -z dns,tree # DNS 查询统计
+tshark -r capture.pcap -Y 'http.request' # 显示 HTTP 请求
+tshark -r capture.pcap -Y 'tcp.analysis.retransmission' # 重传包
 ```
 
 ### 35.3.7 性能注意事项
 
 ```bash
 # 1. 使用 -n/-nn 避免 DNS 反查
-sudo tcpdump -i eth0 -nn        # 推荐
+sudo tcpdump -i eth0 -nn # 推荐
 
 # 2. 限制抓包长度（如果不需要完整载荷）
-sudo tcpdump -i eth0 -s 96      # 只抓头部
+sudo tcpdump -i eth0 -s 96 # 只抓头部
 
 # 3. 使用 BPF 过滤减少内核到用户态的复制
-sudo tcpdump -i eth0 'port 80'  # 内核中过滤
+sudo tcpdump -i eth0 'port 80' # 内核中过滤
 
 # 4. 使用 -B 增大缓冲区（高流量场景）
-sudo tcpdump -i eth0 -B 4096    # 4MB 缓冲区
+sudo tcpdump -i eth0 -B 4096 # 4MB 缓冲区
 
 # 5. 监控丢包
 # tcpdump 退出时会显示：
 # X packets captured
 # Y packets received by filter
-# Z packets dropped by kernel    <-- 关注此数值
+# Z packets dropped by kernel <-- 关注此数值
 
 # 6. 高流量场景使用 -w 写入文件（而非实时输出到终端）
 sudo tcpdump -i eth0 -w /tmp/capture.pcap -nn 'port 80'
@@ -476,16 +476,16 @@ perf list tracepoint
 perf stat ls -la /
 
 # 输出示例：
-#  Performance counter stats for 'ls -la /':
+# Performance counter stats for 'ls -la /':
 #
-#           1.28 msec task-clock           # 0.712 CPUs utilized
-#              0      context-switches     # 0.000 /sec
-#              0      cpu-migrations       # 0.000 /sec
-#            115      page-faults          # 89.844 K/sec
-#        3329841      cycles               # 2.601 GHz
-#        2851193      instructions         # 0.86  insn per cycle
-#         593522      branches             # 463.689 M/sec
-#          21563      branch-misses        # 3.63% of all branches
+# 1.28 msec task-clock # 0.712 CPUs utilized
+# 0 context-switches # 0.000 /sec
+# 0 cpu-migrations # 0.000 /sec
+# 115 page-faults # 89.844 K/sec
+# 3329841 cycles # 2.601 GHz
+# 2851193 instructions # 0.86 insn per cycle
+# 593522 branches # 463.689 M/sec
+# 21563 branch-misses # 3.63% of all branches
 
 # 指定事件
 perf stat -e cycles,instructions,cache-misses,cache-references ls
@@ -500,9 +500,9 @@ perf stat -p $(pidof nginx) sleep 5
 perf stat -a sleep 5
 
 # 详细信息
-perf stat -d ls        # 更多事件
-perf stat -dd ls       # 更详细
-perf stat -ddd ls      # 最详细
+perf stat -d ls # 更多事件
+perf stat -dd ls # 更详细
+perf stat -ddd ls # 最详细
 ```
 
 ### 35.4.4 perf record / perf report（采样分析）
@@ -628,15 +628,15 @@ perf script | /opt/FlameGraph/stackcollapse-perf.pl > out.folded
 
 # 一键生成
 perf record -F 99 -g -a sleep 30 && \
-  perf script | /opt/FlameGraph/stackcollapse-perf.pl | \
-  /opt/FlameGraph/flamegraph.pl > flamegraph.svg
+ perf script | /opt/FlameGraph/stackcollapse-perf.pl | \
+ /opt/FlameGraph/flamegraph.pl > flamegraph.svg
 
 # 生成反向火焰图（冰柱图）
 /opt/FlameGraph/flamegraph.pl --reverse out.folded > icicle.svg
 
 # 差分火焰图（比较两次采样）
 /opt/FlameGraph/difffolded.pl out1.folded out2.folded | \
-  /opt/FlameGraph/flamegraph.pl > diff.svg
+ /opt/FlameGraph/flamegraph.pl > diff.svg
 ```
 
 ### 35.4.10 常见性能分析场景
@@ -648,7 +648,7 @@ perf report -g graph
 
 # === 缓存命中率分析 ===
 perf stat -e cache-references,cache-misses,L1-dcache-loads,L1-dcache-load-misses \
-  ./my_program
+ ./my_program
 
 # === 分支预测分析 ===
 perf stat -e branches,branch-misses ./my_program
@@ -698,17 +698,17 @@ probe /filter/ { action }
 ```
 
 ```
-BEGIN {                           # 程序开始时执行
-    printf("开始追踪...\n");
+BEGIN { # 程序开始时执行
+ printf("开始追踪...\n");
 }
 
-probe /条件/ {                    # 当探针触发且条件为真时执行
-    @map[key] = value;            # map 操作
-    printf("...\n");              # 输出
+probe /条件/ { # 当探针触发且条件为真时执行
+ @map[key] = value; # map 操作
+ printf("...\n"); # 输出
 }
 
-END {                             # 程序结束时执行（Ctrl-C）
-    printf("追踪结束。\n");
+END { # 程序结束时执行（Ctrl-C）
+ printf("追踪结束。\n");
 }
 ```
 
@@ -790,7 +790,7 @@ sudo bpftrace -e 'kretprobe:vfs_read /retval > 0/ { @size = lhist(retval, 0, 100
 
 # === 删除 map ===
 sudo bpftrace -e 'kprobe:vfs_read { @start[tid] = nsecs; }
-  kretprobe:vfs_read /@start[tid]/ { @us = hist((nsecs - @start[tid]) / 1000); delete(@start[tid]); }'
+ kretprobe:vfs_read /@start[tid]/ { @us = hist((nsecs - @start[tid]) / 1000); delete(@start[tid]); }'
 ```
 
 ### 35.5.7 单行命令实战集
@@ -801,61 +801,61 @@ sudo bpftrace -e 'tracepoint:syscalls:sys_enter_openat { printf("%-6d %-16s %s\n
 
 # === 追踪进程创建 ===
 sudo bpftrace -e 'tracepoint:syscalls:sys_enter_execve { printf("%-6d %s", pid, str(args.filename));
-  join(args.argv); }'
+ join(args.argv); }'
 
 # === 追踪进程退出 ===
 sudo bpftrace -e 'tracepoint:sched:sched_process_exit { printf("%-6d %-16s 退出\n", pid, comm); }'
 
 # === 追踪 TCP 连接（主动连接）===
 sudo bpftrace -e 'kprobe:tcp_connect { $sk = (struct sock *)arg0;
-  printf("%-6d %-16s → %s:%d\n", pid, comm,
-  ntop($sk->__sk_common.skc_daddr), $sk->__sk_common.skc_dport); }'
+ printf("%-6d %-16s → %s:%d\n", pid, comm,
+ ntop($sk->__sk_common.skc_daddr), $sk->__sk_common.skc_dport); }'
 
 # === 追踪 TCP 接受连接 ===
 sudo bpftrace -e 'kretprobe:inet_csk_accept { $sk = (struct sock *)retval;
-  printf("%-6d %-16s ← %s:%d\n", pid, comm,
-  ntop($sk->__sk_common.skc_daddr), $sk->__sk_common.skc_num); }'
+ printf("%-6d %-16s ← %s:%d\n", pid, comm,
+ ntop($sk->__sk_common.skc_daddr), $sk->__sk_common.skc_num); }'
 
 # === 追踪磁盘 I/O ===
 sudo bpftrace -e 'tracepoint:block:block_rq_issue { printf("%-6d %-16s %s %d\n",
-  pid, comm, args.rwbs, args.nr_sector * 512); }'
+ pid, comm, args.rwbs, args.nr_sector * 512); }'
 
 # === I/O 延迟直方图 ===
 sudo bpftrace -e 'tracepoint:block:block_rq_issue { @start[args.dev, args.sector] = nsecs; }
-  tracepoint:block:block_rq_complete /@start[args.dev, args.sector]/ {
-  @usecs = hist((nsecs - @start[args.dev, args.sector]) / 1000);
-  delete(@start[args.dev, args.sector]); }'
+ tracepoint:block:block_rq_complete /@start[args.dev, args.sector]/ {
+ @usecs = hist((nsecs - @start[args.dev, args.sector]) / 1000);
+ delete(@start[args.dev, args.sector]); }'
 
 # === 追踪系统调用延迟 ===
 sudo bpftrace -e 'tracepoint:raw_syscalls:sys_enter { @start[tid] = nsecs; }
-  tracepoint:raw_syscalls:sys_exit /@start[tid]/ {
-  @ns[comm] = hist(nsecs - @start[tid]); delete(@start[tid]); }'
+ tracepoint:raw_syscalls:sys_exit /@start[tid]/ {
+ @ns[comm] = hist(nsecs - @start[tid]); delete(@start[tid]); }'
 
 # === 统计每秒系统调用次数 ===
 sudo bpftrace -e 'tracepoint:raw_syscalls:sys_enter { @syscalls = count(); }
-  interval:s:1 { print(@syscalls); clear(@syscalls); }'
+ interval:s:1 { print(@syscalls); clear(@syscalls); }'
 
 # === 内存分配追踪 ===
 sudo bpftrace -e 'tracepoint:kmem:kmalloc { @bytes[comm] = sum(args.bytes_alloc); }'
 
 # === 文件系统延迟 ===
 sudo bpftrace -e 'kprobe:vfs_read { @start[tid] = nsecs; }
-  kretprobe:vfs_read /@start[tid]/ {
-  @us[comm] = hist((nsecs - @start[tid]) / 1000); delete(@start[tid]); }'
+ kretprobe:vfs_read /@start[tid]/ {
+ @us[comm] = hist((nsecs - @start[tid]) / 1000); delete(@start[tid]); }'
 
 # === CPU 运行队列延迟 ===
 sudo bpftrace -e 'tracepoint:sched:sched_wakeup { @qstart[args.pid] = nsecs; }
-  tracepoint:sched:sched_switch {
-  if (@qstart[args.next_pid]) {
-    @usecs = hist((nsecs - @qstart[args.next_pid]) / 1000);
-    delete(@qstart[args.next_pid]); } }'
+ tracepoint:sched:sched_switch {
+ if (@qstart[args.next_pid]) {
+ @usecs = hist((nsecs - @qstart[args.next_pid]) / 1000);
+ delete(@qstart[args.next_pid]); } }'
 
 # === 页面错误统计 ===
 sudo bpftrace -e 'software:page-faults:1 { @[comm] = count(); }'
 
 # === 信号追踪 ===
 sudo bpftrace -e 'tracepoint:signal:signal_generate {
-  printf("%-6d %-16s → %-6d signal %d\n", pid, comm, args.pid, args.sig); }'
+ printf("%-6d %-16s → %-6d signal %d\n", pid, comm, args.pid, args.sig); }'
 ```
 
 ### 35.5.8 编写 bpftrace 脚本
@@ -866,25 +866,25 @@ sudo bpftrace -e 'tracepoint:signal:signal_generate {
 
 BEGIN
 {
-    printf("%-8s %-6s %-16s %-4s ", "TIME", "PID", "COMM", "IP");
-    printf("%-15s %-5s %-15s %-5s %-6s\n",
-           "SADDR", "SPORT", "DADDR", "DPORT", "MS");
+ printf("%-8s %-6s %-16s %-4s ", "TIME", "PID", "COMM", "IP");
+ printf("%-15s %-5s %-15s %-5s %-6s\n",
+ "SADDR", "SPORT", "DADDR", "DPORT", "MS");
 }
 
 kprobe:tcp_set_state
 {
-    $sk = (struct sock *)arg0;
-    $newstate = arg1;
+ $sk = (struct sock *)arg0;
+ $newstate = arg1;
 
-    if ($newstate == 7) {  // TCP_CLOSE
-        $lport = $sk->__sk_common.skc_num;
-        $dport = $sk->__sk_common.skc_dport;
-        $saddr = ntop($sk->__sk_common.skc_rcv_saddr);
-        $daddr = ntop($sk->__sk_common.skc_daddr);
+ if ($newstate == 7) { // TCP_CLOSE
+ $lport = $sk->__sk_common.skc_num;
+ $dport = $sk->__sk_common.skc_dport;
+ $saddr = ntop($sk->__sk_common.skc_rcv_saddr);
+ $daddr = ntop($sk->__sk_common.skc_daddr);
 
-        printf("%-8d %-6d %-16s %-4s ", elapsed / 1000000, pid, comm, "4");
-        printf("%-15s %-5d %-15s %-5d\n", $saddr, $lport, $daddr, $dport);
-    }
+ printf("%-8d %-6d %-16s %-4s ", elapsed / 1000000, pid, comm, "4");
+ printf("%-15s %-5d %-15s %-5d\n", $saddr, $lport, $daddr, $dport);
+ }
 }
 ```
 
@@ -910,17 +910,17 @@ sudo bpftrace tcp_life.bt
 sudo pacman -S bcc bcc-tools python-bcc
 
 # 常用 bcc 工具
-sudo /usr/share/bcc/tools/execsnoop      # 追踪进程执行
-sudo /usr/share/bcc/tools/opensnoop      # 追踪文件打开
-sudo /usr/share/bcc/tools/biolatency     # 块 I/O 延迟直方图
-sudo /usr/share/bcc/tools/biosnoop       # 块 I/O 追踪
-sudo /usr/share/bcc/tools/tcpconnect     # 追踪 TCP 主动连接
-sudo /usr/share/bcc/tools/tcpaccept      # 追踪 TCP 被动连接
-sudo /usr/share/bcc/tools/tcplife        # TCP 连接生命周期
-sudo /usr/share/bcc/tools/runqlat        # CPU 运行队列延迟
-sudo /usr/share/bcc/tools/profile        # CPU 采样火焰图数据
-sudo /usr/share/bcc/tools/cachestat      # 页缓存命中率
-sudo /usr/share/bcc/tools/filetop        # 文件 I/O 排行
+sudo /usr/share/bcc/tools/execsnoop # 追踪进程执行
+sudo /usr/share/bcc/tools/opensnoop # 追踪文件打开
+sudo /usr/share/bcc/tools/biolatency # 块 I/O 延迟直方图
+sudo /usr/share/bcc/tools/biosnoop # 块 I/O 追踪
+sudo /usr/share/bcc/tools/tcpconnect # 追踪 TCP 主动连接
+sudo /usr/share/bcc/tools/tcpaccept # 追踪 TCP 被动连接
+sudo /usr/share/bcc/tools/tcplife # TCP 连接生命周期
+sudo /usr/share/bcc/tools/runqlat # CPU 运行队列延迟
+sudo /usr/share/bcc/tools/profile # CPU 采样火焰图数据
+sudo /usr/share/bcc/tools/cachestat # 页缓存命中率
+sudo /usr/share/bcc/tools/filetop # 文件 I/O 排行
 ```
 
 ---
@@ -1017,9 +1017,9 @@ strace -e trace=signal ls
 strace -p $(pidof nginx)
 
 # 显示时间戳
-strace -t ls           # 时:分:秒
-strace -tt ls          # 微秒精度
-strace -T ls           # 显示每个系统调用耗时
+strace -t ls # 时:分:秒
+strace -tt ls # 微秒精度
+strace -T ls # 显示每个系统调用耗时
 
 # 统计系统调用
 strace -c ls
@@ -1033,7 +1033,7 @@ strace -o /tmp/strace.log ls
 # === ltrace：库函数调用追踪 ===
 ltrace ls
 ltrace -e malloc+free ls
-ltrace -c ls              # 统计
+ltrace -c ls # 统计
 ```
 
 ### 35.6.4 SystemTap
@@ -1067,12 +1067,12 @@ perf script | /opt/FlameGraph/stackcollapse-perf.pl | /opt/FlameGraph/flamegraph
 
 # 步骤 3：追踪网络延迟
 sudo bpftrace -e 'kprobe:tcp_sendmsg { @start[tid] = nsecs; }
-  kretprobe:tcp_sendmsg /@start[tid]/ {
-  @us[comm] = hist((nsecs - @start[tid]) / 1000); delete(@start[tid]); }'
+ kretprobe:tcp_sendmsg /@start[tid]/ {
+ @us[comm] = hist((nsecs - @start[tid]) / 1000); delete(@start[tid]); }'
 
 # 步骤 4：检查磁盘 I/O
 sudo bpftrace -e 'tracepoint:block:block_rq_issue /comm == "node"/ {
-  printf("%-6d %s %d bytes\n", pid, args.rwbs, args.nr_sector * 512); }'
+ printf("%-6d %s %d bytes\n", pid, args.rwbs, args.nr_sector * 512); }'
 
 # 步骤 5：检查系统调用延迟
 perf trace --summary -p $(pidof node) sleep 10
@@ -1083,13 +1083,13 @@ perf trace --summary -p $(pidof node) sleep 10
 ```bash
 # 使用 bpftrace 追踪特定文件的写入
 sudo bpftrace -e 'tracepoint:syscalls:sys_enter_openat
-  /str(args.filename) == "/etc/passwd"/ {
-  printf("%-6d %-16s 打开了 /etc/passwd flags=%d\n", pid, comm, args.flags); }'
+ /str(args.filename) == "/etc/passwd"/ {
+ printf("%-6d %-16s 打开了 /etc/passwd flags=%d\n", pid, comm, args.flags); }'
 
 # 追踪所有写入 /etc 目录的操作
 sudo bpftrace -e 'tracepoint:syscalls:sys_enter_openat
-  /strncmp(str(args.filename), "/etc/", 5) == 0 && (args.flags & 1)/ {
-  printf("%-6d %-16s %s\n", pid, comm, str(args.filename)); }'
+ /strncmp(str(args.filename), "/etc/", 5) == 0 && (args.flags & 1)/ {
+ printf("%-6d %-16s %s\n", pid, comm, str(args.filename)); }'
 ```
 
 ### 35.7.3 案例三：网络连接问题排查
@@ -1100,23 +1100,23 @@ sudo tcpdump -i eth0 -nn 'host 10.0.0.50 and tcp' -w /tmp/debug.pcap -c 1000
 
 # 步骤 2：分析 TCP 重传
 tshark -r /tmp/debug.pcap -Y 'tcp.analysis.retransmission' -T fields \
-  -e frame.time -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport
+ -e frame.time -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport
 
 # 步骤 3：追踪 TCP 重传事件
 sudo bpftrace -e 'tracepoint:tcp:tcp_retransmit_skb {
-  printf("%-8d %-16s %s:%d → %s:%d state=%d\n",
-  pid, comm, ntop(args.saddr), args.sport, ntop(args.daddr), args.dport, args.state); }'
+ printf("%-8d %-16s %s:%d → %s:%d state=%d\n",
+ pid, comm, ntop(args.saddr), args.sport, ntop(args.daddr), args.dport, args.state); }'
 
 # 步骤 4：追踪 TCP 连接状态变化
 sudo bpftrace -e 'tracepoint:sock:inet_sock_set_state {
-  printf("%-16s %-6d %s:%d → %s:%d %d → %d\n",
-  comm, pid, ntop(args.saddr), args.sport,
-  ntop(args.daddr), args.dport, args.oldstate, args.newstate); }'
+ printf("%-16s %-6d %s:%d → %s:%d %d → %d\n",
+ comm, pid, ntop(args.saddr), args.sport,
+ ntop(args.daddr), args.dport, args.oldstate, args.newstate); }'
 
 # 步骤 5：检查连接队列溢出
 sudo bpftrace -e 'tracepoint:tcp:tcp_drop {
-  printf("TCP drop: %s:%d → %s:%d\n",
-  ntop(args.saddr), args.sport, ntop(args.daddr), args.dport); }'
+ printf("TCP drop: %s:%d → %s:%d\n",
+ ntop(args.saddr), args.sport, ntop(args.daddr), args.dport); }'
 ```
 
 ### 35.7.4 案例四：内存泄漏排查
@@ -1139,18 +1139,18 @@ perf report
 ### 35.7.5 工具选择指南
 
 ```
-需求                          推荐工具
+需求 推荐工具
 ──────────────────────────────────────────────
-快速网络抓包                   tcpdump
-深入协议分析                   tshark / Wireshark
-CPU 热点函数                   perf record + 火焰图
-系统调用追踪（简单）            strace
-系统调用追踪（高性能）          perf trace
-一行命令内核追踪               bpftrace
-复杂追踪工具开发               bcc (Python + C)
-内核函数调用图                  ftrace / trace-cmd
-实时系统性能概览               perf top
-定制化内核观测                  eBPF (libbpf + CO-RE)
+快速网络抓包 tcpdump
+深入协议分析 tshark / Wireshark
+CPU 热点函数 perf record + 火焰图
+系统调用追踪（简单） strace
+系统调用追踪（高性能） perf trace
+一行命令内核追踪 bpftrace
+复杂追踪工具开发 bcc (Python + C)
+内核函数调用图 ftrace / trace-cmd
+实时系统性能概览 perf top
+定制化内核观测 eBPF (libbpf + CO-RE)
 ```
 
 ---
@@ -1161,7 +1161,7 @@ CPU 热点函数                   perf record + 火焰图
 
 ## 35.8 本章测验
 
-> [!example] 📝 自测题目
+> [!example] 自测题目
 
 > [!question]- 选择题 1：eBPF 验证器（Verifier）的主要作用是什么？
 > - A. 将 BPF 字节码编译为机器码
@@ -1184,11 +1184,11 @@ CPU 热点函数                   perf record + 火焰图
 > > BPF 过滤在内核中执行，只有匹配过滤条件的数据包才会被复制到用户空间，大幅减少了不必要的内核到用户态数据传输开销。
 
 > [!question]- 判断题 3：eBPF Map 是内核与用户空间之间共享数据的数据结构，支持哈希表、数组、环形缓冲区等多种类型。
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > eBPF Map 提供了内核态 BPF 程序与用户态程序之间的数据共享通道，支持 HASH、ARRAY、RINGBUF、PERCPU_HASH 等多种数据结构类型。
 
 > [!question]- 选择题 4：`perf record -g` 中的 `-g` 参数的作用是什么？
@@ -1212,11 +1212,11 @@ CPU 热点函数                   perf record + 火焰图
 > > `@[comm] = count()` 创建一个以当前进程名（`comm`）为键的 Map，每次探针触发时对应的计数值加 1，最终输出各进程的触发次数统计。
 
 > [!question]- 判断题 6：`perf trace` 是 `strace` 的替代品，功能相同但性能开销更低。
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > `perf trace` 功能类似 `strace`（追踪系统调用），但基于内核 perf_events 子系统实现，避免了 ptrace 的高开销，适合在生产环境中使用。
 
 > [!question]- 选择题 7：在 bpftrace 中，`tracepoint` 和 `kprobe` 探针的区别是什么？
@@ -1240,11 +1240,11 @@ CPU 热点函数                   perf record + 火焰图
 > > 标准流程是：① `perf record -F 99 -g` 采样 → ② `perf script | stackcollapse-perf.pl` 折叠栈 → ③ `flamegraph.pl` 生成 SVG 火焰图。
 
 > [!question]- 判断题 9：经典 BPF（cBPF）只有 2 个 32 位寄存器，仅用于网络包过滤；而 eBPF 有 11 个 64 位寄存器，可用于追踪/安全/网络等多种场景。
-> - A. ✓ 正确
-> - B. ✗ 错误
+> - A. 正确
+> - B. 错误
 >
 > > [!success]- 点击查看答案
-> > **A. ✓ 正确**
+> > **A. 正确**
 > > cBPF 只有 A 和 X 两个 32-bit 寄存器，设计上仅用于包过滤；eBPF 有 R0-R10 共 11 个 64-bit 寄存器，支持丰富指令集和多种使用场景。
 
 > [!question]- 选择题 10：以下哪个工具最适合"快速一行命令追踪内核事件"的场景？

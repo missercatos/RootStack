@@ -5,11 +5,11 @@
 
 ```mermaid
 graph TD
-    A["寄存器<br/>(CPU 内部)<br/>~0.3ns, <1KB"] --> B["L1 Cache<br/>(SRAM, 每核独享)<br/>~1ns, 32KB"]
-    B --> C["L2 Cache<br/>(SRAM, 每核独享)<br/>~5ns, 256KB"]
-    C --> D["L3 Cache<br/>(SRAM, 多核共享)<br/>~20ns, 8-32MB"]
-    D --> E["主存 DRAM<br/>~100ns, GB 级"]
-    E --> F["本地存储 (SSD/HDD)<br/>>10us, TB 级"]
+ A["寄存器<br/>(CPU 内部)<br/>~0.3ns, <1KB"] --> B["L1 Cache<br/>(SRAM, 每核独享)<br/>~1ns, 32KB"]
+ B --> C["L2 Cache<br/>(SRAM, 每核独享)<br/>~5ns, 256KB"]
+ C --> D["L3 Cache<br/>(SRAM, 多核共享)<br/>~20ns, 8-32MB"]
+ D --> E["主存 DRAM<br/>~100ns, GB 级"]
+ E --> F["本地存储 (SSD/HDD)<br/>>10us, TB 级"]
 ```
 
 ### 各层级详细对比
@@ -30,12 +30,12 @@ graph TD
 ### 访存延迟的量化尺度
 
 ```
-L1 cache hit:     ~1 ns        (1 秒的类比)
-L2 cache hit:     ~5 ns        (5 秒)
-L3 cache hit:     ~20 ns       (20 秒)
-DRAM access:      ~100 ns      (100 秒 ≈ 1.5 分钟)
-SSD access:       ~10 us       (3 小时)
-HDD access:       ~10 ms       (4 个月)
+L1 cache hit: ~1 ns (1 秒的类比)
+L2 cache hit: ~5 ns (5 秒)
+L3 cache hit: ~20 ns (20 秒)
+DRAM access: ~100 ns (100 秒 ≈ 1.5 分钟)
+SSD access: ~10 us (3 小时)
+HDD access: ~10 ms (4 个月)
 ```
 
 这个差异解释了为什么 `std::vector`（连续存储，大部分 L1 cache hit）比 `std::list`（散列表存，大部分 DRAM access）快 100 倍——这不是算法的胜利，是数据离 CPU 的物理距离决定的。

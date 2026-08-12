@@ -59,7 +59,7 @@ Rust NVMe 驱动正开发中，展示 Rust 如何处理 DMA 操作、中断处�
 # 顶层 Makefile（简化）
 has_rust := $(shell rustc --version 2>/dev/null)
 ifdef has_rust
-  core-y += rust/
+ core-y += rust/
 endif
 ```
 
@@ -73,18 +73,18 @@ endif
 ```makefile
 # rust/Makefile
 RUSTC_FLAGS := --edition 2021 --crate-type rlib \
-    -C opt-level=2 -C panic=abort -C no-redzone=y \
-    -C code-model=kernel -C relocation-model=static --emit=obj
+ -C opt-level=2 -C panic=abort -C no-redzone=y \
+ -C code-model=kernel -C relocation-model=static --emit=obj
 ```
 
 注意：`panic=abort`（内核中不能 unwind），`no-redzone=y`（内核栈没有 red zone），`code-model=kernel`（负地址偏移）。
 
 Kconfig 配置：
 ```
-CONFIG_RUST=y               # 启用 Rust 支持
-CONFIG_RUST_IS_AVAILABLE=y   # 工具链就绪（自动设置）
+CONFIG_RUST=y # 启用 Rust 支持
+CONFIG_RUST_IS_AVAILABLE=y # 工具链就绪（自动设置）
 CONFIG_SAMPLE_RUST_MINIMAL=y # 最小示例模块
-CONFIG_SAMPLE_RUST_PRINT=y   # 打印示例
+CONFIG_SAMPLE_RUST_PRINT=y # 打印示例
 CONFIG_SAMPLE_RUST_HOSTPROGS=y # 主机 Rust 程序
 ```
 
@@ -92,13 +92,13 @@ CONFIG_SAMPLE_RUST_HOSTPROGS=y # 主机 Rust 程序
 
 ```
 rust/
-├── Makefile          — Rust 构建规则
-├── kernel/           — 内核抽象层（lib.rs entry, prelude, alloc, sync, error, str, types, init, file, task, print, io_buffer）
-│   ├── alloc/        — Kmalloc/GFP 分配器
-│   └── sync/         — Arc, Lock, CondVar
-├── macros/           — module! 过程宏
-├── bindings/         — bindgen 自动生成的 FFI
-└── alloc/            — alloc crate 分支
+├── Makefile — Rust 构建规则
+├── kernel/ — 内核抽象层（lib.rs entry, prelude, alloc, sync, error, str, types, init, file, task, print, io_buffer）
+│ ├── alloc/ — Kmalloc/GFP 分配器
+│ └── sync/ — Arc, Lock, CondVar
+├── macros/ — module! 过程宏
+├── bindings/ — bindgen 自动生成的 FFI
+└── alloc/ — alloc crate 分支
 ```
 
 `kernel` crate 入口点：

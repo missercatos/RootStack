@@ -9,11 +9,11 @@
 现代可观测性三大支柱：
 
 ```
-Metrics（指标）         Logs（日志）          Traces（链路追踪）
-  CPU: 67%             [ERROR] db timeout     request → auth → db → cache
-  Memory: 8.2G         [INFO] 200 GET /api    │        30ms    80ms   5ms
-  QPS: 1240            [WARN] disk 85%        total: 115ms
-  └─ Prometheus        └─ Loki / ELK         └─ Jaeger / Tempo
+Metrics（指标） Logs（日志） Traces（链路追踪）
+ CPU: 67% [ERROR] db timeout request → auth → db → cache
+ Memory: 8.2G [INFO] 200 GET /api │ 30ms 80ms 5ms
+ QPS: 1240 [WARN] disk 85% total: 115ms
+ └─ Prometheus └─ Loki / ELK └─ Jaeger / Tempo
 ```
 
 | 维度 | Prometheus 适合什么 | 不适合什么 |
@@ -29,16 +29,16 @@ Metrics（指标）         Logs（日志）          Traces（链路追踪）
 
 ```
 ┌──────────────────┐
-│   Service 1      │──┐
-│  /metrics endpoint│  │   scrape (pull)    ┌──────────────┐
-└──────────────────┘  │  ┌───────────────▶  │              │
-                       │  │                  │ Prometheus   │──▶ AlertManager ──▶ Email/Slack
-┌──────────────────┐  │  │   ┌────────────  │  (TSDB)      │
-│   Service 2      │──┼──┼───┘              │              │──▶ Grafana
-└──────────────────┘  │  │                  └──────────────┘
-                       │  │
-┌──────────────────┐  │  │   Push（短期）
-│  Short-lived Job │──┘  └────▶ Pushgateway ──▶ Prometheus
+│ Service 1 │──┐
+│ /metrics endpoint│ │ scrape (pull) ┌──────────────┐
+└──────────────────┘ │ ┌───────────────▶ │ │
+ │ │ │ Prometheus │──▶ AlertManager ──▶ Email/Slack
+┌──────────────────┐ │ │ ┌──────────── │ (TSDB) │
+│ Service 2 │──┼──┼───┘ │ │──▶ Grafana
+└──────────────────┘ │ │ └──────────────┘
+ │ │
+┌──────────────────┐ │ │ Push（短期）
+│ Short-lived Job │──┘ └────▶ Pushgateway ──▶ Prometheus
 └──────────────────┘
 ```
 
@@ -79,11 +79,11 @@ User=prometheus
 Group=prometheus
 Type=simple
 ExecStart=/opt/prometheus/prometheus \
-    --config.file=/opt/prometheus/prometheus.yml \
-    --storage.tsdb.path=/var/lib/prometheus \
-    --storage.tsdb.retention.time=15d \
-    --web.listen-address=0.0.0.0:9090 \
-    --web.enable-lifecycle
+ --config.file=/opt/prometheus/prometheus.yml \
+ --storage.tsdb.path=/var/lib/prometheus \
+ --storage.tsdb.retention.time=15d \
+ --web.listen-address=0.0.0.0:9090 \
+ --web.enable-lifecycle
 Restart=on-failure
 
 [Install]
@@ -99,32 +99,32 @@ sudo vim /opt/prometheus/prometheus.yml
 
 ```yaml
 global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
-  external_labels:
-    datacenter: "dc-shanghai"
+ scrape_interval: 15s
+ evaluation_interval: 15s
+ external_labels:
+ datacenter: "dc-shanghai"
 
 alerting:
-  alertmanagers:
-    - static_configs:
-        - targets: ['localhost:9093']
+ alertmanagers:
+ - static_configs:
+ - targets: ['localhost:9093']
 
 rule_files:
-  - "rules/*.yml"
+ - "rules/*.yml"
 
 scrape_configs:
-  # Prometheus 自身监控
-  - job_name: 'prometheus'
-    static_configs:
-      - targets: ['localhost:9090']
+ # Prometheus 自身监控
+ - job_name: 'prometheus'
+ static_configs:
+ - targets: ['localhost:9090']
 
-  # Node Exporter（系统指标）
-  - job_name: 'node'
-    static_configs:
-      - targets:
-        - '192.168.1.10:9100'
-        - '192.168.1.11:9100'
-        - '192.168.1.12:9100'
+ # Node Exporter（系统指标）
+ - job_name: 'node'
+ static_configs:
+ - targets:
+ - '192.168.1.10:9100'
+ - '192.168.1.11:9100'
+ - '192.168.1.12:9100'
 ```
 
 ```bash
@@ -156,9 +156,9 @@ After=network.target
 [Service]
 User=nobody
 ExecStart=/usr/local/bin/node_exporter \
-    --collector.systemd \
-    --collector.processes \
-    --collector.tcpstat
+ --collector.systemd \
+ --collector.processes \
+ --collector.tcpstat
 Restart=on-failure
 
 [Install]
@@ -233,7 +233,7 @@ avg(rate(node_cpu_seconds_total{mode="user"}[5m]))
 max(node_memory_Active_bytes)
 
 # count：计数
-count(up == 1)    # 在线 target 数量
+count(up == 1) # 在线 target 数量
 
 # topk / bottomk
 topk(5, rate(node_cpu_seconds_total{mode="user"}[5m]))
@@ -271,70 +271,70 @@ sudo vim /opt/prometheus/rules/node_alerts.yml
 
 ```yaml
 groups:
-  - name: node_alerts
-    rules:
-      # 实例下线
-      - alert: InstanceDown
-        expr: up == 0
-        for: 2m
-        labels:
-          severity: critical
-        annotations:
-          summary: "{{ $labels.instance }} is down"
-          description: "{{ $labels.instance }} 已经超过 2 分钟无响应"
+ - name: node_alerts
+ rules:
+ # 实例下线
+ - alert: InstanceDown
+ expr: up == 0
+ for: 2m
+ labels:
+ severity: critical
+ annotations:
+ summary: "{{ $labels.instance }} is down"
+ description: "{{ $labels.instance }} 已经超过 2 分钟无响应"
 
-      # 高 CPU 使用率
-      - alert: HighCPUUsage
-        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: "{{ $labels.instance }} CPU usage > 90%"
+ # 高 CPU 使用率
+ - alert: HighCPUUsage
+ expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+ for: 5m
+ labels:
+ severity: warning
+ annotations:
+ summary: "{{ $labels.instance }} CPU usage > 90%"
 
-      # 内存不足
-      - alert: LowMemory
-        expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 < 10
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: "{{ $labels.instance }} available memory < 10%"
+ # 内存不足
+ - alert: LowMemory
+ expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 < 10
+ for: 5m
+ labels:
+ severity: warning
+ annotations:
+ summary: "{{ $labels.instance }} available memory < 10%"
 
-      # 磁盘空间不足
-      - alert: DiskAlmostFull
-        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 10
-        for: 5m
-        labels:
-          severity: critical
-        annotations:
-          summary: "{{ $labels.instance }} 磁盘空间 < 10%"
+ # 磁盘空间不足
+ - alert: DiskAlmostFull
+ expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 10
+ for: 5m
+ labels:
+ severity: critical
+ annotations:
+ summary: "{{ $labels.instance }} 磁盘空间 < 10%"
 
-      # 磁盘预测 4 小时内满
-      - alert: DiskWillFillIn4Hours
-        expr: predict_linear(node_filesystem_avail_bytes{mountpoint="/"}[1h], 4 * 3600) < 0
-        labels:
-          severity: critical
-        annotations:
-          summary: "{{ $labels.instance }} 磁盘预计 4 小时内写满"
+ # 磁盘预测 4 小时内满
+ - alert: DiskWillFillIn4Hours
+ expr: predict_linear(node_filesystem_avail_bytes{mountpoint="/"}[1h], 4 * 3600) < 0
+ labels:
+ severity: critical
+ annotations:
+ summary: "{{ $labels.instance }} 磁盘预计 4 小时内写满"
 
-      # 高负载
-      - alert: HighLoad
-        expr: node_load15 / count without(cpu, mode) (node_cpu_seconds_total{mode="system"}) > 2
-        for: 10m
-        labels:
-          severity: warning
-        annotations:
-          summary: "{{ $labels.instance }} 15min load avg > CPU count * 2"
+ # 高负载
+ - alert: HighLoad
+ expr: node_load15 / count without(cpu, mode) (node_cpu_seconds_total{mode="system"}) > 2
+ for: 10m
+ labels:
+ severity: warning
+ annotations:
+ summary: "{{ $labels.instance }} 15min load avg > CPU count * 2"
 
-      # 重启检测
-      - alert: HostOutOfMemory
-        expr: node_memory_MemAvailable_bytes < 5 * 1024 * 1024
-        for: 30s
-        labels:
-          severity: critical
-        annotations:
-          summary: "{{ $labels.instance }} 内存不足 5MB"
+ # 重启检测
+ - alert: HostOutOfMemory
+ expr: node_memory_MemAvailable_bytes < 5 * 1024 * 1024
+ for: 30s
+ labels:
+ severity: critical
+ annotations:
+ summary: "{{ $labels.instance }} 内存不足 5MB"
 ```
 
 ### AlertManager 安装与配置
@@ -372,49 +372,49 @@ sudo vim /opt/alertmanager/alertmanager.yml
 
 ```yaml
 global:
-  smtp_smarthost: 'smtp.example.com:587'
-  smtp_from: 'alertmanager@example.com'
-  smtp_auth_username: 'alertmanager@example.com'
-  smtp_auth_password: 'your-password'
+ smtp_smarthost: 'smtp.example.com:587'
+ smtp_from: 'alertmanager@example.com'
+ smtp_auth_username: 'alertmanager@example.com'
+ smtp_auth_password: 'your-password'
 
 # 路由：按严重级别分组
 route:
-  group_by: ['alertname', 'severity']
-  group_wait: 10s
-  group_interval: 10s
-  repeat_interval: 3h
-  receiver: 'default'
-  routes:
-    - match:
-        severity: critical
-      receiver: 'critical-ops'
-      continue: true
-    - match:
-        severity: warning
-      receiver: 'ops-email'
+ group_by: ['alertname', 'severity']
+ group_wait: 10s
+ group_interval: 10s
+ repeat_interval: 3h
+ receiver: 'default'
+ routes:
+ - match:
+ severity: critical
+ receiver: 'critical-ops'
+ continue: true
+ - match:
+ severity: warning
+ receiver: 'ops-email'
 
 receivers:
-  - name: 'default'
-    webhook_configs:
-      - url: 'https://hooks.slack.com/services/T00/B00/xxx'
+ - name: 'default'
+ webhook_configs:
+ - url: 'https://hooks.slack.com/services/T00/B00/xxx'
 
-  - name: 'critical-ops'
-    webhook_configs:
-      - url: 'https://hooks.slack.com/services/T00/B00/xxx_alerts'
-      - url: 'https://api.example.com/pagerduty'
-    email_configs:
-      - to: 'ops@example.com'
+ - name: 'critical-ops'
+ webhook_configs:
+ - url: 'https://hooks.slack.com/services/T00/B00/xxx_alerts'
+ - url: 'https://api.example.com/pagerduty'
+ email_configs:
+ - to: 'ops@example.com'
 
-  - name: 'ops-email'
-    email_configs:
-      - to: 'ops@example.com'
+ - name: 'ops-email'
+ email_configs:
+ - to: 'ops@example.com'
 
 inhibit_rules:
-  - source_match:
-      severity: 'critical'
-    target_match:
-      severity: 'warning'
-    equal: ['instance']
+ - source_match:
+ severity: 'critical'
+ target_match:
+ severity: 'warning'
+ equal: ['instance']
 ```
 
 ### Prometheus 集成 AlertManager
@@ -423,9 +423,9 @@ inhibit_rules:
 
 ```yaml
 alerting:
-  alertmanagers:
-    - static_configs:
-        - targets: ['localhost:9093']
+ alertmanagers:
+ - static_configs:
+ - targets: ['localhost:9093']
 ```
 
 ---
@@ -475,9 +475,9 @@ sudo systemctl enable --now grafana-server
 Grafana 社区有大量预设 Dashboard，Node Exporter Full 是最常用的：
 
 ```
-Dashboard ID: 1860  — Node Exporter Full（推荐）
+Dashboard ID: 1860 — Node Exporter Full（推荐）
 Dashboard ID: 11074 — Node Exporter for Prometheus
-Dashboard ID: 111   — Prometheus Stats
+Dashboard ID: 111 — Prometheus Stats
 ```
 
 导入方式：
@@ -533,11 +533,11 @@ rate(node_network_receive_bytes_total{instance=~"$instance",device!="lo"}[$__rat
 ### 创建系统概览（Stat 面板）
 
 ```
-Stat 面板 — Up status:    up{instance=~"$instance"}
-Stat 面板 — Uptime:       time() - node_boot_time_seconds{instance=~"$instance"}
-Stat 面板 — CPU Cores:    count(node_cpu_seconds_total{mode="system",instance=~"$instance"})
+Stat 面板 — Up status: up{instance=~"$instance"}
+Stat 面板 — Uptime: time() - node_boot_time_seconds{instance=~"$instance"}
+Stat 面板 — CPU Cores: count(node_cpu_seconds_total{mode="system",instance=~"$instance"})
 Stat 面板 — Total Memory: node_memory_MemTotal_bytes{instance=~"$instance"}
-Stat 面板 — Disk Used %:  (1 - (node_filesystem_avail_bytes / node_filesystem_size_bytes)) * 100
+Stat 面板 — Disk Used %: (1 - (node_filesystem_avail_bytes / node_filesystem_size_bytes)) * 100
 ```
 
 ### Dashboard 变量（Template Variables）
@@ -548,8 +548,8 @@ Stat 面板 — Disk Used %:  (1 - (node_filesystem_avail_bytes / node_filesyste
 Name: instance
 Type: Query
 Query: label_values(node_cpu_seconds_total, instance)
-Multi-value: ✓
-Include All option: ✓
+Multi-value: 
+Include All option: 
 ```
 
 然后在面板查询中使用 `instance=~"$instance"` 即可动态过滤。
@@ -585,43 +585,43 @@ sudo mkdir /opt/blackbox && sudo vim /opt/blackbox/blackbox_exporter.yml
 
 ```yaml
 modules:
-  http_2xx:
-    prober: http
-    timeout: 5s
-    http:
-      valid_status_codes: [200, 301, 302]
-      method: GET
-      fail_if_ssl: false
-      fail_if_not_ssl: false
+ http_2xx:
+ prober: http
+ timeout: 5s
+ http:
+ valid_status_codes: [200, 301, 302]
+ method: GET
+ fail_if_ssl: false
+ fail_if_not_ssl: false
 
-  tcp_connect:
-    prober: tcp
-    timeout: 5s
+ tcp_connect:
+ prober: tcp
+ timeout: 5s
 
-  icmp:
-    prober: icmp
-    timeout: 5s
+ icmp:
+ prober: icmp
+ timeout: 5s
 ```
 
 在 Prometheus 中添加 scrape job：
 
 ```yaml
 scrape_configs:
-  - job_name: 'blackbox-http'
-    metrics_path: /probe
-    params:
-      module: [http_2xx]
-    static_configs:
-      - targets:
-          - https://example.com
-          - https://api.example.com/health
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - target_label: __address__
-        replacement: 127.0.0.1:9115
+ - job_name: 'blackbox-http'
+ metrics_path: /probe
+ params:
+ module: [http_2xx]
+ static_configs:
+ - targets:
+ - https://example.com
+ - https://api.example.com/health
+ relabel_configs:
+ - source_labels: [__address__]
+ target_label: __param_target
+ - source_labels: [__param_target]
+ target_label: instance
+ - target_label: __address__
+ replacement: 127.0.0.1:9115
 ```
 
 ### Pushgateway（短期任务指标）
@@ -633,7 +633,7 @@ sudo mv pushgateway /usr/local/bin/
 
 # 推送指标（用于 cron 任务、批处理等）
 echo "batch_job_duration_seconds 45" | curl --data-binary @- \
-    http://localhost:9091/metrics/job/batch_example/instance/batch-server-01
+ http://localhost:9091/metrics/job/batch_example/instance/batch-server-01
 ```
 
 ### 其他常用 Exporter

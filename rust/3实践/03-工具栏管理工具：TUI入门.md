@@ -25,39 +25,39 @@ use ratatui::{Frame, widgets::{Block, Borders, List, ListItem}};
 use crossterm::event::{self, Event, KeyCode};
 
 struct App {
-    items: Vec<String>,
-    selected: usize,
+ items: Vec<String>,
+ selected: usize,
 }
 
 fn ui(frame: &mut Frame, app: &App) {
-    let items: Vec<ListItem> = app.items.iter()
-        .map(|s| ListItem::new(s.as_str()))
-        .collect();
-    let list = List::new(items)
-        .block(Block::default().title("Tools").borders(Borders::ALL));
-    frame.render_widget(list, frame.area());
+ let items: Vec<ListItem> = app.items.iter()
+ .map(|s| ListItem::new(s.as_str()))
+ .collect();
+ let list = List::new(items)
+ .block(Block::default().title("Tools").borders(Borders::ALL));
+ frame.render_widget(list, frame.area());
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let stdout = std::io::stdout();
-    let mut backend = ratatui::backend::CrosstermBackend::new(stdout);
-    backend.enable_raw_mode()?;
+ let stdout = std::io::stdout();
+ let mut backend = ratatui::backend::CrosstermBackend::new(stdout);
+ backend.enable_raw_mode()?;
 
-    let mut app = App { items: vec![], selected: 0 };
-    loop {
-        backend.draw(|f| ui(f, &app))?;
-        if event::poll(Duration::from_millis(16))? {
-            match event::read()? {
-                Event::Key(key) => match key.code {
-                    KeyCode::Char('q') => break,
-                    KeyCode::Down => { app.selected += 1; }
-                    _ => {}
-                },
-                _ => {}
-            }
-        }
-    }
-    Ok(())
+ let mut app = App { items: vec![], selected: 0 };
+ loop {
+ backend.draw(|f| ui(f, &app))?;
+ if event::poll(Duration::from_millis(16))? {
+ match event::read()? {
+ Event::Key(key) => match key.code {
+ KeyCode::Char('q') => break,
+ KeyCode::Down => { app.selected += 1; }
+ _ => {}
+ },
+ _ => {}
+ }
+ }
+ }
+ Ok(())
 }
 ```
 

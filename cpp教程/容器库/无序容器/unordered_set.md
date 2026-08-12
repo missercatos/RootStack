@@ -46,20 +46,20 @@ unordered_set<int> s
 // 插入（自动去重）
 s.insert(42)
 s.insert(7)
-s.insert(42)             // 忽略，仍为 1 份
+s.insert(42) // 忽略，仍为 1 份
 
 // 判断是否存在
 if s.count(7) > 0:
-    print "7 exists"
+ print "7 exists"
 
 // 查找
 it = s.find(42)
 if it != s.end():
-    print *it
+ print *it
 
 // 遍历（顺序不固定）
 for each x in s:
-    print x
+ print x
 
 // 删除
 s.erase(7)

