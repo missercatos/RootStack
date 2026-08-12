@@ -1,7 +1,7 @@
 # 模型导出 ONNX (Exporting to ONNX)
 ---
 
-## 📖 章节概述
+## 章节概述
 
 ONNX（Open Neural Network Exchange）是从 Python 训练到 C++ 部署的桥梁。本章演示如何将 PyTorch 模型导出为 .onnx 文件，理解 ONNX 的内部结构（图、节点、张量），用 onnxruntime 在 Python 侧验证模型正确性，为下一章 C++ 部署做好准备。
 
@@ -9,28 +9,28 @@ ONNX（Open Neural Network Exchange）是从 Python 训练到 C++ 部署的桥�
 
 ---
 
-### 📚 第一节：ONNX 概述
+### 第一节：ONNX 概述
 
 1.1 什么是 ONNX
 ----------------
 
 ONNX（Open Neural Network Exchange，开放神经网络交换格式）由 Facebook 和 Microsoft 于 2017 年推出，是一个开放的深度学习模型互操作标准。
 
-```
-你的模型导出为 .onnx 后可以运行在：
+```mermaid
+graph LR
+ subgraph Train["Python (训练/验证)"]
+ PyTorch["PyTorch"]
+ TensorFlow["TensorFlow"]
+ Sklearn["sklearn (skl2onnx)"]
+ Jax["JAX"]
+ Mxnet["MXNet"]
+ end
 
-Python (训练/验证)             C++/其他语言 (部署/推理)
-┌──────────────┐             ┌─────────────────────┐
-│ pytorch      │──export()──▶│                     │
-│ tensorflow   │             │  ONNX Runtime (CPU)  │
-│ sklearn (skl2onnx)│       │  ONNX Runtime (CUDA)  │
-│ jax          │             │  ONNX Runtime (DirectML)│
-│ mxnet        │             │  TensorRT (NVIDIA GPU)│
-└──────────────┘             │  OpenVINO (Intel)    │
-                             │  TVM (Apache)        │
-                             │  ONNX Runtime C API   │ ← 本章终点
-                             │  ONNX Runtime C++ API  │
-                             └─────────────────────┘
+ PyTorch -- "export()" --> ONNX["ONNX Runtime<br/>Runtime (CPU/CUDA/DirectML)<br/>TensorRT (NVIDIA)<br/>OpenVINO (Intel)<br/>TVM (Apache)<br/>C API / C++ API"]
+ TensorFlow --> ONNX
+ Sklearn --> ONNX
+ Jax --> ONNX
+ Mxnet --> ONNX
 ```
 
 1.2 ONNX vs TorchScript vs libtorch
@@ -46,7 +46,7 @@ Python (训练/验证)             C++/其他语言 (部署/推理)
 
 ---
 
-### 📚 第二节：torch.onnx.export 实战
+### 第二节：torch.onnx.export 实战
 
 2.1 导出最简单的模型
 ---------------------
@@ -58,31 +58,31 @@ import torch.nn as nn
 
 # 1. 定义一个简单模型
 class SimpleModel(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.linear = nn.Linear(4, 3)
-    def forward(self, x):
-        return self.linear(x)
+ def __init__(self):
+ super().__init__()
+ self.linear = nn.Linear(4, 3)
+ def forward(self, x):
+ return self.linear(x)
 
 model = SimpleModel()
 model.eval()
 
 # 2. 创建 dummy input — 形状必须和实际输入一致
-dummy_input = torch.randn(1, 4)  # batch=1, features=4
+dummy_input = torch.randn(1, 4) # batch=1, features=4
 
 # 3. 导出 ONNX
 torch.onnx.export(
-    model,
-    dummy_input,
-    'simple_model.onnx',
-    export_params=True,        # 保存模型参数（权重）
-    opset_version=17,          # ONNX 算子集版本
-    input_names=['input'],     # 输入节点名称
-    output_names=['output'],   # 输出节点名称
-    dynamic_axes={             # 动态轴：batch 维度可变
-        'input': {0: 'batch'},
-        'output': {0: 'batch'},
-    },
+ model,
+ dummy_input,
+ 'simple_model.onnx',
+ export_params=True, # 保存模型参数（权重）
+ opset_version=17, # ONNX 算子集版本
+ input_names=['input'], # 输入节点名称
+ output_names=['output'], # 输出节点名称
+ dynamic_axes={ # 动态轴：batch 维度可变
+ 'input': {0: 'batch'},
+ 'output': {0: 'batch'},
+ },
 )
 print('Exported to simple_model.onnx')
 print(f'File size: {__import__(\"os\").path.getsize(\"simple_model.onnx\")} bytes')
@@ -109,13 +109,13 @@ print(f'File size: {__import__(\"os\").path.getsize(\"simple_model.onnx\")} byte
 ```python
 # dynamic_axes 使 batch 维度可变
 dynamic_axes = {
-    'input':  {0: 'batch_size'},   # 输入的第 0 维可变
-    'output': {0: 'batch_size'},   # 输出的第 0 维可变
+ 'input': {0: 'batch_size'}, # 输入的第 0 维可变
+ 'output': {0: 'batch_size'}, # 输出的第 0 维可变
 }
 
 # 导出的模型可以接受任意 batch size：
-# batch=1: (1, 4) ✅
-# batch=32: (32, 4) ✅
+# batch=1: (1, 4) 
+# batch=32: (32, 4) 
 # batch=None: 错误 — 没有标记为动态的维度必须匹配 dummy_input
 ```
 
@@ -129,24 +129,24 @@ python -c "
 import torch, torch.nn as nn
 
 class CNN(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.conv = nn.Conv2d(3, 16, 3, padding=1)
-        self.fc = nn.Linear(16, 10)
-    def forward(self, x):
-        x = self.conv(x)           # (B,3,H,W) → (B,16,H,W)
-        x = x.mean(dim=[2, 3])     # 全局平均池化 → (B,16)
-        return self.fc(x)          # → (B,10)
+ def __init__(self):
+ super().__init__()
+ self.conv = nn.Conv2d(3, 16, 3, padding=1)
+ self.fc = nn.Linear(16, 10)
+ def forward(self, x):
+ x = self.conv(x) # (B,3,H,W) → (B,16,H,W)
+ x = x.mean(dim=[2, 3]) # 全局平均池化 → (B,16)
+ return self.fc(x) # → (B,10)
 
 model = CNN().eval()
 dummy_input = torch.randn(1, 3, 224, 224)
 
 torch.onnx.export(
-    model, dummy_input, 'cnn_model.onnx',
-    input_names=['image'],
-    output_names=['class_logits'],
-    dynamic_axes={'image': {0: 'batch', 2: 'height', 3: 'width'}},
-    opset_version=17,
+ model, dummy_input, 'cnn_model.onnx',
+ input_names=['image'],
+ output_names=['class_logits'],
+ dynamic_axes={'image': {0: 'batch', 2: 'height', 3: 'width'}},
+ opset_version=17,
 )
 print('CNN exported!')
 # C++ 侧: 可以传入 (N, 3, H, W) 任意大小的图像
@@ -155,26 +155,21 @@ print('CNN exported!')
 
 ---
 
-### 📚 第三节：理解 ONNX 模型结构
+### 第三节：理解 ONNX 模型结构
 
 3.1 ONNX 模型的内部表示
 ------------------------
 
 ONNX 模型是一个 protobuf 格式文件，内部结构如下：
 
-```
-ModelProto
-├── graph
-│   ├── input  (ValueInfoProto — 模型输入)
-│   │   └── name, type, shape
-│   ├── output (ValueInfoProto — 模型输出)
-│   │   └── name, type, shape
-│   ├── initializer (TensorProto — 权重参数)
-│   │   └── 每个权重的名称、类型、原始数据
-│   └── node (NodeProto × N — 计算节点)
-│       └── op_type, inputs[], outputs[], attributes
-└── opset_import
-    └── domain, version
+```mermaid
+graph TB
+ MP["ModelProto"] --> G["graph"]
+ G --> INPUT["input<br/>(ValueInfoProto)<br/>模型输入<br/>name, type, shape"]
+ G --> OUTPUT["output<br/>(ValueInfoProto)<br/>模型输出<br/>name, type, shape"]
+ G --> INIT["initializer<br/>(TensorProto)<br/>权重参数<br/>每个权重的名称、类型、原始数据"]
+ G --> NODE["node<br/>(NodeProto × N)<br/>计算节点<br/>op_type, inputs[], outputs[], attributes"]
+ MP --> OI["opset_import<br/>domain, version"]
 ```
 
 每个 `node` 代表一个算子（如 Conv, Relu, Gemm, Softmax），`initializer` 存储权重。
@@ -191,48 +186,48 @@ model = onnx.load('simple_model.onnx')
 # 输入信息
 print('=== Inputs ===')
 for inp in model.graph.input:
-    print(f'  Name: {inp.name}')
-    shape = [d.dim_value if d.dim_value else 'dynamic' for d in inp.type.tensor_type.shape.dim]
-    print(f'  Shape: {shape}')
+ print(f' Name: {inp.name}')
+ shape = [d.dim_value if d.dim_value else 'dynamic' for d in inp.type.tensor_type.shape.dim]
+ print(f' Shape: {shape}')
 
 # 输出信息
 print('=== Outputs ===')
 for out in model.graph.output:
-    print(f'  Name: {out.name}')
+ print(f' Name: {out.name}')
 
 # 算子列表
 print('=== Nodes ===')
 for node in model.graph.node:
-    print(f'  Op: {node.op_type}, Inputs: {list(node.input)}, Outputs: {list(node.output)}')
+ print(f' Op: {node.op_type}, Inputs: {list(node.input)}, Outputs: {list(node.output)}')
 
 # 权重/参数
 print(f'\\n=== Initializers ({len(model.graph.initializer)}) ===')
 for init in model.graph.initializer:
-    print(f'  {init.name}: shape={list(init.dims)}')
+ print(f' {init.name}: shape={list(init.dims)}')
 
 # 验证模型合法性
 onnx.checker.check_model(model)
-print('\\n✓ Model is valid!')
+print('\\n Model is valid!')
 "
 ```
 
 输出示例：
 ```
 === Inputs ===
-  Name: input
-  Shape: ['dynamic', 4]
+ Name: input
+ Shape: ['dynamic', 4]
 
 === Outputs ===
-  Name: output
+ Name: output
 
 === Nodes ===
-  Op: Gemm, Inputs: ['input', 'linear.weight', 'linear.bias'], Outputs: ['output']
+ Op: Gemm, Inputs: ['input', 'linear.weight', 'linear.bias'], Outputs: ['output']
 
 === Initializers (2) ===
-  linear.weight: shape=[3, 4]
-  linear.bias: shape=[3]
+ linear.weight: shape=[3, 4]
+ linear.bias: shape=[3]
 
-✓ Model is valid!
+ Model is valid!
 ```
 
 注意：`nn.Linear` 在 PyTorch 中被转换为 ONNX 的 `Gemm` 算子（General Matrix Multiply：Y = αA×B + βC）。这是 ONNX 算子层面的"翻译"。
@@ -255,7 +250,7 @@ python -c "import netron; netron.start('simple_model.onnx')"
 
 ---
 
-### 📚 第四节：用 onnxruntime 验证导出
+### 第四节：用 onnxruntime 验证导出
 
 4.1 Python 端验证
 ------------------
@@ -270,9 +265,9 @@ import onnxruntime as ort
 
 # 1. 重新加载刚导出的模型
 class SimpleModel(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.linear = nn.Linear(4, 3)
+ def __init__(self):
+ super().__init__()
+ self.linear = nn.Linear(4, 3)
 
 model = SimpleModel()
 model.eval()
@@ -281,26 +276,26 @@ model.eval()
 session = ort.InferenceSession('simple_model.onnx')
 
 # 3. 准备输入
-x = torch.randn(2, 4)  # batch=2
+x = torch.randn(2, 4) # batch=2
 
 # 4. PyTorch 推理
 with torch.no_grad():
-    pytorch_out = model(x).numpy()
+ pytorch_out = model(x).numpy()
 
 # 5. ONNX Runtime 推理
-#    注意：ONNX Runtime 输入是 numpy 数组，键名必须匹配 input_names
+# 注意：ONNX Runtime 输入是 numpy 数组，键名必须匹配 input_names
 onnx_out = session.run(
-    None,                    # None = 获取所有输出
-    {'input': x.numpy()},   # {'输入节点名': numpy 数组}
-)[0]                        # run() 返回 list of outputs
+ None, # None = 获取所有输出
+ {'input': x.numpy()}, # {'输入节点名': numpy 数组}
+)[0] # run() 返回 list of outputs
 
 # 6. 对比结果
 diff = np.abs(pytorch_out - onnx_out).max()
-print(f"PyTorch  output: {pytorch_out[0]}")
-print(f"ONNX RT  output: {onnx_out[0]}")
+print(f"PyTorch output: {pytorch_out[0]}")
+print(f"ONNX RT output: {onnx_out[0]}")
 print(f"Max difference: {diff:.10f}")
 assert diff < 1e-5, f"Output mismatch! diff={diff}"
-print("✓ PyTorch and ONNX Runtime outputs match!")
+print(" PyTorch and ONNX Runtime outputs match!")
 ```
 
 4.2 常见的 ONNX 导出问题
@@ -321,16 +316,16 @@ import torch
 import torch.nn as nn
 
 class DynamicModel(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.linear_a = nn.Linear(10, 10)
-        self.linear_b = nn.Linear(10, 10)
+ def __init__(self):
+ super().__init__()
+ self.linear_a = nn.Linear(10, 10)
+ self.linear_b = nn.Linear(10, 10)
 
-    def forward(self, x, use_branch_b=False):
-        if use_branch_b:
-            return self.linear_b(x)
-        else:
-            return self.linear_a(x)
+ def forward(self, x, use_branch_b=False):
+ if use_branch_b:
+ return self.linear_b(x)
+ else:
+ return self.linear_a(x)
 
 model = DynamicModel().eval()
 
@@ -340,27 +335,27 @@ model = DynamicModel().eval()
 
 # 方案2：用 torch.cond（PyTorch 2.0+）
 def forward(self, x, use_branch_b):
-    return torch.cond(use_branch_b, lambda: self.linear_b(x), lambda: self.linear_a(x))
+ return torch.cond(use_branch_b, lambda: self.linear_b(x), lambda: self.linear_a(x))
 ```
 
 > PyTorch 的 ONNX 导出使用 **Tracing**（跟踪）模式：给定一个示例输入，实际执行一次前向传播，记录所有执行的操作，然后序列化为 ONNX。这类似于 C 代码的单路径执行记录——if/else 的分支、for 循环的迭代次数都被"固化"在导出的图中。
 
 ---
 
-### 📚 第五节：高级导出场景
+### 第五节：高级导出场景
 
 5.1 导出带 BatchNorm 的模型
 -----------------------------
 
 ```python
-# ⚠️ 关键：先 eval()，再导出！
+# 关键：先 eval()，再导出！
 model.eval()
 
 # 或者将 BatchNorm 折叠到前面的卷积中（减少推理计算）
 torch.onnx.export(
-    model, dummy_input, 'model.onnx',
-    do_constant_folding=True,  # 默认 True：常量折叠优化
-    training=torch.onnx.TrainingMode.EVAL,  # 确保是 EVAL 模式
+ model, dummy_input, 'model.onnx',
+ do_constant_folding=True, # 默认 True：常量折叠优化
+ training=torch.onnx.TrainingMode.EVAL, # 确保是 EVAL 模式
 )
 ```
 
@@ -380,18 +375,18 @@ inputs = tokenizer(text, return_tensors='pt')
 export_args = (inputs['input_ids'], inputs['attention_mask'])
 
 torch.onnx.export(
-    model,
-    export_args,
-    'bert.onnx',
-    input_names=['input_ids', 'attention_mask'],
-    output_names=['last_hidden', 'pooler_output'],
-    dynamic_axes={
-        'input_ids':       {0: 'batch', 1: 'seq_length'},
-        'attention_mask':  {0: 'batch', 1: 'seq_length'},
-        'last_hidden':     {0: 'batch', 1: 'seq_length'},
-        'pooler_output':   {0: 'batch'},
-    },
-    opset_version=17,
+ model,
+ export_args,
+ 'bert.onnx',
+ input_names=['input_ids', 'attention_mask'],
+ output_names=['last_hidden', 'pooler_output'],
+ dynamic_axes={
+ 'input_ids': {0: 'batch', 1: 'seq_length'},
+ 'attention_mask': {0: 'batch', 1: 'seq_length'},
+ 'last_hidden': {0: 'batch', 1: 'seq_length'},
+ 'pooler_output': {0: 'batch'},
+ },
+ opset_version=17,
 )
 ```
 
@@ -417,34 +412,13 @@ print('Simplified!')
 
 ---
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> `torch.onnx.export` 的 `dummy_input` 参数作用是什么？
-> - [ ] A. 设置模型的随机种子
-> - [ ] B. 提供示例输入以追踪计算图
-> - [ ] C. 验证模型的准确率
-> - [ ] D. 设置 batch size 为 1
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `dummy_input` 是示例输入，PyTorch 用它实际执行一次前向传播，记录所有执行的操作以生成 ONNX 计算图。dummy_input 的形状同时确定了 ONNX 模型的输入形状。
-
-> [!question] 选择题 2
-> ONNX Runtime 的 `session.run()` 接受的输入格式是什么？
-> - [ ] A. PyTorch Tensor
-> - [ ] B. Python list
-> - [ ] C. 字典 `{'input_name': numpy_array}`
-> - [ ] D. JSON 字符串
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: ONNX Runtime Python API 的 `run()` 方法接受一个 dict，键是模型输入节点名（与 `input_names` 匹配），值是 numpy 数组。
 
 > [!question] 判断题 1
 > ONNX 模型文件使用 JSON 格式存储。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -452,14 +426,14 @@ print('Simplified!')
 
 ---
 
-## 📋 章节测试
+## 章节测试
 
-### 一、判断题（正确选 ✅，错误选 ❌）
+### 一、判断题（正确选 ，错误选 ）
 
 > [!question] 判断题 1
 > ONNX 只支持 PyTorch 导出的模型。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -467,8 +441,8 @@ print('Simplified!')
 
 > [!question] 判断题 2
 > `opset_version` 越大越好，始终使用最新版本。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -476,8 +450,8 @@ print('Simplified!')
 
 > [!question] 判断题 3
 > `dynamic_axes` 使导出的 ONNX 模型可以接受不同大小的输入。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -485,8 +459,8 @@ print('Simplified!')
 
 > [!question] 判断题 4
 > 导出 ONNX 前必须调用 `model.eval()`。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -494,8 +468,8 @@ print('Simplified!')
 
 > [!question] 判断题 5
 > ONNX Runtime 的 C API 需要依赖 Python 运行时。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -503,76 +477,30 @@ print('Simplified!')
 
 > [!question] 判断题 6
 > `onnx.checker.check_model()` 可以验证 ONNX 模型输出的数值精确度。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
 > > **解析**: `check_model()` 只检查 ONNX 图的结构合法性（节点连接、类型匹配、opset 兼容等），不检查输出的数值正确性。验证数值需要对比 PyTorch 模型和 ONNX Runtime 的输出（如本章 4.1 所示）。
 
-### 二、选择题（单项选择题）
-
-> [!question] 选择题 1
-> 导出 ONNX 时 PyTorch 的 `nn.Linear` 通常会转换成什么 ONNX 算子？
-> - [ ] A. MatMul
-> - [ ] B. Conv
-> - [ ] C. Gemm
-> - [ ] D. Add
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: `nn.Linear` 的计算是 `y = x @ W^T + b`，对应 ONNX 的 Gemm 算子（General Matrix multiply：αAB + βC）。
-
-> [!question] 选择题 2
-> `onnxsim` 工具的主要作用是？
-> - [ ] A. 可视化 ONNX 模型结构
-> - [ ] B. 转换 ONNX 为 JSON 格式
-> - [ ] C. 简化 ONNX 图，移除冗余节点
-> - [ ] D. 训练 ONNX 模型
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: onnxsim (onnx-simplifier) 是 ONNX 图的简化工具，执行常量折叠、移除冗余节点和未使用的 initializer，减小模型体积并加速推理。
-
-> [!question] 选择题 3
-> PyTorch ONNX 导出的默认模式是？
-> - [ ] A. Scripting（脚本模式）
-> - [ ] B. Tracing（跟踪模式）
-> - [ ] C. Eager（即时模式）
-> - [ ] D. Compile（编译模式）
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `torch.onnx.export` 默认使用 Tracing 模式：传入 dummy input 实际运行前向传播一次，记录所有执行的操作生成静态计算图。Scripting 模式（通过 `torch.jit.script`）可以处理控制流但需要显式设置。
-
-> [!question] 选择题 4
-> 以下哪个工具用于交互式可视化 ONNX 模型结构？
-> - [ ] A. onnxruntime
-> - [ ] B. netron
-> - [ ] C. onnxsim
-> - [ ] D. tensorboard
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: netron 是一个交互式 ONNX 模型可视化工具，可在浏览器中查看模型的计算图、节点属性、权重和张量形状。
-
-> [!question] 选择题 5
-> ONNX 模型中 `initializer` 存储的是什么？
-> - [ ] A. 输入数据
-> - [ ] B. 模型结构（算子）
-> - [ ] C. 权重的初始训练数据
-> - [ ] D. 训练好的模型权重参数值
->
-> > [!success]- 点击查看答案
-> > 正确答案: D
-> > **解析**: `initializer` 是已训练好的模型权重参数（如卷积核、线性层的 W 和 b）。这些值在导出时被冻结写入 .onnx 文件，推理时不可改变。
 
 ---
 
-### 🛠️ 动手练习题
+## 力扣练习
+
+以下题目用于验证本章所学内容：
+
+| 题号 | 题目 | 链接 | 涉及知识点 |
+|------|------|------|-----------|
+| — | 本章无对应力扣题 | — | 请用动手练习题自检 |
+
+
+
+### 动手练习题
 
 > [!example] 练习题 1：导出并验证自己的 CNN
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 1. 用第四章的 MNIST CNN 模型，把它保存到 `mnist_cnn.pth`
 > 2. 导出为 `mnist_cnn.onnx`（注意输入形状是 `(1, 1, 28, 28)`）
@@ -581,7 +509,7 @@ print('Simplified!')
 > 5. 分别在 batch=1 和 batch=16 上测试推理成功
 
 > [!example] 练习题 2：分析 ONNX 图
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 1. 导出 ResNet-18 到 `resnet18.onnx`（用 `torchvision.models.resnet18`）
 > 2. 用 `onnx.load()` 加载并打印所有节点类型（`node.op_type`）
@@ -590,7 +518,7 @@ print('Simplified!')
 > 5. 用 netron 打开模型，观察计算图的结构层次
 
 > [!example] 练习题 3：ONNX 模型简化
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 1. 导出 ResNet-18 到 ONNX
 > 2. 记录原始文件大小和推理时间（100 次推理取平均）

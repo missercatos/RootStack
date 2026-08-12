@@ -1,7 +1,7 @@
 # SQLite 与 ORM 集成 (SQLite & ORM)
 ---
 
-## 📖 章节概述
+## 章节概述
 
 Web 应用离不开数据持久化。本章从 Python 标准库 `sqlite3` 模块入手，展示纯 SQL 操作 SQLite 数据库的基础用法；然后引入 SQLAlchemy ORM，用 Python 类映射数据表，通过对象操作替代手写 SQL；最后简要介绍 Alembic 数据库迁移工具。全程对比 C 语言直接调用 SQLite C API 的写法，帮助 C 程序员快速建立 Python 数据库编程的心理模型。
 
@@ -9,7 +9,7 @@ Web 应用离不开数据持久化。本章从 Python 标准库 `sqlite3` 模块
 
 ---
 
-### 📚 第一节：sqlite3 标准库 — 纯 SQL 操作
+### 第一节：sqlite3 标准库 — 纯 SQL 操作
 
 Python 标准库自带的 `sqlite3` 模块提供了完整的 SQLite 接口，无需安装任何额外依赖。一行命令即可体验：
 
@@ -21,7 +21,7 @@ conn.execute('CREATE TABLE users(id INTEGER PRIMARY KEY, name TEXT)')
 conn.execute(\"INSERT INTO users VALUES(1, 'Alice')\")
 conn.commit()
 for row in conn.execute('SELECT * FROM users'):
-    print(row)   # (1, 'Alice')
+ print(row) # (1, 'Alice')
 "
 ```
 
@@ -34,12 +34,12 @@ conn = sqlite3.connect('app.db')
 cur = conn.cursor()
 
 cur.execute('''
-    CREATE TABLE IF NOT EXISTS tasks (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL,
-        done INTEGER DEFAULT 0,
-        created_at TEXT DEFAULT (datetime('now'))
-    )
+ CREATE TABLE IF NOT EXISTS tasks (
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ title TEXT NOT NULL,
+ done INTEGER DEFAULT 0,
+ created_at TEXT DEFAULT (datetime('now'))
+ )
 ''')
 
 cur.execute("INSERT INTO tasks (title) VALUES (?)", ("Learning Flask",))
@@ -49,7 +49,7 @@ conn.commit()
 cur.execute("SELECT id, title, done FROM tasks WHERE done = ?", (0,))
 rows = cur.fetchall()
 for row in rows:
-    print(f"#{row[0]} {row[1]} [{'x' if row[2] else ' '}]")
+ print(f"#{row[0]} {row[1]} [{'x' if row[2] else ' '}]")
 
 cur.execute("UPDATE tasks SET done = 1 WHERE id = ?", (1,))
 cur.execute("DELETE FROM tasks WHERE id = ?", (2,))
@@ -75,8 +75,8 @@ conn.close()
 
 ```python
 with sqlite3.connect('app.db') as conn:
-    conn.execute("INSERT INTO tasks (title) VALUES (?)", ("Auto commit",))
-    # with 块正常退出时自动 commit，异常时自动 rollback
+ conn.execute("INSERT INTO tasks (title) VALUES (?)", ("Auto commit",))
+ # with 块正常退出时自动 commit，异常时自动 rollback
 ```
 
 行工厂实现字典式访问（避免索引位置的脆弱性）：
@@ -85,12 +85,12 @@ with sqlite3.connect('app.db') as conn:
 conn.row_factory = sqlite3.Row
 cur = conn.execute("SELECT * FROM tasks")
 for row in cur:
-    print(row['id'], row['title'])   # 用列名访问
+ print(row['id'], row['title']) # 用列名访问
 ```
 
 ---
 
-### 📚 第二节：SQLAlchemy ORM 入门
+### 第二节：SQLAlchemy ORM 入门
 
 SQLAlchemy 是 Python 中最成熟的 ORM（对象关系映射）。其核心理念：将数据库表映射为 Python 类，将行映射为类的实例，将 SQL 操作映射为方法调用。
 
@@ -107,20 +107,20 @@ from sqlalchemy import create_engine, Column, Integer, String, Boolean
 from sqlalchemy.orm import DeclarativeBase, Session
 
 class Base(DeclarativeBase):
-    pass
+ pass
 
 class Task(Base):
-    __tablename__ = "tasks"
+ __tablename__ = "tasks"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    title = Column(String(200), nullable=False)
-    done = Column(Boolean, default=False)
+ id = Column(Integer, primary_key=True, autoincrement=True)
+ title = Column(String(200), nullable=False)
+ done = Column(Boolean, default=False)
 
-    def __repr__(self):
-        return f"<Task(id={self.id}, title='{self.title}')>"
+ def __repr__(self):
+ return f"<Task(id={self.id}, title='{self.title}')>"
 
 engine = create_engine("sqlite:///app.db", echo=True)
-Base.metadata.create_all(engine)   # 自动建表（CREATE TABLE IF NOT EXISTS）
+Base.metadata.create_all(engine) # 自动建表（CREATE TABLE IF NOT EXISTS）
 ```
 
 CRUD 操作——对象式写法：
@@ -128,28 +128,28 @@ CRUD 操作——对象式写法：
 ```python
 # 创建会话
 with Session(engine) as session:
-    # Create
-    task1 = Task(title="Learn Flask")
-    task2 = Task(title="Read SQLAlchemy docs", done=True)
-    session.add_all([task1, task2])
-    session.commit()               # commit 后 task.id 自动填充
+ # Create
+ task1 = Task(title="Learn Flask")
+ task2 = Task(title="Read SQLAlchemy docs", done=True)
+ session.add_all([task1, task2])
+ session.commit() # commit 后 task.id 自动填充
 
-    # Read
-    tasks = session.query(Task).filter(Task.done == False).all()
-    for t in tasks:
-        print(t)
+ # Read
+ tasks = session.query(Task).filter(Task.done == False).all()
+ for t in tasks:
+ print(t)
 
-    # Read by primary key
-    task = session.get(Task, 1)    # SELECT ... WHERE id = 1
-    print(task.title)
+ # Read by primary key
+ task = session.get(Task, 1) # SELECT ... WHERE id = 1
+ print(task.title)
 
-    # Update
-    task.title = "Learn Flask and FastAPI"
-    session.commit()               # 自动检测变更并生成 UPDATE
+ # Update
+ task.title = "Learn Flask and FastAPI"
+ session.commit() # 自动检测变更并生成 UPDATE
 
-    # Delete
-    session.delete(task)
-    session.commit()
+ # Delete
+ session.delete(task)
+ session.commit()
 ```
 
 SQLAlchemy 2.0 风格的 select 语法：
@@ -158,15 +158,15 @@ SQLAlchemy 2.0 风格的 select 语法：
 from sqlalchemy import select
 
 with Session(engine) as session:
-    stmt = select(Task).where(Task.done == False).order_by(Task.id)
-    tasks = session.scalars(stmt).all()
+ stmt = select(Task).where(Task.done == False).order_by(Task.id)
+ tasks = session.scalars(stmt).all()
 ```
 
 > 对比 C：在 C 中你需要手动拼接 SQL 字符串、绑定参数、遍历结果集、手动 malloc/free 结构体。ORM 中的 `session.query(Task).filter(...)` 一行替代了 C 中的 50 行。
 
 ---
 
-### 📚 第三节：模型关系 — 一对多、多对多
+### 第三节：模型关系 — 一对多、多对多
 
 SQLAlchemy 的关系定义相当于 C 中结构体嵌套指针（或链表）：
 
@@ -175,44 +175,44 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
 class User(Base):
-    __tablename__ = "users"
+ __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String(100))
+ id = Column(Integer, primary_key=True)
+ name = Column(String(100))
 
-    tasks = relationship("Task", back_populates="owner")  # 一对多
+ tasks = relationship("Task", back_populates="owner") # 一对多
 
 class Task(Base):
-    __tablename__ = "tasks"
+ __tablename__ = "tasks"
 
-    id = Column(Integer, primary_key=True)
-    title = Column(String(200))
-    user_id = Column(Integer, ForeignKey("users.id"))
+ id = Column(Integer, primary_key=True)
+ title = Column(String(200))
+ user_id = Column(Integer, ForeignKey("users.id"))
 
-    owner = relationship("User", back_populates="tasks")
+ owner = relationship("User", back_populates="tasks")
 ```
 
 使用关系：
 
 ```python
 with Session(engine) as session:
-    alice = User(name="Alice")
-    alice.tasks = [
-        Task(title="Write report"),
-        Task(title="Review code"),
-    ]
-    session.add(alice)
-    session.commit()
+ alice = User(name="Alice")
+ alice.tasks = [
+ Task(title="Write report"),
+ Task(title="Review code"),
+ ]
+ session.add(alice)
+ session.commit()
 
-    # 通过关系访问
-    user = session.query(User).filter_by(name="Alice").first()
-    for task in user.tasks:
-        print(task.title)   # 自动执行 JOIN 查询
+ # 通过关系访问
+ user = session.query(User).filter_by(name="Alice").first()
+ for task in user.tasks:
+ print(task.title) # 自动执行 JOIN 查询
 ```
 
 ---
 
-### 📚 第四节：Alembic 数据库迁移
+### 第四节：Alembic 数据库迁移
 
 数据库 schema 会随项目演进。Alembic 是 SQLAlchemy 作者开发的迁移工具，类似 Git 管理代码版本，Alembic 管理数据库 schema 版本。
 
@@ -220,7 +220,7 @@ with Session(engine) as session:
 
 ```bash
 pip install alembic
-alembic init migrations       # 创建迁移目录
+alembic init migrations # 创建迁移目录
 ```
 
 编辑 `alembic.ini` 中的数据库连接：
@@ -232,24 +232,24 @@ sqlalchemy.url = sqlite:///app.db
 在 `migrations/env.py` 中设置 target_metadata：
 
 ```python
-from app import Base          # 导入你的模型基类
+from app import Base # 导入你的模型基类
 target_metadata = Base.metadata
 ```
 
 迁移操作：
 
 ```bash
-alembic revision --autogenerate -m "add users table"  # 自动生成迁移脚本
-alembic upgrade head          # 应用所有迁移
-alembic downgrade -1          # 回退一个版本
-alembic history               # 查看迁移历史
+alembic revision --autogenerate -m "add users table" # 自动生成迁移脚本
+alembic upgrade head # 应用所有迁移
+alembic downgrade -1 # 回退一个版本
+alembic history # 查看迁移历史
 ```
 
 > 这类似于 C 项目中用 Makefile 管理编译步骤——Alembic 管理的是数据库 DDL 的"增量编译"。
 
 ---
 
-### 📚 第五节：与 Flask/FastAPI 集成
+### 第五节：与 Flask/FastAPI 集成
 
 将 SQLAlchemy 集成到 Web 框架中：
 
@@ -267,19 +267,19 @@ Base.metadata.create_all(engine)
 
 @app.route("/api/tasks")
 def list_tasks():
-    with Session(engine) as session:
-        tasks = session.execute(select(Task)).scalars().all()
-        return jsonify([{"id": t.id, "title": t.title, "done": t.done}
-                        for t in tasks])
+ with Session(engine) as session:
+ tasks = session.execute(select(Task)).scalars().all()
+ return jsonify([{"id": t.id, "title": t.title, "done": t.done}
+ for t in tasks])
 
 @app.route("/api/tasks", methods=["POST"])
 def create_task():
-    data = request.json
-    with Session(engine) as session:
-        task = Task(title=data["title"])
-        session.add(task)
-        session.commit()
-        return jsonify({"id": task.id, "title": task.title}), 201
+ data = request.json
+ with Session(engine) as session:
+ task = Task(title=data["title"])
+ session.add(task)
+ session.commit()
+ return jsonify({"id": task.id, "title": task.title}), 201
 ```
 
 **FastAPI 集成（使用依赖注入获得 session）：**
@@ -292,18 +292,18 @@ engine = create_engine("sqlite:///app.db")
 Base.metadata.create_all(engine)
 
 def get_session():
-    with Session(engine) as session:
-        yield session
+ with Session(engine) as session:
+ yield session
 
 @app.get("/api/tasks")
 def list_tasks(session: Session = Depends(get_session)):
-    tasks = session.execute(select(Task)).scalars().all()
-    return tasks
+ tasks = session.execute(select(Task)).scalars().all()
+ return tasks
 ```
 
 ---
 
-### 📚 第六节：Python sqlite3 vs C SQLite API 对比
+### 第六节：Python sqlite3 vs C SQLite API 对比
 
 同一个操作在 Python 和 C 中的代码量对比：
 
@@ -341,49 +341,29 @@ sqlite3_close(db);
 
 ---
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> Python 中 `sqlite3.connect(':memory:')` 的作用是？
-> - [ ] A. 连接名为 "memory" 的远程数据库
-> - [ ] B. 在内存中创建临时数据库（进程退出后消失）
-> - [ ] C. 将数据库缓存到内存中
-> - [ ] D. 语法错误
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `:memory:` 是 SQLite 的特殊文件名，表示在内存中创建临时数据库。进程退出后数据完全消失，适合测试和临时数据。
 
 > [!question] 判断题 1
 > SQLAlchemy ORM 使用后，不需要再手写任何 SQL 语句。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
 > > **解析**: ORM 处理大部分常规 CRUD，但复杂查询（多表 JOIN、子查询、窗口函数）有时仍需手写 SQL。SQLAlchemy 支持 `session.execute(text("SQL"))` 执行原生 SQL。
 
-> [!question] 选择题 2
-> SQLAlchemy 2.0 风格中 `session.scalars(stmt).all()` 返回什么？
-> - [ ] A. 包含元组的列表
-> - [ ] B. 包含 ORM 对象实例的列表
-> - [ ] C. 包含字典的列表
-> - [ ] D. 包含 SQL 字符串的列表
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `session.scalars()` 将每行的第一列提取为标量（ORM 对象），`.all()` 收集为 Python 列表。与之相对，`session.execute(stmt).all()` 返回的是 `Row` 元组列表。
 
 ---
 
-## 📋 章节测试
+## 章节测试
 
-### 一、判断题（正确选 ✅，错误选 ❌）
+### 一、判断题（正确选 ，错误选 ）
 
 > [!question] 判断题 1
 > Python 的 `sqlite3` 模块是标准库的一部分，不需要 `pip install`。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -391,8 +371,8 @@ sqlite3_close(db);
 
 > [!question] 判断题 2
 > SQLAlchemy 的 `Base.metadata.create_all(engine)` 每次调用都会重建所有表（DROP + CREATE）。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -400,8 +380,8 @@ sqlite3_close(db);
 
 > [!question] 判断题 3
 > Alembic 的 `--autogenerate` 选项会自动检测模型变化并生成迁移脚本。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -409,8 +389,8 @@ sqlite3_close(db);
 
 > [!question] 判断题 4
 > 在 SQLite 中，`sqlite3.connect()` 打开的数据库文件不存在时会报错。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -418,8 +398,8 @@ sqlite3_close(db);
 
 > [!question] 判断题 5
 > SQLAlchemy 只能用于关系型数据库，不支持 SQLite。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -427,81 +407,37 @@ sqlite3_close(db);
 
 ---
 
-### 二、选择题（单项选择题）
-
-> [!question] 选择题 1
-> 以下哪个 SQLite 连接字符串表示在当前目录创建 `data.db`？
-> - [ ] A. `sqlite://localhost/data.db`
-> - [ ] B. `sqlite:///data.db`
-> - [ ] C. `sqlite:data.db`
-> - [ ] D. `sqlite://data.db`
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: SQLAlchemy 中 SQLite 的连接字符串格式为 `sqlite:///path/to/file.db`（三个斜杠表示本地相对路径）或 `sqlite:////absolute/path/file.db`（四个斜杠表示绝对路径）。
-
-> [!question] 选择题 2
-> SQLAlchemy 中 `ForeignKey("users.id")` 的作用是？
-> - [ ] A. 创建一个名为 "users.id" 的新列
-> - [ ] B. 声明当前列是 `users` 表 `id` 列的外键
-> - [ ] C. 自动复制 `users.id` 的数据
-> - [ ] D. 创建索引
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `ForeignKey` 声明外键约束，参数 `"users.id"` 中的 `users` 是目标表名，`id` 是目标列名。
-
-> [!question] 选择题 3
-> sqlite3 的参数占位符使用哪种风格？
-> - [ ] A. `%s`（printf 风格）
-> - [ ] B. `$1, $2`（PostgreSQL 风格）
-> - [ ] C. `?`（qmark 风格）
-> - [ ] D. `:name`（命名风格）
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: Python 的 `sqlite3` 默认使用 `?` 占位符（qmark 风格）。也支持 `:name` 命名风格。**不**支持 `%s` 或 `$1`。这与 SQLite C API 一致。
-
-> [!question] 选择题 4
-> `with sqlite3.connect('app.db') as conn:` 退出 `with` 块后，自动发生什么？
-> - [ ] A. 仅关闭连接
-> - [ ] B. 自动 commit 并关闭连接
-> - [ ] C. 自动 rollback 并关闭连接
-> - [ ] D. 什么也不做
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `sqlite3.Connection` 的上下文管理器在正常退出时自动 `commit()`，异常退出时 `rollback()`，最后关闭连接。
-
-> [!question] 选择题 5
-> Alembic 的迁移版本信息存储在数据库的什么位置？
-> - [ ] A. `.alembic` 文件
-> - [ ] B. `alembic.ini`
-> - [ ] C. 数据库内的 `alembic_version` 表
-> - [ ] D. `migrations/versions/` 目录
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: Alembic 在目标数据库中创建一张 `alembic_version` 表，记录当前已应用的迁移版本号。版本文件本身存储在 `migrations/versions/` 目录中。
 
 ---
 
-### 🛠️ 动手练习题
+## 力扣练习
+
+以下题目用于验证本章所学内容：
+
+| 题号 | 题目 | 链接 | 涉及知识点 |
+|------|------|------|-----------|
+| 175 | 组合两个表 | https://leetcode.cn/problems/combine-two-tables/ | LEFT JOIN、表连接 |
+| 176 | 第二高的薪水 | https://leetcode.cn/problems/second-highest-salary/ | 子查询、排序分页 |
+| 178 | 分数排名 | https://leetcode.cn/problems/rank-scores/ | 窗口函数、排名 |
+
+
+
+### 动手练习题
 
 > [!example] 练习题 1：sqlite3 纯 SQL 命令行工具
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 写一个 Python 脚本，接受命令行参数对 SQLite 数据库进行 CRUD 操作：
 > ```bash
-> python db.py create "Buy milk"        # INSERT
-> python db.py list                     # SELECT all
-> python db.py done 1                   # UPDATE set done=1
-> python db.py delete 3                 # DELETE
+> python db.py create "Buy milk" # INSERT
+> python db.py list # SELECT all
+> python db.py done 1 # UPDATE set done=1
+> python db.py delete 3 # DELETE
 > ```
 > 使用 `argparse` 解析命令，使用 `sqlite3` 标准库操作数据库。
 
 > [!example] 练习题 2：SQLAlchemy 模型与 Flask API
-> **难度**: ⭐⭐⭐
+> **难度**: 简单
 >
 > 定义 `Book` 和 `Author` 两个 SQLAlchemy 模型（多对多关系：一本书多个作者，一个作者多本书）。提供 Flask REST API：
 > - `POST /api/authors` — 创建作者
@@ -511,7 +447,7 @@ sqlite3_close(db);
 > 使用 SQLite 存储，全部 CRUD 通过 Swagger UI 测试。
 
 > [!example] 练习题 3：Alembic 迁移实践
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 在练习题 2 的基础上，使用 Alembic 管理数据库迁移：
 > 1. 初始化 Alembic 迁移目录
@@ -520,6 +456,6 @@ sqlite3_close(db);
 > 4. 执行 `upgrade` 和 `downgrade`，验证迁移的向前向后兼容性
 
 > [!example] 练习题 4：C SQLite 与 Python 对比
-> **难度**: ⭐⭐⭐
+> **难度**: 简单
 >
 > 用 C 语言写一个程序，读取 SQLite 数据库中的 `tasks` 表，统计 `done=0` 的任务数量并输出。然后用 Python 的 `sqlite3` 标准库实现同样的功能。对比两者的代码行数、错误处理逻辑和开发耗时。思考：如果你的 Web 应用需要每分钟扫描数据库做聚合统计（性能关键路径），用 Python 做还是 C 做更合适？

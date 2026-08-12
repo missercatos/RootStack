@@ -1,7 +1,7 @@
 # 内嵌 CPython：在 C 程序里运行 Python (Embedding Python in C)
 ---
 
-## 📖 章节概述
+## 章节概述
 
 上一章我们让 Python 调用 C 库；现在反过来——让 C 程序内嵌 Python 解释器。这是本教程的**核心章节**之一：Python 作为 C 项目的"脚本引擎"，让你在 C 项目中使用 Python 读取配置文件、执行动态逻辑、甚至运行完整的数据处理管道，而不必重新编译 C 代码。
 
@@ -9,7 +9,7 @@
 
 ---
 
-### 📚 第一节：最小内嵌示例
+### 第一节：最小内嵌示例
 
 #### 1.1 第一个内嵌程序
 
@@ -21,31 +21,35 @@
 #include <Python.h>
 
 int main(int argc, char *argv[]) {
-    // 1. 初始化 Python 解释器（必须最先调用）
-    Py_Initialize();
+ // 1. 初始化 Python 解释器（必须最先调用）
+ Py_Initialize();
 
-    // 2. 执行 Python 代码字符串
-    PyRun_SimpleString("print('Hello from embedded Python!')");
-    PyRun_SimpleString("import sys; print(f'Python {sys.version}')");
-    PyRun_SimpleString("x = sum(range(100)); print(f'1+2+...+99 = {x}')");
+ // 2. 执行 Python 代码字符串
+ PyRun_SimpleString("print('Hello from embedded Python!')");
+ PyRun_SimpleString("import sys; print(f'Python {sys.version}')");
+ PyRun_SimpleString("x = sum(range(100)); print(f'1+2+...+99 = {x}')");
 
-    // 3. 清理
-    if (Py_FinalizeEx() < 0) {
-        return 120;  // 清理失败
-    }
-    return 0;
+ // 3. 清理
+ if (Py_FinalizeEx() < 0) {
+ return 120; // 清理失败
+ }
+ return 0;
 }
 ```
 
 ```bash
 # 编译（推荐使用 pkg-config / python3-config）
 gcc -o embed_basic embed_basic.c \
-    $(python3-config --cflags --ldflags --embed)
+ $(python3-config --cflags --ldflags --embed)
 
 # 或者手动指定
 gcc -o embed_basic embed_basic.c \
-    -I/usr/include/python3.12 \
-    -lpython3.12
+ -I/usr/include/python3.12 \
+ -lpython3.12
+
+> **跨平台提示**：
+> - **Windows**：Python 开发头文件在 `%LOCALAPPDATA%\Programs\Python\Python312\include\`，库文件为 `python312.lib`，使用 MSVC 或 MinGW 编译
+> - **macOS**：头文件路径如 `/Library/Frameworks/Python.framework/Versions/3.12/include/python3.12/`，推荐统一使用 `python3-config --cflags --ldflags --embed` 跨平台编译
 
 # 运行
 ./embed_basic
@@ -60,12 +64,12 @@ Python 3.12.3 (main, ...)
 
 > **关键对比**：上面的 `PyRun_SimpleString` 就等价于在终端执行 `python -c "..."`——但它在你的 C 进程内部运行，而不是启动外部子进程。这意味着 Python 代码可以直接访问 C 程序的数据结构（后面会展示）。
 
-### 📝 小节练习
+### 小节练习
 
 > [!question] 判断题 1
 > `Py_Initialize()` 和 `Py_FinalizeEx()` 可以在程序生命周期中被多次调用。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -73,7 +77,7 @@ Python 3.12.3 (main, ...)
 
 ---
 
-### 📚 第二节：C 和 Python 之间的值传递
+### 第二节：C 和 Python 之间的值传递
 
 #### 2.1 C → Python：创建 Python 对象
 
@@ -81,28 +85,28 @@ Python 3.12.3 (main, ...)
 #include <Python.h>
 
 int main() {
-    Py_Initialize();
+ Py_Initialize();
 
-    // 创建 Python 对象
-    PyObject *py_int = PyLong_FromLong(42);
-    PyObject *py_float = PyFloat_FromDouble(3.14159);
-    PyObject *py_str = PyUnicode_FromString("Hello C → Python");
-    PyObject *py_none = Py_None;  // None 是单例，直接引用
-    Py_INCREF(py_none);            // 必须增加引用计数
+ // 创建 Python 对象
+ PyObject *py_int = PyLong_FromLong(42);
+ PyObject *py_float = PyFloat_FromDouble(3.14159);
+ PyObject *py_str = PyUnicode_FromString("Hello C → Python");
+ PyObject *py_none = Py_None; // None 是单例，直接引用
+ Py_INCREF(py_none); // 必须增加引用计数
 
-    // 打印对象（调用 Python 的 str()）
-    PyObject *repr = PyObject_Repr(py_int);
-    printf("Python int: %s\n", PyUnicode_AsUTF8(repr));
-    Py_DECREF(repr);
+ // 打印对象（调用 Python 的 str()）
+ PyObject *repr = PyObject_Repr(py_int);
+ printf("Python int: %s\n", PyUnicode_AsUTF8(repr));
+ Py_DECREF(repr);
 
-    // 清理
-    Py_DECREF(py_int);
-    Py_DECREF(py_float);
-    Py_DECREF(py_str);
-    Py_DECREF(py_none);
+ // 清理
+ Py_DECREF(py_int);
+ Py_DECREF(py_float);
+ Py_DECREF(py_str);
+ Py_DECREF(py_none);
 
-    Py_FinalizeEx();
-    return 0;
+ Py_FinalizeEx();
+ return 0;
 }
 ```
 
@@ -113,32 +117,32 @@ int main() {
 #include <stdio.h>
 
 int main() {
-    Py_Initialize();
+ Py_Initialize();
 
-    // 执行 Python 代码获取值
-    PyObject *py_val = PyRun_String("2 ** 100", Py_eval_input,
-                                     PyDict_New(), PyDict_New());
-    if (py_val == NULL) {
-        PyErr_Print();
-        return 1;
-    }
+ // 执行 Python 代码获取值
+ PyObject *py_val = PyRun_String("2 ** 100", Py_eval_input,
+ PyDict_New(), PyDict_New());
+ if (py_val == NULL) {
+ PyErr_Print();
+ return 1;
+ }
 
-    // 方法一：用 API 提取
-    long as_long = PyLong_AsLong(py_val);
-    printf("2**100 = %ld (可能溢出!)\n", as_long);  // 溢出！
+ // 方法一：用 API 提取
+ long as_long = PyLong_AsLong(py_val);
+ printf("2**100 = %ld (可能溢出!)\n", as_long); // 溢出！
 
-    // 方法二：用 PyLong_AsLongLong
-    long long as_ll = PyLong_AsLongLong(py_val);
-    printf("2**100 = %lld\n", as_ll);  // 也可能溢出
+ // 方法二：用 PyLong_AsLongLong
+ long long as_ll = PyLong_AsLongLong(py_val);
+ printf("2**100 = %lld\n", as_ll); // 也可能溢出
 
-    // 方法三：转为字符串（安全但性能差）
-    PyObject *str_repr = PyObject_Str(py_val);
-    printf("2**100 = %s\n", PyUnicode_AsUTF8(str_repr));
-    Py_DECREF(str_repr);
+ // 方法三：转为字符串（安全但性能差）
+ PyObject *str_repr = PyObject_Str(py_val);
+ printf("2**100 = %s\n", PyUnicode_AsUTF8(str_repr));
+ Py_DECREF(str_repr);
 
-    Py_DECREF(py_val);
-    Py_FinalizeEx();
-    return 0;
+ Py_DECREF(py_val);
+ Py_FinalizeEx();
+ return 0;
 }
 ```
 
@@ -162,23 +166,13 @@ int main() {
 
 > **重要规则**：每个 `PyObject*` 都遵循引用计数规则——获得新引用时引用计数 +1（创建函数自动处理），使用完后必须 `Py_DECREF()`。忘记 DECREF → 内存泄漏；过早 DECREF → 段错误。
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> `PyLong_FromLong(42)` 的作用是？
-> - [ ] A. 将 Python int 转为 C long
-> - [ ] B. 将 C long 转为 Python int 对象
-> - [ ] C. 将 Python str 转为 C long
-> - [ ] D. 创建一个 42 字节的缓冲区
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `PyLong_FromLong()` 将 C 的 `long` 值转换为 Python 的 `int` 对象（`PyObject*`）。对应的逆操作是 `PyLong_AsLong()`。
 
 > [!question] 判断题 1
 > `Py_None` 每次使用时都需要 `Py_INCREF`。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -186,7 +180,7 @@ int main() {
 
 ---
 
-### 📚 第三节：导入模块并调用 Python 函数
+### 第三节：导入模块并调用 Python 函数
 
 #### 3.1 完整的 C → Python 函数调用流程
 
@@ -199,52 +193,52 @@ int main() {
 #include <stdio.h>
 
 int main() {
-    Py_Initialize();
+ Py_Initialize();
 
-    // ===== 第 1 步：导入模块 =====
-    PyObject *pModule = PyImport_ImportModule("json");
-    if (pModule == NULL) {
-        PyErr_Print();
-        return 1;
-    }
+ // ===== 第 1 步：导入模块 =====
+ PyObject *pModule = PyImport_ImportModule("json");
+ if (pModule == NULL) {
+ PyErr_Print();
+ return 1;
+ }
 
-    // ===== 第 2 步：获取函数对象 =====
-    PyObject *pFunc = PyObject_GetAttrString(pModule, "dumps");
-    if (pFunc == NULL || !PyCallable_Check(pFunc)) {
-        PyErr_Print();
-        return 1;
-    }
+ // ===== 第 2 步：获取函数对象 =====
+ PyObject *pFunc = PyObject_GetAttrString(pModule, "dumps");
+ if (pFunc == NULL || !PyCallable_Check(pFunc)) {
+ PyErr_Print();
+ return 1;
+ }
 
-    // ===== 第 3 步：构造参数 =====
-    PyObject *pArgs = PyTuple_New(1);                    // 参数元组
+ // ===== 第 3 步：构造参数 =====
+ PyObject *pArgs = PyTuple_New(1); // 参数元组
 
-    // 构造 Python 字典: {"name": "Alice", "age": 30}
-    PyObject *pDict = PyDict_New();
-    PyDict_SetItemString(pDict, "name", PyUnicode_FromString("Alice"));
-    PyDict_SetItemString(pDict, "age", PyLong_FromLong(30));
+ // 构造 Python 字典: {"name": "Alice", "age": 30}
+ PyObject *pDict = PyDict_New();
+ PyDict_SetItemString(pDict, "name", PyUnicode_FromString("Alice"));
+ PyDict_SetItemString(pDict, "age", PyLong_FromLong(30));
 
-    PyTuple_SetItem(pArgs, 0, pDict);  // 将 dict 作为第一个参数
-    // 注意：PyTuple_SetItem 会"窃取"引用，不需要 Py_DECREF(pDict)
+ PyTuple_SetItem(pArgs, 0, pDict); // 将 dict 作为第一个参数
+ // 注意：PyTuple_SetItem 会"窃取"引用，不需要 Py_DECREF(pDict)
 
-    // ===== 第 4 步：调用函数 =====
-    PyObject *pResult = PyObject_CallObject(pFunc, pArgs);
-    Py_DECREF(pArgs);
+ // ===== 第 4 步：调用函数 =====
+ PyObject *pResult = PyObject_CallObject(pFunc, pArgs);
+ Py_DECREF(pArgs);
 
-    if (pResult == NULL) {
-        PyErr_Print();
-        return 1;
-    }
+ if (pResult == NULL) {
+ PyErr_Print();
+ return 1;
+ }
 
-    // ===== 第 5 步：提取结果 =====
-    printf("JSON 结果: %s\n", PyUnicode_AsUTF8(pResult));
+ // ===== 第 5 步：提取结果 =====
+ printf("JSON 结果: %s\n", PyUnicode_AsUTF8(pResult));
 
-    // ===== 第 6 步：清理 =====
-    Py_DECREF(pResult);
-    Py_DECREF(pFunc);
-    Py_DECREF(pModule);
+ // ===== 第 6 步：清理 =====
+ Py_DECREF(pResult);
+ Py_DECREF(pFunc);
+ Py_DECREF(pModule);
 
-    Py_FinalizeEx();
-    return 0;
+ Py_FinalizeEx();
+ return 0;
 }
 ```
 
@@ -256,40 +250,30 @@ JSON 结果: {"name": "Alice", "age": 30}
 #### 3.2 调用 Python 函数的步法总结
 
 ```
-1. PyImport_ImportModule("module_name")     → 获取模块对象
-2. PyObject_GetAttrString(module, "func")    → 获取函数对象
-3. PyTuple_New(n)                            → 创建参数元组
-4. PyTuple_SetItem(tuple, index, arg)        → 设置每个参数
-5. PyObject_CallObject(func, args)           → 调用函数
-6. PyUnicode_AsUTF8 / PyLong_AsLong(result)  → 提取返回值
-7. 对每个 PyObject* 调用 Py_DECREF           → 释放引用
+1. PyImport_ImportModule("module_name") → 获取模块对象
+2. PyObject_GetAttrString(module, "func") → 获取函数对象
+3. PyTuple_New(n) → 创建参数元组
+4. PyTuple_SetItem(tuple, index, arg) → 设置每个参数
+5. PyObject_CallObject(func, args) → 调用函数
+6. PyUnicode_AsUTF8 / PyLong_AsLong(result) → 提取返回值
+7. 对每个 PyObject* 调用 Py_DECREF → 释放引用
 ```
 
-### 📝 小节练习
+### 小节练习
 
 > [!question] 判断题 1
 > `PyTuple_SetItem` 会自动增加传入对象的引用计数。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
 > > **解析**: `PyTuple_SetItem` 会"窃取"（steal）传入对象的引用——它不增加引用计数，而是直接持有该引用。调用者不需要对传入的对象调用 `Py_DECREF`。
 
-> [!question] 选择题 1
-> 获取 Python 模块中的函数，使用哪个 API？
-> - [ ] A. `PyImport_GetFunc(module, "name")`
-> - [ ] B. `PyObject_GetAttrString(module, "name")`
-> - [ ] C. `PyCallable_New(module, "name")`
-> - [ ] D. `PyModule_GetFunction(module, "name")`
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `PyObject_GetAttrString(obj, "attr_name")` 是通用的属性获取 API。可以获取模块中的函数、类、变量等。
 
 ---
 
-### 📚 第四节：实战：配置驱动的 C 程序
+### 第四节：实战：配置驱动的 C 程序
 
 这是一个完整的实际场景：C 程序用 Python 脚本做配置，读取并处理结果。
 
@@ -304,89 +288,89 @@ JSON 结果: {"name": "Alice", "age": 30}
 
 // 配置结构体（C 端使用）
 typedef struct {
-    char *server_host;
-    int server_port;
-    int max_connections;
-    double timeout;
-    int debug_mode;
+ char *server_host;
+ int server_port;
+ int max_connections;
+ double timeout;
+ int debug_mode;
 } ServerConfig;
 
 // 从 Python dict 中提取配置
 int load_config_from_python(const char *script_path, ServerConfig *cfg) {
-    PyObject *pName = PyUnicode_DecodeFSDefault(script_path);
-    PyObject *pModule = PyImport_Import(pName);
-    Py_DECREF(pName);
+ PyObject *pName = PyUnicode_DecodeFSDefault(script_path);
+ PyObject *pModule = PyImport_Import(pName);
+ Py_DECREF(pName);
 
-    if (pModule == NULL) {
-        PyErr_Print();
-        return -1;
-    }
+ if (pModule == NULL) {
+ PyErr_Print();
+ return -1;
+ }
 
-    PyObject *pFunc = PyObject_GetAttrString(pModule, "get_config");
-    if (pFunc == NULL || !PyCallable_Check(pFunc)) {
-        PyErr_Print();
-        Py_DECREF(pModule);
-        return -1;
-    }
+ PyObject *pFunc = PyObject_GetAttrString(pModule, "get_config");
+ if (pFunc == NULL || !PyCallable_Check(pFunc)) {
+ PyErr_Print();
+ Py_DECREF(pModule);
+ return -1;
+ }
 
-    // 调用 Python 函数 get_config() → 返回 dict
-    PyObject *pConfigDict = PyObject_CallObject(pFunc, NULL);
-    Py_DECREF(pFunc);
+ // 调用 Python 函数 get_config() → 返回 dict
+ PyObject *pConfigDict = PyObject_CallObject(pFunc, NULL);
+ Py_DECREF(pFunc);
 
-    if (pConfigDict == NULL) {
-        PyErr_Print();
-        Py_DECREF(pModule);
-        return -1;
-    }
+ if (pConfigDict == NULL) {
+ PyErr_Print();
+ Py_DECREF(pModule);
+ return -1;
+ }
 
-    // 从 Python dict 提取各字段
-    PyObject *val;
+ // 从 Python dict 提取各字段
+ PyObject *val;
 
-    val = PyDict_GetItemString(pConfigDict, "host");
-    cfg->server_host = strdup(PyUnicode_AsUTF8(val));
+ val = PyDict_GetItemString(pConfigDict, "host");
+ cfg->server_host = strdup(PyUnicode_AsUTF8(val));
 
-    val = PyDict_GetItemString(pConfigDict, "port");
-    cfg->server_port = (int)PyLong_AsLong(val);
+ val = PyDict_GetItemString(pConfigDict, "port");
+ cfg->server_port = (int)PyLong_AsLong(val);
 
-    val = PyDict_GetItemString(pConfigDict, "max_connections");
-    cfg->max_connections = (int)PyLong_AsLong(val);
+ val = PyDict_GetItemString(pConfigDict, "max_connections");
+ cfg->max_connections = (int)PyLong_AsLong(val);
 
-    val = PyDict_GetItemString(pConfigDict, "timeout");
-    cfg->timeout = PyFloat_AsDouble(val);
+ val = PyDict_GetItemString(pConfigDict, "timeout");
+ cfg->timeout = PyFloat_AsDouble(val);
 
-    val = PyDict_GetItemString(pConfigDict, "debug");
-    cfg->debug_mode = PyObject_IsTrue(val);
+ val = PyDict_GetItemString(pConfigDict, "debug");
+ cfg->debug_mode = PyObject_IsTrue(val);
 
-    Py_DECREF(pConfigDict);
-    Py_DECREF(pModule);
-    return 0;
+ Py_DECREF(pConfigDict);
+ Py_DECREF(pModule);
+ return 0;
 }
 
 int main() {
-    ServerConfig cfg = {0};
-    Py_Initialize();
+ ServerConfig cfg = {0};
+ Py_Initialize();
 
-    // 将当前目录加入 sys.path
-    PyRun_SimpleString("import sys; sys.path.insert(0, '.')");
+ // 将当前目录加入 sys.path
+ PyRun_SimpleString("import sys; sys.path.insert(0, '.')");
 
-    if (load_config_from_python("server_config", &cfg) != 0) {
-        Py_FinalizeEx();
-        return 1;
-    }
+ if (load_config_from_python("server_config", &cfg) != 0) {
+ Py_FinalizeEx();
+ return 1;
+ }
 
-    printf("===== 服务器配置 =====\n");
-    printf("Host:              %s\n", cfg.server_host);
-    printf("Port:              %d\n", cfg.server_port);
-    printf("Max Connections:   %d\n", cfg.max_connections);
-    printf("Timeout:           %.1f 秒\n", cfg.timeout);
-    printf("Debug Mode:        %s\n", cfg.debug_mode ? "ON" : "OFF");
+ printf("===== 服务器配置 =====\n");
+ printf("Host: %s\n", cfg.server_host);
+ printf("Port: %d\n", cfg.server_port);
+ printf("Max Connections: %d\n", cfg.max_connections);
+ printf("Timeout: %.1f 秒\n", cfg.timeout);
+ printf("Debug Mode: %s\n", cfg.debug_mode ? "ON" : "OFF");
 
-    // C 程序可以使用配置了...
-    // start_server(&cfg);
+ // C 程序可以使用配置了...
+ // start_server(&cfg);
 
-    free(cfg.server_host);
-    Py_FinalizeEx();
-    return 0;
+ free(cfg.server_host);
+ Py_FinalizeEx();
+ return 0;
 }
 ```
 
@@ -395,14 +379,14 @@ int main() {
 import os
 
 def get_config():
-    """返回服务器配置字典"""
-    return {
-        "host": os.environ.get("HOST", "0.0.0.0"),
-        "port": int(os.environ.get("PORT", "8080")),
-        "max_connections": 1000,
-        "timeout": 30.0,
-        "debug": os.environ.get("DEBUG", "0") == "1",
-    }
+ """返回服务器配置字典"""
+ return {
+ "host": os.environ.get("HOST", "0.0.0.0"),
+ "port": int(os.environ.get("PORT", "8080")),
+ "max_connections": 1000,
+ "timeout": 30.0,
+ "debug": os.environ.get("DEBUG", "0") == "1",
+ }
 ```
 
 ```bash
@@ -416,23 +400,13 @@ HOST=192.168.1.1 PORT=9090 DEBUG=1 ./embed_config
 
 > **这就是内嵌 Python 的威力**：配置逻辑用 Python 编写——无需重新编译 C 代码、无需重启构建系统、甚至可以在运行时动态加载/更新配置脚本。
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> 将 C 程序当前目录加入 Python 的模块搜索路径，应使用？
-> - [ ] A. `PyImport_AppendInitTab(".")`
-> - [ ] B. `PyRun_SimpleString("import sys; sys.path.insert(0, '.')")`
-> - [ ] C. `PySys_SetPath(".")`
-> - [ ] D. 不需要额外操作
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: 通过 `PyRun_SimpleString` 执行 Python 代码修改 `sys.path` 是最简单的方式。也可以用 C API `PyList_Insert(PySys_GetObject("path"), 0, PyUnicode_FromString("."))`。
 
 > [!question] 判断题 1
 > 内嵌 CPython 的 C 程序在调用 `PyRun_SimpleString` 时，当前的 GIL 状态由 C 线程持有。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -440,7 +414,7 @@ HOST=192.168.1.1 PORT=9090 DEBUG=1 ./embed_config
 
 ---
 
-### 📚 第五节：编译与链接详解
+### 第五节：编译与链接详解
 
 #### 5.1 使用 pkg-config / python3-config
 
@@ -452,6 +426,10 @@ python3-config --cflags
 # 查看链接选项
 python3-config --ldflags
 # -L/usr/lib/python3.12/config-3.12-x86_64-linux-gnu -lpython3.12 ...
+
+> **跨平台提示**：
+> - **Windows**：`python3-config` 在 Windows 上不可用，需用 MSVC 项目配置或直接指定路径
+> - **macOS**：`python3-config` 行为一致，输出路径为 `/Library/Frameworks/...`，编译时也可用 `python3-config --cflags --ldflags --embed` 代替手动写路径
 
 # Python 3.8+ 使用 --embed 嵌入链接选项
 python3-config --ldflags --embed
@@ -489,12 +467,12 @@ gcc -o myapp myapp.c -I/usr/include/python3.12 -lpython3.12
 gcc -o myapp myapp.c -I/usr/include/python3.11 -lpython3.11
 ```
 
-### 📝 小节练习
+### 小节练习
 
 > [!question] 判断题 1
 > `python3-config --embed` 选项仅在 Python 3.8+ 可用。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -502,14 +480,14 @@ gcc -o myapp myapp.c -I/usr/include/python3.11 -lpython3.11
 
 ---
 
-## 📋 章节测试
+## 章节测试
 
 ### 一、判断题
 
 > [!question] 判断题 1
 > `#define PY_SSIZE_T_CLEAN` 是可选的定义，不影响程序行为。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -517,8 +495,8 @@ gcc -o myapp myapp.c -I/usr/include/python3.11 -lpython3.11
 
 > [!question] 判断题 2
 > `PyRun_SimpleString` 和 `PyRun_String` 都是执行 Python 代码的 API。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -526,8 +504,8 @@ gcc -o myapp myapp.c -I/usr/include/python3.11 -lpython3.11
 
 > [!question] 判断题 3
 > `PyObject_CallObject` 可以调用 Python 对象上实现 `__call__` 方法的任何对象。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -535,8 +513,8 @@ gcc -o myapp myapp.c -I/usr/include/python3.11 -lpython3.11
 
 > [!question] 判断题 4
 > 内嵌 Python 的 C 程序中，可以通过 `Py_FinalizeEx()` 后再次 `Py_Initialize()` 来重启解释器。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -544,8 +522,8 @@ gcc -o myapp myapp.c -I/usr/include/python3.11 -lpython3.11
 
 > [!question] 判断题 5
 > Python 内嵌方式比 subprocess 方式性能更高，因为避免了进程创建和数据序列化开销。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -553,80 +531,23 @@ gcc -o myapp myapp.c -I/usr/include/python3.11 -lpython3.11
 
 ---
 
-### 二、选择题
-
-> [!question] 选择题 1
-> 内嵌 CPython 时，必须最先调用的函数是？
-> - [ ] A. `PyImport_ImportModule`
-> - [ ] B. `Py_Initialize`
-> - [ ] C. `PyRun_SimpleString`
-> - [ ] D. `PySys_SetArgv`
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `Py_Initialize()` 必须最先调用——它初始化 Python 解释器的全局状态、类型系统、内置模块等。在它之前调用任何其他 Python/C API 都会导致段错误。
-
-> [!question] 选择题 2
-> 以下哪个 API 用于创建 Python 字典并向其中插入键值对？
-> - [ ] A. `PyList_New` / `PyList_SetItem`
-> - [ ] B. `PyDict_New` / `PyDict_SetItemString`
-> - [ ] C. `PyTuple_New` / `PyTuple_SetItem`
-> - [ ] D. `PySet_New` / `PySet_Add`
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `PyDict_New()` 创建空字典，`PyDict_SetItemString(dict, "key", value)` 插入键值对（键必须是 C 字符串）。
-
-> [!question] 选择题 3
-> `Py_FinalizeEx()` 返回负值表示？
-> - [ ] A. 所有 Python 对象已被正确释放
-> - [ ] B. 清理过程中发生错误（如 `__del__` 抛出异常）
-> - [ ] C. Python 解释器已成功退出
-> - [ ] D. 系统内存不足
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `Py_FinalizeEx()` 成功返回 0，如果清理过程中出错（如 `__del__()` 抛出异常且未被捕获），则返回负值。此时 Python 解释器状态不确定，不应继续使用。
-
-> [!question] 选择题 4
-> `PyImport_ImportModule("json")` 等价于 Python 中的？
-> - [ ] A. `from json import *`
-> - [ ] B. `import json`
-> - [ ] C. `__import__("json")`
-> - [ ] D. `exec(open('json.py').read())`
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: `PyImport_ImportModule` 等价于 Python 的内置 `__import__()` 函数。它导入模块并返回模块对象，相当于 `import json` 的效果。返回值为 `NULL` 表示导入失败（需检查 `PyErr_Print()`）。
-
-> [!question] 选择题 5
-> 以下哪个不是内嵌 CPython 相比 subprocess 的优势？
-> - [ ] A. 零序列化开销的数据传递
-> - [ ] B. 共享同一进程空间的 Python 和 C 对象访问
-> - [ ] C. Python 脚本的 bug 不会导致 C 程序崩溃
-> - [ ] D. 更高的调用频率性能
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: 内嵌方式中 Python 运行在 C 进程内，Python 代码的段错误或 `abort()` 会直接导致整个 C 进程崩溃。subprocess 隔离了崩溃风险——这也是它在某些场景下更受青睐的原因。
-
-> [!question] 选择题 6
-> `PyObject_GetAttrString(obj, "attr")` 在功能上等价于 Python 的？
-> - [ ] A. `obj.attr`
-> - [ ] B. `getattr(obj, "attr")`
-> - [ ] C. `hasattr(obj, "attr")`
-> - [ ] D. `setattr(obj, "attr", value)`
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `PyObject_GetAttrString` 对应 `getattr(obj, "attr")`——获取对象的命名属性。如果属性不存在会设置 `AttributeError` 异常并返回 `NULL`。
 
 ---
 
-### 🛠️ 动手练习题
+## 力扣练习
+
+以下题目用于验证本章所学内容：
+
+| 题号 | 题目 | 链接 | 涉及知识点 |
+|------|------|------|-----------|
+| — | 本章无对应力扣题 | — | 请用动手练习题自检 |
+
+
+
+### 动手练习题
 
 > [!example] 练习题 1：最简单的内嵌
-> **难度**: ⭐
+> **难度**: 简单
 >
 > 编写一个 C 程序，内嵌 Python 解释器并：
 > 1. 初始化解释器
@@ -637,7 +558,7 @@ gcc -o myapp myapp.c -I/usr/include/python3.11 -lpython3.11
 > 编译并运行，确保链接正确。
 
 > [!example] 练习题 2：C 调用 Python 数据处理
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > C 程序中有一个 C 数组 `double data[1000]`，通过内嵌 Python 实现：
 > 1. 将 C 数组转为 Python 的 `list`（用 `PyList_New` + `PyList_SetItem`）
@@ -647,7 +568,7 @@ gcc -o myapp myapp.c -I/usr/include/python3.11 -lpython3.11
 > 与纯 C 实现对比代码量。
 
 > [!example] 练习题 3：Python 配置驱动
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 实现一个配置驱动的 C 服务器（简化版）：
 > 1. Python 配置文件 `config.py` 定义端口、超时等参数
@@ -656,7 +577,7 @@ gcc -o myapp myapp.c -I/usr/include/python3.11 -lpython3.11
 > 4. 注意：信号处理函数中操作 CPython API 需要正确的 GIL 管理
 
 > [!example] 练习题 4：双向互操作
-> **难度**: ⭐⭐⭐
+> **难度**: 简单
 >
 > 实现完整双向互操作：C 调用 Python 函数，Python 函数内又回调 C 函数：
 > 1. C 注册一个 `int c_add(int a, int b)` 函数为 Python 模块

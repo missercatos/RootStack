@@ -1,7 +1,7 @@
 # 回测框架：backtrader 与自建回测 (Backtesting)
 ---
 
-## 📖 章节概述
+## 章节概述
 
 回测是量化分析的核心——用历史数据模拟策略表现，回答"如果当时用了这个策略，会赚多少？"本章分两条线：先用 backtrader 快速搭建一个完整的移动均线交叉策略回测系统；然后用 NumPy/Pandas 从零手写一个最小回测引擎，让你看清回测的底层循环逻辑。最后讨论为什么回测的"核心循环"可能是性能瓶颈，以及何时需要用 Cython 或 C 来加速。
 
@@ -9,7 +9,7 @@
 
 ---
 
-### 📚 第一节：backtrader 快速上手
+### 第一节：backtrader 快速上手
 
 #### 1.1 安装与核心概念
 
@@ -35,28 +35,28 @@ import datetime
 
 # 1. 定义策略
 class SmaCross(bt.Strategy):
-    params = (
-        ('fast', 10),   # 快线周期
-        ('slow', 30),   # 慢线周期
-    )
-    
-    def __init__(self):
-        # 计算两条均线
-        self.fast_ma = bt.indicators.SimpleMovingAverage(
-            self.data.close, period=self.params.fast
-        )
-        self.slow_ma = bt.indicators.SimpleMovingAverage(
-            self.data.close, period=self.params.slow
-        )
-        self.crossover = bt.indicators.CrossOver(self.fast_ma, self.slow_ma)
-    
-    def next(self):
-        # 每个 bar 调用一次
-        if not self.position:  # 未持仓
-            if self.crossover > 0:  # 金叉 → 买入
-                self.buy()
-        elif self.crossover < 0:  # 死叉 → 卖出
-            self.sell()
+ params = (
+ ('fast', 10), # 快线周期
+ ('slow', 30), # 慢线周期
+ )
+ 
+ def __init__(self):
+ # 计算两条均线
+ self.fast_ma = bt.indicators.SimpleMovingAverage(
+ self.data.close, period=self.params.fast
+ )
+ self.slow_ma = bt.indicators.SimpleMovingAverage(
+ self.data.close, period=self.params.slow
+ )
+ self.crossover = bt.indicators.CrossOver(self.fast_ma, self.slow_ma)
+ 
+ def next(self):
+ # 每个 bar 调用一次
+ if not self.position: # 未持仓
+ if self.crossover > 0: # 金叉 → 买入
+ self.buy()
+ elif self.crossover < 0: # 死叉 → 卖出
+ self.sell()
 
 # 2. 创建 Cerebro 引擎
 cerebro = bt.Cerebro()
@@ -64,9 +64,9 @@ cerebro.addstrategy(SmaCross)
 
 # 3. 加载数据
 data = bt.feeds.YahooFinanceData(
-    dataname='AAPL',
-    fromdate=datetime.datetime(2023, 1, 1),
-    todate=datetime.datetime(2024, 1, 1)
+ dataname='AAPL',
+ fromdate=datetime.datetime(2023, 1, 1),
+ todate=datetime.datetime(2024, 1, 1)
 )
 cerebro.adddata(data)
 
@@ -87,20 +87,20 @@ print(f'Final Portfolio Value: {cerebro.broker.getvalue():.2f}')
 ```c
 // C 语言等价逻辑
 for (int i = slow_period; i < n; i++) {
-    double fast_ma = calc_sma(close, i, fast_period);
-    double slow_ma = calc_sma(close, i, slow_period);
-    
-    int crossover = (fast_ma > slow_ma) ? 1 : (fast_ma < slow_ma) ? -1 : 0;
-    
-    if (position == 0 && crossover > 0) {
-        // buy
-        position = 1;
-        entry_price = close[i];
-    } else if (position > 0 && crossover < 0) {
-        // sell
-        pnl += close[i] - entry_price;
-        position = 0;
-    }
+ double fast_ma = calc_sma(close, i, fast_period);
+ double slow_ma = calc_sma(close, i, slow_period);
+ 
+ int crossover = (fast_ma > slow_ma) ? 1 : (fast_ma < slow_ma) ? -1 : 0;
+ 
+ if (position == 0 && crossover > 0) {
+ // buy
+ position = 1;
+ entry_price = close[i];
+ } else if (position > 0 && crossover < 0) {
+ // sell
+ pnl += close[i] - entry_price;
+ position = 0;
+ }
 }
 ```
 
@@ -114,24 +114,24 @@ import backtrader as bt
 import backtrader.analyzers as btanalyzers
 
 class SmaCross(bt.Strategy):
-    params = (('fast', 10), ('slow', 30))
-    
-    def __init__(self):
-        self.fast_ma = bt.indicators.SMA(self.data.close, period=self.params.fast)
-        self.slow_ma = bt.indicators.SMA(self.data.close, period=self.params.slow)
-        self.crossover = bt.indicators.CrossOver(self.fast_ma, self.slow_ma)
-    
-    def next(self):
-        if not self.position:
-            if self.crossover > 0:
-                self.buy()
-        elif self.crossover < 0:
-            self.sell()
+ params = (('fast', 10), ('slow', 30))
+ 
+ def __init__(self):
+ self.fast_ma = bt.indicators.SMA(self.data.close, period=self.params.fast)
+ self.slow_ma = bt.indicators.SMA(self.data.close, period=self.params.slow)
+ self.crossover = bt.indicators.CrossOver(self.fast_ma, self.slow_ma)
+ 
+ def next(self):
+ if not self.position:
+ if self.crossover > 0:
+ self.buy()
+ elif self.crossover < 0:
+ self.sell()
 
 print('Strategy defined. In practice, add analyzers:')
-print('  cerebro.addanalyzer(btanalyzers.SharpeRatio, _name=\"sharpe\")')
-print('  cerebro.addanalyzer(btanalyzers.DrawDown, _name=\"drawdown\")')
-print('  cerebro.addanalyzer(btanalyzers.Returns, _name=\"returns\")')
+print(' cerebro.addanalyzer(btanalyzers.SharpeRatio, _name=\"sharpe\")')
+print(' cerebro.addanalyzer(btanalyzers.DrawDown, _name=\"drawdown\")')
+print(' cerebro.addanalyzer(btanalyzers.Returns, _name=\"returns\")')
 "
 ```
 
@@ -148,7 +148,7 @@ print('  cerebro.addanalyzer(btanalyzers.Returns, _name=\"returns\")')
 
 ---
 
-### 📚 第二节：自建回测引擎 —— 理解底层循环
+### 第二节：自建回测引擎 —— 理解底层循环
 
 #### 2.1 为什么自建回测
 
@@ -192,7 +192,7 @@ df['cum_return'] = (1 + df['strategy_return'].fillna(0)).cumprod()
 df['buy_hold_return'] = (1 + df['return'].fillna(0)).cumprod()
 
 print(f'Strategy final: {df[\"cum_return\"].iloc[-1]:.4f}')
-print(f'Buy & Hold:   {df[\"buy_hold_return\"].iloc[-1]:.4f}')
+print(f'Buy & Hold: {df[\"buy_hold_return\"].iloc[-1]:.4f}')
 print(f'Sharpe: {df[\"strategy_return\"].mean() / df[\"strategy_return\"].std() * np.sqrt(252):.3f}')
 "
 ```
@@ -204,41 +204,41 @@ python -c "
 import numpy as np
 
 def simple_backtest(close, fast_window=10, slow_window=30, 
-                    initial_capital=100000.0, commission=0.0003):
-    n = len(close)
-    
-    # 预计算均线（用 np.convolve 或 rolling mean）
-    fast_sma = np.array([np.mean(close[max(0, i-fast_window+1):i+1]) 
-                         for i in range(n)])
-    slow_sma = np.array([np.mean(close[max(0, i-slow_window+1):i+1]) 
-                         for i in range(n)])
-    
-    position = 0      # 当前持仓股数
-    cash = initial_capital
-    equity = np.zeros(n)
-    trades = []
-    
-    for i in range(slow_window, n):
-        signal = 0
-        if fast_sma[i] > slow_sma[i] and fast_sma[i-1] <= slow_sma[i-1]:
-            signal = 1   # 金叉
-        elif fast_sma[i] < slow_sma[i] and fast_sma[i-1] >= slow_sma[i-1]:
-            signal = -1  # 死叉
-        
-        if signal == 1 and position == 0:
-            # 全仓买入
-            position = cash * (1 - commission) / close[i]
-            cash = 0
-            trades.append(('BUY', i, close[i]))
-        elif signal == -1 and position > 0:
-            # 全仓卖出
-            cash = position * close[i] * (1 - commission)
-            position = 0
-            trades.append(('SELL', i, close[i]))
-        
-        equity[i] = cash + position * close[i]
-    
-    return equity, trades
+ initial_capital=100000.0, commission=0.0003):
+ n = len(close)
+ 
+ # 预计算均线（用 np.convolve 或 rolling mean）
+ fast_sma = np.array([np.mean(close[max(0, i-fast_window+1):i+1]) 
+ for i in range(n)])
+ slow_sma = np.array([np.mean(close[max(0, i-slow_window+1):i+1]) 
+ for i in range(n)])
+ 
+ position = 0 # 当前持仓股数
+ cash = initial_capital
+ equity = np.zeros(n)
+ trades = []
+ 
+ for i in range(slow_window, n):
+ signal = 0
+ if fast_sma[i] > slow_sma[i] and fast_sma[i-1] <= slow_sma[i-1]:
+ signal = 1 # 金叉
+ elif fast_sma[i] < slow_sma[i] and fast_sma[i-1] >= slow_sma[i-1]:
+ signal = -1 # 死叉
+ 
+ if signal == 1 and position == 0:
+ # 全仓买入
+ position = cash * (1 - commission) / close[i]
+ cash = 0
+ trades.append(('BUY', i, close[i]))
+ elif signal == -1 and position > 0:
+ # 全仓卖出
+ cash = position * close[i] * (1 - commission)
+ position = 0
+ trades.append(('SELL', i, close[i]))
+ 
+ equity[i] = cash + position * close[i]
+ 
+ return equity, trades
 
 # 测试
 np.random.seed(1)
@@ -265,28 +265,28 @@ n = 200_000
 close = 100 + np.cumsum(np.random.randn(n) * 2)
 
 def backtest_python_loop(close):
-    n = len(close)
-    fast_sma = np.zeros(n)
-    slow_sma = np.zeros(n)
-    # 计算均线
-    for i in range(9, n):
-        fast_sma[i] = np.mean(close[i-9:i+1])
-    for i in range(29, n):
-        slow_sma[i] = np.mean(close[i-29:i+1])
-    
-    equity = np.zeros(n)
-    cash = 100000.0
-    position = 0.0
-    for i in range(30, n):
-        # 信号判断 + 交易逻辑
-        if fast_sma[i] > slow_sma[i] and position == 0:
-            position = cash / close[i]
-            cash = 0
-        elif fast_sma[i] < slow_sma[i] and position > 0:
-            cash = position * close[i]
-            position = 0
-        equity[i] = cash + position * close[i]
-    return equity
+ n = len(close)
+ fast_sma = np.zeros(n)
+ slow_sma = np.zeros(n)
+ # 计算均线
+ for i in range(9, n):
+ fast_sma[i] = np.mean(close[i-9:i+1])
+ for i in range(29, n):
+ slow_sma[i] = np.mean(close[i-29:i+1])
+ 
+ equity = np.zeros(n)
+ cash = 100000.0
+ position = 0.0
+ for i in range(30, n):
+ # 信号判断 + 交易逻辑
+ if fast_sma[i] > slow_sma[i] and position == 0:
+ position = cash / close[i]
+ cash = 0
+ elif fast_sma[i] < slow_sma[i] and position > 0:
+ cash = position * close[i]
+ position = 0
+ equity[i] = cash + position * close[i]
+ return equity
 
 t0 = time.time()
 equity = backtest_python_loop(close)
@@ -301,7 +301,7 @@ print('→ Cython or C acceleration needed (see Chapter 06)')
 
 ---
 
-### 📚 第三节：回测中的常见陷阱
+### 第三节：回测中的常见陷阱
 
 #### 3.1 前视偏差（Look-ahead Bias）
 
@@ -309,10 +309,10 @@ print('→ Cython or C acceleration needed (see Chapter 06)')
 
 ```python
 # 错误示例：用全序列的最大值做归一化
-normalized = close / close.max()  # 用了未来的价格
+normalized = close / close.max() # 用了未来的价格
 
 # 正确：用滚动窗口
-normalized = close / close.rolling(252).max()  # 只用过去一年数据
+normalized = close / close.rolling(252).max() # 只用过去一年数据
 ```
 
 #### 3.2 幸存者偏差（Survivorship Bias）
@@ -326,31 +326,21 @@ normalized = close / close.rolling(252).max()  # 只用过去一年数据
 ```python
 # 简化版交易成本
 def apply_cost(price, volume, commission_rate=0.0003, slippage=0.001):
-    # 手续费 + 滑点（买入时价格打高，卖出时打低）
-    impact = price * (1 + slippage) if volume > 0 else price * (1 - slippage)
-    fee = abs(price * volume * commission_rate)
-    return impact, fee
+ # 手续费 + 滑点（买入时价格打高，卖出时打低）
+ impact = price * (1 + slippage) if volume > 0 else price * (1 - slippage)
+ fee = abs(price * volume * commission_rate)
+ return impact, fee
 ```
 
 ---
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> backtrader 中 `Strategy.next()` 方法在什么时候被调用？
-> - [ ] A. 策略初始化时调用一次
-> - [ ] B. 每个交易信号产生时调用
-> - [ ] C. 数据的每一行（每个 bar）上调用一次
-> - [ ] D. 回测结束时调用
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: `next()` 是回测主循环的"循环体"——数据的每一个时间步都会调用一次。它等价于 C 中的 `for` 循环体。`__init__` 是初始化，`next` 是迭代，`stop` 是收尾。
 
 > [!question] 判断题 1
 > 向量化回测总是比事件驱动回测快。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -358,14 +348,14 @@ def apply_cost(price, volume, commission_rate=0.0003, slippage=0.001):
 
 ---
 
-## 📋 章节测试
+## 章节测试
 
 ### 一、判断题
 
 > [!question] 判断题 1
 > backtrader 的 Cerebro 是回测的核心引擎，负责协调数据、策略、券商和分析器。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -373,8 +363,8 @@ def apply_cost(price, volume, commission_rate=0.0003, slippage=0.001):
 
 > [!question] 判断题 2
 > 在回测中使用全序列归一化（除以全序列最大值）不会引入前视偏差。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -382,8 +372,8 @@ def apply_cost(price, volume, commission_rate=0.0003, slippage=0.001):
 
 > [!question] 判断题 3
 > backtrader 默认会自动考虑交易手续费。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -391,8 +381,8 @@ def apply_cost(price, volume, commission_rate=0.0003, slippage=0.001):
 
 > [!question] 判断题 4
 > 回测中的"幸存者偏差"是指回测数据缺少历史退市股票的问题。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -400,8 +390,8 @@ def apply_cost(price, volume, commission_rate=0.0003, slippage=0.001):
 
 > [!question] 判断题 5
 > NumPy 的 `np.mean` 可以直接替代 Pandas 的 rolling mean，没有性能差异。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -409,8 +399,8 @@ def apply_cost(price, volume, commission_rate=0.0003, slippage=0.001):
 
 > [!question] 判断题 6
 > 自建回测引擎的最大优势是可以完全控制内存布局和循环逻辑以追求极致性能。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -418,85 +408,30 @@ def apply_cost(price, volume, commission_rate=0.0003, slippage=0.001):
 
 ---
 
-### 二、选择题
-
-> [!question] 选择题 1
-> backtrader 中添加数据源使用的方法是？
-> - [ ] A. `cerebro.adddata()`
-> - [ ] B. `cerebro.feed()`
-> - [ ] C. `strategy.adddata()`
-> - [ ] D. `broker.adddata()`
->
-> > [!success]- 点击查看答案
-> > 正确答案: A
-> > **解析**: 使用 `cerebro.adddata(feed)` 将数据源添加到 Cerebro 引擎。数据被注册后，所有策略都可以通过 `self.datas[0]` 或 `self.data0` 访问（多数据源时按添加顺序访问）。
-
-> [!question] 选择题 2
-> Moving Average Crossover 策略中，"死叉"是指？
-> - [ ] A. 快线向下穿过慢线
-> - [ ] B. 快线向上穿过慢线
-> - [ ] C. 价格向下穿过均线
-> - [ ] D. 均线走平无交叉
->
-> > [!success]- 点击查看答案
-> > 正确答案: A
-> > **解析**: 金叉 = 快线从下方向上穿透慢线（买入信号），死叉 = 快线从上方向下穿透慢线（卖出信号）。
-
-> [!question] 选择题 3
-> 以下哪个指标最常用于衡量策略的风险调整后收益？
-> - [ ] A. 总收益率
-> - [ ] B. 最大回撤
-> - [ ] C. 夏普比率
-> - [ ] D. 胜率
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: 夏普比率 = (年化收益率 - 无风险利率) / 年化波动率，统一度量了收益与风险。总收益率只看收益不管风险，最大回撤只看风险，胜率只看交易不看出场盈亏大小。
-
-> [!question] 选择题 4
-> Python 的 for 循环在回测中成为瓶颈时，首选的优化手段是？
-> - [ ] A. 使用 PyPy 解释器
-> - [ ] B. 使用更多 Python 线程
-> - [ ] C. 用 Cython/C 重写核心循环
-> - [ ] D. 使用 async 异步编程
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: 回测的瓶颈是纯数值计算（均线、信号判断、盈亏累计），Python 循环的数值计算比 C 慢 50-100 倍。用 Cython 加类型声明或直接用 C 写核心循环是最有效的优化手段。线程因 GIL 无效，PyPy 改善有限，async 对 CPU 密集型无用。
-
-> [!question] 选择题 5
-> backtrader 中，`self.position` 在策略代码里表示什么？
-> - [ ] A. 当前持仓数量（浮点数/整数）
-> - [ ] B. 当前持仓市值
-> - [ ] C. 当前持仓盈亏
-> - [ ] D. 可用资金
->
-> > [!success]- 点击查看答案
-> > 正确答案: A
-> > **解析**: `self.position` 是一个 Position 对象，`if not self.position` 检测是否有持仓。`.size` 属性返回持仓数量，`.price` 返回均价。`bool(self.position)` 在持仓时为 True。
-
-> [!question] 选择题 6
-> 自建回测引擎中，以下哪种方式计算累计收益率最高效？
-> - [ ] A. for 循环逐个乘
-> - [ ] B. `np.cumprod(1 + returns)`
-> - [ ] C. `pd.Series(returns).cumprod()`
-> - [ ] D. 递归调用
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `np.cumprod(1 + returns)` 调用了 NumPy 的 C 实现，一次完成所有累积乘积计算。Pandas 的 `cumprod()` 底层也是调 NumPy。for 循环逐个乘是最慢的。
 
 ---
 
-### 🛠️ 动手练习题
+## 力扣练习
+
+以下题目用于验证本章所学内容：
+
+| 题号 | 题目 | 链接 | 涉及知识点 |
+|------|------|------|-----------|
+| 121 | 买卖股票的最佳时机 | https://leetcode.cn/problems/best-time-to-buy-and-sell-stock/ | 最大利润、一次交易 |
+| 122 | 买卖股票的最佳时机 II | https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-ii/ | 贪心算法、多次交易 |
+| 123 | 买卖股票的最佳时机 III | https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-iii/ | 动态规划、两次交易 |
+
+
+
+### 动手练习题
 
 > [!example] 练习题 1：SMA 参数网格搜索
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 使用 backtrader 对 SmaCross 策略做参数优化：快线周期从 5 到 50（步长 5），慢线周期从 20 到 200（步长 20）。对每组参数运行回测，记录夏普比率和最大回撤，绘制参数 vs 表现的热力图。使用 `cerebro.optstrategy()` 方法。
 
 > [!example] 练习题 2：从零实现向量化回测
-> **难度**: ⭐⭐⭐
+> **难度**: 简单
 >
 > 不依赖 backtrader，用 Pandas/NumPy 实现一个完整的向量化回测系统，包含：
 > 1. 信号计算（可以是任意自定义规则）
@@ -508,6 +443,6 @@ def apply_cost(price, volume, commission_rate=0.0003, slippage=0.001):
 > 用生成的随机数据测试你的引擎。
 
 > [!example] 练习题 3：回测结果对比
-> **难度**: ⭐⭐⭐
+> **难度**: 简单
 >
 > 用同一份数据、同一个策略（SMA 交叉），分别用 backtrader 和自建引擎执行回测。对比两者的：总收益率、年化波动率、夏普比率、最大回撤。找出结果差异的原因（手续费处理、信号延迟、收盘价 vs 次日开盘价等）。

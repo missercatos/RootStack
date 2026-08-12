@@ -1,7 +1,7 @@
 # sklearn：机器学习入门 (scikit-learn: ML Basics)
 ---
 
-## 📖 章节概述
+## 章节概述
 
 scikit-learn（简称 sklearn）是 Python 的传统机器学习标准库。对于 C 程序员，它的重要性在于：(1) 统一的 `fit/predict` API 设计让你无需记忆每个算法的细节，(2) 底层计算由 Cython/C 完成，性能不低，(3) 模型可以用 joblib 保存后由 C++ 程序加载。本章从分类、回归、聚类三大任务切入，带你掌握 sklearn 的核心工作模式。
 
@@ -9,7 +9,7 @@ scikit-learn（简称 sklearn）是 Python 的传统机器学习标准库。对�
 
 ---
 
-### 📚 第一节：sklearn 统一 API 与数据准备
+### 第一节：sklearn 统一 API 与数据准备
 
 1.1 核心 API 模式
 -------------------
@@ -19,9 +19,9 @@ sklearn 的全部算法遵循三个核心方法：
 ```python
 from sklearn.xxx import SomeModel
 
-model = SomeModel(hyper_param=value)  # 1. 创建模型，设置超参数
-model.fit(X_train, y_train)           # 2. 训练：从数据中学习
-result = model.predict(X_test)        # 3. 预测：对新数据做推断
+model = SomeModel(hyper_param=value) # 1. 创建模型，设置超参数
+model.fit(X_train, y_train) # 2. 训练：从数据中学习
+result = model.predict(X_test) # 3. 预测：对新数据做推断
 ```
 
 这种统一性意味着：当你学会一个模型的使用方式，你就学会了所有 sklearn 模型。在 C 中，相当于所有算法都实现了同一个函数指针接口：
@@ -29,9 +29,9 @@ result = model.predict(X_test)        # 3. 预测：对新数据做推断
 ```c
 // C 中的类比思维
 typedef struct {
-    void* model;
-    void (*fit)(void* model, double* X, double* y, int n);
-    void (*predict)(void* model, double* X, double* out, int n);
+ void* model;
+ void (*fit)(void* model, double* X, double* y, int n);
+ void (*predict)(void* model, double* X, double* out, int n);
 } BaseModel;
 ```
 
@@ -45,11 +45,11 @@ import numpy as np
 
 # X: 特征矩阵，形状 (n_samples, n_features)
 X = np.array([[1.0, 2.0],
-              [3.0, 4.0],
-              [5.0, 6.0]])   # 3 个样本，每个有 2 个特征
+ [3.0, 4.0],
+ [5.0, 6.0]]) # 3 个样本，每个有 2 个特征
 
 # y: 标签向量，形状 (n_samples,)
-y = np.array([0, 1, 0])      # 3 个标签（分类）或连续值（回归）
+y = np.array([0, 1, 0]) # 3 个标签（分类）或连续值（回归）
 ```
 
 > **C 对照**：`X` 等价于 C 中的 `double X[3][2]`，`y` 等价于 `int y[3]`。sklearn 内部将这些数据传给 Cython/C 实现处理。
@@ -92,7 +92,7 @@ print(f'Train: {X_train.shape[0]}, Test: {X_test.shape[0]}')
 
 ---
 
-### 📚 第二节：分类（Classification）
+### 第二节：分类（Classification）
 
 2.1 逻辑回归 — 最简单的分类器
 ------------------------------
@@ -184,7 +184,7 @@ print(classification_report(y_test, y_pred, target_names=load_iris().target_name
 
 ---
 
-### 📚 第三节：回归与聚类
+### 第三节：回归与聚类
 
 3.1 回归任务 — 预测连续值
 --------------------------
@@ -201,13 +201,13 @@ X, y = load_diabetes(return_X_y=True)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
 for name, model in [
-    ('Linear', LinearRegression()),
-    ('Ridge', Ridge(alpha=1.0)),
-    ('RandomForest', RandomForestRegressor(n_estimators=100, random_state=42))
+ ('Linear', LinearRegression()),
+ ('Ridge', Ridge(alpha=1.0)),
+ ('RandomForest', RandomForestRegressor(n_estimators=100, random_state=42))
 ]:
-    model.fit(X_train, y_train)
-    y_pred = model.predict(X_test)
-    print(f'{name:15s} | MSE: {mean_squared_error(y_test, y_pred):7.1f} | R²: {r2_score(y_test, y_pred):.3f}')
+ model.fit(X_train, y_train)
+ y_pred = model.predict(X_test)
+ print(f'{name:15s} | MSE: {mean_squared_error(y_test, y_pred):7.1f} | R²: {r2_score(y_test, y_pred):.3f}')
 "
 ```
 
@@ -242,7 +242,7 @@ from sklearn.model_selection import cross_val_score
 
 X, y = load_iris(return_X_y=True)
 model = RandomForestClassifier(n_estimators=100, random_state=42)
-scores = cross_val_score(model, X, y, cv=5)  # 5 折交叉验证
+scores = cross_val_score(model, X, y, cv=5) # 5 折交叉验证
 print(f'CV scores: {scores}')
 print(f'Mean: {scores.mean():.3f} ± {scores.std():.3f}')
 "
@@ -252,7 +252,7 @@ print(f'Mean: {scores.mean():.3f} ± {scores.std():.3f}')
 
 ---
 
-### 📚 第四节：Pipeline 与模型持久化
+### 第四节：Pipeline 与模型持久化
 
 4.1 数据预处理
 ---------------
@@ -264,8 +264,8 @@ import numpy as np
 
 # 标准化：使每个特征的均值为 0，方差为 1
 X = np.array([[100, 2023],
-              [200, 2024],
-              [150, 2025]], dtype=float)
+ [200, 2024],
+ [150, 2025]], dtype=float)
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 print(f'Original:\n{X}')
@@ -289,8 +289,8 @@ X, y = load_iris(return_X_y=True)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
 pipe = Pipeline([
-    ('scaler', StandardScaler()),       # 第1步：标准化
-    ('classifier', RandomForestClassifier(n_estimators=100, random_state=42))  # 第2步：分类
+ ('scaler', StandardScaler()), # 第1步：标准化
+ ('classifier', RandomForestClassifier(n_estimators=100, random_state=42)) # 第2步：分类
 ])
 pipe.fit(X_train, y_train)
 print(f'Pipeline accuracy: {pipe.score(X_test, y_test):.3f}')
@@ -317,34 +317,13 @@ loaded_pipe.predict(X_new)
 
 ---
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> sklearn 中 `model.fit(X, y)` 的作用是？
-> - [ ] A. 评估模型在新数据上的表现
-> - [ ] B. 用数据训练模型
-> - [ ] C. 将模型保存到文件
-> - [ ] D. 预测新数据的标签
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `fit()` 是训练方法，`X` 是特征矩阵，`y` 是标签。模型会学习从 `X` 到 `y` 的映射关系。之后用 `predict()` 对新数据预测。
-
-> [!question] 选择题 2
-> `cross_val_score(model, X, y, cv=5)` 执行了几次训练和测试？
-> - [ ] A. 1 次
-> - [ ] B. 5 次
-> - [ ] C. 10 次
-> - [ ] D. 25 次
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `cv=5` 表示 5 折交叉验证，数据被分成 5 份，训练 5 次，每次用 4 份训练、1 份测试，返回 5 个得分。
 
 > [!question] 判断题 1
 > sklearn 的 RandomForest 和 SVM 使用完全不同的 Python API。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -352,14 +331,14 @@ loaded_pipe.predict(X_new)
 
 ---
 
-## 📋 章节测试
+## 章节测试
 
-### 一、判断题（正确选 ✅，错误选 ❌）
+### 一、判断题（正确选 ，错误选 ）
 
 > [!question] 判断题 1
 > `train_test_split(X, y, test_size=0.3)` 随机将数据的 30% 分给测试集。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -367,8 +346,8 @@ loaded_pipe.predict(X_new)
 
 > [!question] 判断题 2
 > `StandardScaler().fit_transform(X)` 将数据缩放到 [0, 1] 区间。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -376,8 +355,8 @@ loaded_pipe.predict(X_new)
 
 > [!question] 判断题 3
 > 回归任务和分类任务的区别是：回归预测连续值，分类预测离散类别。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -385,8 +364,8 @@ loaded_pipe.predict(X_new)
 
 > [!question] 判断题 4
 > KMeans 是一种监督学习算法。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -394,8 +373,8 @@ loaded_pipe.predict(X_new)
 
 > [!question] 判断题 5
 > joblib 保存的 sklearn 模型文件可以直接被 C++ 程序加载。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -403,76 +382,30 @@ loaded_pipe.predict(X_new)
 
 > [!question] 判断题 6
 > Pipeline 中 `fit()` 会对 Pipeline 中的每一步依次调用 `fit_transform()`（最后一步调用 `fit()`）。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
 > > **解析**: Pipeline 的 `fit()` 按顺序执行：对中间步骤调用 `fit_transform()`，对最后一步调用 `fit()`。这确保了预处理参数只在训练集上学习。
 
-### 二、选择题（单项选择题）
-
-> [!question] 选择题 1
-> 特征矩阵 `X` 的形状 `(n_samples, n_features)` 中，`n_samples` 代表什么？
-> - [ ] A. 每个样本的特征数量
-> - [ ] B. 样本的总数量
-> - [ ] C. 类别的数量
-> - [ ] D. 模型的参数数量
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `n_samples` 是样本数（行数），`n_features` 是特征数（列数）。例如 150 朵鸢尾花，每朵有 4 个测量值 → `(150, 4)`。
-
-> [!question] 选择题 2
-> 以下哪个模型不属于集成学习（Ensemble）？
-> - [ ] A. RandomForestClassifier
-> - [ ] B. GradientBoostingClassifier
-> - [ ] C. LogisticRegression
-> - [ ] D. AdaBoostClassifier
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: 逻辑回归是单模型（广义线性模型）。随机森林、梯度提升、AdaBoost 都是集成方法——组合多个弱学习器（决策树）形成强学习器。
-
-> [!question] 选择题 3
-> `model.score(X_test, y_test)` 对于分类模型返回什么？
-> - [ ] A. 均方误差
-> - [ ] B. R² 值
-> - [ ] C. 准确率（Accuracy）
-> - [ ] D. F1 值
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: 对于分类器，`score()` 返回 accuracy（准确率）。对于回归器，返回 R² 值（决定系数）。这是 sklearn 的约定。
-
-> [!question] 选择题 4
-> KMeans 聚类中 `n_clusters` 参数的含义是？
-> - [ ] A. 每个簇的最大样本数
-> - [ ] B. 要分成的簇的数量
-> - [ ] C. 聚类的迭代次数
-> - [ ] D. 每个样本的特征数
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `n_clusters` 是超参数 k，指定将数据分成几个簇。这是 KMeans 算法使用前需要人工指定的值。
-
-> [!question] 选择题 5
-> 以下关于混淆矩阵的说法，正确的是？
-> - [ ] A. 它是一个 1×1 的矩阵
-> - [ ] B. 对角线上的值表示分类错误的样本数
-> - [ ] C. 对角线上的值表示分类正确的样本数
-> - [ ] D. 它是模型的参数矩阵
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: 混淆矩阵的每一行是真实类别，每一列是预测类别。对角线上的值是正确分类的样本数，非对角线是错误分类的样本数。
 
 ---
 
-### 🛠️ 动手练习题
+## 力扣练习
+
+以下题目用于验证本章所学内容：
+
+| 题号 | 题目 | 链接 | 涉及知识点 |
+|------|------|------|-----------|
+| — | 本章无对应力扣题 | — | 请用动手练习题自检 |
+
+
+
+### 动手练习题
 
 > [!example] 练习题 1：完整的分类 Pipeline
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 构建一个完整的 sklearn Pipeline：
 > 1. 加载 `load_wine` 葡萄酒数据集
@@ -485,7 +418,7 @@ loaded_pipe.predict(X_new)
 > 所有代码写在一个 `.py` 文件中，`python wine_classifier.py` 即可运行。
 
 > [!example] 练习题 2：从 C 思维重新实现 KMeans
-> **难度**: ⭐⭐⭐
+> **难度**: 简单
 >
 > 用 sklearn 的 `make_blobs` 生成 200 个样本、3 个簇的数据。然后用纯 Python（不要调 sklearn 的 KMeans）实现 KMeans 的 Lloyd 算法：
 > 1. 随机初始化 3 个中心
@@ -495,7 +428,7 @@ loaded_pipe.predict(X_new)
 > 将你的结果与 sklearn 的 `KMeans` 输出对比。这让你从 C 程序员的视角理解 sklearn 在做什么。
 
 > [!example] 练习题 3：对比不同模型的性能
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 对 `load_digits` 手写数字数据集（8×8 像素图像，10 个类别），比较以下模型的准确率：
 > - LogisticRegression (max_iter=5000)

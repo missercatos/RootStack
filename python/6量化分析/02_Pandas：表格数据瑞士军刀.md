@@ -1,7 +1,7 @@
 # Pandas：表格数据瑞士军刀 (Pandas Basics)
 ---
 
-## 📖 章节概述
+## 章节概述
 
 量化分析处理的是表格化的金融数据：日线行情、财务报表、持仓记录。Pandas 是 Python 生态中处理二维表格数据的标准库。本章从 C 程序员的视角介绍 DataFrame 和 Series 的数据结构、CSV/Excel 读写、过滤/分组/合并操作，以及 `.loc`/`.iloc` 的索引哲学。最后简要介绍 Polars —— 用 Rust 重写的极速替代品。
 
@@ -9,7 +9,7 @@
 
 ---
 
-### 📚 第一节：Series 与 DataFrame —— 两种核心数据结构
+### 第一节：Series 与 DataFrame —— 两种核心数据结构
 
 #### 1.1 Series：带标签的一维数组
 
@@ -22,8 +22,8 @@ import numpy as np
 s = pd.Series([1.0, 2.5, 3.8, 5.2], index=['a', 'b', 'c', 'd'])
 print(s)
 print()
-print('values type:', type(s.values))  # numpy.ndarray
-print('dtype:', s.dtype)               # float64
+print('values type:', type(s.values)) # numpy.ndarray
+print('dtype:', s.dtype) # float64
 "
 ```
 
@@ -36,9 +36,9 @@ python -c "
 import pandas as pd
 
 s = pd.Series([10, 20, 30, 40], index=['AAPL', 'GOOG', 'MSFT', 'TSLA'])
-print('by label:', s['AAPL'])      # 用标签访问
-print('by position:', s.iloc[0])   # 用位置访问（和 C 数组相同）
-print(s[['AAPL', 'TSLA']])         # 花式索引
+print('by label:', s['AAPL']) # 用标签访问
+print('by position:', s.iloc[0]) # 用位置访问（和 C 数组相同）
+print(s[['AAPL', 'TSLA']]) # 花式索引
 "
 ```
 
@@ -52,9 +52,9 @@ import pandas as pd
 import numpy as np
 
 df = pd.DataFrame({
-    'symbol': ['AAPL', 'GOOG', 'MSFT'],
-    'price':  [150.0, 2800.0, 330.0],
-    'volume': [80000000, 1200000, 25000000]
+ 'symbol': ['AAPL', 'GOOG', 'MSFT'],
+ 'price': [150.0, 2800.0, 330.0],
+ 'volume': [80000000, 1200000, 25000000]
 })
 print(df)
 print()
@@ -83,9 +83,9 @@ import pandas as pd
 import numpy as np
 
 df = pd.DataFrame({
-    'a': np.random.randn(1000000),
-    'b': np.random.randn(1000000),
-    'c': np.random.randn(1000000)
+ 'a': np.random.randn(1000000),
+ 'b': np.random.randn(1000000),
+ 'c': np.random.randn(1000000)
 })
 print('memory usage (MB):')
 print(df.memory_usage(deep=True) / 1024 / 1024)
@@ -96,7 +96,7 @@ print(df.memory_usage(deep=True) / 1024 / 1024)
 
 ---
 
-### 📚 第二节：数据读写 —— CSV、Excel 与更多
+### 第二节：数据读写 —— CSV、Excel 与更多
 
 #### 2.1 CSV：量化数据的默认格式
 
@@ -106,12 +106,12 @@ import pandas as pd
 
 # 写入示例数据
 df = pd.DataFrame({
-    'date': ['2024-01-02', '2024-01-03', '2024-01-04'],
-    'open': [150.0, 151.5, 149.8],
-    'high': [152.0, 153.0, 151.0],
-    'low':  [149.0, 150.0, 148.5],
-    'close':[151.5, 150.8, 150.2],
-    'volume':[80000000, 75000000, 82000000]
+ 'date': ['2024-01-02', '2024-01-03', '2024-01-04'],
+ 'open': [150.0, 151.5, 149.8],
+ 'high': [152.0, 153.0, 151.0],
+ 'low': [149.0, 150.0, 148.5],
+ 'close':[151.5, 150.8, 150.2],
+ 'volume':[80000000, 75000000, 82000000]
 })
 df.to_csv('/tmp/sample_ohlcv.csv', index=False)
 print('written to /tmp/sample_ohlcv.csv')
@@ -125,7 +125,7 @@ import pandas as pd
 df = pd.read_csv('/tmp/sample_ohlcv.csv')
 print(df)
 print()
-print(df.describe())  # 统计摘要
+print(df.describe()) # 统计摘要
 "
 ```
 
@@ -151,19 +151,19 @@ print('Excel read/write requires: pip install openpyxl')
 
 ```python
 # DataFrame 的某一列就是一个 NumPy 数组
-close_prices = df['close'].values       # 返回 np.ndarray
-returns = np.diff(np.log(close_prices))  # 可以直接做 NumPy 运算
+close_prices = df['close'].values # 返回 np.ndarray
+returns = np.diff(np.log(close_prices)) # 可以直接做 NumPy 运算
 
 # NumPy 数组可以直接构造成 DataFrame
 new_df = pd.DataFrame(np.random.randn(100, 4),
-                       columns=['A', 'B', 'C', 'D'])
+ columns=['A', 'B', 'C', 'D'])
 ```
 
 > 向量化计算技巧详见 [[../7科学计算/01_NumPy向量化：告别C式循环|NumPy 向量化]]。
 
 ---
 
-### 📚 第三节：数据筛选与索引 —— .loc 与 .iloc
+### 第三节：数据筛选与索引 —— .loc 与 .iloc
 
 #### 3.1 .iloc：位置索引（C 程序员最熟悉的模式）
 
@@ -176,16 +176,16 @@ import numpy as np
 
 np.random.seed(42)
 df = pd.DataFrame(np.random.randn(5, 4),
-                  columns=['A', 'B', 'C', 'D'])
+ columns=['A', 'B', 'C', 'D'])
 print('original:')
 print(df)
 print()
 
 # 位置索引 — 和 C 的 df[i][j] 一样
-print('df.iloc[2, 1]:', df.iloc[2, 1])   # 第 3 行，第 2 列
-print('df.iloc[1:3, 0:2]:')              # 行切片 + 列切片
+print('df.iloc[2, 1]:', df.iloc[2, 1]) # 第 3 行，第 2 列
+print('df.iloc[1:3, 0:2]:') # 行切片 + 列切片
 print(df.iloc[1:3, 0:2])
-print('df.iloc[[0, 4], [1, 3]]:')        # 花式索引
+print('df.iloc[[0, 4], [1, 3]]:') # 花式索引
 print(df.iloc[[0, 4], [1, 3]])
 "
 ```
@@ -198,8 +198,8 @@ import pandas as pd
 
 # 行有标签，列也有标签
 df = pd.DataFrame(
-    {'price': [150, 2800, 330], 'pe': [28, 22, 35]},
-    index=['AAPL', 'GOOG', 'MSFT']
+ {'price': [150, 2800, 330], 'pe': [28, 22, 35]},
+ index=['AAPL', 'GOOG', 'MSFT']
 )
 print('AAPL row:')
 print(df.loc['AAPL'])
@@ -218,8 +218,8 @@ import numpy as np
 
 np.random.seed(1)
 df = pd.DataFrame({
-    'returns': np.random.randn(1000) * 0.02,
-    'volume': np.random.randint(1000000, 10000000, 1000)
+ 'returns': np.random.randn(1000) * 0.02,
+ 'volume': np.random.randint(1000000, 10000000, 1000)
 })
 
 # C 思维：遍历所有行检查条件
@@ -251,7 +251,7 @@ df[df['price'].notna()]
 
 ---
 
-### 📚 第四节：分组、聚合与透视表
+### 第四节：分组、聚合与透视表
 
 #### 4.1 groupby：分类聚合
 
@@ -262,18 +262,18 @@ import numpy as np
 
 np.random.seed(0)
 df = pd.DataFrame({
-    'sector': ['Tech', 'Tech', 'Finance', 'Finance', 'Tech'],
-    'symbol': ['AAPL', 'MSFT', 'JPM', 'GS', 'GOOG'],
-    'returns': np.random.randn(5) * 0.02,
-    'volume': np.random.randint(1e6, 1e7, 5)
+ 'sector': ['Tech', 'Tech', 'Finance', 'Finance', 'Tech'],
+ 'symbol': ['AAPL', 'MSFT', 'JPM', 'GS', 'GOOG'],
+ 'returns': np.random.randn(5) * 0.02,
+ 'volume': np.random.randint(1e6, 1e7, 5)
 })
 print('By sector mean returns:')
 print(df.groupby('sector')['returns'].mean())
 print()
 print('Multiple aggregations:')
 print(df.groupby('sector').agg({
-    'returns': ['mean', 'std', 'count'],
-    'volume': 'sum'
+ 'returns': ['mean', 'std', 'count'],
+ 'volume': 'sum'
 }))
 "
 ```
@@ -284,9 +284,9 @@ import pandas as pd
 
 # 更复杂的示例：多列分组 + transform
 df = pd.DataFrame({
-    'date':   ['2024-01', '2024-01', '2024-01', '2024-02', '2024-02'],
-    'symbol': ['AAPL', 'GOOG', 'MSFT', 'AAPL', 'GOOG'],
-    'price':  [150, 2800, 330, 155, 2850]
+ 'date': ['2024-01', '2024-01', '2024-01', '2024-02', '2024-02'],
+ 'symbol': ['AAPL', 'GOOG', 'MSFT', 'AAPL', 'GOOG'],
+ 'price': [150, 2800, 330, 155, 2850]
 })
 # 计算每个 symbol 的月度价格变化
 df['prev_price'] = df.groupby('symbol')['price'].shift(1)
@@ -302,21 +302,21 @@ python -c "
 import pandas as pd
 
 prices = pd.DataFrame({
-    'symbol': ['AAPL', 'GOOG', 'MSFT'],
-    'price':  [150, 2800, 330]
+ 'symbol': ['AAPL', 'GOOG', 'MSFT'],
+ 'price': [150, 2800, 330]
 })
 fundamentals = pd.DataFrame({
-    'symbol': ['AAPL', 'GOOG', 'TSLA'],
-    'pe':     [28, 22, 45]
+ 'symbol': ['AAPL', 'GOOG', 'TSLA'],
+ 'pe': [28, 22, 45]
 })
 
 # 类似 SQL JOIN
 inner = prices.merge(fundamentals, on='symbol', how='inner')
-left  = prices.merge(fundamentals, on='symbol', how='left')
+left = prices.merge(fundamentals, on='symbol', how='left')
 outer = prices.merge(fundamentals, on='symbol', how='outer')
 
 print('inner (only matching):', list(inner['symbol']))
-print('left  (all prices):', list(left['symbol']))
+print('left (all prices):', list(left['symbol']))
 print('outer (all symbols):', list(outer['symbol']))
 "
 ```
@@ -330,15 +330,15 @@ import numpy as np
 
 np.random.seed(1)
 df = pd.DataFrame({
-    'date':   np.repeat(['2024-Q1', '2024-Q2', '2024-Q3', '2024-Q4'], 3),
-    'sector': ['Tech', 'Finance', 'Energy'] * 4,
-    'returns': np.random.randn(12) * 0.05
+ 'date': np.repeat(['2024-Q1', '2024-Q2', '2024-Q3', '2024-Q4'], 3),
+ 'sector': ['Tech', 'Finance', 'Energy'] * 4,
+ 'returns': np.random.randn(12) * 0.05
 })
 pivot = df.pivot_table(
-    values='returns',
-    index='date',
-    columns='sector',
-    aggfunc='mean'
+ values='returns',
+ index='date',
+ columns='sector',
+ aggfunc='mean'
 )
 print(pivot)
 "
@@ -346,7 +346,7 @@ print(pivot)
 
 ---
 
-### 📚 第五节：Polars —— 更快的 Pandas 替代品
+### 第五节：Polars —— 更快的 Pandas 替代品
 
 Polars 用 Rust 重写了 DataFrame，提供零拷贝、惰性计算和 SIMD 优化：
 
@@ -358,9 +358,9 @@ import numpy as np
 
 # 类似 Pandas 但语法略有不同
 df = pl.DataFrame({
-    'symbol': ['AAPL', 'GOOG', 'MSFT'],
-    'price':  [150.0, 2800.0, 330.0],
-    'volume': [80000000, 1200000, 25000000]
+ 'symbol': ['AAPL', 'GOOG', 'MSFT'],
+ 'price': [150.0, 2800.0, 330.0],
+ 'volume': [80000000, 1200000, 25000000]
 })
 print(df)
 print()
@@ -385,23 +385,13 @@ Pandas vs Polars 关键差异：
 
 ---
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> DataFrame 中每列的数据类型有什么特点？
-> - [ ] A. 所有列必须是同一类型
-> - [ ] B. 每列可以有不同类型，但列内类型一致
-> - [ ] C. 每个单元格都可以有不同类型
-> - [ ] D. 只能存储数值类型
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: DataFrame 每列底层是一个 NumPy 数组——类型在数组级别一致（和 C 数组一样）。但不同列可以有不同的 dtype（如一列 float64，一列 int64，一列 object）。
 
 > [!question] 判断题 1
 > `.iloc` 使用标签进行索引，`.loc` 使用整数位置进行索引。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -409,14 +399,14 @@ Pandas vs Polars 关键差异：
 
 ---
 
-## 📋 章节测试
+## 章节测试
 
 ### 一、判断题
 
 > [!question] 判断题 1
 > Pandas 的 Series 底层数据存储就是一个 NumPy 数组。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -424,8 +414,8 @@ Pandas vs Polars 关键差异：
 
 > [!question] 判断题 2
 > DataFrame 中 `df['close']` 返回的是一个 Series，其 `.values` 属性返回 NumPy 数组。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -433,8 +423,8 @@ Pandas vs Polars 关键差异：
 
 > [!question] 判断题 3
 > Pandas 的 `groupby` 操作返回的结果不能直接用于后续的链式操作。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -442,8 +432,8 @@ Pandas vs Polars 关键差异：
 
 > [!question] 判断题 4
 > `pd.read_csv()` 会自动将日期字符串解析为 `datetime64` 类型。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -451,8 +441,8 @@ Pandas vs Polars 关键差异：
 
 > [!question] 判断题 5
 > Pandas 中 `df[df['price'] > 100]` 的底层实现是 Python 的 for 循环遍历。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -460,8 +450,8 @@ Pandas vs Polars 关键差异：
 
 > [!question] 判断题 6
 > Polars 比 Pandas 快是因为它用 Rust 编写了核心引擎。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -469,91 +459,25 @@ Pandas vs Polars 关键差异：
 
 ---
 
-### 二、选择题
-
-> [!question] 选择题 1
-> 以下哪种方式可以最快地计算 DataFrame 某列的均值？
-> - [ ] A. Python `for` 循环遍历每行
-> - [ ] B. `df['col'].mean()`
-> - [ ] C. `df['col'].apply(lambda x: x).mean()`
-> - [ ] D. `sum(df['col']) / len(df['col'])`
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `.mean()` 是 Panel 的内置方法，直接调用底层的 C 实现（NumPy/Cython）。`.apply()` 走 Python 回调路径，比内置方法慢数十倍。
-
-> [!question] 选择题 2
-> `df.merge(other, on='key', how='left')` 的含义是？
-> - [ ] A. 只保留两个 DataFrame 共有的行
-> - [ ] B. 保留左表所有行，右表无匹配则填 NaN
-> - [ ] C. 保留右表所有行，左表无匹配则填 NaN
-> - [ ] D. 保留所有行
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `how='left'` 类似 SQL LEFT JOIN：保留左表所有行，右表匹配不上的用 NaN 填充。`'right'` 反之，`'inner'` 只保留交集，`'outer'` 保留并集。
-
-> [!question] 选择题 3
-> 以下代码的作用是？ `df.groupby('symbol')['returns'].transform('cumsum')`
-> - [ ] A. 计算所有 symbol 的累计收益
-> - [ ] B. 对每个 symbol 分组内计算累计收益，并保持原 DataFrame 形状
-> - [ ] C. 返回一个聚合后的 Series
-> - [ ] D. 语法错误
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `transform` 和 `agg` 的区别：`agg` 返回每组一行（聚合），`transform` 返回与原 DataFrame 相同行数的结果（广播回原形状）。这里对每个 symbol 独立计算 cumsum，结果可以添加为新列。
-
-> [!question] 选择题 4
-> DataFrame 中处理缺失值，以下哪种方法使用插值法？
-> - [ ] A. `df.dropna()`
-> - [ ] B. `df.fillna(0)`
-> - [ ] C. `df.interpolate()`
-> - [ ] D. `df.isna()`
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: `interpolate()` 对缺失值进行插值填充（线性、多项式、样条等方法）。`dropna()` 删除含 NaN 的行，`fillna()` 用固定值填充，`isna()` 检测缺失值返回布尔矩阵。
-
-> [!question] 选择题 5
-> Polars 使用什么内存格式作为列式存储？
-> - [ ] A. JSON
-> - [ ] B. Protocol Buffers
-> - [ ] C. Apache Arrow
-> - [ ] D. MessagePack
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: Polars 使用 Apache Arrow 的列式内存格式，这支持零拷贝共享（同一数据可被 Python、Rust、C++ 同时访问）、高效的列扫描和 SIMD 加速。
-
-> [!question] 选择题 6
-> `df.pivot_table(values='price', index='date', columns='symbol')` 的用途是？
-> - [ ] A. 将长表格转换为宽表格
-> - [ ] B. 将宽表格转换为长表格
-> - [ ] C. 对表格进行排序
-> - [ ] D. 合并两个表格
->
-> > [!success]- 点击查看答案
-> > 正确答案: A
-> > **解析**: `pivot_table` 将行索引（date）和列标签（symbol）展开，price 作为值填充。这类似于 Excel 的数据透视表，把"长格式"数据变成便于分析的"宽格式"矩阵。
-
-> [!question] 选择题 7
-> `df.loc[df['volume'] > 1e6, 'close']` 选择的是？
-> - [ ] A. volume > 1e6 的那些行的 'close' 列
-> - [ ] B. volume > 1e6 的那些行的所有列
-> - [ ] C. 所有行的 'close' 列
-> - [ ] D. 语法错误——不能用布尔条件和列选择器组合
->
-> > [!success]- 点击查看答案
-> > 正确答案: A
-> > **解析**: `.loc[行选择器, 列选择器]` 可以分别指定行和列。此处行选择器是布尔条件，列选择器是 'close' 标签。结果是满足条件的行的 close 列。
 
 ---
 
-### 🛠️ 动手练习题
+## 力扣练习
+
+以下题目用于验证本章所学内容：
+
+| 题号 | 题目 | 链接 | 涉及知识点 |
+|------|------|------|-----------|
+| 175 | 组合两个表 | https://leetcode.cn/problems/combine-two-tables/ | 表连接、数据合并 |
+| 176 | 第二高的薪水 | https://leetcode.cn/problems/second-highest-salary/ | 排序去重、子查询 |
+| 178 | 分数排名 | https://leetcode.cn/problems/rank-scores/ | 窗口函数、排名思想 |
+
+
+
+### 动手练习题
 
 > [!example] 练习题 1：构建 OHLCV 分析流水线
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 下载或创建一份包含 `date`, `open`, `high`, `low`, `close`, `volume` 的 CSV 数据（至少 100 行）。用 Pandas 完成：
 > 1. 读取并解析日期
@@ -563,12 +487,12 @@ Pandas vs Polars 关键差异：
 > 5. 将结果保存为新的 CSV
 
 > [!example] 练习题 2：Pandas vs Polars 性能对比
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 生成一个包含 100 万行和 10 列随机数据的 DataFrame。分别用 Pandas 和 Polars 执行：`groupby` 聚合、列筛选、条件过滤、排序。用 `%timeit` 比较执行时间。
 
 > [!example] 练习题 3：财务数据透视表
-> **难度**: ⭐⭐⭐
+> **难度**: 简单
 >
 > 创建一个包含 `date`, `sector`, `symbol`, `market_cap`, `returns` 的数据集。用 `pivot_table` 计算：
 > 1. 每个 sector 每月的平均收益率

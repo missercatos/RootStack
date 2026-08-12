@@ -1,7 +1,7 @@
 # Flask：十分钟起一个服务 (Flask Quickstart)
 ---
 
-## 📖 章节概述
+## 章节概述
 
 Flask 是 Python 生态中最轻量的 Web 微框架——核心代码仅 5 行即可运行一个 HTTP 服务。本章面向 C 程序员，快速展示 Flask 的路由、请求/响应处理、JSON API 和模板渲染，让你在十分钟内就能为 C 后端服务搭建一个 Web 前端界面。
 
@@ -9,7 +9,7 @@ Flask 是 Python 生态中最轻量的 Web 微框架——核心代码仅 5 行�
 
 ---
 
-### 📚 第一节：最小 Flask 应用
+### 第一节：最小 Flask 应用
 
 一个完整的 Flask Web 服务，仅需 5 行代码：
 
@@ -19,7 +19,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    return 'Hello, World!'
+ return 'Hello, World!'
 
 app.run()
 ```
@@ -30,7 +30,7 @@ app.run()
 
 ```bash
 python -c "from flask import Flask; app=Flask(__name__); \
-  @app.route('/'); def hello(): return 'Hello'; app.run()"
+ @app.route('/'); def hello(): return 'Hello'; app.run()"
 ```
 
 核心组件拆解：
@@ -46,26 +46,26 @@ python -c "from flask import Flask; app=Flask(__name__); \
 
 ---
 
-### 📚 第二节：路由与 URL 变量
+### 第二节：路由与 URL 变量
 
 路由是 URL 到处理函数的映射。Flask 支持多种路由模式：
 
 ```python
-@app.route('/')                   # 根路径
+@app.route('/') # 根路径
 def index():
-    return 'Home Page'
+ return 'Home Page'
 
-@app.route('/user/<name>')        # 动态变量（字符串）
+@app.route('/user/<name>') # 动态变量（字符串）
 def user(name):
-    return f'User: {name}'
+ return f'User: {name}'
 
 @app.route('/post/<int:post_id>') # 类型转换：int/float/path/uuid
 def show_post(post_id):
-    return f'Post #{post_id * 2}'  # post_id 已是 int，不是字符串
+ return f'Post #{post_id * 2}' # post_id 已是 int，不是字符串
 
 @app.route('/files/<path:filepath>') # 匹配含 / 的路径
 def serve_file(filepath):
-    return f'File: {filepath}'
+ return f'File: {filepath}'
 ```
 
 类型转换器对应 C 思维：
@@ -85,14 +85,14 @@ from flask import url_for
 
 @app.route('/user/<name>')
 def profile(name):
-    return f'Profile of {name}'
+ return f'Profile of {name}'
 
 # url_for('profile', name='root') → '/user/root'
 ```
 
 ---
 
-### 📚 第三节：HTTP 方法与请求对象
+### 第三节：HTTP 方法与请求对象
 
 Flask 默认只响应 GET 请求。通过 `methods` 参数指定支持的 HTTP 方法：
 
@@ -101,17 +101,17 @@ from flask import request
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        username = request.form['username']     # POST 表单数据
-        password = request.form['password']
-        return f'Hello, {username}'
-    return '''
-        <form method="post">
-            <input name="username">
-            <input name="password" type="password">
-            <button type="submit">Login</button>
-        </form>
-    '''
+ if request.method == 'POST':
+ username = request.form['username'] # POST 表单数据
+ password = request.form['password']
+ return f'Hello, {username}'
+ return '''
+ <form method="post">
+ <input name="username">
+ <input name="password" type="password">
+ <button type="submit">Login</button>
+ </form>
+ '''
 ```
 
 `request` 对象常用属性（类比 C 中解析 HTTP 头）：
@@ -131,14 +131,14 @@ def login():
 ```python
 @app.route('/search')
 def search():
-    q = request.args.get('q', '')        # 安全获取，设默认值
-    page = request.args.get('page', 1, type=int)  # 自动转 int
-    return f'Searching for {q}, page {page}'
+ q = request.args.get('q', '') # 安全获取，设默认值
+ page = request.args.get('page', 1, type=int) # 自动转 int
+ return f'Searching for {q}, page {page}'
 ```
 
 ---
 
-### 📚 第四节：JSON API 与返回响应
+### 第四节：JSON API 与返回响应
 
 对于前后端分离或 API 服务，JSON 是核心数据格式：
 
@@ -147,21 +147,21 @@ from flask import jsonify, make_response
 
 @app.route('/api/v1/data')
 def get_data():
-    return jsonify({
-        'status': 'ok',
-        'data': [1, 2, 3],
-        'count': 3
-    })
-    # 自动设置 Content-Type: application/json
+ return jsonify({
+ 'status': 'ok',
+ 'data': [1, 2, 3],
+ 'count': 3
+ })
+ # 自动设置 Content-Type: application/json
 
 @app.route('/api/v1/compute')
 def compute():
-    # 典型场景：Flask 接收请求 → 调用 C 后端 → 返回结果
-    result = {'sum': 100, 'product': 200}
-    resp = make_response(jsonify(result))
-    resp.headers['X-Custom-Header'] = 'value'
-    resp.status_code = 201           # 自定义状态码
-    return resp
+ # 典型场景：Flask 接收请求 → 调用 C 后端 → 返回结果
+ result = {'sum': 100, 'product': 200}
+ resp = make_response(jsonify(result))
+ resp.headers['X-Custom-Header'] = 'value'
+ resp.status_code = 201 # 自定义状态码
+ return resp
 ```
 
 错误响应：
@@ -171,24 +171,25 @@ from flask import abort
 
 @app.route('/api/v1/data/<int:id>')
 def get_item(id):
-    if id < 0:
-        abort(400, description='Invalid ID: must be non-negative')
-    return jsonify({'id': id, 'name': f'item_{id}'})
+ if id < 0:
+ abort(400, description='Invalid ID: must be non-negative')
+ return jsonify({'id': id, 'name': f'item_{id}'})
 ```
 
 ---
 
-### 📚 第五节：模板与静态文件（简述）
+### 第五节：模板与静态文件（简述）
 
 Flask 使用 Jinja2 模板引擎渲染 HTML。目录约定：
 
-```
-project/
-├── app.py
-├── templates/          ← 模板文件（Flask 自动查找）
-│   └── index.html
-└── static/             ← 静态文件（CSS/JS/图片）
-    └── style.css
+```mermaid
+graph TB
+ ROOT["project/"]
+ ROOT --> APP["app.py"]
+ ROOT --> TPL["templates/ (模板文件)"]
+ TPL --> INDEX["index.html"]
+ ROOT --> STATIC["static/ (静态文件)"]
+ STATIC --> STYLE["style.css"]
 ```
 
 模板渲染：
@@ -198,7 +199,7 @@ from flask import render_template
 
 @app.route('/hello/<name>')
 def hello(name):
-    return render_template('index.html', name=name, items=[1, 2, 3])
+ return render_template('index.html', name=name, items=[1, 2, 3])
 ```
 
 ```html
@@ -206,7 +207,7 @@ def hello(name):
 <h1>Hello, {{ name }}!</h1>
 <ul>
 {% for item in items %}
-    <li>{{ item }}</li>
+ <li>{{ item }}</li>
 {% endfor %}
 </ul>
 ```
@@ -215,7 +216,7 @@ def hello(name):
 
 ---
 
-### 📚 第六节：包装 C 后端为 Web 服务
+### 第六节：包装 C 后端为 Web 服务
 
 Flask 最适宜作为 C 后端的 HTTP 前端。三种互操作模式：
 
@@ -226,15 +227,15 @@ import subprocess, json
 
 @app.route('/api/c-run')
 def c_run():
-    result = subprocess.run(
-        ['./bin/my_c_program', '--input', '42'],
-        capture_output=True, text=True, timeout=5
-    )
-    return jsonify({
-        'exit_code': result.returncode,
-        'stdout': result.stdout,
-        'stderr': result.stderr
-    })
+ result = subprocess.run(
+ ['./bin/my_c_program', '--input', '42'],
+ capture_output=True, text=True, timeout=5
+ )
+ return jsonify({
+ 'exit_code': result.returncode,
+ 'stdout': result.stdout,
+ 'stderr': result.stderr
+ })
 ```
 
 **模式二：ctypes 调用 C 共享库**
@@ -243,13 +244,15 @@ def c_run():
 import ctypes
 
 lib = ctypes.CDLL('./lib/libcompute.so')
+
+> **跨平台提示**：ctypes 加载共享库时注意后缀差异——Linux 用 `.so`，macOS 用 `.dylib`，Windows 用 `.dll`。跨平台代码请参考 [[../2精通/05_ctypes：在Python中调用C库|ctypes 章节]]。
 lib.compute_sum.argtypes = [ctypes.c_int, ctypes.c_int]
 lib.compute_sum.restype = ctypes.c_int
 
 @app.route('/api/sum/<int:a>/<int:b>')
 def api_sum(a, b):
-    result = lib.compute_sum(a, b)
-    return jsonify({'sum': result})
+ result = lib.compute_sum(a, b)
+ return jsonify({'sum': result})
 ```
 
 **模式三：管道/共享内存/消息队列**
@@ -258,60 +261,40 @@ def api_sum(a, b):
 # 打开命名管道与 C 后台进程通信
 @app.route('/api/pipe-query')
 def pipe_query():
-    with open('/tmp/c_backend.pipe', 'w') as f:
-        f.write('QUERY\n')
-    with open('/tmp/c_backend_resp.pipe', 'r') as f:
-        result = f.read()
-    return jsonify({'result': result.strip()})
+ with open('/tmp/c_backend.pipe', 'w') as f:
+ f.write('QUERY\n')
+ with open('/tmp/c_backend_resp.pipe', 'r') as f:
+ result = f.read()
+ return jsonify({'result': result.strip()})
 ```
 
 > ctypes 的完整用法见 [[../2精通/05_ctypes：在Python中调用C库|精通 05 ctypes]]，进程间通信见 [[../2精通/08_subprocess与进程管道：C与Python数据交换|精通 08 进程管道]]。
 
 ---
 
-### 📝 小节练习
+### 小节练习
 
-> [!question] 选择题 1
-> Flask 装饰器 `@app.route('/user/<int:id>')` 中的 `<int:id>` 表示什么？
-> - [ ] A. 只匹配字符串类型
-> - [ ] B. 匹配整数并自动转换为 Python int
-> - [ ] C. 必须传入 32 位有符号整数
-> - [ ] D. 匹配正则表达式
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `<int:>` 转换器自动将 URL 中的数字字符串转换为 Python `int` 类型，省去手动调用 `int()` 的步骤。
 
 > [!question] 判断题 1
 > Flask 内置的开发服务器可以直接用于生产环境。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
 > > **解析**: Flask 的 `app.run()` 启动的是 Werkzeug 开发服务器，单线程、无进程管理、无安全加固，仅适合开发测试。生产环境必须使用 gunicorn 等 WSGI 服务器。
 
-> [!question] 选择题 2
-> 获取 URL `http://host/search?q=flask&page=2` 中 `page` 参数的推荐方式是？
-> - [ ] A. `request.args[1]`
-> - [ ] B. `request.form.get('page')`
-> - [ ] C. `request.args.get('page', 1, type=int)`
-> - [ ] D. `request.query.page`
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: `request.args` 存储查询参数。`.get()` 方法安全获取（不存在返回默认值），`type=int` 自动类型转换。
 
 ---
 
-## 📋 章节测试
+## 章节测试
 
-### 一、判断题（正确选 ✅，错误选 ❌）
+### 一、判断题（正确选 ，错误选 ）
 
 > [!question] 判断题 1
 > Flask 是一个全栈 Web 框架，内置 ORM 和表单验证。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -319,8 +302,8 @@ def pipe_query():
 
 > [!question] 判断题 2
 > `app = Flask(__name__)` 中的 `__name__` 用于让 Flask 确定模板和静态文件的根目录。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -328,8 +311,8 @@ def pipe_query():
 
 > [!question] 判断题 3
 > `jsonify()` 返回的是普通字符串，需要手动设置 Content-Type。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 错误
@@ -337,8 +320,8 @@ def pipe_query():
 
 > [!question] 判断题 4
 > Flask 的路由装饰器可以在同一个函数上使用多次，绑定多个 URL。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -346,8 +329,8 @@ def pipe_query():
 
 > [!question] 判断题 5
 > `url_for('static', filename='style.css')` 会生成 `/static/style.css` 这样的路径。 （ ）
-> - [ ] ✅ 正确
-> - [ ] ❌ 错误
+> - [ ] 正确
+> - [ ] 错误
 >
 > > [!success]- 点击查看答案
 > > 答案: 正确
@@ -355,74 +338,28 @@ def pipe_query():
 
 ---
 
-### 二、选择题（单项选择题）
-
-> [!question] 选择题 1
-> Flask 启动开发服务器时，默认监听的主机和端口是？
-> - [ ] A. 0.0.0.0:8080
-> - [ ] B. 127.0.0.1:5000
-> - [ ] C. 0.0.0.0:80
-> - [ ] D. 127.0.0.1:3000
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `app.run()` 默认监听 `127.0.0.1:5000`。可通过 `app.run(host='0.0.0.0', port=8080)` 修改。
-
-> [!question] 选择题 2
-> 在 Flask 路由函数中，如果访问了不存在的 `request.form['key']`，会抛出什么异常？
-> - [ ] A. `TypeError`
-> - [ ] B. `ValueError`
-> - [ ] C. `KeyError`
-> - [ ] D. `SyntaxError`
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: 与字典行为一致，直接索引不存在的键抛出 `KeyError`。推荐使用 `request.form.get('key', default)` 安全获取。
-
-> [!question] 选择题 3
-> 以下哪个 URL 能匹配路由 `@app.route('/post/<int:post_id>')`？
-> - [ ] A. `/post/hello`
-> - [ ] B. `/post/3.14`
-> - [ ] C. `/post/42`
-> - [ ] D. `/post/`
->
-> > [!success]- 点击查看答案
-> > 正确答案: C
-> > **解析**: `<int:post_id>` 只匹配整数。`/post/42` 匹配成功，`post_id` 为 Python `int` 类型的 42。
-
-> [!question] 选择题 4
-> 以下关于 `request.args` 的说法正确的是？
-> - [ ] A. 存储 POST 请求的表单数据
-> - [ ] B. 存储 URL 查询参数（`?key=val`）
-> - [ ] C. 存储 JSON 请求体
-> - [ ] D. 存储请求头
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `request.args` 是一个 `ImmutableMultiDict`，存储 URL 查询字符串中的参数。POST 表单用 `request.form`，JSON 用 `request.json`。
-
-> [!question] 选择题 5
-> 使用 `abort(404)` 的效果是？
-> - [ ] A. 杀死 Flask 进程
-> - [ ] B. 返回 HTTP 404 错误响应并终止当前请求
-> - [ ] C. 抛出 Python 异常但继续处理请求
-> - [ ] D. 重定向到 `/404` 页面
->
-> > [!success]- 点击查看答案
-> > 正确答案: B
-> > **解析**: `abort(code)` 抛出 `HTTPException`，由 Flask 框架捕获后返回对应的 HTTP 错误响应。
 
 ---
 
-### 🛠️ 动手练习题
+## 力扣练习
+
+以下题目用于验证本章所学内容：
+
+| 题号 | 题目 | 链接 | 涉及知识点 |
+|------|------|------|-----------|
+| — | 本章无对应力扣题 | — | 请用动手练习题自检 |
+
+
+
+### 动手练习题
 
 > [!example] 练习题 1：最小 Web 服务
-> **难度**: ⭐
+> **难度**: 简单
 >
 > 写一个 5 行的 Flask 应用，访问根路径 `/` 返回 `"Hello, C Programmer!"`。用浏览器验证后，尝试用 `curl http://127.0.0.1:5000` 查看原始 HTTP 响应。
 
 > [!example] 练习题 2：JSON API 端点
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 实现一个 `/api/v1/fib/<int:n>` 端点，返回前 n 个斐波那契数的 JSON 数组。要求：
 > - n ≤ 100，超出返回 400 错误
@@ -430,7 +367,7 @@ def pipe_query():
 > - 用 `curl` 和浏览器分别测试
 
 > [!example] 练习题 3：C 后端封装
-> **难度**: ⭐⭐⭐
+> **难度**: 简单
 >
 > 写一个 C 程序 `compute.c`，接受命令行参数 `<op> <a> <b>`，输出计算结果到 stdout：
 > ```c
@@ -439,7 +376,7 @@ def pipe_query():
 > 编译后，在 Flask 路由中通过 `subprocess.run` 调用该程序，将结果封装为 JSON API 返回。
 
 > [!example] 练习题 4：多路由表单
-> **难度**: ⭐⭐
+> **难度**: 简单
 >
 > 实现两个路由：
 > - `GET /form` — 显示 HTML 表单（含姓名、年龄两个字段）
