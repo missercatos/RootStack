@@ -13,13 +13,8 @@
  <b><a href="https://rootstack.misser.top">rootstack.misser.top</a></b> — 免代理访问的在线教程
 </p>
 
-<p align="center">
- <b><a href="https://rootstack.misser.top">rootstack.misser.top</a></b> — 免代理访问的在线教程
-</p>
-
 ---
 
----
 
 ## 关于本教程
 
