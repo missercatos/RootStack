@@ -41,7 +41,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "linux/README.md",
+                "file": "README.md",
                 "mode": "source",
                 "source": false
               },
@@ -134,7 +134,7 @@
             }
           }
         ],
-        "currentTab": 4
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -313,8 +313,10 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "d57853b484b01acb",
+  "active": "38cc3c16dab64ae8",
   "lastOpenFiles": [
+    "linux/README.md",
+    "c语言教程/1入门/10_结构体与联合体.md",
     "c语言教程/1入门/02_第一个C程序.md",
     "c语言教程/1入门/01_环境配置.md",
     "路径F-Rust学习路径.md",
@@ -339,8 +341,6 @@
     "python/1入门/04_字符串与文件读写.md",
     "python/1入门/03_列表与字典：C数组与结构体的平替.md",
     "汇编基础/2硬件操作/10_ARM汇编与硬件访问.md",
-    "汇编基础/2硬件操作/02_特权级与系统寄存器.md",
-    "汇编基础/2硬件操作/00_硬件操作总览.md",
     "sedHkWNCP",
     "操作系统/sedkHmXAB",
     "计算机网络",
