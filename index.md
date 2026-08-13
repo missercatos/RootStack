@@ -6,31 +6,12 @@
 </p>
 
 <p align="center">
- <img src="https://img.shields.io/badge/C-00599C?style=flat-square&logo=c&logoColor=white" alt="C"/>
- <img src="https://img.shields.io/badge/C++-00599C?style=flat-square&logo=cplusplus&logoColor=white" alt="C++"/>
- <img src="https://img.shields.io/badge/Rust-000000?style=flat-square&logo=rust&logoColor=white" alt="Rust"/>
- <img src="https://img.shields.io/badge/Lua-2C2D72?style=flat-square&logo=lua&logoColor=white" alt="Lua"/>
- <img src="https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black" alt="Linux"/>
- <img src="https://img.shields.io/badge/Assembly-525252?style=flat-square&logo=assemblermips&logoColor=white" alt="Assembly"/>
- <img src="https://img.shields.io/badge/数据结构-339933?style=flat-square" alt="数据结构"/>
- <img src="https://img.shields.io/badge/算法-FF6F00?style=flat-square" alt="算法"/>
- <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"/>
- <img src="https://img.shields.io/badge/网络安全-E34F26?style=flat-square" alt="网络安全"/>
-  <img src="https://img.shields.io/badge/版本-0.12.0-blue?style=flat-square" alt="version"/>
+ <img src="https://img.shields.io/badge/版本-0.12.0-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
  <a href="./git.md">Git 指南</a> · <a href="./github-settings.md">GitHub 设置</a> · <a href="./科学上网.md">科学上网</a> · <a href="./国际付费操作.md">国际付费</a> · <a href="./AI_Agent工具使用教程.md">AI Agent 工具</a> · <a href="./red_team/总目录与快速查询.md">红队知识库</a> · <a href="./ISSUES.md">参与贡献</a>
 </p>
-
-<p align="center">
- <img src="assets/help.png" alt="我们需要你的帮助" style="max-width: 100%;">
-</p>
-<p align="center" style="margin-top: 12px;">
- <a href="#加入交流群" style="display: inline-block; background: #a29bfe; color: #ffffff; padding: 12px 40px; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(162, 155, 254, 0.4);">加入我们 </a>
-</p>
-
----
 
 <p align="center">
  <b> 静态网站：<a href="https://rootstack.misser.top">rootstack.misser.top</a></b>
@@ -44,7 +25,7 @@
 
 **路径说明**: 路径 A-D 是**通识学习路径**，适合所有计算机学习者；路径 E 是**职业分化路径**——网络安全（红队），基于 ArchStrike 体系，已覆盖 ~125 篇知识库文件。通识路径学完后，按兴趣选择职业方向。
 
-**本教程有瑕疵**。教程内容包含 AI 辅助生成的部分，可能存在概念偏差、代码错误或总结不到位的情况。请读者始终保持批判性阅读，不要盲目照搬。如果你发现错误或有改进建议，请见 [[ISSUES|问题讨论区]]——我们非常欢迎你的议题和 Pull Request，项目组在经过实践检验和综合讨论之后会进行修改。
+**本教程有瑕疵**。教程内容包含 AI 辅助生成的部分，可能存在概念偏差、代码错误或总结不到位的情况。请读者始终保持批判性阅读，不要盲目照搬。如果你发现错误或有改进建议，请见 [问题讨论区](ISSUES.md)——我们非常欢迎你的议题和 Pull Request，项目组在经过实践检验和综合讨论之后会进行修改。
 
 ---
 
@@ -74,7 +55,7 @@
 
 AI Agent 工具是当前开发者生产力的核心加速器——它们不只是代码补全，而是能自主理解项目、读取文件、编辑代码、运行测试并迭代修复的"AI 协作者"。本教程体系本身就是在 Agent 工具的辅助下编写和维护的。
 
-教程涵盖主流 Agent 工具（Claude Code、opencode、Cursor、GitHub Copilot 等）的推荐、安装、使用方式，以及作者的安全优先、性能至上、终端黑窗口的使用哲学。详见 [[AI_Agent工具使用教程]]。
+教程涵盖主流 Agent 工具（Claude Code、opencode、Cursor、GitHub Copilot 等）的推荐、安装、使用方式，以及作者的安全优先、性能至上、终端黑窗口的使用哲学。详见 [AI_Agent工具使用教程](AI_Agent工具使用教程.md)。
 
 ---
 
@@ -118,7 +99,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/                          ├ v0.12.0
+RootStack/ ├ v0.12.0
 ├── README.md ← 你在这里
 │
 ├── 路径A-C主线.md C 主线: 从零到内核
@@ -127,6 +108,20 @@ RootStack/                          ├ v0.12.0
 ├── 路径D-DSA算法刷题.md 竞赛策略完全路线图 (力扣 + 多OJ)
 ├── 路径E-红队职业路径.md 网络安全职业路径 (含CTF→SRC/比赛分化)
 ├── 路径F-Rust学习路径.md Rust 学习路径 (含力扣练习与竞赛OJ)
+├── 路径-考研408方向.md 408考研统一入口（四科阅读方向 + 章节索引整合）
+├── 路径-工程化底层方向.md 底层系统工程化路径 (C/汇编/OS/内核)
+├── 路径-工程化应用方向.md 应用层工程化路径 (C++/前后端/数据库)
+│
+├── linux/ Linux 百科全书式教程 (63章 + 4发行版完整指南)
+│ ├── README.md Linux 教程总览与学习路线
+│ ├── 01-Linux概述与历史.md → 63-包管理器崩溃恢复与驱动管理通用指南.md (63章主线)
+│ ├── distro/
+│ │ ├── arch/ Arch Linux 完整指南（含 NVIDIA Legacy 驱动迁移与故障恢复）
+│ │ ├── debian/ Debian/Ubuntu 完整指南
+│ │ ├── redhat/ RHEL/CentOS/Fedora/Rocky 完整指南
+│ │ └── nix/ NixOS 声明式配置指南
+│ └── resources/ 命令速查表 + 术语对照表
+│
 ├── 算法/ 算法竞赛内容 (仅供 Path D 学习者)
 │ ├── 算法技巧/ (28篇) 基础算法技巧 (数组/搜索/DP/图论等)
 │ ├── 数学/ (5篇) 数论/组合数学/CRT (Phase 7)
@@ -157,16 +152,37 @@ RootStack/                          ├ v0.12.0
 ├── lua-tutorial/ (7篇) Lua 教程: 简介 → 安装 → 基础 → 进阶 → 集成
 │ ├── 00-lua简介.md 01-安装与环境配置.md 02-基础入门.md
 │ ├── 03-进阶教程.md 04-C与C++集成.md
-│ └── 05-Neovim示例.md 06-Love2D示例.md
+│   └── 05-Neovim示例.md          06-Love2D示例.md
 │
-├── python/ (~60篇) Python 教程: 入门 → 精通 → 实战 → 专项工具
-│ ├── python目录.md
-│ ├── 1入门/ (8篇) 2精通/ (8篇) 3实战/ (5篇)
-│ ├── 4库/ 5工程化/ (6篇) 6量化分析/ (6篇)
-│ ├── 7科学计算/ (5篇) 8数据可视化/ (5篇) 9图形处理/ (4篇)
-│ └── 10web应用/ (5篇) 11人工智能/ (6篇)
+├── python/ (~60篇)              Python 教程: 入门 → 精通 → 实战 → 专项工具
+│   ├── python目录.md
+│   ├── 1入门/ (8篇)               2精通/ (8篇)             3实战/ (5篇)
+│   ├── 4库/                       5工程化/ (6篇)           6量化分析/ (6篇)
+│   ├── 7科学计算/ (5篇)           8数据可视化/ (5篇)       9图形处理/ (4篇)
+│   └── 10web应用/ (5篇)           11人工智能/ (6篇)
 │
-├── 数据结构/ (21篇) 语言无关的数据结构教程 + DSA学习路线
+├── 数据结构/ (21篇)             语言无关的数据结构教程 + DSA学习路线
+│ ├── A_数组_Array → T_图的高级算法 (共20篇，A-T连续编号)
+│
+├── 操作系统/ (10篇) 大学本科操作系统课标 + 深入底层扩展
+│ ├── 操作系统_索引.md
+│ ├── A_操作系统概述 / B_进程管理 / C_线程与并发 / D_CPU调度
+│ ├── E_同步与死锁 / F_内存管理 / G_内存分配器 / H_文件系统 / I_进程间通信
+│ └── J_IO管理
+│
+├── 计算机原理/ (10篇) 大学本科计算机组成原理课标 + 深入底层扩展
+│ ├── 计算机原理_索引.md
+│ ├── A_数据表示 / B_缓存层级 / C_CPU架构 / D_内存层次结构 / E_指令集体系结构
+│ ├── F_总线系统 / G_输入输出系统 / H_CPU数据通路与控制器 / I_流水线与指令流水
+│ └── J_运算方法与运算器
+│
+├── 计算机网络/ (7篇) 大学本科计算机网络课标 + 深入底层扩展 (408全覆盖)
+│ ├── 计算机网络_索引.md
+│ └── A_体系结构 / B_物理层 / C_数据链路层 / D_网络层 / E_传输层 / F_应用层
+│
+├── 密码学/ (~29篇) 全领域密码学教程: 导读 + 20个专题
+│ ├── 密码学导读.md 阅读起点与学习路线
+│ └── 专题/ 初等数论/古典/对称/哈希/公钥/椭圆曲线/格/后量子/量子/零知识证明/同态加密/数字签名/密钥管理/秘密共享/密码协议/侧信道/工具等
 │
 ├── 内核/ (~35篇) 四种内核 + C与Rust新时代 + Rust内核开发
 │ ├── 系统内核/ (7篇) 语言运行时内核/ (7篇)
@@ -176,16 +192,19 @@ RootStack/                          ├ v0.12.0
 │
 ├── 汇编基础/ (~16篇) x86/ARM 汇编教程 + 硬件直接操作
 │ ├── 汇编目录.md
-│ ├── 1基础/ (4篇) 2硬件操作/ (11篇: Port I/O/MMIO/中断/UART/VGA/PIT/键盘/引导/ARM)
+│ ├── 1基础/ (4篇) 2硬件操作/ (11篇)
 │
-├── red_team/ (~125篇) 网络安全红队职业路径 (ArchStrike体系)
+├── red_team/ (~151篇) 网络安全红队职业路径 (ArchStrike体系)
 │ ├── 网安基础知识/ (10篇) 渗透测试方法论
 │ ├── 前端基础/ (25篇) 实战教程/ (13篇，含14天实训)
 │ ├── archstrike-*教学/ (48篇) 10组ArchStrike工具教程
 │ ├── 服务器部署与运维/ (4篇) QQ Bot攻防实战
-│ └── ctf_trea/ (7篇) CTF竞赛知识库
+│ └── ctf_trea/ (~35篇) CTF竞赛知识库
+│ ├── Web/Web前置技能/ (HTTP协议/操作系统/数据库/HTML-CSS/程序语言)
+│ ├── Web/Web工具配置/ (虚拟机/BurpSuite/Chrome/WebShell/菜刀/端口扫描/远程连接/目录爆破)
+│ └── Web/信息泄露/ (目录遍历)
 │
-├── git.md Git 与 GitHub 终端操作指南 (14节)
+├── git.md Git 与 GitHub 终端操作指南 (17节)
 ├── github-settings.md GitHub 网页端设置指南（新增）
 ├── vim教程.md Vim 编辑器教程 (安装+快捷键+:指令大全+现代替代)
 ├── VSCODE的配置与使用.md VS Code 配置与使用 (安装+插件+快捷键+替代)
@@ -231,16 +250,16 @@ Linux 6.1 开始正式支持 Rust 内核模块。未来的趋势不是 C vs Rust
 - Rust 负责新开发的驱动和子系统（GPU driver、Binder、网络协议）
 - 两者通过 C ABI 的 FFI 无缝交互
 
-详见 [[内核/C与Rust的内核新时代|C与Rust的内核新时代]]
+详见 [C与Rust的内核新时代](内核/C与Rust的内核新时代.md)
 
 ### 四种内核视角
 
 | 内核类型 | 入口 | 代表 |
 |---------|------|------|
-| 系统内核 | [[ISSUES|C语言与操作系统]] | Linux, Windows, BSD |
-| 语言运行时内核 | [[ISSUES|语言运行时内核索引]] | CRT, CPython, V8, JVM |
-| 工具内核 | [[ISSUES|工具内核索引]] | SQLite, Redis, MySQL, Chromium |
-| 游戏引擎内核 | [[ISSUES|游戏引擎内核索引]] | Unity, Unreal, raylib |
+| 系统内核 | [C语言与操作系统](ISSUES.md) | Linux, Windows, BSD |
+| 语言运行时内核 | [语言运行时内核索引](ISSUES.md) | CRT, CPython, V8, JVM |
+| 工具内核 | [工具内核索引](ISSUES.md) | SQLite, Redis, MySQL, Chromium |
+| 游戏引擎内核 | [游戏引擎内核索引](ISSUES.md) | Unity, Unreal, raylib |
 
 ---
 
@@ -266,7 +285,7 @@ Linux 6.1 开始正式支持 Rust 内核模块。未来的趋势不是 C vs Rust
 | [awesome-algorithms](https://github.com/tayllan/awesome-algorithms) | 资源列表 | 25.4k | 算法学习精选书单/课程/竞赛网站/可视化工具 |
 | [Algo-Atlas](https://github.com/lvy010/Algo-Atlas) | C++/Py | 493 | LeetCode 2000 题/8 月刷题计划，含完整分类笔记 |
 
-详细用法见 [[路径D-DSA算法刷题#推荐算法资源|路径 D 的推荐资源章节]]。
+详细用法见 [路径 D 的推荐资源章节](路径D-DSA算法刷题.md#推荐算法资源)。
 
 ---
 
@@ -276,11 +295,11 @@ Linux 6.1 开始正式支持 Rust 内核模块。未来的趋势不是 C vs Rust
 
 | 路径 | 文件 | 适合人群 |
 |------|------|---------|
-| A: C 主线 | [[ISSUES|路径A-C主线]] | 系统编程/嵌入式/内核开发 |
-| B: C++ 主线 | [[ISSUES|路径B-CPP主线]] | 应用开发 + 底层贯通 |
-| C: C→C++ | [[ISSUES|路径C-C→C++]] | 先 C 后 C++ 向下兼容 |
-| D: DSA 刷题 | [[ISSUES|路径D-DSA算法刷题]] | 数据结构与算法/力扣练习/竞赛入门 |
-| F: Rust 学习 | [[ISSUES|路径F-Rust学习路径]] | C++ 之后的系统编程进阶 |
+| A: C 主线 | [路径A-C主线](路径A-C主线.md) | 系统编程/嵌入式/内核开发 |
+| B: C++ 主线 | [路径B-CPP主线](路径B-CPP主线.md) | 应用开发 + 底层贯通 |
+| C: C→C++ | [路径C-C向下兼容C++](路径C-C向下兼容C++.md) | 先 C 后 C++ 向下兼容 |
+| D: DSA 刷题 | [路径D-DSA算法刷题](路径D-DSA算法刷题.md) | 数据结构与算法/力扣练习/竞赛入门 |
+| F: Rust 学习 | [路径F-Rust学习路径](路径F-Rust学习路径.md) | C++ 之后的系统编程进阶 |
 
 ## 职业路径（分支）
 
@@ -288,7 +307,7 @@ Linux 6.1 开始正式支持 Rust 内核模块。未来的趋势不是 C vs Rust
 
 | 路径 | 文件 | 适合人群 |
 |------|------|---------|
-| E: 红队 (ArchStrike) | [[ISSUES|路径E-红队职业路径]] | 网络安全/渗透测试/CTF/红队攻防，含CTF→SRC/比赛分化 |
+| E: 红队 (ArchStrike) | [路径E-红队职业路径](路径E-红队职业路径.md) | 网络安全/渗透测试/CTF/红队攻防，含CTF→SRC/比赛分化 |
 
 > 本教程体系可当作类百科全书使用，内容完善但体量庞大。若作为教程从头通读，效率不高。建议按照路径文件中的推荐阅读顺序，结合索引文件进行选择性学习。同时推荐与 AI 进行问答互动学习——在自认为掌握语法或数据结构之后，去 [力扣](https://leetcode.cn/) 做几道题验证即可。如遇到错误，不建议死磕，可用 AI 辅助纠正思路。
 
@@ -314,17 +333,17 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 
 | 模块 | 入口 | 说明 |
 |------|------|------|
-| C 语言 | [[ISSUES|C 教程目录]] | 入门 → 深化 → 3数据结构 → 库大全 |
-| C++ | [[ISSUES|C++ 教程目录]] | 基础 → 深化 → 容器库 → 功能库 → 第三方库 |
-| Python | [[python/python目录|Python 教程目录]] | 入门 → 精通 → 实战 → 库 → 工程化 → 专项工具 |
-| Vim | [[vim教程|Vim 编辑器教程]] | Windows安装+快捷键大全+:指令大全+现代替代 |
-| VS Code | [[VSCODE的配置与使用|VS Code 配置与使用]] | 三平台安装+中文/字体配置+插件+快捷键 |
-| 数据结构 | [[ISSUES|DSA 学习路线]] | 18个主题, Phase 1→6, 力扣题目 |
-| 算法技巧 | [[ISSUES|动态规划]] | 24个算法专题, 语言无关 |
-| 内核 | [[ISSUES|内核总索引]] | 四种内核 + C与Rust新时代 |
-| 汇编 | [[汇编基础/汇编目录|汇编基础教程]] | 基础入门 → 硬件直接操作 (16篇) |
-| 红队 | [[ISSUES|红队知识库总目录]] | ArchStrike渗透体系, ~125篇, 职业路径 |
-| AI Agent | [[AI_Agent工具使用教程]] | 编码 Agent 工具推荐、安装、使用哲学 |
+| C 语言 | [C 教程目录](c语言教程/c目录.md) | 入门 → 深化 → 3数据结构 → 库大全 |
+| C++ | [C++ 教程目录](cpp教程/cpp目录.md) | 基础 → 深化 → 容器库 → 功能库 → 第三方库 |
+| Python | [Python 教程目录](python/python目录.md) | 入门 → 精通 → 实战 → 库 → 工程化 → 专项工具 |
+| Vim | [Vim 编辑器教程](vim教程.md) | Windows安装+快捷键大全+:指令大全+现代替代 |
+| VS Code | [VS Code 配置与使用](VSCODE的配置与使用.md) | 三平台安装+中文/字体配置+插件+快捷键 |
+| 数据结构 | [DSA 学习路线](数据结构/DSA学习路线.md) | 18个主题, Phase 1→6, 力扣题目 |
+| 算法技巧 | [动态规划](算法/算法技巧/动态规划.md) | 24个算法专题, 语言无关 |
+| 内核 | [内核总索引](内核/内核索引.md) | 四种内核 + C与Rust新时代 |
+| 汇编 | [汇编基础教程](汇编基础/汇编目录.md) | 基础入门 → 硬件直接操作 (16篇) |
+| 红队 | [红队知识库总目录](red_team/总目录与快速查询.md) | ArchStrike渗透体系, ~125篇, 职业路径 |
+| AI Agent | [AI_Agent工具使用教程](AI_Agent工具使用教程.md) | 编码 Agent 工具推荐、安装、使用哲学 |
 
 ---
 
@@ -352,7 +371,7 @@ RootStack 欢迎任何人贡献内容、修正错误或提出建议。
 
 ### 终端操作（专业流程）
 
-详见 [[git|Git 与 GitHub 终端操作指南]]，包含从安装到 PR 合并的完整教程。
+详见 [Git 与 GitHub 终端操作指南](git.md)，包含从安装到 PR 合并的完整教程。
 
 ```
 # 极简流程：Fork → Clone → 修改 → PR
@@ -393,16 +412,15 @@ git push origin my-feature
 - [opencode](https://opencode.ai) — 项目重构与内容批量处理
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — 方案设计、内容编写与代码审查
 
-关于这些工具的详细介绍、安装使用、安全风险及作者的 Agent 使用哲学，见 [[AI_Agent工具使用教程]]。
+关于这些工具的详细介绍、安装使用、安全风险及作者的 Agent 使用哲学，见 [AI_Agent工具使用教程](AI_Agent工具使用教程.md)。
 
-感谢所有通过 [[ISSUES|问题讨论区]] 和 Pull Request 参与贡献的读者。
+感谢所有通过 [问题讨论区](ISSUES.md) 和 Pull Request 参与贡献的读者。
 
 ---
 ## 近期任务
 
  主要是两大任务，撰写密码学部分，与筛查优化数据结构部分。
- 本教程虽然是整合了已有的开源知识。但是大部分需要手动筛查和优化，即使有AI辅助也很难做完。另外本教程还有一些是没有被开源的教程，我们需要自己去探索撰写。工作量更添甚多，我们需要帮助！！！
- 有意向者欢迎加入我们QQ群，即使是进来加油打气，提出意见也行！
+ 本教程虽然是整合了已有的开源知识，但大部分需要手动筛查和优化，即使有AI辅助也很难做完。另外本教程还有一些是没有被开源的教程，需要自己去探索撰写。
  
 ---
 ## 近期更新
@@ -417,18 +435,9 @@ git push origin my-feature
 | 7.18 | Rust 教程整合 | 新增 Rust 教程体系 (~55篇: 入门14+深入11+实践6+工程12+重构6)，路径F-Rust学习路径，rust目录.md 索引，Rust内核融入 内核/Rust内核/，跨模块双链接 |
 | 7.20 | 新增密码学 | 密码学是计算领域的一门重要学科，所以创建密码学部分。专门列一个类目。 |
 | 7.22 | 网站上线 | 部署至 Cloudflare Pages，域名 rootstack.misser.top，GitHub Actions 自动发布 |
-| 7.22 | 内容更新 | Linux 推荐改为 Mint，新增网安发行版说明，增加求 Star 链接，版本升至 0.5.0
-| 7.31 | 新增Lua教程 | 新增 lua-tutorial/ (7篇: 简介+安装+基础+进阶+C/C++集成+Neovim+Love2D)，双链接接入 README/index，版本升至 0.8.0
-| 8.11 | 新增Python教程 | 新增 python/ (~60篇: 入门7+精通8+实战5+库索引+工程化6+量化分析6+科学计算5+可视化5+图形4+Web5+AI6)，定位为C程序员的Python工具手册，双链接接入 README/index，版本升至 0.9.0
-| 8.12 | 汇编重构+硬件操作 | 汇编基础/ 重构为分目录体系 (1基础/4篇 + 2硬件操作/11篇: Port I/O/MMIO/特权级/内联汇编精通/中断IDT/UART/VGA/PIT/键盘/引导/ARM)，以"直接操作硬件"为核心，全部示例 QEMU 可跑，版本升至 0.10.0
-| 8.13 | 全库规范性修订 | 全库去除 emoji 表情符号 (141 文件)；python/汇编 选择题→力扣题目链接 (~770道)；ASCII 字符画→Mermaid 渲染图 (~20处)；README/index 补 python 条目+双链接修复；python 新增"写在教程之前"(三平台下载+编辑器)+全章 Windows/macOS 补充；新增 vim教程.md (Windows安装+快捷键+指令大全)。版本升至 0.11.0
-| 8.14 | 编辑器三连+环境准备 | python 新增 1入门/00_准备工作.md (三平台环境配置+终端跑Python+编辑器选择)；vim教程.md 补全第九节"现代 Vim 上位替代" (IDE Vim插件/Neovim/LazyVim/ARKVim)；新增 VSCODE的配置与使用.md (三平台安装+中文界面+字体连字+插件配置+功能/快捷键+单语言替代)。版本升至 0.12.0
-
-
-## 加入交流群
-
-欢迎加入 QQ 群交流学习：
-
-![扫码加入 QQ 群](https://raw.githubusercontent.com/missercatos/RootStack/clean-main/assets/images/qrcode_1783954615606.jpg)
-
-二维码失效或群满请通过 [[ISSUES|问题讨论区]] 联系管理员更新。
+| 7.22 | 内容更新 | Linux 推荐改为 Mint，新增网安发行版说明，增加求 Star 链接，版本升至 0.5.0 |
+| 7.31 | 新增Lua教程 | 新增 lua-tutorial/ (7篇: 简介+安装+基础+进阶+C/C++集成+Neovim+Love2D)，双链接接入 README/index，版本升至 0.8.0 |
+| 8.11 | 新增Python教程 | 新增 python/ (~60篇: 入门7+精通8+实战5+库索引+工程化6+量化分析6+科学计算5+可视化5+图形4+Web5+AI6)，定位为C程序员的Python工具手册，双链接接入 README/index，版本升至 0.9.0 |
+| 8.12 | 汇编重构+硬件操作 | 汇编基础/ 重构为分目录体系 (1基础/4篇 + 2硬件操作/11篇: Port I/O/MMIO/特权级/内联汇编精通/中断IDT/UART/VGA/PIT/键盘/引导/ARM)，以"直接操作硬件"为核心，全部示例 QEMU 可跑，版本升至 0.10.0 |
+| 8.13 | 全库规范性修订 | 全库去除 emoji 表情符号 (141 文件)；python/汇编 选择题→力扣题目链接 (~770道)；ASCII 字符画→Mermaid 渲染图 (~20处)；README/index 补 python 条目+双链接修复；python 新增"写在教程之前"(三平台下载+编辑器)+全章 Windows/macOS 补充；新增 vim教程.md (Windows安装+快捷键+指令大全)。版本升至 0.11.0 |
+| 8.14 | 编辑器三连+环境准备 | python 新增 1入门/00_准备工作.md (三平台环境配置+终端跑Python+编辑器选择)；vim教程.md 补全第九节"现代 Vim 上位替代" (IDE Vim插件/Neovim/LazyVim/ARKVim)；新增 VSCODE的配置与使用.md (三平台安装+中文界面+字体连字+插件配置+功能/快捷键+单语言替代)。版本升至 0.12.0 |
