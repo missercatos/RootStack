@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "数据结构/A_数组_Array.md",
+                "file": "git.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "A_数组_Array"
+              "title": "git"
             }
           },
           {
@@ -244,8 +244,19 @@
   },
   "active": "38cc3c16dab64ae8",
   "lastOpenFiles": [
-    "数据结构/0 基本知识.md",
     "数据结构/A_数组_Array.md",
+    "sedsUBQR4",
+    "red_team/前端基础/php/08-代码审计基础.md",
+    "red_team/前端基础/php/07-反序列化与phar.md",
+    "red_team/前端基础/php/06-文件上传与WebShell.md",
+    "red_team/前端基础/php/05-文件包含LFI_RFI.md",
+    "red_team/前端基础/php/04-终端PHP与curl封装器实战.md",
+    "red_team/前端基础/php/03-危险函数与命令执行.md",
+    "red_team/前端基础/php/02-弱类型与认证绕过.md",
+    "red_team/前端基础/php/01-PHP核心语法与超全局变量.md",
+    "red_team/前端基础/php/PHP基础总目录.md",
+    "red_team/前端基础/php",
+    "数据结构/0 基本知识.md",
     "c语言教程/1入门/03_变量与数据类型.md",
     "数据结构/DSA学习路线.md",
     "数据结构/B_字符串_String.md",
@@ -260,16 +271,6 @@
     "路径D-DSA算法刷题.md",
     "路径C-C向下兼容C++.md",
     "路径B-CPP主线.md",
-    "路径A-C主线.md",
-    "路径-考研408方向.md",
-    "路径-工程化应用方向.md",
-    "路径-工程化底层方向.md",
-    "python/1入门/00_准备工作.md",
-    "VSCODE的配置与使用.md",
-    "vim教程.md",
-    "python/1入门/01_认识Python与python_-c_一行流.md",
-    "python/1入门/00 准备工作.md",
-    "python/python目录.md",
     "sedHkWNCP",
     "操作系统/sedkHmXAB",
     "计算机网络",
@@ -278,8 +279,6 @@
     "red_team/ctf_trea/Web/信息泄露",
     "red_team/ctf_trea/Web/Web工具配置/远程连接",
     "red_team/ctf_trea/Web/Web工具配置/虚拟机",
-    "red_team/ctf_trea/Web/Web工具配置/菜刀类工具",
-    "red_team/ctf_trea/Web/Web工具配置/端口扫描",
     "public/assets/images/string/strstr_kmp_indices.svg",
     "public/assets/images/string/prefix_str_3.svg",
     "public/assets/images/string/prefix_str_2.svg",
