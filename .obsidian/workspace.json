@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "README.md",
+                "file": "数据结构/A_数组_Array.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "README"
+              "title": "A_数组_Array"
             }
           },
           {
@@ -315,6 +315,10 @@
   },
   "active": "38cc3c16dab64ae8",
   "lastOpenFiles": [
+    "数据结构/B_字符串_String.md",
+    "数据结构/A_数组_Array.md",
+    "数据结构/0 基本知识.md",
+    "README.md",
     "linux/README.md",
     "c语言教程/1入门/10_结构体与联合体.md",
     "c语言教程/1入门/02_第一个C程序.md",
@@ -337,10 +341,6 @@
     "python/python目录.md",
     "python/1入门/02_变量与类型：从C迁移.md",
     "python/1入门/06_类与继承：从struct到class.md",
-    "python/1入门/05_异常处理与pdb调试.md",
-    "python/1入门/04_字符串与文件读写.md",
-    "python/1入门/03_列表与字典：C数组与结构体的平替.md",
-    "汇编基础/2硬件操作/10_ARM汇编与硬件访问.md",
     "sedHkWNCP",
     "操作系统/sedkHmXAB",
     "计算机网络",
