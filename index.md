@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
- <img src="https://img.shields.io/badge/版本-0.12.0-blue?style=flat-square" alt="version"/>
+ <img src="https://img.shields.io/badge/版本-0.13.0-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
@@ -99,7 +99,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/ ├ v0.12.0
+RootStack/ ├ v0.13.0
 ├── README.md ← 你在这里
 │
 ├── 路径A-C主线.md C 主线: 从零到内核
@@ -208,7 +208,9 @@ RootStack/ ├ v0.12.0
 ├── github-settings.md GitHub 网页端设置指南（新增）
 ├── vim教程.md Vim 编辑器教程 (安装+快捷键+:指令大全+现代替代)
 ├── VSCODE的配置与使用.md VS Code 配置与使用 (安装+插件+快捷键+替代)
-├── VERSION                      项目版本号: 0.12.0
+├── dsh.md DeepSeek Harness 教程 (安装+Web UI+Profile+插件开发与发布)
+├── npm.md npm 使用教程 (安装配置+版本管理+npx+进阶+排障)
+├── VERSION                      项目版本号: 0.13.0
 └── ISSUES.md 问题讨论与贡献指南
 ```
 
@@ -338,6 +340,8 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | Python | [Python 教程目录](python/python目录.md) | 入门 → 精通 → 实战 → 库 → 工程化 → 专项工具 |
 | Vim | [Vim 编辑器教程](vim教程.md) | Windows安装+快捷键大全+:指令大全+现代替代 |
 | VS Code | [VS Code 配置与使用](VSCODE的配置与使用.md) | 三平台安装+中文/字体配置+插件+快捷键 |
+| dsh | [DeepSeek Harness 教程](dsh.md) | 安装/Web UI/Profile/插件安装与开发/发布 |
+| npm | [npm 教程](npm.md) | 安装配置/基本使用/版本管理/npx/进阶/排障 |
 | 数据结构 | [DSA 学习路线](数据结构/DSA学习路线.md) | 18个主题, Phase 1→6, 力扣题目 |
 | 算法技巧 | [动态规划](算法/算法技巧/动态规划.md) | 24个算法专题, 语言无关 |
 | 内核 | [内核总索引](内核/内核索引.md) | 四种内核 + C与Rust新时代 |
@@ -440,4 +444,5 @@ git push origin my-feature
 | 8.11 | 新增Python教程 | 新增 python/ (~60篇: 入门7+精通8+实战5+库索引+工程化6+量化分析6+科学计算5+可视化5+图形4+Web5+AI6)，定位为C程序员的Python工具手册，双链接接入 README/index，版本升至 0.9.0 |
 | 8.12 | 汇编重构+硬件操作 | 汇编基础/ 重构为分目录体系 (1基础/4篇 + 2硬件操作/11篇: Port I/O/MMIO/特权级/内联汇编精通/中断IDT/UART/VGA/PIT/键盘/引导/ARM)，以"直接操作硬件"为核心，全部示例 QEMU 可跑，版本升至 0.10.0 |
 | 8.13 | 全库规范性修订 | 全库去除 emoji 表情符号 (141 文件)；python/汇编 选择题→力扣题目链接 (~770道)；ASCII 字符画→Mermaid 渲染图 (~20处)；README/index 补 python 条目+双链接修复；python 新增"写在教程之前"(三平台下载+编辑器)+全章 Windows/macOS 补充；新增 vim教程.md (Windows安装+快捷键+指令大全)。版本升至 0.11.0 |
-| 8.14 | 编辑器三连+环境准备 | python 新增 1入门/00_准备工作.md (三平台环境配置+终端跑Python+编辑器选择)；vim教程.md 补全第九节"现代 Vim 上位替代" (IDE Vim插件/Neovim/LazyVim/ARKVim)；新增 VSCODE的配置与使用.md (三平台安装+中文界面+字体连字+插件配置+功能/快捷键+单语言替代)。版本升至 0.12.0 |
+| 8.14 | 编辑器三连+环境准备 | python 新增 1入门/00_准备工作.md (三平台环境配置+终端跑Python+编辑器选择)；vim教程.md 补全第九节"现代 Vim 上位替代" (IDE Vim插件/Neovim/LazyVim/ARKVim)；新增 VSCODE的配置与使用.md (三平台安装+中文界面+字体连字+插件配置+功能/快捷键+单语言替代)。版本升至 0.12.0
+| 8.15 | dsh+npm 工具教程 | 新增 dsh.md (DeepSeek Harness: 安装/Web UI/Profile/插件安装卸载/插件开发与发布)；新增 npm.md (通用 npm 教程: 安装配置/版本管理/npx/workspaces/发布/排障)，两篇互相链接。版本升至 0.13.0 |
