@@ -95,7 +95,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/ ├ v0.12.0
+RootStack/ ├ v0.13.0
 ├── README.md ← 你在这里
 │
 ├── 路径A-C主线.md C 主线: 从零到内核
@@ -204,7 +204,9 @@ RootStack/ ├ v0.12.0
 ├── github-settings.md GitHub 网页端设置指南（新增）
 ├── vim教程.md Vim 编辑器教程 (安装+快捷键+:指令大全+现代替代)
 ├── VSCODE的配置与使用.md VS Code 配置与使用 (安装+插件+快捷键+替代)
-├── VERSION                      项目版本号: 0.12.0
+├── dsh.md DeepSeek Harness 教程 (安装+Web UI+Profile+插件开发与发布)
+├── npm.md npm 使用教程 (安装配置+版本管理+npx+进阶+排障)
+├── VERSION                      项目版本号: 0.13.0
 └── ISSUES.md 问题讨论与贡献指南
 ```
 
@@ -336,6 +338,8 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | Python | [Python 教程目录](python/python目录.md) | 入门→精通→实战→库→工程化→专项工具 |
 | Vim | [Vim 编辑器教程](vim教程.md) | Windows安装+快捷键大全+:指令大全+现代替代 |
 | VS Code | [VS Code 配置与使用](VSCODE的配置与使用.md) | 三平台安装+中文/字体配置+插件+快捷键 |
+| dsh | [DeepSeek Harness 教程](dsh.md) | 安装/Web UI/Profile/插件安装与开发/发布 |
+| npm | [npm 教程](npm.md) | 安装配置/基本使用/版本管理/npx/进阶/排障 |
 | 数据结构 | [DSA 学习路线](数据结构/DSA学习路线.md) | 20个主题, Phase 0→6, 力扣题目 |
 | 算法技巧 | [动态规划](算法/算法技巧/动态规划.md) | ~50个算法专题, 语言无关 |
 | 操作系统 | [操作系统教程](操作系统/操作系统_索引.md) | 大学本科课标 + 深入底层 (10篇) |
