@@ -6,7 +6,12 @@
 
 ## 原理
 
+![[../assets/images/图的分类.png]]
+
 图（Graph）由顶点（Vertex / Node）和连接顶点的边（Edge / Arc）组成。图是最灵活的数据结构——树是"无环连通图"，链表是"每个节点都恰好有一条出边的有向图"。
+
+![[../assets/images/有向图.png]]
+![[../assets/images/无向图.png]]
 
 ### 图的分类
 
@@ -29,6 +34,8 @@
 **邻接表的实现细节**：实际工程中，邻接表用 `vector<vector<int>>` 或 CSR 格式（类比稀疏矩阵一章）而非链表——因为 `vector` 的缓存友好性更好，且边的集合在构建后很少改变。
 
 ### BFS 与 DFS
+
+![[../assets/images/图遍历算法对比.png]]
 
 BFS 和 DFS 是图遍历的两条基本路径：
 
@@ -171,6 +178,8 @@ void graph_dfs(AdjNode** adj, int V, int start) {
 ```
 
 ### Dijkstra 最短路径
+
+![[../assets/images/Dijkstra算法.png]]
 
 Dijkstra 的核心思想是**贪心**：每次从未确定的顶点中选出距离起点最近的顶点，用它去松弛其邻居。重复 V 次，每次选最近顶点需要 O(V)，总 O(V^2)。用最小堆优化后选顶点降为 O(log V)，总 O((V+E)log V)。
 
