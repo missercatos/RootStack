@@ -30,6 +30,9 @@ graph TD
  end
 ```
 
+![[../assets/images/二叉堆.png]]
+![[../assets/images/二叉堆与数据存储的索引.png]]
+
 数组索引之间的跳转公式完全替代了指针：
 - 父节点：$\text{parent}(i) = \lfloor (i-1) / 2 \rfloor$
 - 左子节点：$\text{left}(i) = 2i + 1$
