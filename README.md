@@ -95,7 +95,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/ ├ v0.13.0
+RootStack/ ├ v0.14.0
 ├── README.md ← 你在这里
 │
 ├── 路径A-C主线.md C 主线: 从零到内核
@@ -190,15 +190,23 @@ RootStack/ ├ v0.13.0
 │ ├── 汇编目录.md
 │ ├── 1基础/ (4篇) 2硬件操作/ (11篇)
 │
-├── red_team/ (~160篇) 网络安全红队职业路径 (ArchStrike体系)
+├── 数据库/ (12篇) 多数据库教学: MySQL深入 + 全主流数据库
+│ ├── 数据库目录.md
+│ ├── mysql/ (5篇) 安装配置/SQL语法/查询进阶/索引事务/权限备份
+│ ├── postgresql/ sqlite/ sqlserver/ oracle/
+│ └── mongodb/ redis/
+│
+├── red_team/ (~186篇) 网络安全红队职业路径 (ArchStrike体系)
 │ ├── 网安基础知识/ (10篇) 渗透测试方法论
 │ ├── 前端基础/ (34篇) 实战教程/ (13篇，含14天实训)
+│ ├── 数据库安全/ (10篇) 各数据库渗透: 探测/提权/破解
 │ ├── archstrike-*教学/ (48篇) 10组ArchStrike工具教程
 │ ├── 服务器部署与运维/ (4篇) QQ Bot攻防实战
-│ └── ctf_trea/ (~35篇) CTF竞赛知识库
+│ └── ctf_trea/ (~51篇) CTF竞赛知识库
 │ ├── Web/Web前置技能/ (HTTP协议/操作系统/数据库/HTML-CSS/程序语言)
 │ ├── Web/Web工具配置/ (虚拟机/BurpSuite/Chrome/WebShell/菜刀/端口扫描/远程连接/目录爆破)
-│ └── Web/信息泄露/ (目录遍历)
+│ ├── Web/信息泄露/ (目录遍历)
+│ └── Web/SQL/ (注入5型 + mysql结构9场景)
 │
 ├── git.md Git 与 GitHub 终端操作指南 (17节)
 ├── github-settings.md GitHub 网页端设置指南（新增）
@@ -206,7 +214,7 @@ RootStack/ ├ v0.13.0
 ├── VSCODE的配置与使用.md VS Code 配置与使用 (安装+插件+快捷键+替代)
 ├── dsh.md DeepSeek Harness 教程 (安装+Web UI+Profile+插件开发与发布)
 ├── npm.md npm 使用教程 (安装配置+版本管理+npx+进阶+排障)
-├── VERSION                      项目版本号: 0.13.0
+├── VERSION                      项目版本号: 0.14.0
 └── ISSUES.md 问题讨论与贡献指南
 ```
 
@@ -348,6 +356,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | 考研408统一入口 | [路径-考研408方向](路径-考研408方向.md) | 四科阅读方向 + 章节索引整合 |
 | 内核 | [内核总索引](内核/内核索引.md) | 四种内核 + C与Rust新时代 |
 | 汇编 | [汇编基础教程](汇编基础/汇编目录.md) | 基础入门 → 硬件直接操作 (16篇) |
+| 数据库 | [数据库教学目录](数据库/数据库目录.md) | MySQL深入 + PostgreSQL/SQLite/MSSQL/Oracle/MongoDB/Redis (12篇) |
 | Linux 教程 | [Linux 百科全书式教程](linux/README.md) | 62章 + 4发行版指南 + Shell编程 + 服务器运维 |
 | Lua | [Lua 教程](lua-tutorial/00-lua简介.md) | 基础→进阶→C/C++集成→Neovim/Love2D (7篇) |
 | 红队 | [红队知识库总目录](red_team/总目录与快速查询.md) | ArchStrike渗透体系, ~148篇, 职业路径 |

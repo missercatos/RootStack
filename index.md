@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
- <img src="https://img.shields.io/badge/版本-0.13.0-blue?style=flat-square" alt="version"/>
+ <img src="https://img.shields.io/badge/版本-0.14.0-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
@@ -99,7 +99,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/ ├ v0.13.0
+RootStack/ ├ v0.14.0
 ├── README.md ← 你在这里
 │
 ├── 路径A-C主线.md C 主线: 从零到内核
@@ -194,15 +194,23 @@ RootStack/ ├ v0.13.0
 │ ├── 汇编目录.md
 │ ├── 1基础/ (4篇) 2硬件操作/ (11篇)
 │
-├── red_team/ (~160篇) 网络安全红队职业路径 (ArchStrike体系)
+├── 数据库/ (12篇) 多数据库教学: MySQL深入 + 全主流数据库
+│ ├── 数据库目录.md
+│ ├── mysql/ (5篇) 安装配置/SQL语法/查询进阶/索引事务/权限备份
+│ ├── postgresql/ sqlite/ sqlserver/ oracle/
+│ └── mongodb/ redis/
+│
+├── red_team/ (~186篇) 网络安全红队职业路径 (ArchStrike体系)
 │ ├── 网安基础知识/ (10篇) 渗透测试方法论
 │ ├── 前端基础/ (34篇) 实战教程/ (13篇，含14天实训)
+│ ├── 数据库安全/ (10篇) 各数据库渗透: 探测/提权/破解
 │ ├── archstrike-*教学/ (48篇) 10组ArchStrike工具教程
 │ ├── 服务器部署与运维/ (4篇) QQ Bot攻防实战
-│ └── ctf_trea/ (~35篇) CTF竞赛知识库
+│ └── ctf_trea/ (~51篇) CTF竞赛知识库
 │ ├── Web/Web前置技能/ (HTTP协议/操作系统/数据库/HTML-CSS/程序语言)
 │ ├── Web/Web工具配置/ (虚拟机/BurpSuite/Chrome/WebShell/菜刀/端口扫描/远程连接/目录爆破)
-│ └── Web/信息泄露/ (目录遍历)
+│ ├── Web/信息泄露/ (目录遍历)
+│ └── Web/SQL/ (注入5型 + mysql结构9场景)
 │
 ├── git.md Git 与 GitHub 终端操作指南 (17节)
 ├── github-settings.md GitHub 网页端设置指南（新增）
@@ -210,7 +218,7 @@ RootStack/ ├ v0.13.0
 ├── VSCODE的配置与使用.md VS Code 配置与使用 (安装+插件+快捷键+替代)
 ├── dsh.md DeepSeek Harness 教程 (安装+Web UI+Profile+插件开发与发布)
 ├── npm.md npm 使用教程 (安装配置+版本管理+npx+进阶+排障)
-├── VERSION                      项目版本号: 0.13.0
+├── VERSION                      项目版本号: 0.14.0
 └── ISSUES.md 问题讨论与贡献指南
 ```
 
@@ -346,6 +354,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | 算法技巧 | [动态规划](算法/算法技巧/动态规划.md) | 24个算法专题, 语言无关 |
 | 内核 | [内核总索引](内核/内核索引.md) | 四种内核 + C与Rust新时代 |
 | 汇编 | [汇编基础教程](汇编基础/汇编目录.md) | 基础入门 → 硬件直接操作 (16篇) |
+| 数据库 | [数据库教学目录](数据库/数据库目录.md) | MySQL深入 + PostgreSQL/SQLite/MSSQL/Oracle/MongoDB/Redis (12篇) |
 | 红队 | [红队知识库总目录](red_team/总目录与快速查询.md) | ArchStrike渗透体系, ~125篇, 职业路径 |
 | AI Agent | [AI_Agent工具使用教程](AI_Agent工具使用教程.md) | 编码 Agent 工具推荐、安装、使用哲学 |
 
@@ -445,4 +454,5 @@ git push origin my-feature
 | 8.12 | 汇编重构+硬件操作 | 汇编基础/ 重构为分目录体系 (1基础/4篇 + 2硬件操作/11篇: Port I/O/MMIO/特权级/内联汇编精通/中断IDT/UART/VGA/PIT/键盘/引导/ARM)，以"直接操作硬件"为核心，全部示例 QEMU 可跑，版本升至 0.10.0 |
 | 8.13 | 全库规范性修订 | 全库去除 emoji 表情符号 (141 文件)；python/汇编 选择题→力扣题目链接 (~770道)；ASCII 字符画→Mermaid 渲染图 (~20处)；README/index 补 python 条目+双链接修复；python 新增"写在教程之前"(三平台下载+编辑器)+全章 Windows/macOS 补充；新增 vim教程.md (Windows安装+快捷键+指令大全)。版本升至 0.11.0 |
 | 8.14 | 编辑器三连+环境准备 | python 新增 1入门/00_准备工作.md (三平台环境配置+终端跑Python+编辑器选择)；vim教程.md 补全第九节"现代 Vim 上位替代" (IDE Vim插件/Neovim/LazyVim/ARKVim)；新增 VSCODE的配置与使用.md (三平台安装+中文界面+字体连字+插件配置+功能/快捷键+单语言替代)。版本升至 0.12.0
-| 8.15 | dsh+npm 工具教程 | 新增 dsh.md (DeepSeek Harness: 安装/Web UI/Profile/插件安装卸载/插件开发与发布)；新增 npm.md (通用 npm 教程: 安装配置/版本管理/npx/workspaces/发布/排障)，两篇互相链接。版本升至 0.13.0 |
+| 8.15 | dsh+npm 工具教程 | 新增 dsh.md (DeepSeek Harness: 安装/Web UI/Profile/插件安装卸载/插件开发与发布)；新增 npm.md (通用 npm 教程: 安装配置/版本管理/npx/workspaces/发布/排障)，两篇互相链接。版本升至 0.13.0
+| 8.16 | 数据库三线扩充 | 新增 数据库/ (12篇: MySQL深入5章 + PostgreSQL/SQLite/MSSQL/Oracle/MongoDB/Redis)；red_team 新增 数据库安全/ (10篇: 渗透探测/MySQL UDF/MSSQL xp_cmdshell/Oracle/PostgreSQL/Redis 未授权与主从RCE/MongoDB/口令破解/工具链)；ctf_trea/Web 新增 SQL/ (16篇: 整数型/字符型/报错/布尔盲注/时间盲注 + mysql结构 Cookie/UA/Referer/二次注入/过滤空格/AND_OR/ORDER_BY/UPDATE/综合训练)。版本升至 0.14.0 |
