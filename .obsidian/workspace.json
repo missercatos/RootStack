@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "数据结构/0 基本知识.md",
+                "file": "linux/03-FHS文件系统层次标准.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "0 基本知识"
+              "title": "03-FHS文件系统层次标准"
             }
           },
           {
@@ -97,16 +97,16 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "数据结构/E_链表_LinkedList.md",
+                "file": "数据结构/B_字符串_String.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "E_链表_LinkedList"
+              "title": "B_字符串_String"
             }
           }
         ],
-        "currentTab": 6
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -285,10 +285,44 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "aadb4b73fa139a0c",
+  "active": "a43f62c08fa30d3c",
   "lastOpenFiles": [
-    "数据结构/0y_表达方式之间的转化_RepresentationConversion.md",
-    "数据结构/0x_数据结构表达方式_Representation.md",
+    "red_team/bash/04-横向移动/04-内网代理链：proxychains_impersonation.md",
+    "red_team/bash/04-横向移动/03-Pass-the-Hash的bash实现.md",
+    "red_team/bash/04-横向移动/02-SSH密钥收集与利用.md",
+    "red_team/bash/04-横向移动/01-密码喷射与暴力破解脚本.md",
+    "red_team/bash/03-提权/05-容器逃逸的bash检测脚本.md",
+    "red_team/bash/03-提权/04-定时任务与可写路径提权.md",
+    "red_team/bash/03-提权/03-内核漏洞利用的自动化检测.md",
+    "red_team/bash/03-提权/02-sudo滥用：GTFOBins自动化.md",
+    "red_team/bash/03-提权/01-SUID发现与利用脚本.md",
+    "red_team/bash/06-数据渗出/01-数据外传：DNS_HTTP_ICMP隧道.md",
+    "red_team/bash/08-武器化/04-红队工具链的bash封装.md",
+    "red_team/bash/08-武器化/03-钓鱼攻击脚本：宏_链接_附件.md",
+    "red_team/bash/08-武器化/02-自动化渗透框架：从bash开始.md",
+    "red_team/bash/08-武器化/01-一键环境搭建脚本.md",
+    "red_team/bash/07-CTF与靶场/04-Vulnhub_HTB靶场bash实战.md",
+    "red_team/bash/07-CTF与靶场/03-PWN题中的bash环境利用.md",
+    "red_team/bash/07-CTF与靶场/02-反弹shell绕过WAF技巧.md",
+    "red_team/bash/07-CTF与靶场/01-CTF中bash逆向题型.md",
+    "red_team/bash/06-数据渗出/03-痕迹清理脚本.md",
+    "red_team/bash/06-数据渗出/02-文件打包与加密传输.md",
+    "red_team/bash/05-漏洞利用/04-文件上传Webshell管理.md",
+    "red_team/bash/05-漏洞利用/03-Web漏洞自动化：SQL注入_XSS检测.md",
+    "red_team/bash/02-信息收集/04-网络拓扑发现：ping_sweep_arp.md",
+    "red_team/bash/02-信息收集/03-用户与权限枚举脚本.md",
+    "red_team/bash/05-漏洞利用/02-PoC框架：用bash快速验证CVE.md",
+    "red_team/bash/02-信息收集/02-端口扫描与服务识别：bash实现.md",
+    "scan_report_20260822.txt",
+    "scan_20260822.csv",
+    "red_team/bash/08-防御规避与痕迹清理",
+    "red_team/bash/07-数据渗出",
+    "red_team/bash/06-持久化与权限维持",
+    "red_team/bash/05-横向移动",
+    "red_team/bash/04-提权技术",
+    "red_team/bash/03-漏洞利用",
+    "red_team/bash/08-武器化",
+    "red_team/bash/07-CTF与靶场",
     "assets/images/二叉堆与数据存储的索引.png",
     "assets/images/二叉堆.png",
     "assets/images/区间合并.png",
@@ -299,40 +333,6 @@
     "assets/images/排序算法思路.png",
     "assets/images/Dijkstra算法.png",
     "assets/images/B+树.png",
-    "数据结构/B_字符串_String.md",
-    "sedb7KbaX",
-    "数据库/sqlite/SQLite教程.md",
-    "数据库/postgresql/PostgreSQL教程.md",
-    "数据库/mysql/05-用户权限与备份恢复.md",
-    "数据库/mysql/04-索引事务与优化.md",
-    "数据库/mysql/03-查询进阶.md",
-    "数据库/mysql/02-SQL基础语法.md",
-    "数据库/mysql/01-安装与配置.md",
-    "数据库/数据库目录.md",
-    "数据库/sqlite",
-    "数据库/postgresql",
-    "数据库/mysql",
-    "red_team/数据库安全/09-工具链速查.md",
-    "数据库/redis/Redis教程.md",
-    "red_team/数据库安全/08-口令破解与哈希提取.md",
-    "red_team/数据库安全/07-MongoDB渗透.md",
-    "red_team/数据库安全/06-Redis渗透.md",
-    "red_team/数据库安全/05-PostgreSQL渗透.md",
-    "red_team/数据库安全/04-Oracle渗透.md",
-    "red_team/数据库安全/03-MSSQL渗透.md",
-    "数据库/mongodb/MongoDB教程.md",
-    "red_team/数据库安全/02-MySQL渗透.md",
-    "数据库/oracle/Oracle教程.md",
-    "red_team/数据库安全/01-数据库渗透流程与探测.md",
-    "red_team/数据库安全/数据库安全总目录.md",
-    "数据库/sqlserver/SQLServer教程.md",
-    "red_team/数据库安全",
-    "数据库/sqlserver",
-    "数据库/redis",
-    "数据库/oracle",
-    "数据库/mongodb",
-    "数据库",
-    "red_team/ctf_trea/Web/SQL/mysql结构/09-综合训练.md",
     "docs/Canvas.canvas",
     "密码学/未命名.canvas",
     "未命名.canvas"

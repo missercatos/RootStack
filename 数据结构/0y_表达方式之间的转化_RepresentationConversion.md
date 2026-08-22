@@ -1,7 +1,7 @@
 
 ## 表达方式之间的转化
 
-建议先阅读: [[0x_数据结构表达方式_Representation|表达方式]], [[0 域本知识|前置知识]]
+建议先阅读: [[0x_数据结构表达方式_Representation|表达方式]], [[0 基本知识]]
 
 ---
 
@@ -215,16 +215,16 @@ $$
 
 ### 核心映射表
 
-| 数学概念 | C | C++ | Rust | Python | Bash | Java |
-|---------|---|-----|------|--------|------|------|
-| 求和 $\sum_{i=0}^{n-1} a_i$ | `for`循环累加 | 同C / `std::accumulate` | `.iter().sum()` | `sum(a)` | `for` + `(( ))` | `Arrays.stream(a).sum()` |
-| 求积 $\prod_{i=1}^{n} i$ | `for`循环累乘 | 同C | `.fold(1,\|a,b\|a*b)` | `math.prod()` 或 `functools.reduce` | `for` + `(( *= ))` | Stream reduce |
-| 递推 $a_n = f(a_{n-1})$ | `for`循环 | 同C | `for`循环 | `for`循环 | `for`循环 | `for`循环 |
-| 递归 $T(n) = T(n/2)+c$ | 递归函数 | 同C | 递归函数 | 递归函数 | 递归(不推荐) | 递归函数 |
-| 下取整 $\lfloor x \rfloor$ | `(int)x` | `std::floor` 或整数除法 | `as usize` / `.floor()` | `int(x)` 或 `//` 整除 | `$(( ))` 整除 | `(int)x` |
-| 取模 $a \bmod b$ | `a % b` | 同C | `a % b` | `a % b` | `$(( a % b ))` | `a % b` |
-| 最大值 $\max(a,b)` | `a>b?a:b` | `std::max(a,b)` | `a.max(b)` / `a.max(b)` | `max(a,b)` | `[[ $a -gt $b ]]` | `Math.max(a,b)` |
-| 条件函数 | `if-else` | 同C | `match` / `if-else` | `if-else` / 三元 | `if-then-else-fi` | `if-else` / `switch` |
+| 数学概念                      | C         | C++                    | Rust                    | Python                             | Bash               | Java                     |
+| ------------------------- | --------- | ---------------------- | ----------------------- | ---------------------------------- | ------------------ | ------------------------ |
+| 求和 $\sum_{i=0}^{n-1} a_i$ | `for`循环累加 | 同C / `std::accumulate` | `.iter().sum()`         | `sum(a)`                           | `for` + `(( ))`    | `Arrays.stream(a).sum()` |
+| 求积 $\prod_{i=1}^{n} i$    | `for`循环累乘 | 同C                     | `.fold(1,\|a,b\|a*b)`   | `math.prod()` 或 `functools.reduce` | `for` + `(( *= ))` | Stream reduce            |
+| 递推 $a_n = f(a_{n-1})$     | `for`循环   | 同C                     | `for`循环                 | `for`循环                            | `for`循环            | `for`循环                  |
+| 递归 $T(n) = T(n/2)+c$      | 递归函数      | 同C                     | 递归函数                    | 递归函数                               | 递归(不推荐)            | 递归函数                     |
+| 下取整 $\lfloor x \rfloor$   | `(int)x`  | `std::floor` 或整数除法     | `as usize` / `.floor()` | `int(x)` 或 `//` 整除                 | `$(( ))` 整除        | `(int)x`                 |
+| 取模 $a \bmod b$            | `a % b`   | 同C                     | `a % b`                 | `a % b`                            | `$(( a % b ))`     | `a % b`                  |
+| 最大值 $\max(a,b)`           | `a>b?a:b` | `std::max(a,b)`        | `a.max(b)` / `a.max(b)` | `max(a,b)`                         | `[[ $a -gt $b ]]`  | `Math.max(a,b)`          |
+| 条件函数                      | `if-else` | 同C                     | `match` / `if-else`     | `if-else` / 三元                     | `if-then-else-fi`  | `if-else` / `switch`     |
 
 ### 代表公式一：求和 $\sum_{i=0}^{n-1} a_i$
 
