@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
- <img src="https://img.shields.io/badge/版本-0.14.0-blue?style=flat-square" alt="version"/>
+ <img src="https://img.shields.io/badge/版本-0.15.0-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
@@ -99,7 +99,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/ ├ v0.14.0
+RootStack/ ├ v0.15.0
 ├── README.md ← 你在这里
 │
 ├── 路径A-C主线.md C 主线: 从零到内核
@@ -108,6 +108,7 @@ RootStack/ ├ v0.14.0
 ├── 路径D-DSA算法刷题.md 竞赛策略完全路线图 (力扣 + 多OJ)
 ├── 路径E-红队职业路径.md 网络安全职业路径 (含CTF→SRC/比赛分化)
 ├── 路径F-Rust学习路径.md Rust 学习路径 (含力扣练习与竞赛OJ)
+├── 路径G-Java全栈路径.md Java 全栈职业路径 (Java为后端核心, 前端/运维规划中)
 ├── 路径-考研408方向.md 408考研统一入口（四科阅读方向 + 章节索引整合）
 ├── 路径-工程化底层方向.md 底层系统工程化路径 (C/汇编/OS/内核)
 ├── 路径-工程化应用方向.md 应用层工程化路径 (C++/前后端/数据库)
@@ -137,17 +138,25 @@ RootStack/ ├ v0.14.0
 ├── c语言教程/ C 语言: 入门 → 深化 → 库大全
 │ ├── c目录.md
 │ ├── 1入门/ (10篇) 2深化/ (9篇) 3数据结构/ (9篇)
+│ ├── 4工程化/ (2篇) CMake深入 + C项目工程化(CI/静态分析/发布)
 │ └── 库大全/ → 容器类库/ 功能类库/ 第三方库/
 │
 ├── cpp教程/ C++ 教程: 基础 → 深化 → 容器库 → 功能库 → 第三方库
 │ ├── cpp目录.md
-│ ├── cpp基础教程/ (11篇) cpp深化教程/ (16篇)
-│ ├── 容器库/ (5子目录) cpp功能库/ (8子目录) cpp第三方库/ (11子目录)
+│ ├── cpp基础教程/ (11篇) cpp深化教程/ (18篇, 含CMake深入+Conan/vcpkg)
+│ ├── 容器库/ (5子目录) cpp功能库/ (8子目录)
+│ └── cpp第三方库/ (11子目录, 网络含Web框架实战)
 │
 ├── rust/ Rust 教程: 入门 → 深入 → 实践 → 工程 → 重构
 │ ├── rust目录.md
-│ ├── 1入门/ (14篇) 2深入/ (11篇) 3实践/ (6篇)
-│ ├── 4工程/ (12篇) 5重构/ (6篇)
+│ ├── 1入门/ (14篇) 2深入/ (11篇) 3实践/ (7篇, 含axum Web开发)
+│ ├── 4工程/ (14篇, 含sqlx+workspace) 5重构/ (6篇)
+│
+├── java/ (48篇) Java 全栈教程: 入门 → 深入 → 工程化 (Spring体系)
+│ ├── java目录.md
+│ ├── 1入门/ (18篇) 三平台环境配置 + 语法 + OOP核心
+│ ├── 2深入/ (12篇) 集合源码 + 并发 + JVM + 设计模式
+│ └── 3工程化/ (18篇) Maven/Gradle + Spring全家桶 + Docker/CI + 架构
 │
 ├── lua-tutorial/ (7篇) Lua 教程: 简介 → 安装 → 基础 → 进阶 → 集成
 │ ├── 00-lua简介.md 01-安装与环境配置.md 02-基础入门.md
@@ -218,7 +227,7 @@ RootStack/ ├ v0.14.0
 ├── VSCODE的配置与使用.md VS Code 配置与使用 (安装+插件+快捷键+替代)
 ├── dsh.md DeepSeek Harness 教程 (安装+Web UI+Profile+插件开发与发布)
 ├── npm.md npm 使用教程 (安装配置+版本管理+npx+进阶+排障)
-├── VERSION                      项目版本号: 0.14.0
+├── VERSION                      项目版本号: 0.15.0
 └── ISSUES.md 问题讨论与贡献指南
 ```
 
@@ -310,6 +319,7 @@ Linux 6.1 开始正式支持 Rust 内核模块。未来的趋势不是 C vs Rust
 | C: C→C++ | [路径C-C向下兼容C++](路径C-C向下兼容C++.md) | 先 C 后 C++ 向下兼容 |
 | D: DSA 刷题 | [路径D-DSA算法刷题](路径D-DSA算法刷题.md) | 数据结构与算法/力扣练习/竞赛入门 |
 | F: Rust 学习 | [路径F-Rust学习路径](路径F-Rust学习路径.md) | C++ 之后的系统编程进阶 |
+| G: Java 全栈 | [路径G-Java全栈路径](路径G-Java全栈路径.md) | 直接学全栈开发, Java 为后端核心 (Spring体系) |
 
 ## 职业路径（分支）
 
@@ -355,6 +365,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | 内核 | [内核总索引](内核/内核索引.md) | 四种内核 + C与Rust新时代 |
 | 汇编 | [汇编基础教程](汇编基础/汇编目录.md) | 基础入门 → 硬件直接操作 (16篇) |
 | 数据库 | [数据库教学目录](数据库/数据库目录.md) | MySQL深入 + PostgreSQL/SQLite/MSSQL/Oracle/MongoDB/Redis (12篇) |
+| Java 全栈 | [Java 教程目录](java/java目录.md) | 入门 → 深入 → 工程化/Spring全家桶 (48篇), 路径G |
 | 红队 | [红队知识库总目录](red_team/总目录与快速查询.md) | ArchStrike渗透体系, ~125篇, 职业路径 |
 | AI Agent | [AI_Agent工具使用教程](AI_Agent工具使用教程.md) | 编码 Agent 工具推荐、安装、使用哲学 |
 
@@ -455,4 +466,5 @@ git push origin my-feature
 | 8.13 | 全库规范性修订 | 全库去除 emoji 表情符号 (141 文件)；python/汇编 选择题→力扣题目链接 (~770道)；ASCII 字符画→Mermaid 渲染图 (~20处)；README/index 补 python 条目+双链接修复；python 新增"写在教程之前"(三平台下载+编辑器)+全章 Windows/macOS 补充；新增 vim教程.md (Windows安装+快捷键+指令大全)。版本升至 0.11.0 |
 | 8.14 | 编辑器三连+环境准备 | python 新增 1入门/00_准备工作.md (三平台环境配置+终端跑Python+编辑器选择)；vim教程.md 补全第九节"现代 Vim 上位替代" (IDE Vim插件/Neovim/LazyVim/ARKVim)；新增 VSCODE的配置与使用.md (三平台安装+中文界面+字体连字+插件配置+功能/快捷键+单语言替代)。版本升至 0.12.0
 | 8.15 | dsh+npm 工具教程 | 新增 dsh.md (DeepSeek Harness: 安装/Web UI/Profile/插件安装卸载/插件开发与发布)；新增 npm.md (通用 npm 教程: 安装配置/版本管理/npx/workspaces/发布/排障)，两篇互相链接。版本升至 0.13.0
-| 8.16 | 数据库三线扩充 | 新增 数据库/ (12篇: MySQL深入5章 + PostgreSQL/SQLite/MSSQL/Oracle/MongoDB/Redis)；red_team 新增 数据库安全/ (10篇: 渗透探测/MySQL UDF/MSSQL xp_cmdshell/Oracle/PostgreSQL/Redis 未授权与主从RCE/MongoDB/口令破解/工具链)；ctf_trea/Web 新增 SQL/ (16篇: 整数型/字符型/报错/布尔盲注/时间盲注 + mysql结构 Cookie/UA/Referer/二次注入/过滤空格/AND_OR/ORDER_BY/UPDATE/综合训练)。版本升至 0.14.0 |
+| 8.16 | 数据库三线扩充 | 新增 数据库/ (12篇: MySQL深入5章 + PostgreSQL/SQLite/MSSQL/Oracle/MongoDB/Redis)；red_team 新增 数据库安全/ (10篇: 渗透探测/MySQL UDF/MSSQL xp_cmdshell/Oracle/PostgreSQL/Redis 未授权与主从RCE/MongoDB/口令破解/工具链)；ctf_trea/Web 新增 SQL/ (16篇: 整数型/字符型/报错/布尔盲注/时间盲注 + mysql结构 Cookie/UA/Referer/二次注入/过滤空格/AND_OR/ORDER_BY/UPDATE/综合训练)。版本升至 0.14.0
+| 8.17 | Java 全栈体系 + 三语言补缺 | 新增 java/ (48篇: 1入门18章三平台配置+OOP核心 / 2深入12章集合源码+并发+JVM / 3工程化18章 Maven+Spring全家桶+Docker/CI+应急排查+GitHub项目实战+架构入门)；新增 路径G-Java全栈路径 (Phase 0-10, 前端/运维规划中)；补缺 c语言教程/4工程化/ (CMake深入+C项目工程化)、cpp深化教程 16-17 (CMake进阶+Conan/vcpkg)、cpp第三方库 网络Web框架实战、rust 实践07 axum + 工程13-14 (sqlx+workspace)。版本升至 0.15.0 |
