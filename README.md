@@ -95,7 +95,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/ ├ v0.15.0
+RootStack/ ├ v0.16.0
 ├── README.md ← 你在这里
 │
 ├── 路径A-C主线.md C 主线: 从零到内核
@@ -222,8 +222,14 @@ RootStack/ ├ v0.15.0
 ├── vim教程.md Vim 编辑器教程 (安装+快捷键+:指令大全+现代替代)
 ├── VSCODE的配置与使用.md VS Code 配置与使用 (安装+插件+快捷键+替代)
 ├── dsh.md DeepSeek Harness 教程 (安装+Web UI+Profile+插件开发与发布)
+├── deepseek-harness/ (26篇) DSH框架深度教程: 认知+架构+实战+自建Harness
+│ ├── deepseek-harness目录.md
+│ ├── 1认知/ (3篇) 范式跃迁 + 全景 + Cordis论文精读
+│ ├── 2架构/ (7篇) 内核/Profile/服务DI/事件/能力三角色/LLM适配/沙箱
+│ ├── 3实战开发/ (9篇) 源码导读 + 插件全流程 + 发布
+│ └── 4设计自己的Harness/ (7篇) 用Cordis从零造框架(含200行骨架源码)
 ├── npm.md npm 使用教程 (安装配置+版本管理+npx+进阶+排障)
-├── VERSION                      项目版本号: 0.15.0
+├── VERSION                      项目版本号: 0.16.0
 └── ISSUES.md 问题讨论与贡献指南
 ```
 
@@ -357,6 +363,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | Vim | [Vim 编辑器教程](vim教程.md) | Windows安装+快捷键大全+:指令大全+现代替代 |
 | VS Code | [VS Code 配置与使用](VSCODE的配置与使用.md) | 三平台安装+中文/字体配置+插件+快捷键 |
 | dsh | [DeepSeek Harness 教程](dsh.md) | 安装/Web UI/Profile/插件安装与开发/发布 |
+| DSH 框架深度 | [DeepSeek Harness 完整教程](deepseek-harness/deepseek-harness目录.md) | Cordis架构+论文精读+插件实战+自建Harness (26篇) |
 | npm | [npm 教程](npm.md) | 安装配置/基本使用/版本管理/npx/进阶/排障 |
 | 数据结构 | [DSA 学习路线](数据结构/DSA学习路线.md) | 20个主题, Phase 0→6, 力扣题目 |
 | 算法技巧 | [动态规划](算法/算法技巧/动态规划.md) | ~50个算法专题, 语言无关 |
