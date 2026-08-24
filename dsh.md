@@ -586,6 +586,7 @@ Git 安装拉的是源码，作者必须提供自包含的 `prepare` 脚本（pn
 
 ### 关联
 
+- [[deepseek-harness/deepseek-harness目录|DeepSeek Harness 完整教程]] — 框架深度学习路径：Cordis 架构、论文精读、插件开发实战、用 Cordis 自建 Harness
 - [[npm|npm 教程]] — dsh 的启动（npx）与插件管理（pnpm）都基于 npm 生态
 - [[vim教程|Vim 教程]] — 终端编辑插件源码
 - [[VSCODE的配置与使用|VS Code 配置]] — 编辑 TS 插件的图形界面选择

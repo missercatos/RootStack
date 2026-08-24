@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
- <img src="https://img.shields.io/badge/版本-0.15.0-blue?style=flat-square" alt="version"/>
+ <img src="https://img.shields.io/badge/版本-0.16.0-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
@@ -99,7 +99,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/ ├ v0.15.0
+RootStack/ ├ v0.16.0
 ├── README.md ← 你在这里
 │
 ├── 路径A-C主线.md C 主线: 从零到内核
@@ -226,8 +226,14 @@ RootStack/ ├ v0.15.0
 ├── vim教程.md Vim 编辑器教程 (安装+快捷键+:指令大全+现代替代)
 ├── VSCODE的配置与使用.md VS Code 配置与使用 (安装+插件+快捷键+替代)
 ├── dsh.md DeepSeek Harness 教程 (安装+Web UI+Profile+插件开发与发布)
+├── deepseek-harness/ (26篇) DSH框架深度教程: 认知+架构+实战+自建Harness
+│ ├── deepseek-harness目录.md
+│ ├── 1认知/ (3篇) 范式跃迁 + 全景 + Cordis论文精读
+│ ├── 2架构/ (7篇) 内核/Profile/服务DI/事件/能力三角色/LLM适配/沙箱
+│ ├── 3实战开发/ (9篇) 源码导读 + 插件全流程 + 发布
+│ └── 4设计自己的Harness/ (7篇) 用Cordis从零造框架(含200行骨架源码)
 ├── npm.md npm 使用教程 (安装配置+版本管理+npx+进阶+排障)
-├── VERSION                      项目版本号: 0.15.0
+├── VERSION                      项目版本号: 0.16.0
 └── ISSUES.md 问题讨论与贡献指南
 ```
 
@@ -359,6 +365,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | Vim | [Vim 编辑器教程](vim教程.md) | Windows安装+快捷键大全+:指令大全+现代替代 |
 | VS Code | [VS Code 配置与使用](VSCODE的配置与使用.md) | 三平台安装+中文/字体配置+插件+快捷键 |
 | dsh | [DeepSeek Harness 教程](dsh.md) | 安装/Web UI/Profile/插件安装与开发/发布 |
+| DSH 框架深度 | [DeepSeek Harness 完整教程](deepseek-harness/deepseek-harness目录.md) | Cordis架构+论文精读+插件实战+自建Harness (26篇) |
 | npm | [npm 教程](npm.md) | 安装配置/基本使用/版本管理/npx/进阶/排障 |
 | 数据结构 | [DSA 学习路线](数据结构/DSA学习路线.md) | 18个主题, Phase 1→6, 力扣题目 |
 | 算法技巧 | [动态规划](算法/算法技巧/动态规划.md) | 24个算法专题, 语言无关 |
@@ -468,3 +475,4 @@ git push origin my-feature
 | 8.15 | dsh+npm 工具教程 | 新增 dsh.md (DeepSeek Harness: 安装/Web UI/Profile/插件安装卸载/插件开发与发布)；新增 npm.md (通用 npm 教程: 安装配置/版本管理/npx/workspaces/发布/排障)，两篇互相链接。版本升至 0.13.0
 | 8.16 | 数据库三线扩充 | 新增 数据库/ (12篇: MySQL深入5章 + PostgreSQL/SQLite/MSSQL/Oracle/MongoDB/Redis)；red_team 新增 数据库安全/ (10篇: 渗透探测/MySQL UDF/MSSQL xp_cmdshell/Oracle/PostgreSQL/Redis 未授权与主从RCE/MongoDB/口令破解/工具链)；ctf_trea/Web 新增 SQL/ (16篇: 整数型/字符型/报错/布尔盲注/时间盲注 + mysql结构 Cookie/UA/Referer/二次注入/过滤空格/AND_OR/ORDER_BY/UPDATE/综合训练)。版本升至 0.14.0
 | 8.17 | Java 全栈体系 + 三语言补缺 | 新增 java/ (48篇: 1入门18章三平台配置+OOP核心 / 2深入12章集合源码+并发+JVM / 3工程化18章 Maven+Spring全家桶+Docker/CI+应急排查+GitHub项目实战+架构入门)；新增 路径G-Java全栈路径 (Phase 0-10, 前端/运维规划中)；补缺 c语言教程/4工程化/ (CMake深入+C项目工程化)、cpp深化教程 16-17 (CMake进阶+Conan/vcpkg)、cpp第三方库 网络Web框架实战、rust 实践07 axum + 工程13-14 (sqlx+workspace)。版本升至 0.15.0 |
+| 8.18 | DeepSeek Harness 框架深度教程 | 新增 deepseek-harness/ (26篇: 1认知3篇 范式跃迁+dsh全景+Cordis论文《A Programming Paradigm for Spatiotemporal Composability》精读 / 2架构7篇 Cordis内核+Fiber生命周期+Profile与Bundle分层+服务DI+事件四语义+能力三角色+LLM适配器StreamChunk+沙箱审批 / 3实战开发9篇 monorepo源码导读+插件全流程+defineTool+Config+Schemastery+热重载+类型安全+会话日志+发布 / 4设计自己的Harness7篇 决策树+200行Cordis骨架源码+工具流水线+多模型路由+安全审计+可观测回放+完整架构蓝图)；dsh.md 与新目录互链。版本升至 0.16.0 |
