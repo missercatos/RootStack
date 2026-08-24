@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
- <img src="https://img.shields.io/badge/版本-0.16.0-blue?style=flat-square" alt="version"/>
+ <img src="https://img.shields.io/badge/版本-0.17.0-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
@@ -99,7 +99,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/ ├ v0.16.0
+RootStack/ ├ v0.17.0
 ├── README.md ← 你在这里
 │
 ├── 路径A-C主线.md C 主线: 从零到内核
@@ -108,7 +108,7 @@ RootStack/ ├ v0.16.0
 ├── 路径D-DSA算法刷题.md 竞赛策略完全路线图 (力扣 + 多OJ)
 ├── 路径E-红队职业路径.md 网络安全职业路径 (含CTF→SRC/比赛分化)
 ├── 路径F-Rust学习路径.md Rust 学习路径 (含力扣练习与竞赛OJ)
-├── 路径G-Java全栈路径.md Java 全栈职业路径 (Java为后端核心, 前端/运维规划中)
+├── 路径G-Java全栈路径.md Java 全栈职业路径 (Java核心+前端闭环 Phase 0-11)
 ├── 路径-考研408方向.md 408考研统一入口（四科阅读方向 + 章节索引整合）
 ├── 路径-工程化底层方向.md 底层系统工程化路径 (C/汇编/OS/内核)
 ├── 路径-工程化应用方向.md 应用层工程化路径 (C++/前后端/数据库)
@@ -157,6 +157,16 @@ RootStack/ ├ v0.16.0
 │ ├── 1入门/ (18篇) 三平台环境配置 + 语法 + OOP核心
 │ ├── 2深入/ (12篇) 集合源码 + 并发 + JVM + 设计模式
 │ └── 3工程化/ (18篇) Maven/Gradle + Spring全家桶 + Docker/CI + 架构
+│
+├── 前端开发/ (~91篇) 前端全栈: 基础 → 框架 → 可视化 → 实战 → 融会贯通
+│ ├── 引导阅读.md 按需求导引(六条路线+技术栈组合)
+│ ├── 01-基础/ HTML+CSS+JS+TS (21篇)
+│ ├── 02-CSS框架/ Tailwind+Bootstrap5+Bootstrap4+Foundation (10篇)
+│ ├── 03-JS框架/ Vue2/Vue3/React/Next.js/Angular/AngularJS (25篇)
+│ ├── 04-DOM与交互/ DOM+AJAX+JSON (8篇) 05-工具库/ jQuery系 (2篇)
+│ ├── 06-数据可视化/ Chart.js+ECharts+Highcharts+SVG (12篇)
+│ ├── 07-图标与UI/ Font-Awesome (2篇)
+│ └── 08-项目实战/ (4篇) 09-融会贯通/ 工程化+联调+选型 (3篇)
 │
 ├── lua-tutorial/ (7篇) Lua 教程: 简介 → 安装 → 基础 → 进阶 → 集成
 │ ├── 00-lua简介.md 01-安装与环境配置.md 02-基础入门.md
@@ -233,7 +243,7 @@ RootStack/ ├ v0.16.0
 │ ├── 3实战开发/ (9篇) 源码导读 + 插件全流程 + 发布
 │ └── 4设计自己的Harness/ (7篇) 用Cordis从零造框架(含200行骨架源码)
 ├── npm.md npm 使用教程 (安装配置+版本管理+npx+进阶+排障)
-├── VERSION                      项目版本号: 0.16.0
+├── VERSION                      项目版本号: 0.17.0
 └── ISSUES.md 问题讨论与贡献指南
 ```
 
@@ -373,6 +383,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | 汇编 | [汇编基础教程](汇编基础/汇编目录.md) | 基础入门 → 硬件直接操作 (16篇) |
 | 数据库 | [数据库教学目录](数据库/数据库目录.md) | MySQL深入 + PostgreSQL/SQLite/MSSQL/Oracle/MongoDB/Redis (12篇) |
 | Java 全栈 | [Java 教程目录](java/java目录.md) | 入门 → 深入 → 工程化/Spring全家桶 (48篇), 路径G |
+| 前端开发 | [前端引导阅读](前端开发/引导阅读.md) | HTML/CSS/JS/TS + Vue/React/Angular + 可视化, 按需路线 (~91篇) |
 | 红队 | [红队知识库总目录](red_team/总目录与快速查询.md) | ArchStrike渗透体系, ~125篇, 职业路径 |
 | AI Agent | [AI_Agent工具使用教程](AI_Agent工具使用教程.md) | 编码 Agent 工具推荐、安装、使用哲学 |
 
@@ -476,3 +487,4 @@ git push origin my-feature
 | 8.16 | 数据库三线扩充 | 新增 数据库/ (12篇: MySQL深入5章 + PostgreSQL/SQLite/MSSQL/Oracle/MongoDB/Redis)；red_team 新增 数据库安全/ (10篇: 渗透探测/MySQL UDF/MSSQL xp_cmdshell/Oracle/PostgreSQL/Redis 未授权与主从RCE/MongoDB/口令破解/工具链)；ctf_trea/Web 新增 SQL/ (16篇: 整数型/字符型/报错/布尔盲注/时间盲注 + mysql结构 Cookie/UA/Referer/二次注入/过滤空格/AND_OR/ORDER_BY/UPDATE/综合训练)。版本升至 0.14.0
 | 8.17 | Java 全栈体系 + 三语言补缺 | 新增 java/ (48篇: 1入门18章三平台配置+OOP核心 / 2深入12章集合源码+并发+JVM / 3工程化18章 Maven+Spring全家桶+Docker/CI+应急排查+GitHub项目实战+架构入门)；新增 路径G-Java全栈路径 (Phase 0-10, 前端/运维规划中)；补缺 c语言教程/4工程化/ (CMake深入+C项目工程化)、cpp深化教程 16-17 (CMake进阶+Conan/vcpkg)、cpp第三方库 网络Web框架实战、rust 实践07 axum + 工程13-14 (sqlx+workspace)。版本升至 0.15.0 |
 | 8.18 | DeepSeek Harness 框架深度教程 | 新增 deepseek-harness/ (26篇: 1认知3篇 范式跃迁+dsh全景+Cordis论文《A Programming Paradigm for Spatiotemporal Composability》精读 / 2架构7篇 Cordis内核+Fiber生命周期+Profile与Bundle分层+服务DI+事件四语义+能力三角色+LLM适配器StreamChunk+沙箱审批 / 3实战开发9篇 monorepo源码导读+插件全流程+defineTool+Config+Schemastery+热重载+类型安全+会话日志+发布 / 4设计自己的Harness7篇 决策树+200行Cordis骨架源码+工具流水线+多模型路由+安全审计+可观测回放+完整架构蓝图)；dsh.md 与新目录互链。版本升至 0.16.0 |
+| 8.19 | 前端开发全栈目录 | 新增 前端开发/ (~91篇, 九子目录): 引导阅读.md 按需求六路线导引+四条技术栈组合 / 01-基础 HTML+CSS+JavaScript+TypeScript 21篇 / 02-CSS框架 Tailwind+Bootstrap5深入+Bootstrap4/Foundation速查 10篇 / 03-JS框架 Vue2/Vue3/React/Next.js/Angular 深入+AngularJS速查 25篇 / 04-DOM与交互+05-工具库+07-图标 12篇 / 06-数据可视化 Chart.js+ECharts+Highcharts+SVG 12篇 / 08-项目实战 企业官网+后台管理(Vue3)+数据看板(React)+电商首页(Tailwind) 4篇 / 09-融会贯通 工程化+Java前后端联调+技术栈选型 3篇；路径G 新增 Phase 11 前端闭环并接入引导阅读。版本升至 0.17.0 |
