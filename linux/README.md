@@ -40,14 +40,15 @@ Linux 是一个类 Unix 的开源操作系统内核，由芬兰赫尔辛基大�
 
 ## 教程结构总览
 
-本教程按知识领域划分为六个部分，共 **63 章**（主教程）+ 发行版专项内容，总计超过 80 篇文档。
+本教程按知识领域划分为七个部分，共 **66 章**（主教程，含第 0 章）+ 发行版专项内容 + WSL 专项目录。
 
-### 第一部分：入门篇（01-06）
+### 第一部分：入门篇（00-06）
 
-理解和安装 Linux，建立基本功。
+从第一次打开 Linux 到建立命令行基本功。刚装好系统的"急救手册"见第 0 章。
 
 | 章节 | 标题 | 核心内容 |
 |------|------|---------|
+| [[00-Linux快速上手]] | Linux 快速上手 | 新手急救手册：中文输入法、中文字体、联网、显卡/WiFi 驱动、屏幕显示、软件安装、常见报错速查 |
 | [[01-Linux概述与历史]] | Linux 概述与历史 | Unix 遗产、Linus 的故事、开源运动、GNU GPL 协议 |
 | [[02-多发行版安装指南]] | 多发行版安装指南 | Debian/Arch/Fedora/NixOS 安装流程、分区、引导 |
 | [[03-FHS文件系统层次标准]] | FHS 文件系统层次标准 | `/bin`, `/etc`, `/var`, `/usr` 等目录的结构与意义 |
@@ -55,21 +56,23 @@ Linux 是一个类 Unix 的开源操作系统内核，由芬兰赫尔辛基大�
 | [[05-文本编辑器(Vim+Nano)]] | 文本编辑器 (Vim + Nano) | Vim 模态编辑、Nano 新手友好、配置文件编辑实践 |
 | [[06-命令行基础与Shell入门]] | 命令行基础与 Shell 入门 | Bash 基础、环境变量、别名、补全、作业控制 |
 
-### 第二部分：运维基础（07-15）
+### 第二部分：系统配置与运维基础（07-17）
 
-系统管理的核心技能。
+环境变量操作全书、虚拟机实战与系统管理的核心技能。
 
 | 章节 | 标题 | 核心内容 |
 |------|------|---------|
-| [[07-用户与权限管理]] | 用户与权限管理 | UID/GID、文件权限、ACL、sudo、PAM 认证 |
-| [[08-进程管理]] | 进程管理 | `ps`, `top`, `htop`, `kill`, signal, nice, 前后台切换 |
-| [[09-systemd服务管理]] | systemd 服务管理 | Unit 文件、timer、socket、journalctl、systemd 启动流程 |
-| [[10-存储管理与磁盘操作]] | 存储管理与磁盘操作 | 分区（fdisk/gdisk）、格式化、挂载、fstab、LVM |
-| [[11-网络配置基础]] | 网络配置基础 | IP 地址、路由、DNS、NetworkManager、systemd-networkd |
-| [[12-软件包管理通识]] | 软件包管理通识 | 包管理概念、各发行版对比、GPG 验证、AUR/PPA/Copr |
-| [[13-计划任务与自动化]] | 计划任务与自动化 | cron、systemd timer、at、anacron |
-| [[14-日志系统]] | 日志系统 | journald、rsyslog、logrotate、集中日志分析 |
-| [[15-备份与恢复]] | 备份与恢复 | rsync、tar、dd、BorgBackup、快照恢复、灾难恢复策略 |
+| [[07-PATH深入与环境变量全书]] | PATH 深入与环境变量全书 | export 本质、PATH 搜索机制与 hash 缓存、配置文件加载链、开发工具链/系统行为/密钥安全/服务容器变量实战、调试排查 |
+| [[08-用户与权限管理]] | 用户与权限管理 | UID/GID、文件权限、ACL、sudo、PAM 认证 |
+| [[09-虚拟机配置与打包]] | 虚拟机配置与打包 | Type-1/Type-2 全景、VirtualBox/VMware/KVM/Vagrant 配置快照克隆、OVA/OVF 打包分发、Windows/macOS/Linux 三大宿主机方案、自定义 ISO（live-build/archiso/mkosi） |
+| [[10-进程管理]] | 进程管理 | `ps`, `top`, `htop`, `kill`, signal, nice, 前后台切换 |
+| [[11-systemd服务管理]] | systemd 服务管理 | Unit 文件、timer、socket、journalctl、systemd 启动流程 |
+| [[12-存储管理与磁盘操作]] | 存储管理与磁盘操作 | 分区（fdisk/gdisk）、格式化、挂载、fstab、LVM |
+| [[13-网络配置基础]] | 网络配置基础 | IP 地址、路由、DNS、NetworkManager、systemd-networkd |
+| [[14-软件包管理通识]] | 软件包管理通识 | 包管理概念、各发行版对比、GPG 验证、AUR/PPA/Copr |
+| [[15-计划任务与自动化]] | 计划任务与自动化 | cron、systemd timer、at、anacron |
+| [[16-日志系统]] | 日志系统 | journald、rsyslog、logrotate、集中日志分析 |
+| [[17-备份与恢复]] | 备份与恢复 | rsync、tar、dd、BorgBackup、快照恢复、灾难恢复策略 |
 
 ### 第三部分：Shell 编程与自动化（16-20）
 
@@ -77,82 +80,82 @@ Linux 是一个类 Unix 的开源操作系统内核，由芬兰赫尔辛基大�
 
 | 章节 | 标题 | 核心内容 |
 |------|------|---------|
-| [[16-Bash编程基础]] | Bash 编程基础 | 变量、条件、循环、函数、参数、退出码 |
-| [[17-Bash编程进阶]] | Bash 编程进阶 | 数组、关联数组、trap、set 选项、调试、子Shell |
-| [[18-正则与文本处理三剑客]] | 正则与文本处理三剑客 | grep/sed/awk 深度，正则表达式语法 |
-| [[19-IO重定向与管道深入]] | I/O 重定向与管道深入 | stdin/stdout/stderr、Here Document、进程替换、命名管道 |
-| [[20-Shell脚本实战]] | Shell 脚本实战 | 日志分析脚本、监控脚本、备份脚本、批量管理 |
+| [[18-Bash编程基础]] | Bash 编程基础 | 变量、条件、循环、函数、参数、退出码 |
+| [[19-Bash编程进阶]] | Bash 编程进阶 | 数组、关联数组、trap、set 选项、调试、子Shell |
+| [[20-正则与文本处理三剑客]] | 正则与文本处理三剑客 | grep/sed/awk 深度，正则表达式语法 |
+| [[21-IO重定向与管道深入]] | I/O 重定向与管道深入 | stdin/stdout/stderr、Here Document、进程替换、命名管道 |
+| [[22-Shell脚本实战]] | Shell 脚本实战 | 日志分析脚本、监控脚本、备份脚本、批量管理 |
 
-### 第四部分：服务与安全（21-26）
+### 第四部分：服务与安全（23-28）
 
 对外提供服务和保护系统的完整技能。
 
 | 章节 | 标题 | 核心内容 |
 |------|------|---------|
-| [[21-SSH远程管理]] | SSH 远程管理 | SSH 密钥、配置、隧道、端口转发、sshd 加固 |
-| [[22-防火墙与安全]] | 防火墙与安全 | iptables/nftables/firewalld/ufw、DDoS 防护、Fail2ban |
-| [[23-DNS与域名系统]] | DNS 与域名系统 | 递归/权威 DNS、BIND、CoreDNS、DNS-over-HTTPS |
-| [[24-Web服务器(Nginx+Apache)]] | Web 服务器 (Nginx + Apache) | 虚拟主机、SSL/TLS、反向代理、PHP-FPM、静态优化 |
-| [[25-数据库管理]] | 数据库管理 | PostgreSQL/MySQL 安装、用户权限、备份恢复、基础调优 |
-| [[26-系统安全加固与审计]] | 系统安全加固与审计 | 最小权限、审计日志、入侵检测、MFA、内核参数加固 |
+| [[23-SSH远程管理]] | SSH 远程管理 | SSH 密钥、配置、隧道、端口转发、sshd 加固 |
+| [[24-防火墙与安全]] | 防火墙与安全 | iptables/nftables/firewalld/ufw、DDoS 防护、Fail2ban |
+| [[25-DNS与域名系统]] | DNS 与域名系统 | 递归/权威 DNS、BIND、CoreDNS、DNS-over-HTTPS |
+| [[26-Web服务器(Nginx+Apache)]] | Web 服务器 (Nginx + Apache) | 虚拟主机、SSL/TLS、反向代理、PHP-FPM、静态优化 |
+| [[27-数据库管理]] | 数据库管理 | PostgreSQL/MySQL 安装、用户权限、备份恢复、基础调优 |
+| [[28-系统安全加固与审计]] | 系统安全加固与审计 | 最小权限、审计日志、入侵检测、MFA、内核参数加固 |
 
-### 第五部分：操作系统原理（27-35）
+### 第五部分：操作系统原理（29-37）
 
 计算机科学理论基础——理解操作系统本身。
 
 | 章节 | 标题 | 核心内容 |
 |------|------|---------|
-| [[27-操作系统概述与结构]] | 操作系统概述与结构 | OS 层次结构、系统调用机制、内核架构、中断处理 |
-| [[28-进程与线程]] | 进程与线程 | PCB、上下文切换、多线程模型、用户线程 vs 内核线程 |
-| [[29-进程同步与互斥]] | 进程同步与互斥 | 临界区、信号量、互斥锁、条件变量、管程 |
-| [[30-死锁]] | 死锁 | 死锁四条件、预防、避免（银行家算法）、检测与解除 |
-| [[31-处理机调度]] | 处理机调度 | 调度算法（FCFS、SJF、RR、多级队列）、CFS、实时调度 |
-| [[32-存储管理]] | 存储管理 | 分区分配、段式存储、页式存储、内部/外部碎片 |
-| [[33-虚拟存储与页面置换]] | 虚拟存储与页面置换 | 请求调页、FIFO/LRU/Clock 置换算法、工作集 |
-| [[34-文件系统设计]] | 文件系统设计 | 文件结构、目录实现、空闲空间管理、一致性检查 |
-| [[35-I-O设备管理]] | I/O 设备管理 | I/O 控制方式、缓冲/缓存、SPOOLing、磁盘调度 |
+| [[29-操作系统概述与结构]] | 操作系统概述与结构 | OS 层次结构、系统调用机制、内核架构、中断处理 |
+| [[30-进程与线程]] | 进程与线程 | PCB、上下文切换、多线程模型、用户线程 vs 内核线程 |
+| [[31-进程同步与互斥]] | 进程同步与互斥 | 临界区、信号量、互斥锁、条件变量、管程 |
+| [[32-死锁]] | 死锁 | 死锁四条件、预防、避免（银行家算法）、检测与解除 |
+| [[33-处理机调度]] | 处理机调度 | 调度算法（FCFS、SJF、RR、多级队列）、CFS、实时调度 |
+| [[34-存储管理]] | 存储管理 | 分区分配、段式存储、页式存储、内部/外部碎片 |
+| [[35-虚拟存储与页面置换]] | 虚拟存储与页面置换 | 请求调页、FIFO/LRU/Clock 置换算法、工作集 |
+| [[36-文件系统设计]] | 文件系统设计 | 文件结构、目录实现、空闲空间管理、一致性检查 |
+| [[37-I-O设备管理]] | I/O 设备管理 | I/O 控制方式、缓冲/缓存、SPOOLing、磁盘调度 |
 
-### 第六部分：系统架构与高级主题（36-63）
+### 第六部分：系统架构与高级主题（38-55）
 
 从内核到用户态，从存储到追踪——深入 Linux 现代特性。
 
 | 章节 | 标题 | 核心内容 |
 |------|------|---------|
-| [[36-Linux内核基础与模块]] | Linux 内核基础与模块 | 内核模块加载/卸载、编译内核、内核参数、sysctl |
-| [[37-系统调优与性能分析]] | 系统调优与性能分析 | perf、火焰图、sar、vmstat、perf top |
-| [[38-引导流程与GRUB]] | 引导流程与 GRUB | BIOS/UEFI、Bootloader、内核启动参数、initramfs |
-| [[39-内存管理深入]] | 内存管理深入 | Buddy 算法、Slab 分配器、页面回收、内存压缩、HugePages |
-| [[40-文件系统深入]] | 文件系统深入 | VFS 层、ext4、XFS、Btrfs、ZFS、超级块、日志 |
-| [[41-硬件驱动与设备管理]] | 硬件驱动与设备管理 | 设备树、udev、sysfs、驱动加载机制 |
-| [[42-压缩与归档工具大全]] | 压缩与归档工具大全 | tar, gz, xz, zstd, 7z, rar, zip 详解 |
-| [[43-系统错误排查与日志分析]] | 系统错误排查与日志分析 | 故障排查方法论、日志解析、Troubleshooting |
-| [[44-容器技术]] | 容器技术 | Docker/Podman、Dockerfile、Compose、注册表、BuildKit |
-| [[45-容器编排与K8s入门]] | 容器编排与 K8s 入门 | Pod, Deployment, Service, Ingress, Helm (基础) |
-| [[46-不可变系统]] | 不可变系统 | Fedora Silverblue, openSUSE MicroOS, NixOS, SteamOS |
-| [[47-FUSE与虚拟文件系统]] | FUSE 与虚拟文件系统 | 用户态文件系统、S3FS、SSHFS、Rclone、自定义 VFS |
-| [[48-BPF与系统追踪]] | BPF 与系统追踪 | eBPF 架构、bpftrace、可观测性 |
-| [[49-Wayland深入指南]] | Wayland 深入指南 | 协议、合成器、客户端、XWayland |
-| [[50-PipeWire与音频系统]] | PipeWire 与音频系统 | 替代 PulseAudio/JACK，统一多媒体框架 |
-| [[51-io_uring与异步IO]] | io_uring 与异步 I/O | 高性能异步 I/O 接口，超越 AIO、epoll |
-| [[52-Device Mapper与存储栈]] | Device Mapper 与存储栈 | dm-crypt (LUKS), dm-thin (LVM), dm-verity, dm-integrity |
-| [[53-终端常用工具大全]] | 终端常用工具大全 | fd, ripgrep, bat, tldr, jq, fzf, zoxide, lsd, btop, tmux |
+| [[38-Linux内核基础与模块]] | Linux 内核基础与模块 | 内核模块加载/卸载、编译内核、内核参数、sysctl |
+| [[39-系统调优与性能分析]] | 系统调优与性能分析 | perf、火焰图、sar、vmstat、perf top |
+| [[40-引导流程与GRUB]] | 引导流程与 GRUB | BIOS/UEFI、Bootloader、内核启动参数、initramfs |
+| [[41-内存管理深入]] | 内存管理深入 | Buddy 算法、Slab 分配器、页面回收、内存压缩、HugePages |
+| [[42-文件系统深入]] | 文件系统深入 | VFS 层、ext4、XFS、Btrfs、ZFS、超级块、日志 |
+| [[43-硬件驱动与设备管理]] | 硬件驱动与设备管理 | 设备树、udev、sysfs、驱动加载机制 |
+| [[44-压缩与归档工具大全]] | 压缩与归档工具大全 | tar, gz, xz, zstd, 7z, rar, zip 详解 |
+| [[45-系统错误排查与日志分析]] | 系统错误排查与日志分析 | 故障排查方法论、日志解析、Troubleshooting |
+| [[46-容器技术]] | 容器技术 | Docker/Podman、Dockerfile、Compose、注册表、BuildKit |
+| [[47-容器编排与K8s入门]] | 容器编排与 K8s 入门 | Pod, Deployment, Service, Ingress, Helm (基础) |
+| [[48-不可变系统]] | 不可变系统 | Fedora Silverblue, openSUSE MicroOS, NixOS, SteamOS |
+| [[49-FUSE与虚拟文件系统]] | FUSE 与虚拟文件系统 | 用户态文件系统、S3FS、SSHFS、Rclone、自定义 VFS |
+| [[50-BPF与系统追踪]] | BPF 与系统追踪 | eBPF 架构、bpftrace、可观测性 |
+| [[51-Wayland深入指南]] | Wayland 深入指南 | 协议、合成器、客户端、XWayland |
+| [[52-PipeWire与音频系统]] | PipeWire 与音频系统 | 替代 PulseAudio/JACK，统一多媒体框架 |
+| [[53-io_uring与异步IO]] | io_uring 与异步 I/O | 高性能异步 I/O 接口，超越 AIO、epoll |
+| [[54-Device Mapper与存储栈]] | Device Mapper 与存储栈 | dm-crypt (LUKS), dm-thin (LVM), dm-verity, dm-integrity |
+| [[55-终端常用工具大全]] | 终端常用工具大全 | fd, ripgrep, bat, tldr, jq, fzf, zoxide, lsd, btop, tmux |
 
-### 第七部分：DevOps 与运维实战（54-62）
+### 第七部分：DevOps 与运维实战（56-65）
 
 企业级基础设施自动化与运维实战。
 
 | 章节 | 标题 | 核心内容 |
 |------|------|---------|
-| [[54-服务器初始化与基线配置]] | 服务器初始化与基线配置 | cloud-init, Kickstart, Preseed, 安全基线 |
-| [[55-Nginx反向代理与负载均衡]] | Nginx 反向代理与负载均衡 | upstream、WAF、限流、缓存、HTTP/2、HTTP/3 |
-| [[56-数据库运维(主从+备份+优化)]] | 数据库运维（主从 + 备份 + 优化） | 主从复制、连接池、慢查询、备份策略、高可用 |
-| [[57-DNS服务器搭建]] | DNS 服务器搭建 | BIND 权威 + 递归、区域传输、DNSSEC |
-| [[58-监控系统(Prometheus+Grafana)]] | 监控系统 (Prometheus + Grafana) | 指标采集、PromQL、仪表板、告警 |
-| [[59-CI-CD基础]] | CI/CD 基础 | GitLab CI、GitHub Actions、Jenkins 入门 |
-| [[60-Ansible与配置管理]] | Ansible 与配置管理 | 清单、Playbook、角色、变量编排 |
-| [[61-高可用与集群]] | 高可用与集群 | Keepalived + HAProxy、故障转移、PG 高可用集群 |
-| [[62-自定义系统打包与分发]] | 自定义系统打包与分发 | 制作自定义 ISO、PXE 批量部署 |
-| [[63-包管理器崩溃恢复与驱动管理通用指南]] | 包管理器崩溃恢复与驱动管理 | 跨发行版的包管理器恢复、ICU 库修复、DKMS 故障处理、滚动更新预防 |
+| [[56-服务器初始化与基线配置]] | 服务器初始化与基线配置 | cloud-init, Kickstart, Preseed, 安全基线 |
+| [[57-Nginx反向代理与负载均衡]] | Nginx 反向代理与负载均衡 | upstream、WAF、限流、缓存、HTTP/2、HTTP/3 |
+| [[58-数据库运维(主从+备份+优化)]] | 数据库运维（主从 + 备份 + 优化） | 主从复制、连接池、慢查询、备份策略、高可用 |
+| [[59-DNS服务器搭建]] | DNS 服务器搭建 | BIND 权威 + 递归、区域传输、DNSSEC |
+| [[60-监控系统(Prometheus+Grafana)]] | 监控系统 (Prometheus + Grafana) | 指标采集、PromQL、仪表板、告警 |
+| [[61-CI-CD基础]] | CI/CD 基础 | GitLab CI、GitHub Actions、Jenkins 入门 |
+| [[62-Ansible与配置管理]] | Ansible 与配置管理 | 清单、Playbook、角色、变量编排 |
+| [[63-高可用与集群]] | 高可用与集群 | Keepalived + HAProxy、故障转移、PG 高可用集群 |
+| [[64-自定义系统打包与分发]] | 自定义系统打包与分发 | 制作自定义 ISO、PXE 批量部署 |
+| [[65-包管理器崩溃恢复与驱动管理通用指南]] | 包管理器崩溃恢复与驱动管理 | 跨发行版的包管理器恢复、ICU 库修复、DKMS 故障处理、滚动更新预防 |
 
 ### 发行版专项内容
 
@@ -166,6 +169,21 @@ Linux 是一个类 Unix 的开源操作系统内核，由芬兰赫尔辛基大�
 | **RHEL / Fedora** | `distro/redhat/` | [[distro/redhat/01-dnf-yum包管理\|dnf/yum 包管理]]、[[distro/redhat/02-RHEL-CentOS安装与配置\|安装与配置]]、[[distro/redhat/03-RPM打包与仓库\|RPM 打包与仓库]]、[[distro/redhat/04-SELinux深入\|SELinux 深入]]、[[distro/redhat/05-firewalld与nmcli\|firewalld 与 nmcli]] |
 | **NixOS** | `distro/nix/` | [[distro/nix/01-NixOS安装与声明式配置\|安装与声明式配置]]、[[distro/nix/02-Nix语言与flake\|Nix 语言与 flake]]、[[distro/nix/03-nixpkgs与包管理\|nixpkgs 与包管理]] |
 
+### WSL 专项内容（Windows 用户的 Linux 方案）
+
+Windows Subsystem for Linux 全生命周期深度指南。
+
+| 章节 | 标题 | 核心内容 |
+|------|------|---------|
+| [[WSL/01-WSL入门与安装\|01-WSL 入门与安装]] | WSL1/2 架构、一键安装、发行版管理、.wslconfig 与 wsl.conf 双配置体系、首日配置与互访 |
+| [[WSL/02-WSL2架构与网络\|02-WSL2 架构与网络]] | utility VM 本质、ext4 与 /mnt/c 性能铁律、VHD 压缩、NAT/mirrored 网络模式、portproxy 外部访问、VPN 故障 |
+| [[WSL/03-systemd与系统集成\|03-systemd 与系统集成]] | systemd 启用、WSLg 图形子系统架构与排障、音频、NVIDIA GPU 直通与 CUDA 冒烟测试 |
+| [[WSL/04-Docker与容器集成\|04-Docker 与容器集成]] | Docker Desktop vs 原生 Engine 双路线、compose v2、Dev Containers 三层嵌套、k3s/kind/minikube 三选一 |
+| [[WSL/05-VSCode与SSH开发\|05-VS Code 与 SSH 开发]] | Remote-WSL 架构、扩展双栏、GCM 凭据复用、WSL sshd + portproxy 外网访问全链路 |
+| [[WSL/06-开发环境实战\|06-开发环境实战]] | Node/Python/Go/Rust/Java/C++ 工具链落位、"代码放 ~ 不放 /mnt/c" 铁律、数据库开发、混编联调 |
+| [[WSL/07-WSL与虚拟机协作\|07-WSL 与虚拟机协作]] | WSL/VM/双系统决策树、Hyper-V/VirtualBox/VMware 共存机制、迁移策略、四维性能对比 |
+| [[WSL/08-WSL运维与排障\|08-WSL 运维与排障]] | 生命周期运维、VHD 膨胀压缩、内存调优、安全加固清单、现象→诊断→修复排障手册 |
+
 ---
 
 ## 学习路径推荐
@@ -174,10 +192,11 @@ Linux 是一个类 Unix 的开源操作系统内核，由芬兰赫尔辛基大�
 
 | 路径 | 目标 | 推荐章节顺序 |
 |------|------|-------------|
-| **Linux 入门者** | 从零到能够日常使用 Linux | 01-06 → 07-15 → 16-20 → 21-26 |
-| **系统管理员** | 管理服务器和基础架构 | 01-06 → 07-15 → 16-20 → 36-43 → 54-62 |
-| **深入理论** | 理解操作系统原理 | 27-35 → 36-43 → 44-53 |
-| **全栈 DevOps** | 容器、Tracing、CI/CD | 01-06 → 21-26 → 44-53 → 54-62 |
+| **Linux 入门者** | 从零到能够日常使用 Linux | 00 → 01-06 → 07-17 → 18-22 → 23-28 |
+| **系统管理员** | 管理服务器和基础架构 | 00 → 01-06 → 07-17 → 18-22 → 38-45 → 56-64 |
+| **深入理论** | 理解操作系统原理 | 29-37 → 38-45 → 46-55 |
+| **全栈 DevOps** | 容器、Tracing、CI/CD | 01-06 → 23-28 → 46-55 → 56-64 |
+| **Windows 开发者** | 用 WSL 搭建 Linux 环境 | 00 → 07 → WSL/01-08 → 46-47 |
 | **Arch 用户** | 深度掌握 Arch Linux | 全部主教程 + [[distro/arch/|distro/arch/]] |
 | **Debian/Ubuntu 用户** | 深度掌握 Debian 体系 | 全部主教程 + [[distro/debian/|distro/debian/]] |
 | **RHEL/Fedora 用户** | 深度掌握红帽体系 | 全部主教程 + [[distro/redhat/|distro/redhat/]] |
@@ -251,7 +270,7 @@ Linux 是一个类 Unix 的开源操作系统内核，由芬兰赫尔辛基大�
 固件 (UEFI/BIOS) → Bootloader (GRUB/systemd-boot) → 内核 → initramfs → init (systemd) → 用户空间
 ```
 
-详见 [[38-引导流程与GRUB]]。
+详见 [[40-引导流程与GRUB]]。
 
 ### 系统层次
 
@@ -265,7 +284,7 @@ Linux 内核 (进程调度、内存管理、网络栈、文件系统、驱动)
 硬件 (CPU、内存、磁盘、网卡、GPU)
 ```
 
-详见 [[27-操作系统概述与结构]]、[[36-Linux内核基础与模块]]。
+详见 [[29-操作系统概述与结构]]、[[38-Linux内核基础与模块]]。
 
 ### 一切皆文件
 
@@ -285,7 +304,7 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 echo "hello" > /tmp/test.txt
 ```
 
-详见 [[47-FUSE与虚拟文件系统]]、[[40-文件系统深入]]。
+详见 [[49-FUSE与虚拟文件系统]]、[[42-文件系统深入]]。
 
 ---
 
@@ -338,7 +357,7 @@ echo "hello" > /tmp/test.txt
 | `dd` | 块级读写 |
 | `xargs` | 参数传递 |
 
-详见 [[06-命令行基础与Shell入门]]、[[18-正则与文本处理三剑客]]、[[53-终端常用工具大全]]。
+详见 [[06-命令行基础与Shell入门]]、[[20-正则与文本处理三剑客]]、[[55-终端常用工具大全]]。
 
 ---
 
@@ -371,7 +390,7 @@ neovim可以参考我们的项目
 | **Hyprland** | 中等 | 极高 | Wayland 下的美观平铺体验 |
 | **Niri** | 低 | 高 | 滚动式平铺窗口的独特体验 |
 
-详见 [[49-Wayland深入指南]]、[[distro/arch/desktop/02-Hyprland配置|Hyprland 配置]]、[[distro/arch/desktop/01-Niri配置|Niri 配置]]。
+详见 [[51-Wayland深入指南]]、[[distro/arch/desktop/02-Hyprland配置|Hyprland 配置]]、[[distro/arch/desktop/01-Niri配置|Niri 配置]]。
 
 ---
 
@@ -409,7 +428,7 @@ Linux **不是绝对安全**的。虽然其安全架构（权限分离、包管�
 - 容器逃逸和提权漏洞不断被发现
 - 不安全的配置是人最多的安全漏洞来源
 
-详见 [[26-系统安全加固与审计]]、[[22-防火墙与安全]]。
+详见 [[28-系统安全加固与审计]]、[[24-防火墙与安全]]。
 
 ---
 
@@ -476,10 +495,16 @@ Linux **不是绝对安全**的。虽然其安全架构（权限分离、包管�
 ```
 linux/
 ├── README.md ← 你正在看的主入口
- ├── 01-*.md ~ 63-*.md ← 63 章主教程（按编号排列）
+├── 00-*.md ~ 65-*.md ← 66 章主教程（按编号排列）
+│   ├── 00 ← Linux 快速上手（新手急救手册）
+│   ├── 07 ← PATH 深入与环境变量全书
+│   └── 09 ← 虚拟机配置与打包
 ├── resources/ ← 辅助资源
-│ ├── 发行版命令速查表.md ← 跨发行版命令对照
-│ └── 术语对照表.md ← 英汉术语速查
+│   ├── 环境变量速查.md ← 环境变量配套速查卡
+│   ├── 发行版命令速查表.md ← 跨发行版命令对照
+│   └── 术语对照表.md ← 英汉术语速查
+├── WSL/ ← WSL 专项内容（8 章）
+│   └── 01-安装 ~ 08-运维排障
 └── distro/ ← 发行版专项内容
  ├── arch/ ← Arch Linux 系列（含桌面子目录）
  │ ├── 01-~06- ← Arch 核心教程
@@ -495,19 +520,19 @@ linux/
 
 | 岗位方向 | 核心技能 | 推荐章节 |
 |---------|---------|---------|
-| **后端开发** | Linux 基础操作、Shell 脚本、服务部署、数据库管理 | 01-15, 21-26 |
-| **DevOps 工程师** | CI/CD、容器/K8s、配置管理、监控、云服务 | 01-15, 44-45, 54-62 |
-| **系统管理员** | 用户管理、安全加固、存储、网络、自动化运维 | 全部基础 + 36-43 |
-| **SRE / 平台工程** | 性能调优、追踪、故障排查、自动化、高可用 | 36-53, 54-62 |
-| **嵌入式 Linux** | 内核模块、设备驱动、交叉编译、启动流程 | 36-43, Buildroot/Yocto |
-| **安全工程师** | 防火墙、SELinux、审计、渗透测试 | 22, 26, distro/redhat/04, distro/redhat/05 |
-| **内核开发者** | C 语言、内核架构、内存管理、调度器 | 27-43 |
+| **后端开发** | Linux 基础操作、Shell 脚本、服务部署、数据库管理 | 00-17, 23-28 |
+| **DevOps 工程师** | CI/CD、容器/K8s、配置管理、监控、云服务 | 01-17, 46-47, 56-64 |
+| **系统管理员** | 用户管理、安全加固、存储、网络、自动化运维 | 全部基础 + 38-45 |
+| **SRE / 平台工程** | 性能调优、追踪、故障排查、自动化、高可用 | 38-55, 56-64 |
+| **嵌入式 Linux** | 内核模块、设备驱动、交叉编译、启动流程 | 38-45, Buildroot/Yocto |
+| **安全工程师** | 防火墙、SELinux、审计、渗透测试 | 24, 28, distro/redhat/04, distro/redhat/05 |
+| **内核开发者** | C 语言、内核架构、内存管理、调度器 | 29-45 |
 
 ---
 
 ## 重要信号速查
 
-在 [[08-进程管理]] 中会详细学习信号机制，这里先给出常用信号的速查表：
+在 [[10-进程管理]] 中会详细学习信号机制，这里先给出常用信号的速查表：
 
 | 信号编号 | 信号名 | 含义 | 可否捕获/忽略 |
 |---------|--------|------|-------------|

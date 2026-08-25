@@ -34,7 +34,7 @@ Linux 是一个自由开源的操作系统内核，由 [Linus Torvalds](https://
 - [kernel.org](https://kernel.org) — Linux 内核官方站点
 - [Arch Wiki](https://wiki.archlinux.org/) — 几乎所有 Linux 问题都能在这里找到答案，不仅限于 Arch 用户
 
-> **本教程体系包含完整的 Linux 百科全书式教程** — 62 章从入门到系统底层，涵盖 Shell 编程、系统管理、操作系统原理、服务器运维、容器技术、新型技术栈，以及 Arch/Debian/RedHat/Nix 四大发行版的完整指南。**[这是通识路径之一，推荐所有学习者修读。](linux/)**
+> **本教程体系包含完整的 Linux 百科全书式教程** — 66 章从入门到系统底层，涵盖 Shell 编程、系统管理、操作系统原理、服务器运维、容器技术、新型技术栈，以及 Arch/Debian/RedHat/Nix 四大发行版的完整指南。**[这是通识路径之一，推荐所有学习者修读。](linux/)**
 
 ### 新手推荐：Linux Mint
 
@@ -51,7 +51,7 @@ Linux 是一个自由开源的操作系统内核，由 [Linus Torvalds](https://
 
 - [Linux Mint 官网](https://linuxmint.com/) — 下载安装、查看文档
 - [Linux Mint 中文社区](https://linuxmint.com.cn/) — 中文资料与交流
-- [RootStack Linux 教程](linux/README.md) — 从零到精通的完整学习路径 (62章 + 4发行版)
+- [RootStack Linux 教程](linux/README.md) — 从零到精通的完整学习路径 (66章 + 4发行版 + WSL 8章)
 
 ---
 
@@ -109,7 +109,7 @@ RootStack/ ├ v0.17.0
 ├── 路径-工程化底层方向.md 底层系统工程化路径 (C/汇编/OS/内核)
 ├── 路径-工程化应用方向.md 应用层工程化路径 (C++/前后端/数据库)
 │
-├── linux/ Linux 百科全书式教程 (63章 + 4发行版完整指南)
+├── linux/ Linux 百科全书式教程 (66章 + 4发行版 + WSL 8章)
 │ ├── README.md Linux 教程总览与学习路线
 │ ├── 01-Linux概述与历史.md → 63-包管理器崩溃恢复与驱动管理通用指南.md (63章主线)
 │ ├── distro/
@@ -386,7 +386,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | 数据库 | [数据库教学目录](数据库/数据库目录.md) | MySQL深入 + PostgreSQL/SQLite/MSSQL/Oracle/MongoDB/Redis (12篇) |
 | Java 全栈 | [Java 教程目录](java/java目录.md) | 入门 → 深入 → 工程化/Spring全家桶 (48篇), 路径G |
 | 前端开发 | [前端引导阅读](前端开发/引导阅读.md) | HTML/CSS/JS/TS + Vue/React/Angular + 可视化, 按需路线 (~91篇) |
-| Linux 教程 | [Linux 百科全书式教程](linux/README.md) | 62章 + 4发行版指南 + Shell编程 + 服务器运维 |
+| Linux 教程 | [Linux 百科全书式教程](linux/README.md) | 66章 + 4发行版 + WSL专项 + Shell编程 + 服务器运维 + 虚拟机与环境变量实战 |
 | Lua | [Lua 教程](lua-tutorial/00-lua简介.md) | 基础→进阶→C/C++集成→Neovim/Love2D (7篇) |
 | 红队 | [红队知识库总目录](red_team/总目录与快速查询.md) | ArchStrike渗透体系, ~148篇, 职业路径 |
 
