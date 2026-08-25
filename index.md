@@ -113,7 +113,7 @@ RootStack/ ├ v0.17.0
 ├── 路径-工程化底层方向.md 底层系统工程化路径 (C/汇编/OS/内核)
 ├── 路径-工程化应用方向.md 应用层工程化路径 (C++/前后端/数据库)
 │
-├── linux/ Linux 百科全书式教程 (63章 + 4发行版完整指南)
+├── linux/ Linux 百科全书式教程 (66章 + 4发行版 + WSL 8章)
 │ ├── README.md Linux 教程总览与学习路线
 │ ├── 01-Linux概述与历史.md → 63-包管理器崩溃恢复与驱动管理通用指南.md (63章主线)
 │ ├── distro/
@@ -488,3 +488,4 @@ git push origin my-feature
 | 8.17 | Java 全栈体系 + 三语言补缺 | 新增 java/ (48篇: 1入门18章三平台配置+OOP核心 / 2深入12章集合源码+并发+JVM / 3工程化18章 Maven+Spring全家桶+Docker/CI+应急排查+GitHub项目实战+架构入门)；新增 路径G-Java全栈路径 (Phase 0-10, 前端/运维规划中)；补缺 c语言教程/4工程化/ (CMake深入+C项目工程化)、cpp深化教程 16-17 (CMake进阶+Conan/vcpkg)、cpp第三方库 网络Web框架实战、rust 实践07 axum + 工程13-14 (sqlx+workspace)。版本升至 0.15.0 |
 | 8.18 | DeepSeek Harness 框架深度教程 | 新增 deepseek-harness/ (26篇: 1认知3篇 范式跃迁+dsh全景+Cordis论文《A Programming Paradigm for Spatiotemporal Composability》精读 / 2架构7篇 Cordis内核+Fiber生命周期+Profile与Bundle分层+服务DI+事件四语义+能力三角色+LLM适配器StreamChunk+沙箱审批 / 3实战开发9篇 monorepo源码导读+插件全流程+defineTool+Config+Schemastery+热重载+类型安全+会话日志+发布 / 4设计自己的Harness7篇 决策树+200行Cordis骨架源码+工具流水线+多模型路由+安全审计+可观测回放+完整架构蓝图)；dsh.md 与新目录互链。版本升至 0.16.0 |
 | 8.19 | 前端开发全栈目录 | 新增 前端开发/ (~91篇, 九子目录): 引导阅读.md 按需求六路线导引+四条技术栈组合 / 01-基础 HTML+CSS+JavaScript+TypeScript 21篇 / 02-CSS框架 Tailwind+Bootstrap5深入+Bootstrap4/Foundation速查 10篇 / 03-JS框架 Vue2/Vue3/React/Next.js/Angular 深入+AngularJS速查 25篇 / 04-DOM与交互+05-工具库+07-图标 12篇 / 06-数据可视化 Chart.js+ECharts+Highcharts+SVG 12篇 / 08-项目实战 企业官网+后台管理(Vue3)+数据看板(React)+电商首页(Tailwind) 4篇 / 09-融会贯通 工程化+Java前后端联调+技术栈选型 3篇；路径G 新增 Phase 11 前端闭环并接入引导阅读。版本升至 0.17.0 |
+| 8.20 | Linux 教程大扩充与全局重编号 | linux/ 主教程 63→66 章并整体 +2 重编号（07-63 → 08-65，57 个文件 rename，290 处内链同步修复）：新增 [[linux/00-Linux快速上手]] 新手急救手册（中文输入法 fcitx5/ibus、中文字体 fontconfig、联网 nmcli/netplan、显卡/WiFi 驱动、屏幕显示、软件安装入门、报错速查，双链发行版专项）/ [[linux/07-PATH深入与环境变量全书]]（export 本质、PATH 搜索与 hash 缓存、配置文件加载链、开发工具链/系统行为/密钥安全/systemd 与容器变量实战、调试排查）三链接：06 章 6.8 节互引 + resources/环境变量速查.md 配套速查卡 / [[linux/09-虚拟机配置与打包]]（Type-1/Type-2、VirtualBox/VMware/KVM/Vagrant 配置快照、OVA/OVF 打包分发、Windows Hyper-V/macOS UTM/Linux KVM 三宿主机方案、live-build/archiso/mkosi 自定义 ISO）；新增 linux/WSL/ 目录 8 章（入门安装/WSL2 架构网络/systemd 与 WSLg/Docker 集成/VS Code 与 SSH/开发环境实战/与虚拟机协作/运维排障）；修复历史遗留断链 20+ 处。版本升至 0.18.0 |
