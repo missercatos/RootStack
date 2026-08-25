@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "linux/04-文件与目录管理.md",
+                "file": "linux/06-命令行基础与Shell入门.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "04-文件与目录管理"
+              "title": "06-命令行基础与Shell入门"
             }
           }
         ],
@@ -217,6 +217,10 @@
   },
   "active": "074116920a0a805e",
   "lastOpenFiles": [
+    "linux/05-文本编辑器(Vim+Nano).md",
+    "linux/06-命令行基础与Shell入门.md",
+    "linux/04-文件与目录管理.md",
+    "42-压缩与归档工具.md",
     "数据结构/E_链表_LinkedList.md",
     "数据结构/B_字符串_String.md",
     "数据结构/A_数组_Array.md",
@@ -239,10 +243,6 @@
     "前端开发/03-JS框架/AngularJS/01-AngularJS快速参考.md",
     "前端开发/03-JS框架/Angular/04-Angular实战.md",
     "前端开发/03-JS框架/Angular/03-路由与HTTP.md",
-    "前端开发/03-JS框架/Angular/02-组件与服务.md",
-    "前端开发/03-JS框架/Angular/01-Angular基础.md",
-    "前端开发/03-JS框架/Next.js/04-Next.js实战.md",
-    "前端开发/03-JS框架/Next.js/03-路由与API.md",
     "前端开发/09-融会贯通",
     "前端开发/08-项目实战",
     "前端开发/07-图标与UI/Font-Awesome",
