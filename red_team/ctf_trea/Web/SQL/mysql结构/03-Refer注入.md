@@ -6,7 +6,7 @@
 >
 > sqli-labs 对照：less-19（Referer Injection，登录成功后触发）
 >
-> 配套工具：`~/hackingtools/web/injection/sqlinject`（工具库位于仓库外 `/home/a/hackingtools`）
+> 配套工具：`~/hackingtools/web/injection/sqlinject`（GitHub: [missercatos/tools](https://github.com/missercatos/tools)，本地位于仓库外 `/home/a/hackingtools`）
 
 ## 一、原理：Referer 作为输入源
 
@@ -362,7 +362,7 @@ cd ~/hackingtools/web/injection
                --custom "' or updatexml(1,concat(0x7e,database()),1) or '"
 ```
 
-参数细节与更多示例见 `~/hackingtools/web/injection/sqlinject`（工具库位于仓库外 `/home/a/hackingtools`）。
+参数细节与更多示例见 `~/hackingtools/web/injection/sqlinject`（GitHub: [missercatos/tools](https://github.com/missercatos/tools)，本地位于仓库外 `/home/a/hackingtools`）。
 
 ## 九、防御
 
@@ -377,4 +377,4 @@ cd ~/hackingtools/web/injection
 
 ---
 
-**返回** [[SQL总目录|SQL 总目录]] · [[mysql结构总目录|mysql结构 总目录]] · 工具 `~/hackingtools/web/injection/sqlinject`（工具库位于仓库外 `/home/a/hackingtools`） · 相关 [[../01-整数型注入|整数型注入]] [[../03-报错注入|报错注入]]
+**返回** [[SQL总目录|SQL 总目录]] · [[mysql结构总目录|mysql结构 总目录]] · 工具 `~/hackingtools/web/injection/sqlinject`（GitHub: [missercatos/tools](https://github.com/missercatos/tools)，本地位于仓库外 `/home/a/hackingtools`） · 相关 [[../01-整数型注入|整数型注入]] [[../03-报错注入|报错注入]]

@@ -4,7 +4,7 @@
 >
 > 总目录：[[../SQL总目录|SQL 总目录]] · 本目录 [[mysql结构总目录|mysql结构 总目录]]
 >
-> 工具箱：`~/hackingtools/web/injection/sqlinject`（工具库位于仓库外 `/home/a/hackingtools`）
+> 工具箱：`~/hackingtools/web/injection/sqlinject`（GitHub: [missercatos/tools](https://github.com/missercatos/tools)，本地位于仓库外 `/home/a/hackingtools`）
 >
 > sqli-labs 对照：less-46、less-47（报错）、less-48、less-49（盲注变体）
 
@@ -359,7 +359,7 @@ $sql = "SELECT * FROM users ORDER BY $order";  // 此时拼接是安全的
 
 ## 十、自动化：sqlinject.py 工具
 
-本章对应命令已内置在工具中，路径 `~/hackingtools/web/injection/sqlinject`（用法详见 `~/hackingtools/web/injection/sqlinject`（工具库位于仓库外 `/home/a/hackingtools`））：
+本章对应命令已内置在工具中，路径 `~/hackingtools/web/injection/sqlinject`（用法详见 `~/hackingtools/web/injection/sqlinject`（GitHub: [missercatos/tools](https://github.com/missercatos/tools)，本地位于仓库外 `/home/a/hackingtools`））：
 
 ```bash
 # ORDER BY 位报错路线：工具识别参数位于关键字位置后自动切换无 union 流程

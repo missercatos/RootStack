@@ -92,7 +92,7 @@ Linux 是一个类 Unix 的开源操作系统内核，由芬兰赫尔辛基大�
 
 | 章节 | 标题 | 核心内容 |
 |------|------|---------|
-| [[23-SSH远程管理]] | SSH 远程管理 | SSH 密钥、配置、隧道、端口转发、sshd 加固 |
+| [[23-SSH远程管理]] | SSH 远程管理 | SSH 密钥、配置、隧道、端口转发、sshd 加固、密钥迁移与设备更换、端到端模拟流程、意外风险应急处置 |
 | [[24-防火墙与安全]] | 防火墙与安全 | iptables/nftables/firewalld/ufw、DDoS 防护、Fail2ban |
 | [[25-DNS与域名系统]] | DNS 与域名系统 | 递归/权威 DNS、BIND、CoreDNS、DNS-over-HTTPS |
 | [[26-Web服务器(Nginx+Apache)]] | Web 服务器 (Nginx + Apache) | 虚拟主机、SSL/TLS、反向代理、PHP-FPM、静态优化 |

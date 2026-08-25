@@ -390,7 +390,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | Linux 教程 | [Linux 百科全书式教程](linux/README.md) | 66章 + 4发行版 + WSL专项 + Shell编程 + 服务器运维 + 虚拟机与环境变量实战 |
 | Lua | [Lua 教程](lua-tutorial/00-lua简介.md) | 基础→进阶→C/C++集成→Neovim/Love2D (7篇) |
 | 红队 | [红队知识库总目录](red_team/总目录与快速查询.md) | ArchStrike渗透体系, ~148篇, 职业路径 |
-| 自制安全工具箱 | `~/hackingtools/web/` (仓库外) | SQL注入自动化 sqlinject 等自研工具; CTF 教程见红队知识库 |
+| 自制安全工具箱 | [missercatos/tools](https://github.com/missercatos/tools) (本地 ~/hackingtools) | SQL注入自动化 sqlinject 等自研工具; CTF 教程见红队知识库 |
 
 ---
 
