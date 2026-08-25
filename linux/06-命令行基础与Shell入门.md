@@ -155,6 +155,9 @@ type -a echo
 在 Linux 中，学会自己查找信息比记住所有命令更重要。
 
 ### 6.4.1 `man` — 系统手册
+*在一些系统内，man需要自行下载，并且初始语言并不是中文
+*下载 man-db和man-pages*
+*中文手册包需要额外安装man-pages-zh_cn*
 
 ```bash
 man ls # 查看 ls 的手册页
@@ -188,6 +191,7 @@ man -f ls # 查看 ls 的简短描述（同 whatis）
 ### 6.4.2 `--help` — 快速帮助
 
 大多数命令支持 `--help` 选项，输出简洁的使用说明：
+*或者简写-h*
 
 ```bash
 ls --help # 简洁帮助
