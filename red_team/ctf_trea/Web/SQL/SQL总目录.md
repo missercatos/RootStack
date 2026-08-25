@@ -62,7 +62,7 @@ cd ~/hackingtools/web/injection
 ./sqlinject.py -h                                                    # 完整指南
 ```
 
-工具支持 GET/POST/Cookie/UA/Referer 五种注入点、布尔与时间盲注自动化、八种 tamper 绕过与自定义 payload。源码结构与用法详见 [[../../../hackingtools/web/README|hackingtools/web 工具箱 README]]。
+工具支持 GET/POST/Cookie/UA/Referer 五种注入点、布尔与时间盲注自动化、八种 tamper 绕过与自定义 payload。源码结构与用法详见 `~/hackingtools/web/injection/sqlinject`（工具库位于仓库外 `/home/a/hackingtools`，源码在 `web/源代码/sqlinject/`）。
 
 ## 学习路线
 

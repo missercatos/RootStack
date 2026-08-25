@@ -6,7 +6,7 @@
 >
 > sqli-labs 对照：less-20（明文 Cookie 回显）、less-21（Cookie base64 + 单引号闭合）、less-22（Cookie base64 + 双引号闭合）
 >
-> 配套工具：[[../../../../../hackingtools/web/README|hackingtools/web 工具箱]]
+> 配套工具：`~/hackingtools/web/injection/sqlinject`（工具库位于仓库外 `/home/a/hackingtools`）
 
 ## 一、原理：Cookie 也是输入源
 
@@ -365,7 +365,7 @@ B64=$(echo -n "1')" | base64 -w 0)
                --custom "' and updatexml(1,concat(0x7e,database()),1)#"
 ```
 
-参数细节与更多示例见 [[../../../../../hackingtools/web/README|hackingtools/web 工具箱]]。
+参数细节与更多示例见 `~/hackingtools/web/injection/sqlinject`（工具库位于仓库外 `/home/a/hackingtools`）。
 
 ## 十、防御
 
@@ -386,4 +386,4 @@ $stmt->execute([$_COOKIE['uname']]);
 
 ---
 
-**返回** [[SQL总目录|SQL 总目录]] · [[mysql结构总目录|mysql结构 总目录]] · 工具 [[../../../../../hackingtools/web/README|hackingtools/web 工具箱]] · 相关 [[../01-整数型注入|整数型注入]] [[../03-报错注入|报错注入]]
+**返回** [[SQL总目录|SQL 总目录]] · [[mysql结构总目录|mysql结构 总目录]] · 工具 `~/hackingtools/web/injection/sqlinject`（工具库位于仓库外 `/home/a/hackingtools`） · 相关 [[../01-整数型注入|整数型注入]] [[../03-报错注入|报错注入]]

