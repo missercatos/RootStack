@@ -27,16 +27,30 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "linux/06-命令行基础与Shell入门.md",
+                "file": "red_team/ctf_trea/Web/SQL/mysql结构/02-UA注入.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "06-命令行基础与Shell入门"
+              "title": "02-UA注入"
+            }
+          },
+          {
+            "id": "0d10b65d529ab538",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "git.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "git"
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -215,44 +229,44 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "074116920a0a805e",
+  "active": "0d10b65d529ab538",
   "lastOpenFiles": [
+    "hackingtools/web/README.md",
+    "hackingtools/web/injection/sqlinject/__pycache__/bypass.cpython-314.pyc",
+    "hackingtools/web/injection/sqlinject/__pycache__/blind.cpython-314.pyc",
+    "hackingtools/web/injection/sqlinject/__pycache__/extractor.cpython-314.pyc",
+    "hackingtools/web/injection/sqlinject/__pycache__/detector.cpython-314.pyc",
+    "hackingtools/web/injection/sqlinject/__pycache__/utils.cpython-314.pyc",
+    "hackingtools/web/injection/sqlinject/__pycache__/cli.cpython-314.pyc",
+    "hackingtools/web/injection/sqlinject/__pycache__/__init__.cpython-314.pyc",
+    "hackingtools/web/injection/sqlinject/__pycache__",
+    "hackingtools/web/injection/sqlinject/cli.py",
+    "red_team/ctf_trea/Web/SQL/mysql结构/02-UA注入.md",
+    "hackingtools/web/injection/sqlinject/bypass.py",
+    "red_team/ctf_trea/Web/SQL/01-整数型注入.md",
+    "red_team/ctf_trea/Web/SQL/mysql结构/mysql结构总目录.md",
+    "red_team/ctf_trea/Web/SQL/mysql结构/09-综合训练.md",
+    "red_team/ctf_trea/Web/SQL/mysql结构/06-AND_OR注入.md",
+    "red_team/ctf_trea/Web/SQL/mysql结构/08-UPDATE注入.md",
+    "red_team/ctf_trea/Web/SQL/mysql结构/05-过滤空格.md",
+    "red_team/ctf_trea/Web/SQL/mysql结构/04-二次注入.md",
+    "red_team/ctf_trea/Web/SQL/mysql结构/01-Cookie注入.md",
+    "linux/06-命令行基础与Shell入门.md",
     "linux/WSL/04-Docker与容器集成.md",
     "linux/WSL/03-systemd与系统集成.md",
     "linux/WSL/02-WSL2架构与网络.md",
     "linux/WSL/01-WSL入门与安装.md",
     "linux/resources/环境变量速查.md",
-    "linux/WSL/sedGR51eJ",
     "linux/WSL/08-WSL运维与排障.md",
     "linux/WSL/07-WSL与虚拟机协作.md",
-    "linux/WSL/sed9Ow3Fy",
     "linux/WSL/06-开发环境实战.md",
     "linux/WSL/05-VSCode与SSH开发.md",
-    "linux/WSL",
     "linux/09-虚拟机配置与打包.md",
     "linux/07-PATH深入与环境变量全书.md",
     "linux/00-Linux快速上手.md",
     "linux/08-用户与权限管理.md",
     "linux/10-进程管理.md",
     "linux/11-systemd服务管理.md",
-    "linux/12-存储管理与磁盘操作.md",
-    "linux/13-网络配置基础.md",
-    "linux/14-软件包管理通识.md",
-    "linux/15-计划任务与自动化.md",
-    "linux/16-日志系统.md",
-    "linux/17-备份与恢复.md",
-    "linux/18-Bash编程基础.md",
-    "linux/19-Bash编程进阶.md",
-    "linux/20-正则与文本处理三剑客.md",
-    "linux/21-IO重定向与管道深入.md",
-    "linux/22-Shell脚本实战.md",
-    "前端开发/09-融会贯通",
-    "前端开发/08-项目实战",
-    "前端开发/07-图标与UI/Font-Awesome",
-    "前端开发/07-图标与UI",
-    "前端开发/06-数据可视化/SVG",
-    "前端开发/06-数据可视化/Highcharts",
-    "前端开发/06-数据可视化/ECharts",
     "assets/images/二叉堆与数据存储的索引.png",
     "assets/images/二叉堆.png",
     "assets/images/区间合并.png",
