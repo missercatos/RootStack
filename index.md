@@ -229,7 +229,15 @@ RootStack/ ├ v0.17.0
 │ ├── Web/Web前置技能/ (HTTP协议/操作系统/数据库/HTML-CSS/程序语言)
 │ ├── Web/Web工具配置/ (虚拟机/BurpSuite/Chrome/WebShell/菜刀/端口扫描/远程连接/目录爆破)
 │ ├── Web/信息泄露/ (目录遍历)
-│ └── Web/SQL/ (注入5型 + mysql结构9场景)
+│ └── Web/SQL/ (注入5型 + mysql结构9场景, curl五步实操流)
+│
+├── hackingtools/ 自制安全工具箱
+│ ├── README.md 工具箱总览与使用边界
+│ └── web/
+│ ├── README.md Web工具说明
+│ └── injection/
+│ ├── sqlinject.py SQL注入自动化(五步方法论一键化)
+│ └── sqlinject/ 源码包(cli/detector/extractor/blind/bypass/utils)
 │
 ├── git.md Git 与 GitHub 终端操作指南 (17节)
 ├── github-settings.md GitHub 网页端设置指南（新增）
@@ -489,3 +497,4 @@ git push origin my-feature
 | 8.18 | DeepSeek Harness 框架深度教程 | 新增 deepseek-harness/ (26篇: 1认知3篇 范式跃迁+dsh全景+Cordis论文《A Programming Paradigm for Spatiotemporal Composability》精读 / 2架构7篇 Cordis内核+Fiber生命周期+Profile与Bundle分层+服务DI+事件四语义+能力三角色+LLM适配器StreamChunk+沙箱审批 / 3实战开发9篇 monorepo源码导读+插件全流程+defineTool+Config+Schemastery+热重载+类型安全+会话日志+发布 / 4设计自己的Harness7篇 决策树+200行Cordis骨架源码+工具流水线+多模型路由+安全审计+可观测回放+完整架构蓝图)；dsh.md 与新目录互链。版本升至 0.16.0 |
 | 8.19 | 前端开发全栈目录 | 新增 前端开发/ (~91篇, 九子目录): 引导阅读.md 按需求六路线导引+四条技术栈组合 / 01-基础 HTML+CSS+JavaScript+TypeScript 21篇 / 02-CSS框架 Tailwind+Bootstrap5深入+Bootstrap4/Foundation速查 10篇 / 03-JS框架 Vue2/Vue3/React/Next.js/Angular 深入+AngularJS速查 25篇 / 04-DOM与交互+05-工具库+07-图标 12篇 / 06-数据可视化 Chart.js+ECharts+Highcharts+SVG 12篇 / 08-项目实战 企业官网+后台管理(Vue3)+数据看板(React)+电商首页(Tailwind) 4篇 / 09-融会贯通 工程化+Java前后端联调+技术栈选型 3篇；路径G 新增 Phase 11 前端闭环并接入引导阅读。版本升至 0.17.0 |
 | 8.20 | Linux 教程大扩充与全局重编号 | linux/ 主教程 63→66 章并整体 +2 重编号（07-63 → 08-65，57 个文件 rename，290 处内链同步修复）：新增 [[linux/00-Linux快速上手]] 新手急救手册（中文输入法 fcitx5/ibus、中文字体 fontconfig、联网 nmcli/netplan、显卡/WiFi 驱动、屏幕显示、软件安装入门、报错速查，双链发行版专项）/ [[linux/07-PATH深入与环境变量全书]]（export 本质、PATH 搜索与 hash 缓存、配置文件加载链、开发工具链/系统行为/密钥安全/systemd 与容器变量实战、调试排查）三链接：06 章 6.8 节互引 + resources/环境变量速查.md 配套速查卡 / [[linux/09-虚拟机配置与打包]]（Type-1/Type-2、VirtualBox/VMware/KVM/Vagrant 配置快照、OVA/OVF 打包分发、Windows Hyper-V/macOS UTM/Linux KVM 三宿主机方案、live-build/archiso/mkosi 自定义 ISO）；新增 linux/WSL/ 目录 8 章（入门安装/WSL2 架构网络/systemd 与 WSLg/Docker 集成/VS Code 与 SSH/开发环境实战/与虚拟机协作/运维排障）；修复历史遗留断链 20+ 处。版本升至 0.18.0 |
+| 8.21 | SQL注入章节全面重写 + 自制工具箱 | 重写 red_team/ctf_trea/Web/SQL/ 全部 14 章（基础五章 整数型/字符型/报错/布尔盲注/时间盲注 + mysql结构九场景 Cookie/UA/Refer/二次/过滤空格/AND_OR/ORDER_BY/UPDATE/综合训练）：统一"确认注入→探测列数→爆库→爆表爆列→提取数据"五步 curl 实操方法论，每章含可直接执行的完整命令流、bash 自动化猜解脚本与例题思路表；SQL总目录.md 增加五步方法论总纲+mysql结构专项目录；新增 hackingtools/ 自制工具箱（web/injection/sqlinject.py 单文件入口 + sqlinject/ 源码包六模块：cli/detector/extractor/blind/bypass/utils），支持 GET/POST/Cookie/UA/Referer 五种注入点、布尔/时间盲注自动化、八种 WAF tamper 绕过与自定义 payload，-h/--help 完整指南，已在本地模拟靶场完成全模式端到端验证。版本升至 0.19.0 |

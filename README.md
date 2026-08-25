@@ -225,7 +225,15 @@ RootStack/ ├ v0.17.0
 │ ├── Web/Web前置技能/ (HTTP协议/操作系统/数据库/HTML-CSS/程序语言)
 │ ├── Web/Web工具配置/ (虚拟机/BurpSuite/Chrome/WebShell/菜刀/端口扫描/远程连接/目录爆破)
 │ ├── Web/信息泄露/ (目录遍历)
-│ └── Web/SQL/ (注入5型 + mysql结构9场景)
+│ └── Web/SQL/ (注入5型 + mysql结构9场景, curl五步实操流)
+│
+├── hackingtools/ 自制安全工具箱
+│ ├── README.md 工具箱总览与使用边界
+│ └── web/
+│ ├── README.md Web工具说明
+│ └── injection/
+│ ├── sqlinject.py SQL注入自动化(五步方法论一键化)
+│ └── sqlinject/ 源码包(cli/detector/extractor/blind/bypass/utils)
 │
 ├── git.md Git 与 GitHub 终端操作指南 (17节)
 ├── github-settings.md GitHub 网页端设置指南（新增）
@@ -389,6 +397,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | Linux 教程 | [Linux 百科全书式教程](linux/README.md) | 66章 + 4发行版 + WSL专项 + Shell编程 + 服务器运维 + 虚拟机与环境变量实战 |
 | Lua | [Lua 教程](lua-tutorial/00-lua简介.md) | 基础→进阶→C/C++集成→Neovim/Love2D (7篇) |
 | 红队 | [红队知识库总目录](red_team/总目录与快速查询.md) | ArchStrike渗透体系, ~148篇, 职业路径 |
+| 安全工具箱 | [hackingtools/web](hackingtools/web/README.md) | 自制工具: SQL注入自动化 sqlinject.py (盲注/tamper/五注入点), 配套CTF教程 |
 
 ---
 
