@@ -4,7 +4,7 @@
 >
 > 总目录：[[../SQL总目录|SQL 总目录]] · 本目录 [[mysql结构总目录|mysql结构 总目录]]
 >
-> 工具箱：`~/hackingtools/web/injection/sqlinject`（工具库位于仓库外 `/home/a/hackingtools`）
+> 工具箱：`~/hackingtools/web/injection/sqlinject`（GitHub: [missercatos/tools](https://github.com/missercatos/tools)，本地位于仓库外 `/home/a/hackingtools`）
 >
 > sqli-labs 对照：less-25、less-25a（and/or 过滤）、less-27/28（union select 过滤，双写同理）
 
@@ -366,7 +366,7 @@ curl -s "http://127.0.0.1/sqli-labs/Less-28/?id=0')%0auniunionon%0aseleselectct%
 
 ## 十、自动化：sqlinject.py 工具
 
-本章对应的命令已内置在工具中，路径 `~/hackingtools/web/injection/sqlinject`（用法详见 `~/hackingtools/web/injection/sqlinject`（工具库位于仓库外 `/home/a/hackingtools`））：
+本章对应的命令已内置在工具中，路径 `~/hackingtools/web/injection/sqlinject`（用法详见 `~/hackingtools/web/injection/sqlinject`（GitHub: [missercatos/tools](https://github.com/missercatos/tools)，本地位于仓库外 `/home/a/hackingtools`））：
 
 ```bash
 # and/or 过滤场景：doublewrite tamper 对应本章双写手法

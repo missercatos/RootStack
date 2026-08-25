@@ -4,7 +4,7 @@
 >
 > 总目录：[[../SQL总目录|SQL 总目录]] · 本目录 [[mysql结构总目录|mysql结构 总目录]]
 >
-> 工具箱：`~/hackingtools/web/injection/sqlinject`（工具库位于仓库外 `/home/a/hackingtools`）
+> 工具箱：`~/hackingtools/web/injection/sqlinject`（GitHub: [missercatos/tools](https://github.com/missercatos/tools)，本地位于仓库外 `/home/a/hackingtools`）
 >
 > sqli-labs 对照：less-17（UPDATE 场景原型，注入点在 POST password）、less-24 第二阶段
 
@@ -369,7 +369,7 @@ curl -s "http://127.0.0.1/sqli-labs/Less-24/login.php" \
 
 ## 九、自动化：sqlinject.py 工具
 
-本章对应命令已内置在工具中，路径 `~/hackingtools/web/injection/sqlinject`（用法详见 `~/hackingtools/web/injection/sqlinject`（工具库位于仓库外 `/home/a/hackingtools`））：
+本章对应命令已内置在工具中，路径 `~/hackingtools/web/injection/sqlinject`（用法详见 `~/hackingtools/web/injection/sqlinject`（GitHub: [missercatos/tools](https://github.com/missercatos/tools)，本地位于仓库外 `/home/a/hackingtools`））：
 
 ```bash
 # POST 型 UPDATE 位报错注入：指定注入参数为 passwd

@@ -1,4 +1,4 @@
-# Git 与 GitHub 终端操作指南
+i# Git 与 GitHub 终端操作指南
 
 **快速导航**（Obsidian 中可点击跳转；下同）
 
