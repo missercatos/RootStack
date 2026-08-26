@@ -2,6 +2,8 @@
 
 建议先阅读: [[A_数组_Array|数组]] — 数组是所有连续存储结构的基础。了解寻址公式和静态/动态数组的区别后再读本节能更好地理解 vector 扩容机制的数学原理。
 
+> **考研 408 导引**：本章应试核心是**链表**（单/双/循环链表的定义与操作、头插尾插、就地逆置）、**栈**（出入栈合法性判断、两栈共享空间的队满条件）与**队列**（循环队列的队满判断与长度公式）；vector 扩容均摊分析与迭代器失效规则为概念常考点。CPU 缓存、缺页中断、malloc 分配器为超出考纲的增值内容。正文备有 3 组闭卷手算自测（见练习节清单）。
+
 本章只讲述数据结构的设计原理和实现思想，不绑定任何特定语言。代码演示用 C 语言，因为 C 标准库几乎不提供数据结构，能完整展示底层实现细节。每种主流语言对该结构的封装形式见末尾的对比表。
 
 ---
@@ -11,6 +13,27 @@
 ![[../assets/images/线性结构.png]]
 
 容器是用于存储和组织数据集合的数据结构，封装了数据存储和访问的管理细节。
+
+### 什么是容器
+
+把这句话拆开，容器同时回答了三个设计问题——**元素放在哪**（连续数组还是散落节点）、**怎么找到元素**（顺序扫描、树形有序还是哈希直取）、**对外暴露什么接口**（全功能开放还是刻意受限）。三个问题的不同组合，派生出了整张容器家族树：
+
+```mermaid
+graph TD
+ C["容器 Container"] --> S["序列式 Sequence<br/>按位置存取"]
+ C --> A["关联式 Associative<br/>按键值存取"]
+ C --> AD["适配器 Adapter<br/>受限接口"]
+ S --> V["vector / array<br/>连续内存"]
+ S --> L["list<br/>双向链表"]
+ S --> D["deque<br/>分段连续"]
+ A --> T["set / map<br/>红黑树，有序"]
+ A --> H["unordered_set / map<br/>哈希表，无序"]
+ AD --> ST["stack"]
+ AD --> QU["queue"]
+ AD --> PQ["priority_queue"]
+```
+
+序列式容器的次序由使用者决定；关联式容器的次序由键值关系决定；适配器则干脆把底层容器的部分接口藏起来，只留一种访问姿势。本章覆盖序列式与适配器的原理与实现；关联式的红黑树见 [[J_树_Tree_BST_AVL|树章节]]，哈希表见后续章节。
 
 ### 连续存储 vs 节点存储
 
@@ -82,7 +105,7 @@ CPU 缓存之上还有一层**虚拟内存**。进程看到的地址是虚拟地
 - 触发中断（第③步）= 闸机呼叫控制中心（硬件通知软件）
 - 内核处理（第⑤–⑦步）= 控制中心检查你的卡，开闸
 - 返回重试（第⑧–⑨步）= 你再刷一次卡，闸机放行
-- 具体见[[F_内存管理]]
+- 具体见[[../操作系统/F_内存管理|操作系统 — 内存管理]]
 
 #### 对容器的影响
 
@@ -399,6 +422,288 @@ size_t new_cap = v->capacity == 0 ? 1 : v->capacity * 2;
 
 ---
 
+## 链表：节点存储的代表作
+
+前面讲清了节点存储的缓存劣势，但链表依然是不可替代的结构——任意位置 $O(1)$ 插删、节点地址终生稳定（迭代器不失效）、无需预估容量。它也是 408 手写代码题的第一主角。
+
+### 单链表的定义
+
+```c
+typedef struct ListNode {
+    int val;
+    struct ListNode* next;   // 指向后继；尾节点的 next 为 NULL
+} ListNode;
+```
+
+两个极易混淆的术语，408 选择题常客：
+
+| 术语 | 含义 |
+|------|------|
+| 头指针 | 指向链表第一个节点的指针；链表的"身份证"，只要有它在就能访问全表 |
+| 头结点（哨兵） | 在第一个数据节点之前附加的"假节点"，不存有效数据 |
+
+哨兵的价值：**统一边界**。不带哨兵时"在表头插入"是特例（要改 head），带哨兵后任何位置的插入都等价于"在某节点之后插入"，代码少一个分支。判空也从 `head == NULL` 变为 `head->next == NULL`。
+
+### 建表：头插法与尾插法
+
+```c
+// 头插法 —— O(n)，读入顺序与链表次序相反
+ListNode* build_head(int* a, int n) {
+    ListNode* head = NULL;
+    for (int i = 0; i < n; i++) {
+        ListNode* node = malloc(sizeof(ListNode));
+        node->val = a[i];
+        node->next = head;    // 新节点接管现有整条链
+        head = node;          // 再成为新表头
+    }
+    return head;
+}
+
+// 尾插法 —— O(n)，借助哨兵 + 尾指针保持读入顺序
+ListNode* build_tail(int* a, int n) {
+    ListNode dummy = {0, NULL};
+    ListNode* tail = &dummy;
+    for (int i = 0; i < n; i++) {
+        ListNode* node = malloc(sizeof(ListNode));
+        node->val = a[i];
+        tail->next = node;
+        tail = node;
+    }
+    return dummy.next;
+}
+```
+
+考点：**头插法的建表结果恰好是输入的逆序**——这使它同时就是"逆序建表"的标准做法，也是后面就地逆置的思想雏形。
+
+### 插入与删除
+
+```c
+// 在 p 之后插入新节点 —— O(1)
+void insert_after(ListNode* p, int val) {
+    ListNode* node = malloc(sizeof(ListNode));
+    node->val = val;
+    node->next = p->next;   // ① 新节点先接上后半段
+    p->next = node;         // ② 再让 p 指向新节点
+}
+
+// 删除 p 的后继 —— O(1)
+void delete_after(ListNode* p) {
+    ListNode* dead = p->next;
+    if (dead) { p->next = dead->next; free(dead); }
+}
+```
+
+口诀 **"先接后断"**：① 必须在 ② 之前。若先执行 `p->next = node`，后半段链的入口就被覆盖丢失——这是 408 手写题最常见的失分点。
+
+单链表的软肋也在这里：删除"值为 x 的节点"需要先找它的**前驱**，而找前驱只能从头扫描，$O(n)$。双链表正是为消除这个不对称而生。
+
+### 双链表与循环链表
+
+```c
+typedef struct DListNode {
+    int val;
+    struct DListNode *prev, *next;
+} DListNode;
+```
+
+双链表每个节点多付一个指针（64 位系统 8 字节），换来删除/插入时无需寻找前驱——已知任意节点即可自删：
+
+```c
+// 删除双向链表中的 p（设前后邻居都存在）—— O(1)
+p->prev->next = p->next;
+p->next->prev = p->prev;
+free(p);
+```
+
+循环链表把尾节点的 `next` 指回头节点，形成环。带哨兵的循环单链表判空条件是 `head->next == head`；它的独特优势是**从任意节点出发都能遍历全表**，以及 $O(1)$ 找到尾部（沿 `head->prev` 方向走一步即到）——约瑟夫问题、轮转调度都用这个形态。
+
+### 经典操作：就地逆置
+
+408 高频手写题。三个指针滚动前进，把每个箭头掉头：
+
+```c
+// 就地逆置 —— 时间 O(n)，空间 O(1)
+ListNode* reverse(ListNode* head) {
+    ListNode *prev = NULL, *cur = head;
+    while (cur) {
+        ListNode* nxt = cur->next;  // 先存后继，防止断链
+        cur->next = prev;           // 掉头
+        prev = cur;                 // 双指针整体右移
+        cur  = nxt;
+    }
+    return prev;                    // prev 即新表头
+}
+```
+
+**408 自测：链表**
+
+① 输入序列 3、1、4、1、5 用**头插法**建表，写出从头遍历的输出。
+② 在双链表中删除节点 p（前后邻居均存在），写出语句序列并说明能否省略某句。
+③ 带哨兵的循环单链表 L，判空条件是什么？如何 $O(1)$ 定位尾节点？
+
+> 答案：
+>
+> ① `5 → 1 → 4 → 1 → 3`。每个新元素都成为当前表头，最后进来的排最前。
+> ② `p->prev->next = p->next; p->next->prev = p->prev; free(p);` 三句缺一不可——前两句分别修复左右邻居对 p 的引用，漏掉任何一句都会留下悬垂指针；若 p 是尾节点，第二句可省略。
+> ③ 判空 `L->next == L`（哨兵指向自己）；尾节点即 `L->next == L ? L : ...`——更常用的形态是把哨兵当"尾"用：`L->prev` 或沿 next 一格即达，取决于实现约定，答题时写出"从哨兵一步可达且无需遍历"即得分。
+
+---
+
+## 栈：后进先出的受限线性表
+
+只允许在**栈顶**一端做插入（push）和删除（pop），先进者后出（LIFO）。限制不是缺陷而是语义：函数调用、撤销操作、括号匹配都依赖"最近发生的最先处理"这一确定性。
+
+### 顺序栈
+
+```c
+#define MAXSIZE 100
+typedef struct {
+    int data[MAXSIZE];
+    int top;                 // 约定 A：top 指向栈顶元素，空栈为 -1
+} SeqStack;
+
+void push(SeqStack* s, int x) {
+    if (s->top == MAXSIZE - 1) return;   // 上溢
+    s->data[++s->top] = x;
+}
+int pop(SeqStack* s) {
+    if (s->top == -1) return -1;          // 下溢（工程中应返回错误码）
+    return s->data[s->top--];
+}
+int stack_top(SeqStack* s) { return s->data[s->top]; }
+int empty(SeqStack* s) { return s->top == -1; }
+```
+
+408 读题陷阱：教材存在两种 top 约定——**指向栈顶元素**（初值 -1，入栈先加后存）与**指向下一个空位**（初值 0，入栈先存后加）。两种约定的 push/pop 语句不同，做题第一步先确认题目采用哪种。
+
+### 两栈共享空间
+
+让一个数组服务两个栈：两栈底分别设在数组两端，向中间增长。适合"两个栈的需求此消彼长"的场景（如表达式求值的操作数栈与运算符栈），比各分一半数组更抗溢出：
+
+```c
+typedef struct {
+    int data[MAXSIZE];
+    int top1;                // 左栈顶，初值 -1，向右增长
+    int top2;                // 右栈顶，初值 MAXSIZE，向左增长
+} DoubleStack;
+
+int dstack_full(DoubleStack* s)  { return s->top2 - s->top1 == 1; }  // 两栈顶相邻
+int dstack_empty1(DoubleStack* s){ return s->top1 == -1; }
+int dstack_empty2(DoubleStack* s){ return s->top2 == MAXSIZE; }
+```
+
+**队满条件推导**：左栈每压入一个元素 top1 右移一格，右栈反之；当 `top2 - top1 == 1` 时中间已无空位，两栈同时满。这是选择题的高频计算点。
+
+### 链栈
+
+单链表的头部当栈顶：头插即 push、头删即 pop，都是 $O(1)$ 且天然不存在栈满。代价是每个元素多付一个指针。顺序栈 vs 链栈的选择逻辑与 vector vs list 完全同构。
+
+### 应用场景（408 经典三例）
+
+- **括号匹配**：左括号进栈；遇到右括号弹栈比对类型，不匹配或栈空则失败；串结束时栈必须为空
+- **表达式求值**：中缀转后缀用一个运算符栈；后缀求值用一个操作数栈——两次"扫一遍字符串"完成
+- **函数调用**：程序运行时的调用栈就是硬件级顺序栈，递归的本质是系统替你维护了一个栈；理解这一点才能看懂"所有递归都可改写为迭代 + 显式栈"
+
+**408 自测：栈**
+
+① 序列 1、2、3、4 依次入栈，出栈可在任意间隙进行。判定出栈序列 **3,1,4,2** 是否可能，说明理由。
+② 中缀式 `a + b * c` 对应的后缀式是什么？
+③ 判断括号串 `"([)]"` 是否合法。
+
+> 答案：
+>
+> ① **不可能**。要让 3 最先出栈，必须先把 1、2、3 都压栈再弹出 3，此刻栈内自底向上是 1、2（2 在上）；下一个能出栈的只能是 2 或新压入的 4，1 被压在下面永远无法先于 2 出栈。n 个元素依次入栈的合法出栈序列共 $\frac{1}{n+1}\binom{2n}{n}$ 种（卡塔兰数），n=3 时 5 种、n=4 时 14 种——判断题直接数或按此法排除。
+> ② `a b c * +`。乘法优先级高先成组：b、c 先出组成 `bc*`，再与 a 相加。
+> ③ **不合法**。处理到 `)` 时栈顶是 `[`，弹出的应是 `[` 而非期待的 `(`，类型不匹配立即失败。"嵌套正确但交叉"是括号匹配题的经典陷阱。
+
+---
+
+## 队列：先进先出的受限线性表
+
+只允许**队尾**入队（rear）、**队头**出队（front），先进者先出（FIFO）。它是 BFS、任务调度、缓冲区的原生模型。
+
+### 循环队列：408 必考手算
+
+顺序队列有一个尴尬缺陷：出队后 front 右移，数组前部空间沦为不可用的"假溢出"。解法是取模回绕，让数组首尾相接成环：
+
+```c
+#define MAXSIZE 5
+typedef struct {
+    int data[MAXSIZE];
+    int front, rear;    // front 指队头；rear 指"下一写入位"
+} CirQueue;
+
+int enqueue(CirQueue* q, int x) {
+    if ((q->rear + 1) % MAXSIZE == q->front) return -1;  // 队满
+    q->data[q->rear] = x;
+    q->rear = (q->rear + 1) % MAXSIZE;
+    return 0;
+}
+int dequeue(CirQueue* q) {
+    if (q->front == q->rear) return -1;                  // 队空
+    int x = q->data[q->front];
+    q->front = (q->front + 1) % MAXSIZE;
+    return x;
+}
+```
+
+核心公式（牺牲一格换取判空判满的区分，教材标准方案）：
+
+$$
+\text{队空}: front == rear \qquad \text{队满}: (rear + 1) \bmod MAXSIZE == front
+$$
+
+$$
+\text{元素个数} = (rear - front + MAXSIZE) \bmod MAXSIZE
+$$
+
+为什么牺牲一格？若不牺牲，front == rear 时既可能是空也可能是满，无法区分。另两种替代方案也要认识：增设 size 计数器，或增设 tag 标记上次操作是入队还是出队——四种说法出现在同一道选择题里时要能一一分辨。
+
+**手算示范**：MAXSIZE=5、front=2、rear=4。当前元素个数 $(4-2+5)\%5=2$；连续入队两个元素后 rear 依次走到 0、1，此时 $(1+1)\%5==2==front$，队满，实际只装了 $MAXSIZE-1=4$ 个元素。
+
+**408 自测：循环队列**
+
+MAXSIZE=6，front=3，rear=5。① 当前元素个数？② 再入队多少个元素会触发队满？③ 若改用"size 计数器"方案，同样状态下还能入队几个？
+
+> 答案：
+>
+> ① $(5-3+6)\%6=2$ 个。② 队满要求 $(rear+1)\%6==front$，rear 从 5 出发经 0、1 到 2 时 $(2+1)\%6==3$ 成立，故再入 **3 个**触发队满——注意不是 4 个：牺牲的那一格永远装不进数据。③ 计数器方案不牺牲格子，容量足额 6，可再入 4 个直到 size==6。
+
+---
+
+## 优先队列与堆
+
+priority_queue 与普通 queue 的唯一区别是出队顺序由**优先级**决定而非到达顺序。它的标准实现是**堆**——一棵隐式存储的完全二叉树：整棵树按层序放进数组，下标 i（0 起算）的孩子位于 $2i+1$ 和 $2i+2$，父节点位于 $(i-1)/2$，完全不需要指针。
+
+大顶堆性质：任意父节点 ≥ 其两个孩子。于是"最大值"永远坐在 `h[0]`——取最值 $O(1)$。
+
+```c
+// 下沉：让以 i 为根的子树恢复大顶堆性质 —— O(log n)
+void sift_down(int* h, int n, int i) {
+    while (1) {
+        int largest = i, l = 2*i + 1, r = 2*i + 2;
+        if (l < n && h[l] > h[largest]) largest = l;
+        if (r < n && h[r] > h[largest]) largest = r;
+        if (largest == i) break;
+        int t = h[i]; h[i] = h[largest]; h[largest] = t;
+        i = largest;
+    }
+}
+
+// 建堆：从最后一个非叶节点起逐个下沉 —— O(n)
+void build_heap(int* h, int n) {
+    for (int i = n/2 - 1; i >= 0; i--) sift_down(h, n, i);
+}
+```
+
+- **插入**：新元素放末尾，向上浮（与父节点比较交换），$O(\log n)$
+- **删除堆顶**：末尾元素补到根，向下沉，$O(\log n)$
+- **建堆为何是 O(n)** 而不是直觉上的 $O(n \log n)$：一半节点是叶子根本不用动；倒数第二层的 $\frac{n}{4}$ 个节点最多下沉 1 层，再上层节点数减半而下沉上限加一，求和 $\sum \frac{n}{2^{k}} \cdot O(k) = O(n)$——408 偶尔考这个推导
+
+堆排序、Top-K 问题、多路归并的败者树都建立在这套操作之上，见 [[H_排序_八大排序_Sorting|排序章节]]。
+
+---
+
 ## 各语言标准库对比
 
 本章介绍的几种容器类型在各主流语言中都有对应封装，只是名称和接口略有差异：
@@ -487,10 +792,23 @@ size_t sa_size(StackAdapter* s) {
 ## 练习
 
 | 题号 | 题目 | 难度 | 知识点 |
-|------|------|------|--------|
-| 448 | 找到所有数组中消失的数字 | 入门 | 数组标记 |
-| 1920 | 基于排列构建数组 | 入门 | vector 基础 |
-| 344 | 反转字符串 | 入门 | vector 反向遍历 |
+|------|------|:----:|--------|
+| [206](https://leetcode.cn/problems/reverse-linked-list/) | 反转链表 | 入门 | 就地逆置三指针 |
+| [20](https://leetcode.cn/problems/valid-parentheses/) | 有效的括号 | 入门 | 栈：括号匹配 |
+| [155](https://leetcode.cn/problems/min-stack/) | 最小栈 | 中等 | 栈设计（辅助栈） |
+| [232](https://leetcode.cn/problems/implement-queue-using-stacks/) | 用栈实现队列 | 中等 | 双栈倒手，均摊分析 |
+| [225](https://leetcode.cn/problems/implement-stack-using-queues/) | 用队列实现栈 | 中等 | 单队列轮转 |
+| [215](https://leetcode.cn/problems/kth-largest-element-in-an-array/) | 数组中的第K个最大元素 | 中等 | 小顶堆 / 快速选择 |
+
+### 408 手算自测清单
+
+笔试题与上面的 LeetCode 互补——考的是闭卷手算，全部在正文中带完整答案：
+
+| 自测 | 位置 | 考什么 |
+|------|------|--------|
+| 链表 ×3 问 | 就地逆置之后 | 头插法逆序、双链表删除语句序列、循环链表判空 |
+| 栈 ×3 问 | 应用场景之后 | 出栈序列合法性、中缀转后缀、括号交叉陷阱 |
+| 循环队列 ×3 问 | 手算示范之后 | 个数公式、队满触发时机、牺牲格 vs size 方案 |
 
 ---
 
