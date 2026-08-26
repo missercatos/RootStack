@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "数据结构/D_容器_Container.md",
+                "file": "数据结构/G_队列_Queue.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "D_容器_Container"
+              "title": "G_队列_Queue"
             }
           },
           {
@@ -245,13 +245,14 @@
   },
   "active": "80342907837bf2f0",
   "lastOpenFiles": [
+    "数据结构/F_栈_Stack.md",
+    "数据结构/E_链表_LinkedList.md",
+    "数据结构/D_容器_Container.md",
     "数据结构/B_字符串_String.md",
     "数据结构/A_数组_Array.md",
     "red_team/ctf_trea/Web/SQL/mysql结构/02-UA注入.md",
     "数据结构/DSA学习路线.md",
     "算法/算法技巧/数组.md",
-    "数据结构/D_容器_Container.md",
-    "数据结构/E_链表_LinkedList.md",
     "git.md",
     "hackingtools/web/README.md",
     "hackingtools/web/injection/sqlinject/__pycache__/bypass.cpython-314.pyc",
@@ -280,7 +281,6 @@
     "linux/resources/环境变量速查.md",
     "linux/WSL/08-WSL运维与排障.md",
     "linux/WSL/07-WSL与虚拟机协作.md",
-    "linux/WSL/06-开发环境实战.md",
     "assets/images/二叉堆与数据存储的索引.png",
     "assets/images/二叉堆.png",
     "assets/images/区间合并.png",
