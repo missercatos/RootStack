@@ -2,9 +2,35 @@
 
 建议先阅读: [[D_容器_Container|容器概览]] — 理解连续存储 vs 节点存储的本质分歧。
 
+> **考研 408 导引**：本章应试核心是单链表的建表（头插/尾插）、**就地反转**（迭代 + 递归）、双链表插入删除的语句序列、**循环链表**的判空条件与约瑟夫问题，以及快慢指针四大题型（倒数第 k / 合并有序 / 回文 / 分隔）。指针追踪、XOR 链表、侵入式链表为超出考纲的增值内容。正文备有 6 组闭卷手算自测。
+
 ---
 
 ## 原理
+
+### 链表在哪里
+
+在进入定义之前，先看它藏在哪：操作系统的空闲内存页靠链表串起等待复用；Linux 内核把所有进程挂在一条双向循环链表上统一调度；LRU 缓存用双向链表维护访问次序，实现 O(1) 定位与淘汰；文本编辑器的撤销历史、编译器的符号表也都在链式结构上流动。这些场景的共同主题——**元素数量不可预知、中间增删频繁、且几乎不需要按下标随机访问**——正是链表的适用边界。
+
+### 单个节点与头指针
+
+一切从最小的单元开始——一个节点就是一段堆内存，装着数据和一条通往后继的指针：
+
+```c
+typedef struct SNode {
+    int data;
+    struct SNode* next;   // 指向后继；尾节点的 next 为 NULL
+} SNode;
+```
+
+整条链表只需一个入口——**头指针** head 指向第一个节点；空链表的 head == NULL。沿 next 一格格走即遍历。两个必考术语：
+
+| 术语 | 含义 | 判空条件 |
+|------|------|---------|
+| 头指针 | 指向首节点的指针，链表的唯一"身份证" | 不带哨兵：`head == NULL` |
+| 头结点（哨兵） | 首个数据节点之前的附加节点，不存有效数据 | 带哨兵：`head->next == NULL` |
+
+哨兵的价值是**统一边界**：没有它，"在表头插入"是特例（要改 head 本身）；有了它，任何位置的插入都等价于"在某节点之后插入"，代码少一个分支。容器章的 SimpleVector 是连续存储的答案，这个 SNode 则是节点存储的最小完整模型。
 
 链表是节点存储（node-based storage）的原型。每个节点在堆上独立分配，通过指针将各节点串联起来。链表与数组的对立不仅仅是"插入 O(1) vs O(n)"的操作复杂度差异——更深层的分歧在于内存布局：连续（contiguous） vs 散列（non-contiguous）。
 
@@ -333,6 +359,33 @@ void sll_reverse(SinglyLinkedList* list) {
 }
 ```
 
+#### 递归版反转
+
+```c
+// 递归反转 —— 时间 O(n)，空间 O(n)（调用栈）
+SNode* sll_reverse_rec(SNode* head) {
+    if (!head || !head->next) return head;    // 空表或单节点：自身即新表头
+    SNode* new_head = sll_reverse_rec(head->next);   // 信任：后半段已完全逆转
+    head->next->next = head;                  // 后继回头指向自己
+    head->next = NULL;                        // 自己成为新尾巴
+    return new_head;
+}
+```
+
+理解关键：递归信任"后半段已经逆转完毕"，当前层只做两件事——让后继指回自己、把自己封为新尾。以 1→2→3 为例的调用栈展开：
+
+```
+reverse_rec(1)
+ └─ reverse_rec(2)
+     └─ reverse_rec(3) → 返回 3（基准情形）
+     2->next(=3)->next = 2, 2->next = NULL     链变为 3→2→NULL
+   返回 3
+ 1->next(=2)->next = 1, 1->next = NULL         链变为 3→2→1
+返回 3
+```
+
+迭代版 vs 递归版：时间同为 $O(n)$；空间 $O(1)$ vs $O(n)$——递归的隐藏代价是调用栈深度等于链长，长链表可能栈溢出。这正呼应容器章的论断：所有递归都可改写为迭代 + 显式栈。
+
 ### 双向链表（含哨兵节点）
 
 哨兵节点（sentinel node / dummy node）是一个不存数据、只作为链表头尾标志的节点。使用哨兵可以消除大量 `NULL` 检查，将边界情况统一化：
@@ -406,6 +459,60 @@ void dll_destroy(DoublyLinkedList* list) {
 
 哨兵设计的核心收益：`dll_init` 后链表就处于"空但结构完备"状态（哨兵自环），`dll_insert_before` 对所有情况（空链表、头、尾、中间）使用同一段代码——没有 if-else 分支。
 
+### 循环链表与约瑟夫问题
+
+把尾节点的 next 指回头节点（或哨兵），链表首尾相接成环。判空条件随形态变化，408 选择题高频：
+
+| 形态 | 判空 | 特点 |
+|------|------|------|
+| 循环单链表（不带哨兵） | `head == NULL` | 尾节点 next 指回 head |
+| 循环单链表（带哨兵） | `head->next == head` | 从任意节点出发可达全表 |
+| 循环双链表（带哨兵） | `head->next == head` | `sentinel.prev` 即尾节点，头尾操作全 $O(1)$ |
+
+循环双链表正是深入底层节 Linux 内核 `list_head` 的形态——知道任何一个节点就能 $O(1)$ 到达头、尾并自删，这就是"对称性允许在不知道容器头部的情况下执行删除"的结构基础。
+
+经典应用：**约瑟夫问题**——n 人围成一圈，从第 1 人开始报数，数到 m 的人出列，下一人重新从 1 报起，求出列顺序与幸存者。普通单链表每次走到尾部都要 $O(n)$ 回跳到头，循环结构天然衔接：
+
+```c
+// 约瑟夫问题：打印出列序列，n 人报数、数到 m 出列
+void josephus(int n, int m) {
+    ListNode* head = malloc(sizeof(ListNode));   // 建环：1..n
+    head->data = 1;
+    ListNode* tail = head;
+    for (int i = 2; i <= n; i++) {
+        tail->next = malloc(sizeof(ListNode));
+        tail->next->data = i;
+        tail = tail->next;
+    }
+    tail->next = head;                    // 成环
+
+    ListNode* prev = tail;                // prev 始终指向当前报数人的前驱
+    while (prev->next != prev) {          // 圈内还剩多于一人
+        for (int cnt = 1; cnt < m; cnt++) // 走 m-1 步，停在报数为 m 者的前驱
+            prev = prev->next;
+        ListNode* out = prev->next;
+        printf("%d ", out->data);
+        prev->next = out->next;           // 摘除出列者
+        free(out);
+    }
+    printf("幸存者: %d\n", prev->data);   // 最后剩下的节点
+}
+```
+
+**手算示范**：n=5、m=3 → 出列顺序 **3, 1, 5, 2**，最后只剩 **4**——它就是幸存者。逐步验证：从 1 报起数到 3 → 3 出列；从 4 数到 3（4,5,1）→ 1 出列；从 2 数到 3（2,4,5）→ 5 出列；剩 (2,4)，从 2 数三下（2,4,2）→ 2 出列；幸存 4。
+
+**408 自测：循环链表**
+
+① n=6、m=2 的约瑟夫问题，写出完整出列顺序与幸存者。
+② 带哨兵的循环双链表 L，如何 O(1) 访问首节点和尾节点？判空条件是什么？
+③ 循环单链表（不带哨兵）中，只给指针 p 指向某节点，能否在 O(1) 内把它插入为表头？
+
+> 答案：
+>
+> ① 从 1 报起：数到 2 → 2 出列；3,4 → 4 出列；5,6 → 6 出列；1,3 → 3 出列；剩 (1,5)，5,1 → 1 出列。顺序 **2, 4, 6, 3, 1**，幸存者 **5**。
+> ② 首节点 `L.next`、尾节点 `L.prev`——哨兵的两个方向各直达一端；判空 `L.next == &L`。
+> ③ **能，且这正是循环链表的招牌技巧**：把新节点插到 p 之后（O(1)），然后交换两节点的 data 字段——新数据落位表头语义，原 p 的数据顺移到新节点。数据换位代替指针重排，无需遍历找前驱。
+
 ### 快慢指针 --- 环检测与中点查找
 
 ```c
@@ -458,6 +565,122 @@ Floyd 算法的数学保证基于模运算：设非环部分长度为 $a$，环�
 
 ---
 
+## 408 高频手写题型专练
+
+四个固定模板，每个都值得默写到肌肉记忆。
+
+### 倒数第 k 个节点
+
+快慢指针拉开 k 的间隔，fast 到达末尾时 slow 恰在倒数第 k：
+
+```c
+// 返回倒数第 k 个节点（k 从 1 起算）；链长短于 k 返回 NULL
+ListNode* kth_from_end(ListNode* head, int k) {
+    ListNode *fast = head, *slow = head;
+    while (k-- > 0) {
+        if (!fast) return NULL;      // 提前越界检查
+        fast = fast->next;
+    }
+    while (fast) { fast = fast->next; slow = slow->next; }
+    return slow;
+}
+```
+
+一趟遍历完成，无需先数长度再二次扫描——这是考试偏爱的解法。
+
+**自测**：链表 1→2→3→4→5、k=2，写出 fast/slow 的完整轨迹。
+
+> 答案：预备阶段 fast 先走 2 步停在 3；随后同步前进——fast=4/slow=2 → fast=5/slow=3 → fast=NULL/slow=4。slow 停在 **4**，正是倒数第 2 个。
+
+### 合并两个有序链表
+
+归并排序 merge 在链表上的翻版；哑结点让结果首节点不再特判：
+
+```c
+ListNode* merge_sorted(ListNode* a, ListNode* b) {
+    ListNode dummy = {0, NULL};
+    ListNode* tail = &dummy;
+    while (a && b) {
+        if (a->data <= b->data) { tail->next = a; a = a->next; }
+        else                    { tail->next = b; b = b->next; }
+        tail = tail->next;
+    }
+    tail->next = a ? a : b;          // 一句接走剩余整段
+    return dummy.next;
+}
+```
+
+时间 $O(m+n)$。考点：循环结束后 `tail->next = a ? a : b`——漏掉这句是最常见的失分点。
+
+**自测**：合并 1→3→5 与 2→4，写出每步 tail->next 的取值与收尾动作。
+
+> 答案：1≤2 取 1；3>2 取 2；3≤4 取 3；5>4 取 4；此时 a 剩 5、b 为空 → 接上整段 5。结果 **1→2→3→4→5**。
+
+### 回文链表
+
+三步模板：找中点 → 逆转后半段 → 双向比对，全程 O(1) 额外空间：
+
+```c
+int is_palindrome(ListNode* head) {
+    if (!head || !head->next) return 1;
+    // ① 快慢指针找中点：slow 停在前半段的最后一个节点
+    ListNode *slow = head, *fast = head;
+    while (fast->next && fast->next->next) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    // ② 逆转后半段
+    ListNode *second = slow->next, *prev = NULL;
+    slow->next = NULL;
+    while (second) {
+        ListNode* nxt = second->next;
+        second->next = prev;
+        prev = second;
+        second = nxt;
+    }
+    // ③ 前半段与逆序的后半段逐对比较（后半段更短或等长）
+    ListNode *p = head, *q = prev;
+    while (q) {
+        if (p->data != q->data) return 0;
+        p = p->next; q = q->next;
+    }
+    return 1;
+}
+```
+
+注意 `while (fast->next && fast->next->next)` 让 slow 停在**前半段末尾**而非正中——奇偶长度都能正确切分。若题目只要求判断且允许额外空间，复制进数组再双指针更简单，但面试与考试的标准答案是这个 O(1) 空间版本。
+
+**自测**：判断 1→2→3→2→1 是否回文，写出切分点与两段内容。
+
+> 答案：slow 最终停在中间的 **3**（fast 被条件挡在末节点）；前半 1→2→3，后半逆转后 1→2；逐对比较 1=1、2=2 全部相等 → **是回文**。
+
+### 分隔链表
+
+保持相对次序地把 < x 与 ≥ x 分成两条链再拼接：
+
+```c
+ListNode* partition(ListNode* head, int x) {
+    ListNode small_d = {0, NULL}, great_d = {0, NULL};
+    ListNode *s = &small_d, *g = &great_d;
+    while (head) {
+        if (head->data < x) { s->next = head; s = s->next; }
+        else                { g->next = head; g = g->next; }
+        head = head->next;
+    }
+    s->next = great_d.next;   // 小链尾接大链头
+    g->next = NULL;           // 大链必须封口！
+    return small_d.next;
+}
+```
+
+两个哑结点 + 尾插天然保序。陷阱在大链封口：原链表中大链尾节点的 next 可能还挂着小链成员，不置 NULL 就会成环——这是本题最隐蔽的错误来源。
+
+**自测**：把 1→4→3→2→5→2 按 x=3 分隔，写出两条临时链的形成过程与最终结果。
+
+> 答案：<3 链依次收集 **1、2、2**；≥3 链依次收集 **4、3、5**。拼接得 **1→2→2→4→3→5**——两组内部各自保持原有相对次序。
+
+---
+
 ## 各语言标准库对比
 
 | 语言 | 单向链表 | 双向链表 | 说明 |
@@ -484,10 +707,26 @@ Floyd 算法的数学保证基于模运算：设非环部分长度为 $a$，环�
 
 | 题号 | 题目 | 说明 |
 |------|------|------|
-| [206](https://leetcode.cn/problems/reverse-linked-list/) | 反转链表 | 迭代/递归双解 |
+| [206](https://leetcode.cn/problems/reverse-linked-list/) | 反转链表 | 迭代/递归双解（见正文两版实现） |
 | [141](https://leetcode.cn/problems/linked-list-cycle/) | 环形链表 | Floyd 快慢指针 |
-| [21](https://leetcode.cn/problems/merge-two-sorted-lists/) | 合并两个有序链表 | 归并思想 |
+| [142](https://leetcode.cn/problems/linked-list-cycle-ii/) | 环形链表 II | 定位入口（正文 Floyd 第二阶段 + 数学证明） |
+| [21](https://leetcode.cn/problems/merge-two-sorted-lists/) | 合并两个有序链表 | 归并思想（见手写题型专练） |
+| [19](https://leetcode.cn/problems/remove-nth-node-from-end-of-list/) | 删除链表的倒数第 N 个结点 | 倒数第 k 模板 + 前驱处理 |
+| [234](https://leetcode.cn/problems/palindrome-linked-list/) | 回文链表 | 找中点 + 逆转 + 比对三步模板 |
 | [160](https://leetcode.cn/problems/intersection-of-two-linked-lists/) | 相交链表 | 双指针消除长度差 |
+| [86](https://leetcode.cn/problems/partition-list/) | 分隔链表 | 双哑结点保序分隔 |
+
+### 408 手算自测清单
+
+笔试题与上面的 LeetCode 互补——考的是闭卷手算与代码默写，全部在正文中带完整答案：
+
+| 自测 | 位置 | 考什么 |
+|------|------|--------|
+| 循环链表 ×3 问 | 约瑟夫问题之后 | 出列序列推演、哨兵环的首尾访问、数据换位插表头技巧 |
+| 倒数第 k | 手写题型专练 | 双指针间隔轨迹 |
+| 合并有序 | 同上 | 归并取值次序与剩余段收尾 |
+| 回文链表 | 同上 | 中点切分与逐对比较 |
+| 分隔链表 | 同上 | 保序收集与封口陷阱 |
 
 ## 动手实验
 
