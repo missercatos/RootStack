@@ -238,6 +238,24 @@ graph TD
 
 
 
+### 数组作为抽象数据类型（ADT）
+
+内存视角之外，还有接口视角。数据结构课上，数组首先是一个 **ADT**——一组命名操作的集合，与它如何落进内存无关：
+
+| 操作 | 典型名字（C++ / Python / Java） | 语义 | 成本 |
+|------|--------------------------------|------|:----:|
+| 读 | `v[i]` / `lst[i]` / `get(i)` | 取第 i 个元素 | $O(1)$ |
+| 写 | `v[i] = x` / `lst[i] = x` / `set(i,x)` | 覆盖第 i 个元素 | $O(1)$ |
+| 尾插 | `push_back` / `append` / `add` | 末尾追加（动态数组才有） | 均摊 $O(1)$ |
+| 尾删 | `pop_back` / `pop` / `remove(size-1)` | 删除末尾元素 | $O(1)$ |
+| 中插 | `insert(begin()+i, x)` / `insert(i, x)` / `add(i, x)` | 插到位置 i，后续整体后移 | $O(n)$ |
+| 中删 | `erase(begin()+i)` / `pop(i)` / `remove(i)` | 删位置 i，后续整体前移 | $O(n)$ |
+| 长度 | `size` / `len` / `size` | 当前元素个数 | $O(1)$ |
+
+三列名字一一对应——C++ `vector`、Python `list`、Java `ArrayList` 本质上是同一个 ADT 的三种方言，实现差异在 [[D_容器_Container|容器章节]] 展开。
+
+这张表里最重要的事实是**读写 $O(1)$ 与中插删 $O(n)$ 的不对称**。它不是某个实现的缺点，而是连续内存的物理必然：要保持"基地址+偏移"寻址，元素就必须连着放；要插删，就得搬移其后全部元素。本章后续的一切——动态数组扩容、缓存友好、乃至下面的经典算法节——都是围绕这对矛盾展开的工程回应。
+
 ### 时间复杂度
 
 | 操作 | 静态数组 | 动态数组（末尾） | 动态数组（中间） |
@@ -530,6 +548,149 @@ graph TD
 
 ---
 
+## 数组上的经典算法
+
+> 前面两节回答了"数组是什么、为什么快"。本节回答本科课程的另一半要求：**在这块连续内存上，有哪些被反复验证过的索引操纵套路**。双指针、滑动窗口、二分、前缀和与差分——它们都不改变存储结构，而是把 $O(1)$ 随机访问这个硬件特性兑换成算法层面的效率跃升。
+
+### 双指针：用两个下标替代两层循环
+
+暴力枚举所有配对是 $O(n^2)$。双指针的核心洞察：**如果数据具备某种单向有序性（已排序 / 可归约条件），两个下标的相对运动就能剪掉绝大多数无效配对**。
+
+**对撞指针**——两端向中间收拢，典型场景是有序结构上的配对搜索：
+
+```c
+// 有序数组中找 a[i] + a[j] == target（LeetCode 167 两数之和 II）
+bool two_sum_sorted(const int* a, int n, int target, int* oi, int* oj) {
+    int lo = 0, hi = n - 1;
+    while (lo < hi) {
+        int s = a[lo] + a[hi];
+        if (s == target) { *oi = lo; *oj = hi; return true; }
+        else if (s < target) lo++;   // 最小者太小，只能换更大的
+        else                 hi--;   // 最大者太大，只能换更小的
+    }
+    return false;
+}
+```
+
+每一步都确定性排除一整行候选——当 $a[lo] + a[hi] < target$ 时，$a[lo]$ 与任何更小的 $hi$ 配对只会更小，于是 $lo$ 这一整行被一次性淘汰。$n$ 步内收敛，复杂度从暴力 $O(n^2)$ 降到 $O(n)$。三数之和（LeetCode 15）就是外层固定一个数、内层跑一遍对撞指针。
+
+**快慢指针**——同向而行，快指针探路、慢指针守结果区。本章练习的"原地删除"系列全是这一个模板：
+
+```c
+// 有序数组原地去重，返回新长度（LeetCode 26）—— 快慢指针 O(n)
+int remove_duplicates(int* a, int n) {
+    if (n == 0) return 0;
+    int slow = 0;                          // [0..slow] 是去重后的结果区
+    for (int fast = 1; fast < n; fast++)
+        if (a[fast] != a[slow])
+            a[++slow] = a[fast];           // 遇到新值才推进结果边界
+    return slow + 1;
+}
+```
+
+快指针必然扫满 $n$ 次，慢指针至多前进 $n$ 次——时间 $O(n)$、空间 $O(1)$，全程不需要第二个数组。"原地"二字正是连续内存的红利：写入位置由自己掌控。
+
+### 滑动窗口：双指针的同向特化
+
+两根指针同向且永不回退，中间夹住的 $[left, right]$ 就是窗口。适用问题有明确特征：**连续区间 + 指标随伸缩单调变化**。
+
+| 形态 | 窗口行为 | 典型问题 |
+|------|---------|---------|
+| 固定窗口 | right 走一步，left 同步走一步 | 定长子数组的最大和 |
+| 可变窗口 | right 探索扩张，违反约束时 left 收缩 | 最长/最短满足条件的子数组 |
+
+可变窗口的经典实现（LeetCode 3 最长无重复字符子串）：
+
+```c
+#include <string.h>
+
+int length_of_longest_substring(const char* s, int n) {
+    int last[128];
+    memset(last, -1, sizeof(last));      // 每个字符上次出现的位置
+    int best = 0, left = 0;              // 窗口 [left, right]，无重复
+    for (int right = 0; right < n; right++) {
+        unsigned char c = s[right];
+        if (last[c] >= left)             // c 在当前窗口内出现过
+            left = last[c] + 1;          // 左界直接跳到重复位置的下一格
+        last[c] = right;
+        if (right - left + 1 > best)
+            best = right - left + 1;
+    }
+    return best;
+}
+```
+
+为什么是 $O(n)$ 而不是 $O(n^2)$？均摊分析：`right` 全程只增 $n$ 次，`left` 只增不减、也至多 $n$ 次，两指针总位移 $2n$——每个元素最多进窗一次、出窗一次。这与 KMP 的 $j$、vector 扩容的分析共享同一个数学骨架：**单调不减的计数器各自至多走 n 步**。
+
+### 二分查找：每次比较砍掉一半定义域
+
+有序数组上定位元素不必逐个看：跳到正中比较，一次排除一半。100 万个元素只需 20 次比较，这就是 $O(\log n)$ 的含义。
+
+```c
+// lower_bound：第一个 >= x 的下标；不存在返回 n —— 左闭右开写法
+int lower_bound(const int* a, int n, int x) {
+    int lo = 0, hi = n;                  // 不变量：答案永远落在 [lo, hi]
+    while (lo < hi) {
+        int mid = lo + (hi - lo) / 2;    // 写成 lo+(hi-lo)/2 防止溢出
+        if (a[mid] < x)
+            lo = mid + 1;                // mid 及其左侧全被排除
+        else
+            hi = mid;                    // mid 可能正是答案，必须保留
+    }
+    return lo;
+}
+```
+
+三个工程细节值得刻进肌肉记忆：
+
+1. **`mid = lo + (hi - lo) / 2` 而非 `(lo+hi)/2`**——后者在大数组上会整数溢出，这是 JDK 标准库里潜伏多年才被公开修复的真实 bug（Joshua Bloch 2006 年撰文致歉）；
+2. **区间约定全程一致**——上面用左闭右开 `[lo, hi)`；若中途混入闭区间写法，立刻死循环或漏判；
+3. **循环不变量先行**——动笔前先用一句话说清"lo、hi 之间永远装着什么"，一切边界争议自动消解。LeetCode 34（查找元素首末位置）就是跑两遍 `lower_bound` 型二分的直接应用。
+
+二分不止于查值。"二分答案"把任何具有单调性的判定问题（能否在 T 天内完成？最小可行容量是多少？）整体转化为二分搜索，是本科后期最重要的算法思想之一。
+
+### 前缀和与差分：空间换时间的两端
+
+如果数组**不变**而区间查询频繁，就把查询成本预支给预处理：
+
+$$
+\text{prefix}[i] = \sum_{k=0}^{i-1} a[k], \qquad \sum_{k=l}^{r} a[k] = \text{prefix}[r{+}1] - \text{prefix}[l]
+$$
+
+```c
+// 前缀和：构建 O(n)，之后任意区间和查询 O(1)
+long long* build_prefix(const int* a, int n) {
+    long long* pre = malloc((n + 1) * sizeof(long long));
+    pre[0] = 0;
+    for (int i = 0; i < n; i++) pre[i + 1] = pre[i] + a[i];
+    return pre;                          // [l, r] 的和 = pre[r+1] - pre[l]
+}
+```
+
+反过来，如果**区间修改**频繁而单点读取稀少，用对偶的**差分数组** `diff[i] = a[i] - a[i-1]`。给区间 $[l, r]$ 整体加 $v$ 只需碰两个端点：
+
+```c
+diff[l]     += v;    // 从 l 开始，增量生效
+diff[r + 1] -= v;    // 到 r 之后终止
+// 所有修改完成后做一遍前缀和还原，每个单点值即正确
+```
+
+$m$ 次区间修改的成本从 $O(nm)$ 降到 $O(n + m)$。前缀和向高维推广是二维积分图，向动态化推广就是 [[R_树状数组_BIT|树状数组]]与 [[Q_线段树_SegmentTree|线段树]]——它们让"边修改边查区间信息"维持在 $O(\log n)$。
+
+### 五种套路的共同本质
+
+| 套路 | 消耗的前提性质 | 复杂度跃升 |
+|------|---------------|-----------|
+| 对撞双指针 | 数值有序（可排序） | $O(n^2) \to O(n)$ |
+| 快慢指针 | 问题可归约为保留/丢弃判定 | $O(n)$ 且原地 |
+| 滑动窗口 | 指标随窗口伸缩单调 | $O(nk) \to O(n)$ |
+| 二分查找 | 下标空间具有单调性 | $O(n) \to O(\log n)$ |
+| 前缀和 / 差分 | 数据静态（或修改可延迟） | 区间操作 $O(n) \to O(1)$ |
+
+它们的共同前提都是数组的两条硬件属性——$O(1)$ 随机访问让任意跳跃免费，连续内存让"区间"成为廉价的一等公民。同样的套路搬到链表上大多失效或退化，原因正在于此。
+
+---
+
 ## 数组作为其他数据结构的底层存储
 
 数组是大量高级数据结构的实现载体——不是"可以"用数组实现，而是"在实践中必然"用数组实现以获得 cache 友好的内存布局：
@@ -636,10 +797,30 @@ int mat_set(Matrix2D* m, size_t i, size_t j, int value) {
 | Rust | `[i32; 10]` | `Vec<i32>` | 静态数组大小编译时确定 |
 | Go | `[10]int` | `[]int`（slice） | slice 是底层数组的视图+长度+容量 |
 
+#### Go Slice：动态数组视图的最小完整模型
+
+Go 的 `[]int` 值得单独一提，因为它是"数组视图"的最小完整模型——一个 slice 在底层只是三元组：
+
+```go
+type slice struct {
+    ptr *int  // 指向底层数组某一段的开头
+    len int   // 可见元素个数
+    cap int   // 从 ptr 到底层数组末尾的剩余容量
+}
+```
+
+`s[a:b]` 切片不拷贝数据，只是构造新的三元组共享同一段内存。这带来两个经典陷阱：
+
+- **别名效应**：两个 slice 共享底层数组时，通过其中一个写入，会从另一个里"凭空"显现；
+- **append 的隐式换底**：cap 不足时 `append` 分配新数组并整体迁移，此后的写入不再与旧 slice 共享——同一个变量在 append 前后行为悄然改变。
+
+理解了 slice 就理解了"动态数组 = 视图 + 扩容协议"的全部要点：Rust 的 `&[T]` 是同款视图语义；Python 的列表切片则相反（返回拷贝而非视图），对比着学印象最深。
+
 ---
 
 ## 应用场景
 
+- **排序与查找的载体**：八大排序的操作对象就是数组（[[H_排序_八大排序_Sorting]]），二分查找、前缀和更是直接以有序/静态数组为前提——本章"经典算法"节是它们的地基
 - **查找表（Lookup Table）**：用下标做 O(1) 映射——CRC 校验表、三角函数近似、Unicode 属性表、预计算常量
 - **I/O 缓冲区**：操作系统用大数组作为内核态↔用户态的 DMA 缓冲区，网卡驱动程序用环形缓冲区数组存储待发送/待接收的数据包描述符
 - **GPU 缓冲区对象**：VBO（顶点缓冲对象，vertex buffer object）存储顶点位置/颜色/法线，以数组形式连续排列以便 GPU SIMD 单元并行处理
@@ -652,10 +833,18 @@ int mat_set(Matrix2D* m, size_t i, size_t j, int value) {
 
 | 题号 | 题目 | 难度 | 知识点 |
 | ----------------------------------------------------------------------- | ----------- | :-: | ---------- |
-| [26](https://leetcode.cn/problems/remove-duplicates-from-sorted-array/) | 删除有序数组中的重复项 | 入门 | 原地修改、双指针 |
-| [27](https://leetcode.cn/problems/remove-element/) | 移除元素 | 入门 | 原地修改 |
+| [26](https://leetcode.cn/problems/remove-duplicates-from-sorted-array/) | 删除有序数组中的重复项 | 入门 | 原地修改、快慢指针 |
+| [27](https://leetcode.cn/problems/remove-element/) | 移除元素 | 入门 | 原地修改、快慢指针 |
 | [283](https://leetcode.cn/problems/move-zeroes/) | 移动零 | 入门 | 双指针 + 原地修改 |
 | [88](https://leetcode.cn/problems/merge-sorted-array/) | 合并两个有序数组 | 入门 | 逆向双指针 |
+| [704](https://leetcode.cn/problems/binary-search/) | 二分查找 | 入门 | 二分模板 |
+| [303](https://leetcode.cn/problems/range-sum-query-immutable/) | 区域和检索 - 数组不可变 | 入门 | 前缀和 |
+| [34](https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/) | 在排序数组中查找元素的第一个和最后一个位置 | 中等 | 二分边界（lower_bound 变体） |
+| [209](https://leetcode.cn/problems/minimum-size-subarray-sum/) | 长度最小的子数组 | 中等 | 可变滑动窗口 |
+| [167](https://leetcode.cn/problems/two-sum-ii-input-array-is-sorted/) | 两数之和 II - 输入有序数组 | 中等 | 对撞双指针 |
+| [15](https://leetcode.cn/problems/3sum/) | 三数之和 | 中等 | 排序 + 对撞双指针 |
+| [1109](https://leetcode.cn/problems/corporate-flight-bookings/) | 航班预订统计 | 中等 | 差分数组 |
+| [42](https://leetcode.cn/problems/trapping-rain-water/) | 接雨水 | 困难 | 双指针 / 前缀最大值 |
 
 
 ---
