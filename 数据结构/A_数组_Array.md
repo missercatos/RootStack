@@ -110,6 +110,12 @@ graph TD
 1. **小块内存（< 128KB，实际阈值由 glibc 的 `mmap_threshold` 控制）**：`malloc` 从预先向 OS 申请的堆段（通过 `sbrk` 系统调用扩展数据段边界）中切割一块空闲 chunk。chunk 之间有元数据（大小、标记位），free 时合并相邻空闲 chunk
 2. **大块内存（≥ 128KB）**：`malloc` 直接调用 `mmap` 向内核申请一块全新的虚拟地址区域（anonymous mapping），free 时通过 `munmap` 归还内核
 
+* malloc是C的标准函数，源自标准库<stdlib.h>,用法: void* malloc(size_t size);
+* 返回一个通用指针，最终指针类型取决于所需，比如 num= (int * )malloc(size_t size);这里malloc返回的指针就是指向int类型的。这里num可以作为动态数组，内存空间在堆上分配
+* size_t size表示要分配的字节数，通常由程序员自己定义，比如malloc(sizeof(int))分配一个int大小的堆上连续内存空间。
+* 成功返回的指向首地址的指针，失败返回NULL
+* malloc分配的内存空间不会被初始化，其中的值是随机的
+
 动态数组扩容的核心机制在 [[D_容器_Container#vector 扩容机制|容器章节]] 有完整的均摊数学分析。
 
 ### 多维数组的内存布局
