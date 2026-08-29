@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "数据结构/K_红黑树_RedBlackTree.md",
+                "file": "linux/distro/arch/01-安装指南.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "K_红黑树_RedBlackTree"
+              "title": "01-安装指南"
             }
           },
           {
@@ -273,6 +273,11 @@
   },
   "active": "0a3e136bae6eec4f",
   "lastOpenFiles": [
+    "linux/distro/arch/desktop/01-Niri配置.md",
+    "linux/distro/arch/desktop/02-Hyprland配置.md",
+    "linux/distro/arch/02-pacman包管理高级.md",
+    "linux/distro/arch/01-安装指南.md",
+    "数据结构/K_红黑树_RedBlackTree.md",
     "数据结构/J_树_Tree_BST_AVL.md",
     "数据结构/A_数组_Array.md",
     "数据结构/DSA学习路线.md",
@@ -304,11 +309,6 @@
     "red_team/ctf_trea/Web/SQL/mysql结构/05-过滤空格.md",
     "red_team/ctf_trea/Web/SQL/mysql结构/04-二次注入.md",
     "red_team/ctf_trea/Web/SQL/mysql结构/01-Cookie注入.md",
-    "linux/06-命令行基础与Shell入门.md",
-    "linux/WSL/04-Docker与容器集成.md",
-    "linux/WSL/03-systemd与系统集成.md",
-    "linux/WSL/02-WSL2架构与网络.md",
-    "linux/WSL/01-WSL入门与安装.md",
     "assets/images/二叉堆与数据存储的索引.png",
     "assets/images/二叉堆.png",
     "assets/images/区间合并.png",
