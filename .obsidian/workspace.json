@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "数据结构/A_数组_Array.md",
+                "file": "数据结构/K_红黑树_RedBlackTree.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "A_数组_Array"
+              "title": "K_红黑树_RedBlackTree"
             }
           },
           {
@@ -273,6 +273,8 @@
   },
   "active": "0a3e136bae6eec4f",
   "lastOpenFiles": [
+    "数据结构/J_树_Tree_BST_AVL.md",
+    "数据结构/A_数组_Array.md",
     "数据结构/DSA学习路线.md",
     "linux/23-SSH远程管理.md",
     "数据结构/G_队列_Queue.md",
@@ -280,7 +282,6 @@
     "数据结构/E_链表_LinkedList.md",
     "数据结构/D_容器_Container.md",
     "数据结构/B_字符串_String.md",
-    "数据结构/A_数组_Array.md",
     "red_team/ctf_trea/Web/SQL/mysql结构/02-UA注入.md",
     "算法/算法技巧/数组.md",
     "git.md",
@@ -308,7 +309,6 @@
     "linux/WSL/03-systemd与系统集成.md",
     "linux/WSL/02-WSL2架构与网络.md",
     "linux/WSL/01-WSL入门与安装.md",
-    "linux/resources/环境变量速查.md",
     "assets/images/二叉堆与数据存储的索引.png",
     "assets/images/二叉堆.png",
     "assets/images/区间合并.png",
