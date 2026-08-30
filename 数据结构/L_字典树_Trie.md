@@ -2,11 +2,17 @@
 
 建议先阅读: [[J_树_Tree_BST_AVL|树 BST AVL]], [[B_字符串_String|字符串]] — KMP 的自动机思想在 Trie 和 Aho-Corasick 中有直接应用。
 
+> **考研 408 导引**：Trie 不在 408 数据结构核心考纲内，从未出现手写题。偶尔作为选择题出现（概念理解：前缀共享原理、与哈希表的对比、时间复杂度 O(m) 与集合大小无关）。01-Trie 最大异或、AC 自动机为竞赛/工程增值内容。正文无需 408 手算自测。
+
 ---
 
 ## 原理
 
 字典树（Trie，取自 retrieval）是专为字符串集合设计的树形结构。每个节点对应一个字符，从根到有标记节点的路径组成一个完整单词。Trie 的核心创新是**前缀共享**——多个拥有公共前缀的单词共享树上的前几步路径，将冗余的前缀存储压缩为唯一增长。
+
+### Trie 在哪里
+
+输入 "app" 时搜索框瞬间弹出 "apple/application/appointment"——这是 Trie 的前缀遍历在毫秒级完成。DNS 解析器将域名 `www.example.com` 按 `.` 分段在 Trie 中查找，O(长度) 定位到 IP 地址。Linux 内核的路由表用 Patricia Trie 做最长前缀匹配，决定数据包的下一跳。IDE 的自动补全、拼写检查的候选词生成、基因序列的子串搜索——凡是需要"按前缀检索"或"共享公共前缀"的场景，Trie 都是比哈希表更自然的选择。
 
 ### 前缀共享的量化分析
 
@@ -230,7 +236,9 @@ int bin_max_xor(BinNode* root, int num) {
 |------|------|------|
 | [208](https://leetcode.cn/problems/implement-trie-prefix-tree/) | 实现 Trie | Trie 基础 |
 | [211](https://leetcode.cn/problems/design-add-and-search-words-data-structure/) | 添加与搜索单词 | 通配符 + Trie |
+| [212](https://leetcode.cn/problems/word-search-ii/) | 单词搜索 II | Trie + 回溯 |
 | [421](https://leetcode.cn/problems/maximum-xor-of-two-numbers-in-an-array/) | 数组中两个数的最大异或值 | 01 字典树 |
+| [648](https://leetcode.cn/problems/replace-words/) | 单词替换 | Trie 前缀匹配 |
 
 ## 动手实验
 
