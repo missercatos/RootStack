@@ -271,8 +271,9 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "0a3e136bae6eec4f",
+  "active": "c8e2d7c1de62bbc2",
   "lastOpenFiles": [
+    "数据结构/U_查找_Search.md",
     "linux/distro/arch/02-pacman包管理高级.md",
     "linux/distro/arch/01-安装指南.md",
     "linux/distro/arch/desktop/01-Niri配置.md",
@@ -308,7 +309,6 @@
     "red_team/ctf_trea/Web/SQL/mysql结构/09-综合训练.md",
     "red_team/ctf_trea/Web/SQL/mysql结构/06-AND_OR注入.md",
     "red_team/ctf_trea/Web/SQL/mysql结构/08-UPDATE注入.md",
-    "red_team/ctf_trea/Web/SQL/mysql结构/05-过滤空格.md",
     "assets/images/二叉堆与数据存储的索引.png",
     "assets/images/二叉堆.png",
     "assets/images/区间合并.png",
