@@ -516,7 +516,7 @@ sequenceDiagram
  MMU->>Kernel: 再次 page fault...
 ```
 
-![[d7aede532892b71ee610d249c12f1df1 1.jpg]]
+![[assets/images/string/D7AEDE532892B71EE610D249C12F1DF1.jpg]]
 这里点击放大可以看到完整图片
 
 
