@@ -378,8 +378,3 @@ date    # 确认恢复正常
 - 本地 K8s：长期用 k3s、CI 用 kind、新手面板用 minikube
 - 四大坑：DOCKER_HOST 残留、磁盘暴涨、容器 Exited 不是丢失、时钟漂移毁证书
 
-## 思考题
-
-1. 为什么路线 B 必须启用 systemd 而路线 A 不需要？从 daemon 的宿主角度解释。
-2. `docker system prune -a --volumes` 会删掉什么？为什么说生产数据目录慎用？
-3. Dev Containers 相比 Remote-WSL 多隔离了什么？什么规模的项目值得付出这层成本？

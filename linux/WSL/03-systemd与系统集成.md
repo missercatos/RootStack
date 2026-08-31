@@ -381,9 +381,3 @@ AMD 与 Intel 的支持走 Vulkan / Direct3D 12 映射路线（dzn/d3d12 驱动�
 - GPU 直通的铁律：Windows 装驱动，Linux 只装 cuda-toolkit 工具链，`nvidia-smi` 是验收标准
 - 桌面环境能跑不建议装；display manager 因架构原因不可用
 
-## 思考题
-
-1. 启用 systemd 后哪个命令能立刻证明 1 号进程换了人？未启用时 1 号进程是谁？
-2. 为什么在 WSL 的 Ubuntu 里安装 NVIDIA Linux 驱动反而会让 GPU 直通失效？
-3. xeyes 能正常弹出但 Firefox 不显示，说明问题不在哪一层？下一步查什么？
-4. 你有一个希望每天凌晨三点执行的备份脚本，为什么在 WSL 里优先选 systemd timer 而不是 cron？

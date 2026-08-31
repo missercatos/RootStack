@@ -592,50 +592,6 @@ exec bash # 用新的 bash 替换当前进程
 
 ---
 
-## 6.12 实践练习
-
-### 6.12.1 新手每日练习
-
-```bash
-# Day 1：基础导航
-pwd && ls && cd / && ls && cd ~
-
-# Day 2：理解命令结构
-man ls && whatis ls && type ls
-
-# Day 3：历史操作
-history && ls && !! && !$
-
-# Day 4：Tab 补全
-# 尝试用 Tab 补全尽可能长的路径
-
-# Day 5：快捷键
-# 不用方向键，只用 Ctrl+A/E/B/F 移动光标
-# 用 Ctrl+R 搜索历史
-
-# Day 6：别名
-alias && echo 'alias today="date"' >> ~/.bashrc && source ~/.bashrc
-
-# Day 7：环境变量
-env | sort && echo $PATH && which bash
-```
-
-### 6.12.2 探索式学习
-
-```bash
-# 遇到陌生命令，三步法学习：
-# 1. 快速查看用途
-whatis command_name
-
-# 2. 查看常用示例
-tldr command_name
-
-# 3. 深入查看完整手册
-man command_name
-```
-
----
-
 ## 6.13 常见问题
 
 | 问题 | 解决方案 |

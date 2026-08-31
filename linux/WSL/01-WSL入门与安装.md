@@ -390,8 +390,3 @@ python3 -m http.server 8000
 - `--unregister` 会永久删除数据，执行前先 export
 - 代码放 Linux 侧（~），通过 `\\wsl$` 和 localhost 直通获得最佳体验
 
-## 思考题
-
-1. 你的 WSL2 虚拟机默认会拿走多少内存？如何限制到 4GB？
-2. 为什么 `wsl.conf` 里改了 `appendWindowsPath=false` 后敲旧命令还找得到 `.exe`？
-3. 把发行版从 C 盘迁到 D 盘，哪三步是必须的？哪一步之后默认用户会变成 root？
