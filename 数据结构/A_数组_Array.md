@@ -653,6 +653,8 @@ int remove_duplicates(int* a, int n) {
 }
 ```
 
+![[remove_duplicates.gif]]
+
 快指针必然扫满 $n$ 次，慢指针至多前进 $n$ 次——时间 $O(n)$、空间 $O(1)$，全程不需要第二个数组。"原地"二字正是连续内存的红利：写入位置由自己掌控。
 
 ### 滑动窗口：双指针的同向特化
@@ -685,6 +687,8 @@ int length_of_longest_substring(const char* s, int n) {
 }
 ```
 
+![[longest_substring.gif]]
+
 为什么是 $O(n)$ 而不是 $O(n^2)$？均摊分析：`right` 全程只增 $n$ 次，`left` 只增不减、也至多 $n$ 次，两指针总位移 $2n$——每个元素最多进窗一次、出窗一次。这与 KMP 的 $j$、vector 扩容的分析共享同一个数学骨架：**单调不减的计数器各自至多走 n 步**。
 
 ### 二分查找：每次比较砍掉一半定义域
@@ -705,6 +709,8 @@ int lower_bound(const int* a, int n, int x) {
     return lo;
 }
 ```
+
+![[lower_bound.gif]]
 
 三个工程细节值得刻进肌肉记忆：
 
@@ -732,6 +738,9 @@ long long* build_prefix(const int* a, int n) {
 }
 ```
 
+![[prefix_sum.gif]]
+
+
 反过来，如果**区间修改**频繁而单点读取稀少，用对偶的**差分数组** `diff[i] = a[i] - a[i-1]`。给区间 $[l, r]$ 整体加 $v$ 只需碰两个端点：
 
 ```c
@@ -740,6 +749,7 @@ diff[r + 1] -= v;    // 到 r 之后终止
 // 所有修改完成后做一遍前缀和还原，每个单点值即正确
 ```
 
+![[difference_core.gif]]
 $m$ 次区间修改的成本从 $O(nm)$ 降到 $O(n + m)$。前缀和向高维推广是二维积分图，向动态化推广就是 [[R_树状数组_BIT|树状数组]]与 [[Q_线段树_SegmentTree|线段树]]——它们让"边修改边查区间信息"维持在 $O(\log n)$。
 
 ### 五种套路的共同本质
