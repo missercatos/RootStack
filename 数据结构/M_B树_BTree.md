@@ -466,6 +466,24 @@ int bp_search(BPlusTree* tree, int key) {
  if (leaf->keys[i] == key) return 1;
  return 0;
 }
+
+// 范围查询：沿叶子链表遍历，时间复杂度 O(log n + k)
+// 返回 [low, high] 范围内的所有键
+int bp_range_query(BPlusTree* tree, int low, int high, int* result) {
+ if (!tree->root) return 0;
+ BPNode* leaf = bp_find_leaf(tree, low); // 从 low 所在叶子开始
+ int count = 0;
+ while (leaf) {
+ for (int i = 0; i < leaf->num_keys; i++) {
+ if (leaf->keys[i] > high) return count; // 超出范围，结束
+ if (leaf->keys[i] >= low) {
+ result[count++] = leaf->keys[i]; // 收集范围内的键
+ }
+ }
+ leaf = leaf->next; // 沿链表走到下一个叶子
+ }
+ return count;
+}
 ```
 
 ---

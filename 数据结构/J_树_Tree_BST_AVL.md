@@ -565,6 +565,83 @@ AVLNode* avl_insert(AVLNode* root, int value) {
 
 **线索二叉树**（Threaded Binary Tree）：将空的 left/right 指针改为指向中序的前驱/后继的线索（thread）。遍历时无需递归或栈——从第一个节点出发，沿线索可以连续访问中序后继。内存开销为每个节点 2 bit（标记 left/right 是真指针还是线索）。线索二叉树将 $O(n)$ 空间的遍历栈需求压缩到常数空间。
 
+#### 线索二叉树详解
+
+**定义**：对于二叉树中的空指针：
+- 若节点的 `left` 为空，令 `left` 指向其中序前驱（in-order predecessor）
+- 若节点的 `right` 为空，令 `right` 指向其中序后继（in-order successor）
+- 增加标志位 `ltag/rtag`：0 表示真子节点，1 表示线索
+
+**线索化过程**：中序遍历一遍，在遍历过程中记录前一个访问的节点 `prev`。若当前节点 `left` 为空，则 `left = prev`（指向前驱）；若 `prev` 的 `right` 为空，则 `prev->right = curr`（指向后继）。
+
+```c
+typedef struct ThreadNode {
+ int data;
+ struct ThreadNode *left, *right;
+ int ltag, rtag; // 0=子节点, 1=线索
+} ThreadNode;
+
+static ThreadNode* prev = NULL;
+
+void inorder_thread(ThreadNode* node) {
+ if (!node) return;
+ inorder_thread(node->left); // 左
+
+ // 处理当前节点的线索
+ if (!node->left) {
+ node->ltag = 1;
+ node->left = prev; // 指向前驱
+ }
+ if (prev && !prev->right) {
+ prev->rtag = 1;
+ prev->right = node; // 前驱的右指针指向当前（后继）
+ }
+ prev = node;
+
+ inorder_thread(node->right); // 右
+}
+```
+
+#### 线索化手算轨迹
+
+给定二叉树（中序序列为 D, B, A, E, C）：
+
+```
+        A
+       / \
+      B   C
+     /   /
+    D   E
+```
+
+| 步 | 当前节点 | left | right | 动作 | 线索状态 |
+|:--:|:--------:|:----:|:-----:|------|---------|
+| 1 | D | NULL | NULL | D 的 left 指向 NULL（无前驱），D 的 right 指向 B（后继） | D→B |
+| 2 | B | D | NULL | B 的 right 指向 A（后继） | D→B→A |
+| 3 | A | B | C | A 的 left/right 都非空，无线索 | — |
+| 4 | E | NULL | NULL | E 的 left 指向 A（前驱），E 的 right 指向 C（后继） | A→E→C |
+| 5 | C | E | NULL | C 的 left = E（已处理），C 的 right 指向 NULL（无后继） | — |
+
+最终线索化后，沿线索遍历：D → B → A → E → C（中序序列），无需栈。
+
+**408 自测：线索二叉树**
+
+二叉树中序序列为 `G, D, H, B, E, A, C, F`。① 画出线索二叉树（标注 ltag/rtag）。② 写出从节点 G 出发沿线索遍历的序列。
+
+> 答案：
+>
+> ① 线索（ltag=1 表示线索，rtag=1 表示线索）：
+> - G: left=NULL(ltag=1,无前驱), right=D(rtag=1,后继)
+> - D: left=G(ltag=1,前驱), right=H(rtag=1,后继)
+> - H: left=D(ltag=1,前驱), right=B(rtag=1,后继)
+> - B: left=D(ltag=1,前驱), right=E(rtag=1,后继)
+> - E: left=B(ltag=1,前驱), right=A(rtag=1,后继)
+> - A: left=B(ltag=1,前驱), right=C(rtag=1,后继)
+> - C: left=A(ltag=1,前驱), right=F(rtag=1,后继)
+> - F: left=C(ltag=1,前驱), right=NULL(rtag=1,无后继)
+>
+> ② 从 G 出发沿线索遍历：G → D → H → B → E → A → C → F
+
 **哈夫曼树**（Huffman Tree）：贪心构造的最优前缀编码二叉树。权值最小的两个节点不断合并为新节点，最终形成一棵最优的二叉树——高频字符靠近根，低频字符在深层。这是数据压缩的基础算法。
 
 #### 哈夫曼编码手算
