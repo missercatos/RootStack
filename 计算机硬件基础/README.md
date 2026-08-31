@@ -37,6 +37,53 @@
 
 ---
 
+## 什么是 NPU 和 TPU
+
+除了 CPU 和 GPU，还有两类与 AI 密切相关的处理器：
+
+### NPU（Neural Processing Unit，神经网络处理单元）
+
+NPU 是专门为神经网络推理设计的加速器，通常集成在 SoC 中。与 GPU 相比，NPU 功耗更低（毫瓦级）、延迟更小，适合在手机、PC 上本地运行 AI 模型。
+
+| 芯片 | 内置 NPU | AI 算力 | 适用 |
+|------|:--------:|:-------:|------|
+| Apple M4 | 16 核 Neural Engine | 38 TOPS | Mac AI 功能 |
+| Intel Core Ultra | NPU | 10-11 TOPS | Windows AI PC |
+| Qualcomm Snapdragon X | Hexagon NPU | 45 TOPS | Windows AI PC |
+| 高通骁龙 8 Gen 3 | Hexagon NPU | 45 TOPS | 旗舰手机 |
+| 联发科天玑 9300 | APU 790 | 46 TOPS | 旗舰手机 |
+| 华为麒麟 9010 | NPU | 16 TOPS | 华为手机 |
+| 瑞芯微 RK3588 | NPU | 6 TOPS | 开发板/AI 边缘 |
+
+### TPU（Tensor Processing Unit，张量处理单元）
+
+TPU 是 Google 专为大规模机器学习训练和推理设计的 ASIC 芯片。只在 Google Cloud 和 TPU Pod 中可用，不面向消费市场。
+
+| 版本 | 年份 | 算力 | 内存 | 适用 |
+|------|:----:|:----:|------|------|
+| TPU v1 | 2016 | 92 TFLOPS (INT8) | 8GB HBM | 推理 |
+| TPU v2 | 2017 | 46 TFLOPS | 64GB HBM | 训练+推理 |
+| TPU v3 | 2018 | 123 TFLOPS | 128GB HBM | 大规模训练 |
+| TPU v4 | 2021 | 275 TFLOPS | 32GB HBM | 大规模训练 |
+| TPU v5e | 2023 | 197 TFLOPS (BF16) | 16GB HBM | 推理优化 |
+| TPU v5p | 2023 | 459 TFLOPS (BF16) | 95GB HBM | 训练优化 |
+| TPU v6e (Trillium) | 2024 | 918 TFLOPS (BF16) | 32GB HBM | 新一代 |
+| Trillium | 2024 | 4.7x v5e | HBM | 最新 |
+
+### 其他 AI 加速器
+
+| 芯片 | 厂商 | 算力 | 适用 |
+|------|------|:----:|------|
+| Google Coral Edge TPU | Google | 4 TOPS | 边缘推理 |
+| Intel Movidius Myriad X | Intel | 4 TOPS | 无人机/安防 |
+| 华为 Ascend 310 | 华为 | 8-16 TOPS | 边缘推理 |
+| 华为 Ascend 910B | 华为 | 320+ TFLOPS | 训练（替代 A100）|
+| 寒武纪 MLU370 | 寒武纪 | 256 TFLOPS | 训练+推理 |
+| 寒武纪 MLU590 | 寒武纪 | 512 TFLOPS | 新一代 |
+| Cerebras CS-3 | Cerebras | 125 PFLOPS (FP16) | 超大规模训练 |
+
+---
+
 ## 如何判断一个 CPU 的型号
 
 CPU 型号的命名规则（以 Intel 和 AMD 为例）：
