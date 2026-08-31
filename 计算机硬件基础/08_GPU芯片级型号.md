@@ -113,6 +113,62 @@
 | GK107 | GTX 650 | 2 | 384 | 128-bit | 1-2GB GDDR5 | 64W |
 | GK107 | GT 640 | 2 | 384 | 128-bit | 1-2GB DDR3 | 65W |
 
+### Fermi 架构（2010, TSMC 40nm）
+
+| 芯片代号 | 零售产品 | SM 数 | CUDA 核心 | 显存位宽 | 显存 | TDP |
+|---------|---------|:-----:|:---------:|:--------:|------|:---:|
+| GF110 | GTX 590 | 2x16 | 2x512 | 2x384-bit | 2x1.5GB GDDR5 | 365W |
+| GF110 | GTX 580 | 16 | 512 | 384-bit | 1.5GB GDDR5 | 244W |
+| GF110 | GTX 570 | 14 | 480 | 384-bit | 1.25GB GDDR5 | 219W |
+| GF114 | GTX 560 Ti | 8 | 384 | 256-bit | 1GB GDDR5 | 170W |
+| GF114 | GTX 560 | 7 | 336 | 256-bit | 1GB GDDR5 | 150W |
+| GF116 | GTX 550 Ti | 4 | 192 | 192-bit | 1GB GDDR5 | 116W |
+| GF108 | GT 730 | 2 | 96 | 128-bit | 2GB DDR3 | 49W |
+| GF108 | GT 720 | 1 | 48 | 64-bit | 1-2GB DDR3 | 19W |
+| GF100 | GTX 480 | 15 | 480 | 384-bit | 1.5GB GDDR5 | 250W |
+| GF100 | GTX 470 | 14 | 448 | 320-bit | 1.25GB GDDR5 | 215W |
+| GF104 | GTX 460 | 7 | 336 | 256-bit | 1GB GDDR5 | 160W |
+| GF106 | GTX 450 | 3 | 192 | 128-bit | 1GB GDDR5 | 106W |
+| GF106 | GTS 450 | 4 | 192 | 128-bit | 1GB GDDR5 | 106W |
+| GT200b | GTX 295 | 2x10 | 2x240 | 2x448-bit | 2x896MB GDDR3 | 289W |
+| GT200 | GTX 285 | 10 | 240 | 512-bit | 2GB GDDR3 | 183W |
+| GT200 | GTX 275 | 10 | 240 | 448-bit | 896MB GDDR3 | 219W |
+| G92b | GTX 260 | 8 | 192 | 448-bit | 896MB GDDR3 | 182W |
+| G92 | 8800 GT | 8 | 112 | 256-bit | 512MB GDDR3 | 105W |
+| G94 | 9600 GT | 4 | 64 | 256-bit | 512MB GDDR3 | 95W |
+| G94 | 9500 GT | 2 | 32 | 128-bit | 512MB GDDR3 | 50W |
+| G96 | 9400 GT | 2 | 16 | 128-bit | 512MB DDR2 | 50W |
+| G71 | 7900 GTX | 8 | 24 | 256-bit | 512MB GDDR3 | 62W |
+| G71 | 7900 GT | 8 | 24 | 256-bit | 256MB GDDR3 | 48W |
+| G71 | 7600 GT | 4 | 12 | 128-bit | 256MB GDDR3 | 40W |
+| G73 | 7300 GT | 4 | 8 | 128-bit | 256MB GDDR2 | 24W |
+| G73 | 7100 GS | 2 | 4 | 64-bit | 128MB DDR2 | 24W |
+
+### 更早期架构
+
+| 芯片代号 | 架构 | 零售产品 | 显存 | 年份 |
+|---------|------|---------|------|:----:|
+| NV40 | NV40 | GeForce 6800 Ultra | 256MB GDDR3 | 2004 |
+| NV41 | NV41 | GeForce 6800 GT | 256MB GDDR3 | 2004 |
+| NV43 | NV43 | GeForce 6600 GT | 128MB GDDR3 | 2004 |
+| NV44 | NV44 | GeForce 6200 | 128MB DDR | 2004 |
+| G70 | NV47 | GeForce 7800 GTX | 256MB GDDR3 | 2005 |
+| G70 | NV47 | GeForce 7800 GT | 256MB GDDR3 | 2005 |
+| G73 | NV49 | GeForce 7600 GT | 256MB GDDR3 | 2006 |
+| G72 | NV48 | GeForce 7300 GT | 128MB DDR2 | 2006 |
+| G71 | NV47 | GeForce 7950 GX2 | 2x512MB GDDR3 | 2006 |
+| G80 | G80 | GeForce 8800 GTX | 768MB GDDR3 | 2006 |
+| G80 | G80 | GeForce 8800 GTS | 320/640MB GDDR3 | 2006 |
+| G92 | G92 | GeForce 8800 GT | 512MB GDDR3 | 2007 |
+| G92 | G92 | GeForce 8800 GTS 512 | 512MB GDDR3 | 2007 |
+| G94 | G94 | GeForce 9600 GT | 512MB GDDR3 | 2008 |
+| G94 | G94 | GeForce 9500 GT | 256-512MB DDR2 | 2008 |
+| G200 | GT200 | GeForce GTX 280 | 1GB GDDR3 | 2008 |
+| G200 | GT200 | GeForce GTX 260 | 896MB GDDR3 | 2008 |
+| GT215 | GT215 | GeForce GT 240 | 512MB-1GB GDDR5 | 2009 |
+| GT218 | GT218 | GeForce G210 | 512MB DDR2 | 2009 |
+| GT216 | GT216 | GeForce 320M | 256MB DDR3 | 2010 |
+
 ---
 
 ## AMD GPU 芯片代号
@@ -164,13 +220,63 @@
 | Polaris 20 XL | RX 570 | 32 | 2048 | 256-bit | 4-8GB GDDR5 | 150W |
 | Polaris 11 | RX 560 | 16 | 1024 | 128-bit | 4GB GDDR5 | 75W |
 | Polaris 12 | RX 550 | 10 | 640 | 64-bit | 2-4GB GDDR5 | 50W |
+| Tonga PRO | R9 280 | 28 | 1792 | 384-bit | 3GB GDDR5 | 250W |
 | Hawaii XT | R9 290X | 44 | 2816 | 512-bit | 4GB GDDR5 | 290W |
 | Hawaii PRO | R9 290 | 40 | 2560 | 512-bit | 4GB GDDR5 | 250W |
-| Tonga XT | R9 285 | 32 | 1792 | 256-bit | 2GB GDDR5 | 190W |
-| Tahiti XT2 | R9 280X | 32 | 2048 | 384-bit | 3GB GDDR5 | 250W |
-| Curacao XT | R9 270X | 20 | 1280 | 256-bit | 2-4GB GDDR5 | 180W |
+| Curacao PRO | R9 270 | 20 | 1280 | 256-bit | 2GB GDDR5 | 150W |
 | Bonaire XTX | R7 260X | 14 | 896 | 128-bit | 2GB GDDR5 | 115W |
-| Oland | R7 240 | 6 | 320 | 128-bit | 2GB GDDR5 | 30W |
+| Bonaire XT | R7 260 | 14 | 896 | 128-bit | 2GB GDDR5 | 105W |
+| Oland XT | R7 250X | 10 | 640 | 128-bit | 2GB GDDR5 | 110W |
+| Oland PRO | R7 250 | 8 | 512 | 128-bit | 2GB GDDR5/DDR3 | 75W |
+| Oland | R7 240 | 6 | 320 | 128-bit | 2GB GDDR5/DDR3 | 30W |
+| Hainan | R5 230 | 2 | 128 | 64-bit | 2GB DDR3 | 18W |
+
+### TeraScale / VLIW 架构（2007-2012, TSMC 55/40nm）
+
+| 芯片代号 | 架构 | 零售产品 | 流处理器 | 显存位宽 | 显存 | TDP |
+|---------|------|---------|:--------:|:--------:|------|:---:|
+| Hemlock | VLIW5 | HD 5970 | 2x1600 | 2x256-bit | 2x2GB GDDR5 | 294W |
+| Cypress XT | VLIW5 | HD 5870 | 1600 | 256-bit | 1GB GDDR5 | 188W |
+| Cypress PRO | VLIW5 | HD 5850 | 1440 | 256-bit | 1GB GDDR5 | 151W |
+| Cypress LE | VLIW5 | HD 5830 | 1120 | 256-bit | 1GB GDDR5 | 175W |
+| Juniper XT | VLIW5 | HD 5770 | 800 | 128-bit | 1GB GDDR5 | 108W |
+| Juniper PRO | VLIW5 | HD 5750 | 720 | 128-bit | 1GB GDDR5 | 86W |
+| Redwood XT | VLIW5 | HD 5670 | 400 | 128-bit | 512MB-1GB GDDR5 | 61W |
+| Redwood PRO | VLIW5 | HD 5650 | 400 | 128-bit | 1GB DDR3 | 40W |
+| Cedar | VLIW5 | HD 5570 | 320 | 64-bit | 512MB-1GB GDDR5/DDR3 | 39W |
+| Cypress XT | VLIW5 | HD 4890 | 800 | 256-bit | 1GB GDDR5 | 190W |
+| Cypress PRO | VLIW5 | HD 4870 | 800 | 256-bit | 512MB-1GB GDDR5 | 150W |
+| Juniper XT | VLIW5 | HD 4770 | 640 | 128-bit | 512MB GDDR5 | 80W |
+| RV770 XT | VLIW5 | HD 4850 | 800 | 256-bit | 512MB-1GB GDDR3 | 110W |
+| RV770 PRO | VLIW5 | HD 4830 | 640 | 256-bit | 512MB GDDR3 | 95W |
+| RV730 XT | VLIW5 | HD 4670 | 320 | 128-bit | 512MB GDDR4/DDR3 | 59W |
+| RV730 PRO | VLIW5 | HD 4650 | 320 | 128-bit | 512MB DDR3 | 48W |
+| RV670 XT | VLIW5 | HD 3870 | 320 | 256-bit | 512MB GDDR4 | 105W |
+| RV670 PRO | VLIW5 | HD 3850 | 320 | 256-bit | 256MB-512MB GDDR3 | 75W |
+| RV635 XT | VLIW5 | HD 3690/4670 | 128 | 128-bit | 256MB GDDR3 | 50W |
+| RV635 PRO | VLIW5 | HD 3650 | 120 | 128-bit | 256MB-512MB GDDR2 | 65W |
+| RV620 | VLIW5 | HD 3470 | 40 | 64-bit | 256MB GDDR2 | 30W |
+| R600 XT | VLIW5 | HD 2900 XT | 320 | 512-bit | 512MB GDDR3 | 240W |
+| R600 PRO | VLIW5 | HD 2900 PRO | 320 | 256-bit | 512MB GDDR3 | 200W |
+| RV670 | VLIW5 | HD 2600 XT | 120 | 128-bit | 256MB GDDR4 | 75W |
+| RV630 | VLIW5 | HD 2600 PRO | 120 | 128-bit | 256MB GDDR2 | 45W |
+| RV610 | VLIW5 | HD 2400 XT | 40 | 64-bit | 256MB GDDR3 | 25W |
+
+### ATI 旧时代（2000-2006）
+
+| 芯片代号 | 零售产品 | 渲染管线 | 顶点着色器 | 显存 | 年份 |
+|---------|---------|:--------:|:----------:|------|:----:|
+| R580+ | X1950 XTX | 48 | 8 | 512MB GDDR4 | 2006 |
+| R580 | X1900 XTX | 48 | 8 | 512MB GDDR3 | 2006 |
+| R520 | X1800 XT | 16 | 8 | 256MB GDDR3 | 2005 |
+| R481 | X850 XT PE | 16 | 6 | 256MB GDDR3 | 2005 |
+| R480 | X850 XT | 16 | 6 | 256MB GDDR3 | 2004 |
+| R423 | X800 XT | 16 | 6 | 256MB GDDR3 | 2004 |
+| R420 | X800 Pro | 12 | 6 | 256MB GDDR3 | 2004 |
+| R350 | 9800 Pro | 8 | 4 | 128MB DDR | 2003 |
+| R300 | 9700 Pro | 8 | 4 | 128MB DDR | 2002 |
+| R250 | 9100 | 2 | 4 | 64MB DDR | 2002 |
+| R100 | Radeon | 2 | 1 | 32MB DDR | 2000 |
 
 ---
 
