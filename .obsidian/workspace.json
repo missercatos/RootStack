@@ -36,6 +36,20 @@
             }
           },
           {
+            "id": "b2fc8f5edaee2956",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "README.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "README"
+            }
+          },
+          {
             "id": "80342907837bf2f0",
             "type": "leaf",
             "state": {
@@ -90,7 +104,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -269,15 +283,15 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "0a3e136bae6eec4f",
+  "active": "b2fc8f5edaee2956",
   "lastOpenFiles": [
+    "数据结构/A_数组_Array.md",
     "数据结构/DSA学习路线.md",
     "assets/images/二叉堆.png",
     "assets/数组动画/two_sum_sync.gif",
     "assets/数组动画",
     "assets/images/ac_automaton/ac-automaton1.gif",
     "assets/images/ac_automaton/ac-automaton2.gif",
-    "数据结构/A_数组_Array.md",
     "d7aede532892b71ee610d249c12f1df1 1.jpg",
     "d7aede532892b71ee610d249c12f1df1.jpg",
     "assets/images/string/D7AEDE532892B71EE610D249C12F1DF1.jpg",
