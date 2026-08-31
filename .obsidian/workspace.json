@@ -53,14 +53,12 @@
             "id": "3b3a8884ca5494f4",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "image",
               "state": {
-                "file": "数据结构/A_数组_Array.md",
-                "mode": "source",
-                "source": false
+                "file": "assets/images/二叉堆.png"
               },
-              "icon": "lucide-file",
-              "title": "A_数组_Array"
+              "icon": "lucide-image",
+              "title": "二叉堆"
             }
           },
           {
@@ -92,7 +90,7 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -271,8 +269,15 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "3b3a8884ca5494f4",
+  "active": "0a3e136bae6eec4f",
   "lastOpenFiles": [
+    "数据结构/DSA学习路线.md",
+    "assets/images/二叉堆.png",
+    "assets/数组动画/two_sum_sync.gif",
+    "assets/数组动画",
+    "assets/images/ac_automaton/ac-automaton1.gif",
+    "assets/images/ac_automaton/ac-automaton2.gif",
+    "数据结构/A_数组_Array.md",
     "d7aede532892b71ee610d249c12f1df1 1.jpg",
     "d7aede532892b71ee610d249c12f1df1.jpg",
     "assets/images/string/D7AEDE532892B71EE610D249C12F1DF1.jpg",
@@ -300,7 +305,6 @@
     "计算机硬件基础/01_日用计算机硬件/02_台式座机/04_硬盘.md",
     "计算机硬件基础/01_日用计算机硬件/02_台式座机/03_内存.md",
     "计算机硬件基础/01_日用计算机硬件/02_台式座机/02_主板.md",
-    "计算机硬件基础/01_日用计算机硬件/02_台式座机/01_CPU.md",
     "hackingtools/web/injection/sqlinject/__pycache__/bypass.cpython-314.pyc",
     "hackingtools/web/injection/sqlinject/__pycache__/blind.cpython-314.pyc",
     "hackingtools/web/injection/sqlinject/__pycache__/extractor.cpython-314.pyc",
@@ -310,15 +314,9 @@
     "hackingtools/web/injection/sqlinject/__pycache__/__init__.cpython-314.pyc",
     "hackingtools/web/injection/sqlinject/__pycache__",
     "hackingtools/web/injection/sqlinject/cli.py",
-    "hackingtools/web/injection/sqlinject/bypass.py",
     "assets/images/二叉堆与数据存储的索引.png",
-    "assets/images/二叉堆.png",
     "assets/images/区间合并.png",
     "assets/images/归并排序如何统计逆排序.png",
-    "assets/images/双路快速排序.png",
-    "assets/images/随机化排序.png",
-    "assets/images/归并排序与分治全过程.png",
-    "assets/images/排序算法思路.png",
     "docs/Canvas.canvas",
     "密码学/未命名.canvas",
     "未命名.canvas"
