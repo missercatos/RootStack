@@ -369,6 +369,7 @@ export function renderPage(
       {pageResources.js
         .filter((resource) => resource.loadTime === "afterDOMReady")
         .map((res) => JSResourceToScriptElement(res, true))}
+      <script type="module" src={joinSegments("..", basePath, "static/lightbox.js")} />
     </html>
   )
 

@@ -1,3 +1,56 @@
 @use "./variables.scss" as *;
 
-// put your custom CSS here!
+// ===== GIF 修复：禁用 content-visibility 以免动画被跳过 =====
+img[src$=".gif"],
+img[src$=".GIF"] {
+  content-visibility: visible !important;
+}
+
+// ===== 公式移动端居中修复 =====
+.katex-display {
+  display: block !important;
+  text-align: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+// ===== 代码块滚动修复 =====
+pre {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+// ===== Lightbox overlay 样式 =====
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.lightbox-overlay.active {
+  opacity: 1;
+}
+
+.lightbox-overlay img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s ease;
+  cursor: default;
+}
+
+.lightbox-overlay img.zoomed {
+  transform: scale(1.5);
+  cursor: zoom-out;
+}
