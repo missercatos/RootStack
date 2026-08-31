@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "linux/distro/nix/01-NixOS安装与声明式配置.md",
+                "file": "数据结构/A_数组_Array.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "01-NixOS安装与声明式配置"
+              "title": "A_数组_Array"
             }
           },
           {
@@ -55,12 +55,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "linux/23-SSH远程管理.md",
+                "file": "汇编基础/2硬件操作/01_Port_IO与MMIO.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "23-SSH远程管理"
+              "title": "01_Port_IO与MMIO"
             }
           },
           {
@@ -92,7 +92,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -271,8 +271,22 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "c8e2d7c1de62bbc2",
+  "active": "3b3a8884ca5494f4",
   "lastOpenFiles": [
+    "汇编基础/2硬件操作/04_中断与IDT.md",
+    "汇编基础/2硬件操作/00_硬件操作总览.md",
+    "汇编基础/2硬件操作/01_Port_IO与MMIO.md",
+    "汇编基础/1基础/03_C++在汇编层的体现.md",
+    "汇编基础/1基础/02_栈与调用约定.md",
+    "汇编基础/1基础/01_寄存器与指令基础.md",
+    "汇编基础/1基础/04_工具链与调试环境.md",
+    "red_team/网安基础知识/02-Web技术基础.md",
+    "red_team/网安基础知识/01-计算机网络基础.md",
+    "linux/06-命令行基础与Shell入门.md",
+    "linux/23-SSH远程管理.md",
+    "数据结构/A_数组_Array.md",
+    "数据结构/B_字符串_String.md",
+    "linux/distro/nix/01-NixOS安装与声明式配置.md",
     "数据结构/U_查找_Search.md",
     "linux/distro/arch/02-pacman包管理高级.md",
     "linux/distro/arch/01-安装指南.md",
@@ -282,18 +296,9 @@
     "数据结构/K_红黑树_RedBlackTree.md",
     "数据结构/J_树_Tree_BST_AVL.md",
     "linux/distro/arch/desktop/02-Hyprland配置.md",
-    "数据结构/A_数组_Array.md",
     "数据结构/DSA学习路线.md",
-    "linux/23-SSH远程管理.md",
     "数据结构/G_队列_Queue.md",
     "数据结构/F_栈_Stack.md",
-    "数据结构/E_链表_LinkedList.md",
-    "数据结构/D_容器_Container.md",
-    "数据结构/B_字符串_String.md",
-    "red_team/ctf_trea/Web/SQL/mysql结构/02-UA注入.md",
-    "算法/算法技巧/数组.md",
-    "git.md",
-    "hackingtools/web/README.md",
     "hackingtools/web/injection/sqlinject/__pycache__/bypass.cpython-314.pyc",
     "hackingtools/web/injection/sqlinject/__pycache__/blind.cpython-314.pyc",
     "hackingtools/web/injection/sqlinject/__pycache__/extractor.cpython-314.pyc",
@@ -304,11 +309,6 @@
     "hackingtools/web/injection/sqlinject/__pycache__",
     "hackingtools/web/injection/sqlinject/cli.py",
     "hackingtools/web/injection/sqlinject/bypass.py",
-    "red_team/ctf_trea/Web/SQL/01-整数型注入.md",
-    "red_team/ctf_trea/Web/SQL/mysql结构/mysql结构总目录.md",
-    "red_team/ctf_trea/Web/SQL/mysql结构/09-综合训练.md",
-    "red_team/ctf_trea/Web/SQL/mysql结构/06-AND_OR注入.md",
-    "red_team/ctf_trea/Web/SQL/mysql结构/08-UPDATE注入.md",
     "assets/images/二叉堆与数据存储的索引.png",
     "assets/images/二叉堆.png",
     "assets/images/区间合并.png",
