@@ -516,6 +516,10 @@ sequenceDiagram
  MMU->>Kernel: 再次 page fault...
 ```
 
+![[d7aede532892b71ee610d249c12f1df1 1.jpg]]
+这里点击放大可以看到完整图片
+
+
 **缺页中断的三阶段开销**：
 
 1. **CPU 上下文保存**：硬件自动压栈 RIP/CS/RFLAGS/RSP/SS（约 20 周期），然后跳转 page fault handler
