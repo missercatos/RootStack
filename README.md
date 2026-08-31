@@ -7,6 +7,8 @@
 
 <p align="center">
  <b><a href="https://rootstack.misser.top">rootstack.misser.top</a></b> — 免代理访问的在线教程
+ <br>
+ <b><a href="https://github.com/missercatos/RootStack">github.com/missercatos/RootStack</a></b> — github仓库
 </p>
 
 ---
