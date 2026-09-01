@@ -2,7 +2,7 @@
 
 建议先阅读: [[D_容器_Container|容器概览]], [[F_栈_Stack|栈]]
 
-> **考研 408 导引**：本章应试核心是**循环队列**——判空/判满两种策略（牺牲一格 vs 显式计数）的表达式差异、元素个数公式、给定操作序列的 head/tail 状态推演；链表队列注意"出队至空须置 tail=NULL"的陷阱。双端队列架构、单调队列、Ring Buffer 为超纲增值内容。正文备有 2 组闭卷手算自测。
+
 
 ---
 
@@ -38,16 +38,20 @@
 
 循环队列通过取模运算将一维数组在逻辑上卷成环：
 
-```
-物理数组: [s0] [s1] [s2] [s3] [s4] [s5] [s6] [s7]
- ┌─────────────────────────────────────┐
- │ (7) ──→ (0) ──→ (1) ──→ (2) │
- │ ↑ ↓ │
- │ (6) ←── (5) ←── (4) ←── (3) │
- └─────────────────────────────────────┘
-tail=5 → 指向下一个插入位
-head=2 → 指向队首元素
-当前元素: [2], [3], [4]
+```mermaid
+flowchart LR
+  subgraph ring ["环形队列"]
+    direction LR
+    S0["[0]"]
+    S1["[1]"]
+    S2["[2]\n← head"]
+    S3["[3]"]
+    S4["[4]"]
+    S5["[5]\n← tail"]
+    S6["[6]"]
+    S7["[7]"]
+  end
+  S0 --> S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7 --> S0
 ```
 
 核心操作：
@@ -80,9 +84,9 @@ capacity=8, head=0, tail=0 → 空
 
 **显式计数**（本章采用）：维护 `count` 变量单独计数。`count == 0` 为空，`count == capacity` 为满。多一个变量但不需要浪费槽位。
 
-#### 两种策略的 408 对比
+#### 两种策略的对比
 
-408 选择题最爱把两种策略放在一起考表达式差异——并排背：
+选择题常考两种策略的表达式差异——并排对比：
 
 | | 牺牲一格（空闲单元法） | 显式计数（计数器法） |
 |--|--|--|
@@ -94,27 +98,27 @@ capacity=8, head=0, tail=0 → 空
 
 **手算示范**（牺牲一格法）：capacity=8，head=5，tail=2。元素个数 $= (2-5+8)\%8 = 5$；判满：$(2+1)\%8 = 3 \ne 5$，未满；还能连续入队几次？入队推进 tail 直到 $(tail+1)\%8 = 5$ 即 tail=4——从 2 走到 4 需 **2 次**。
 
-**408 自测：循环队列状态推演**
+**自测：循环队列状态推演**
 
 ① 牺牲一格法，capacity=10，head=3，tail=9。当前元素个数？还能连续入队几次？
 ② 同一物理状态下改用显式计数法：实际容量是多少？
 ③ 牺牲一格法，capacity=4，从空队开始依次执行：push A、push B、push C、pop ×2、push E、push F、pop——写出每步后 head/tail 与队内内容；哪一步之后队列满？
 
-> 答案：
->
-> ① 元素个数 $=(9-3+10)\%10=6$；满的条件是 tail 绕回到 2（$(2+1)\%10=3=head$），从 9 出发经 0、1 到 2，还能入队 **3 次**。
-> ② 计数法不牺牲槽位，实际容量就是 **10**（牺牲一格法只有 9）。同一 head/tail 下若 count=9，则还能入队 **1 次**。
-> ③ 逐步轨迹：
->
-> | 操作 | head | tail | 队内（首→尾）| 说明 |
-> |------|:---:|:---:|------|------|
-> | push A/B/C | 0 | 3 | A B C | 再 push 会撞上 head，被拒 |
-> | pop ×2 | 2 | 3 | C | A、B 出队 |
-> | push E | 2 | 0 | C E | tail 绕环到 0——wrap-around |
-> | push F | 2 | 1 | C E F | $(1+1)\%4=2=head$ → **满** |
-> | pop | 3 | 1 | E F | C 出队，又腾出一格 |
->
-> 满发生在 push F 之后。注意第 4 步正是"绕环追上"的经典场景：tail 从 3 绕回 0 再走到 1，靠取模保持下标合法。
+答案：
+
+① 元素个数 $=(9-3+10)\%10=6$；满的条件是 tail 绕回到 2（$(2+1)\%10=3=head$），从 9 出发经 0、1 到 2，还能入队 **3 次**。
+② 计数法不牺牲槽位，实际容量就是 **10**（牺牲一格法只有 9）。同一 head/tail 下若 count=9，则还能入队 **1 次**。
+③ 逐步轨迹：
+
+| 操作 | head | tail | 队内（首→尾）| 说明 |
+|------|:---:|:---:|------|------|
+| push A/B/C | 0 | 3 | A B C | 再 push 会撞上 head，被拒 |
+| pop ×2 | 2 | 3 | C | A、B 出队 |
+| push E | 2 | 0 | C E | tail 绕环到 0——wrap-around |
+| push F | 2 | 1 | C E F | $(1+1)\%4=2=head$ → **满** |
+| pop | 3 | 1 | E F | C 出队，又腾出一格 |
+
+满发生在 push F 之后。注意第 4 步正是"绕环追上"的经典场景：tail 从 3 绕回 0 再走到 1，靠取模保持下标合法。
 
 ### 双端队列（Deque）的内部架构
 
@@ -174,6 +178,90 @@ int sd_at(SimpleDeque* dq, int i) {
  int global_idx = dq->head_off + i;
  int blk = (dq->map_start + global_idx / BLOCK_SIZE) % dq->map_cap;
  return dq->map[blk][global_idx % BLOCK_SIZE];
+}
+
+void sd_push_front(SimpleDeque* dq, int value) {
+ if (dq->head_off > 0) {
+  dq->head_off--;
+ } else {
+  int new_map_cap = dq->map_cap * 2;
+  int** new_map = calloc(new_map_cap, sizeof(int*));
+  int center = new_map_cap / 2;
+  for (int i = 0; i < dq->block_count; i++)
+   new_map[center + i] = dq->map[(dq->map_start + i) % dq->map_cap];
+  free(dq->map);
+  dq->map = new_map;
+  dq->map_cap = new_map_cap;
+  dq->map_start = center;
+  int blk = (dq->map_start - 1 + dq->map_cap) % dq->map_cap;
+  dq->map[blk] = malloc(BLOCK_SIZE * sizeof(int));
+  dq->block_count++;
+  dq->head_off = BLOCK_SIZE - 1;
+  dq->map_start = blk;
+ }
+ dq->map[(dq->map_start + dq->head_off / BLOCK_SIZE) % dq->map_cap][dq->head_off % BLOCK_SIZE] = value;
+ dq->total++;
+}
+
+void sd_push_back(SimpleDeque* dq, int value) {
+ int global_idx = dq->head_off + dq->total;
+ int blk = (dq->map_start + global_idx / BLOCK_SIZE) % dq->map_cap;
+ int off = global_idx % BLOCK_SIZE;
+ if (dq->total > 0 && off == 0) {
+  int next = (blk + 1) % dq->map_cap;
+  if (next == dq->map_start) {
+   int new_map_cap = dq->map_cap * 2;
+   int** new_map = calloc(new_map_cap, sizeof(int*));
+   int center = new_map_cap / 2;
+   for (int i = 0; i < dq->block_count; i++)
+    new_map[center + i] = dq->map[(dq->map_start + i) % dq->map_cap];
+   free(dq->map);
+   dq->map = new_map;
+   dq->map_cap = new_map_cap;
+   dq->map_start = center;
+   blk = (dq->map_start + global_idx / BLOCK_SIZE) % dq->map_cap;
+  }
+  dq->map[(blk + 1) % dq->map_cap] = malloc(BLOCK_SIZE * sizeof(int));
+  dq->block_count++;
+ }
+ dq->map[blk][off] = value;
+ dq->total++;
+}
+
+int sd_pop_front(SimpleDeque* dq, int* out) {
+ if (dq->total == 0) return -1;
+ int blk = (dq->map_start + dq->head_off / BLOCK_SIZE) % dq->map_cap;
+ int off = dq->head_off % BLOCK_SIZE;
+ if (out) *out = dq->map[blk][off];
+ dq->head_off++;
+ dq->total--;
+ if (dq->head_off >= BLOCK_SIZE && dq->total > 0) {
+  free(dq->map[blk]);
+  dq->map[blk] = NULL;
+  dq->map_start = (dq->map_start + 1) % dq->map_cap;
+  dq->block_count--;
+  dq->head_off = 0;
+ } else if (dq->total == 0) {
+  dq->head_off = 0;
+ }
+ return 0;
+}
+
+int sd_pop_back(SimpleDeque* dq, int* out) {
+ if (dq->total == 0) return -1;
+ dq->total--;
+ int global_idx = dq->head_off + dq->total;
+ int blk = (dq->map_start + global_idx / BLOCK_SIZE) % dq->map_cap;
+ int off = global_idx % BLOCK_SIZE;
+ if (out) *out = dq->map[blk][off];
+ if (dq->total == 0) {
+  dq->head_off = 0;
+ }
+ return 0;
+}
+
+int sd_size(const SimpleDeque* dq) {
+ return dq->total;
 }
 ```
 
@@ -419,11 +507,11 @@ int lq_pop(LinkedQueue* q) {
 | [232](https://leetcode.cn/problems/implement-queue-using-stacks/) | 用栈实现队列 | 与 225 成对的另一侧 |
 | [239](https://leetcode.cn/problems/sliding-window-maximum/) | 滑动窗口最大值 | 单调队列 |
 
-### 408 手算自测清单
+### 核心推演清单
 
-笔试题与上面的 LeetCode 互补——考的是闭卷手算，全部在正文中带完整答案：
+练习题与上面的 LeetCode 互补——侧重手算推演，全部在正文中带完整答案：
 
-| 自测 | 位置 | 考什么 |
+| 自测 | 位置 | 内容 |
 |------|------|--------|
 | 状态推演 ×3 问 | 循环队列判定节 | 两种策略的表达式差异、剩余容量、wrap-around 轨迹与判满时刻 |
 

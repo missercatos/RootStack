@@ -2,8 +2,6 @@
 
 建议先阅读: [[J_树_Tree_BST_AVL|树 BST AVL]], [[B_字符串_String|字符串]] — KMP 的自动机思想在 Trie 和 Aho-Corasick 中有直接应用。
 
-> **考研 408 导引**：Trie 不在 408 数据结构核心考纲内，从未出现手写题。偶尔作为选择题出现（概念理解：前缀共享原理、与哈希表的对比、时间复杂度 O(m) 与集合大小无关）。01-Trie 最大异或、AC 自动机为竞赛/工程增值内容。正文无需 408 手算自测。
-
 ---
 
 ## 原理
@@ -166,11 +164,90 @@ int trie_search(Trie* t, const char* word) {
 int trie_starts_with(Trie* t, const char* prefix) {
  TrieNode* cur = t->root;
  for (int i = 0; prefix[i]; i++) {
- int idx = prefix[i] - 'a';
- if (!cur->children[idx]) return 0;
- cur = cur->children[idx];
+  int idx = prefix[i] - 'a';
+  if (!cur->children[idx]) return 0;
+  cur = cur->children[idx];
  }
  return 1; // 前缀存在
+}
+
+int trie_count_words_with_prefix(Trie* t, const char* prefix) {
+ TrieNode* cur = t->root;
+ for (int i = 0; prefix[i]; i++) {
+  int idx = prefix[i] - 'a';
+  if (!cur->children[idx]) return 0;
+  cur = cur->children[idx];
+ }
+ return cur->prefix_count;
+}
+
+static void trie_collect(TrieNode* node, char* prefix, int depth, char** results, int* count) {
+ if (!node) return;
+ if (node->is_end) {
+  prefix[depth] = '\0';
+  results[*count] = strdup(prefix);
+  (*count)++;
+ }
+ for (int i = 0; i < ALPHABET; i++) {
+  prefix[depth] = 'a' + i;
+  trie_collect(node->children[i], prefix, depth + 1, results, count);
+ }
+}
+
+int trie_autocomplete(Trie* t, const char* prefix, char** results, int max_results) {
+ TrieNode* cur = t->root;
+ for (int i = 0; prefix[i]; i++) {
+  int idx = prefix[i] - 'a';
+  if (!cur->children[idx]) return 0;
+  cur = cur->children[idx];
+ }
+ char buf[256];
+ strcpy(buf, prefix);
+ int count = 0;
+ trie_collect(cur, buf, strlen(prefix), results, &count);
+ if (count > max_results) count = max_results;
+ return count;
+}
+
+static void trie_count_all(TrieNode* node, int* total) {
+ if (!node) return;
+ if (node->is_end) (*total)++;
+ for (int i = 0; i < ALPHABET; i++)
+  trie_count_all(node->children[i], total);
+}
+
+int trie_total_words(Trie* t) {
+ int total = 0;
+ trie_count_all(t->root, &total);
+ return total;
+}
+
+static int trie_empty(TrieNode* node) {
+ if (!node) return 1;
+ if (node->is_end) return 0;
+ for (int i = 0; i < ALPHABET; i++)
+  if (!trie_empty(node->children[i])) return 0;
+ return 1;
+}
+
+void trie_delete(Trie* t, const char* word) {
+ TrieNode* cur = t->root;
+ TrieNode* path[256];
+ int path_len = 0;
+ for (int i = 0; word[i]; i++) {
+  int idx = word[i] - 'a';
+  if (!cur->children[idx]) return;
+  path[path_len++] = cur;
+  cur = cur->children[idx];
+ }
+ cur->is_end = 0;
+ for (int i = path_len - 1; i >= 0; i--) {
+  int idx = word[i] - 'a';
+  if (trie_empty(path[i]->children[idx])) {
+   free(path[i]->children[idx]);
+   path[i]->children[idx] = NULL;
+  }
+ }
 }
 
 static void trie_free_node(TrieNode* node) {

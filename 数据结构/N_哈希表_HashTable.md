@@ -2,8 +2,6 @@
 
 建议先阅读: [[D_容器_Container|容器概览]]
 
-> **考研 408 导引**：哈希表在 408 中是**选择题+偶尔简答题考点**。核心是哈希函数的构造（除留余数法/乘法哈希）、冲突解决（链地址法 vs 开放地址法）、装载因子与 rehash 的关系、查找成功/失败的平均长度计算。布隆过滤器、一致性哈希为增值内容。正文备有 2 组闭卷手算自测。
-
 ---
 
 ## 原理
@@ -103,7 +101,7 @@ DJB2 在"乘以 33"（即 `(hash << 5) + hash`）和"加上下一个字符"之�
 
 注意：$M$ 取质数可以减少碰撞——如果 $M$ 是合数（如 12 = 3×4），所有 3 的倍数的键都会映射到 3 的倍数桶，分布不均匀。
 
-**408 自测：哈希函数**
+**自测：哈希函数**
 
 除留余数法 $h(k) = k \bmod 11$，对键序列 `25, 36, 18, 9, 47` 依次哈希，写出每个键的桶号。
 
@@ -147,15 +145,73 @@ $$h(k, i) = (h'(k) + i) \bmod M$$
 $$h(k, i) = (h'(k) + i^2) \bmod M$$
 
 ```c
+// 开放地址法数据结构
+typedef enum { EMPTY, OCCUPIED, DELETED } SlotState;
+
+typedef struct {
+ int key, value;
+ SlotState state;
+} OASlot;
+
+typedef struct {
+ OASlot* table;
+ size_t cap;
+ size_t size;
+} OAHashMap;
+
+void oa_init(OAHashMap* m, size_t capacity) {
+ m->cap = capacity;
+ m->table = calloc(capacity, sizeof(OASlot));
+ m->size = 0;
+}
+
 // 开放地址法查找（线性探测）
-int oa_find(HashMap* m, int key) {
+int oa_find(OAHashMap* m, int key) {
  int idx = hash(key) % m->cap;
  while (m->table[idx].state != EMPTY) {
- if (m->table[idx].state == OCCUPIED && m->table[idx].key == key)
- return idx; // 找到
- idx = (idx + 1) % m->cap; // 线性探测下一位置
+  if (m->table[idx].state == OCCUPIED && m->table[idx].key == key)
+   return idx; // 找到
+  idx = (idx + 1) % m->cap; // 线性探测下一位置
  }
  return -1; // 未找到
+}
+
+int oa_insert(OAHashMap* m, int key, int value) {
+ if (m->size * 100 >= m->cap * 75) return -1; // 装载因子 >= 0.75 拒绝插入
+ int idx = hash(key) % m->cap;
+ int first_deleted = -1;
+ while (m->table[idx].state != EMPTY) {
+  if (m->table[idx].state == DELETED && first_deleted == -1)
+   first_deleted = idx;
+  if (m->table[idx].state == OCCUPIED && m->table[idx].key == key) {
+   m->table[idx].value = value;
+   return 0; // 更新
+  }
+  idx = (idx + 1) % m->cap;
+ }
+ int target = first_deleted != -1 ? first_deleted : idx;
+ m->table[target].key = key;
+ m->table[target].value = value;
+ m->table[target].state = OCCUPIED;
+ m->size++;
+ return 0;
+}
+
+int oa_delete(OAHashMap* m, int key) {
+ int idx = hash(key) % m->cap;
+ while (m->table[idx].state != EMPTY) {
+  if (m->table[idx].state == OCCUPIED && m->table[idx].key == key) {
+   m->table[idx].state = DELETED; // 墓碑标记，不能置 EMPTY（会打断探测链）
+   m->size--;
+   return 1;
+  }
+  idx = (idx + 1) % m->cap;
+ }
+ return 0;
+}
+
+void oa_destroy(OAHashMap* m) {
+ free(m->table);
 }
 ```
 
@@ -193,7 +249,7 @@ int oa_find(HashMap* m, int key) {
 
 注意：6 个键全部挤在桶 0-5，桶 6 始终空闲——这就是线性探测的**主聚类**（primary clustering）问题：连续被占的桶形成"长串"，新键的探测距离越来越长。
 
-**408 自测：冲突解决**
+**自测：冲突解决**
 
 $M = 7$，链地址法，插入 `10, 22, 31, 4, 15, 28, 17, 53`，$h(k) = k \bmod 7$。① 画出最终的桶数组。② 查找 28 的比较次数。③ 查找 60（不在表中）的比较次数。
 
@@ -332,8 +388,45 @@ int hm_put(HashMap* m, int key, int value) {
 int hm_get(const HashMap* m, int key, int* out) {
  size_t idx = hash(key, m->bucket_count);
  for (Entry* e = m->buckets[idx]; e; e = e->next)
- if (e->key == key) { *out = e->value; return 1; }
+  if (e->key == key) { *out = e->value; return 1; }
  return 0;
+}
+
+int hm_remove(HashMap* m, int key) {
+ size_t idx = hash(key, m->bucket_count);
+ Entry** pp = &m->buckets[idx];
+ while (*pp) {
+  if ((*pp)->key == key) {
+   Entry* del = *pp;
+   *pp = del->next;
+   free(del);
+   m->size--;
+   return 1;
+  }
+  pp = &(*pp)->next;
+ }
+ return 0;
+}
+
+size_t hm_size(const HashMap* m) {
+ return m->size;
+}
+
+int hm_contains(const HashMap* m, int key) {
+ size_t idx = hash(key, m->bucket_count);
+ for (Entry* e = m->buckets[idx]; e; e = e->next)
+  if (e->key == key) return 1;
+ return 0;
+}
+
+int* hm_keys(const HashMap* m, size_t* out_len) {
+ int* keys = malloc(m->size * sizeof(int));
+ size_t j = 0;
+ for (size_t i = 0; i < m->bucket_count; i++)
+  for (Entry* e = m->buckets[i]; e; e = e->next)
+   keys[j++] = e->key;
+ *out_len = m->size;
+ return keys;
 }
 
 void hm_destroy(HashMap* m) {

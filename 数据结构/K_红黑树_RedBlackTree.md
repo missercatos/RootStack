@@ -2,8 +2,6 @@
 
 建议先阅读: [[J_树_Tree_BST_AVL|树 BST AVL]]
 
-> **考研 408 导引**：红黑树在 408 中是**选择题概念考点**，不要求手写代码。核心考点是**五个性质的记忆与判断**（给一棵树验证是否合法）、**高度上界** $h \leq 2\log_2(n+1)$、**与 AVL 的对比**（查找速度 vs 插入旋转次数）、**应用场景**（C++ STL、Linux CFS、epoll）。插入修复的三种情况为概念理解内容。正文备有 1 组闭卷自测。
-
 ---
 
 ## 原理
@@ -55,40 +53,61 @@ graph TD
 
 #### 性质验证自测
 
-408 选择题最常考的红黑树题型：给一棵树，判断是否满足五个性质。逐条过：
+选择题常见题型：给一棵树，判断是否满足五个性质。逐条过：
 
 **自测 1**：以下树是否为合法红黑树？
 
-```
-      10(B)
-     /    \\
-   5(R)   15(R)
-  / \\      \\
- 3(B) 8(B)  20(R)
+```mermaid
+graph TD
+    N10["10(B)"] --> N5["5(R)"]
+    N10 --> N15["15(R)"]
+    N5 --> N3["3(B)"]
+    N5 --> N8["8(B)"]
+    N15 --> N20["20(R)"]
+    style N10 fill:#333,color:#fff
+    style N5 fill:#f00,color:#fff
+    style N15 fill:#f00,color:#fff
+    style N3 fill:#333,color:#fff
+    style N8 fill:#333,color:#fff
+    style N20 fill:#f00,color:#fff
 ```
 
 > 答案：**不合法**——违反性质 5（黑高不等）。路径 10→5→3→NIL 有 3 个黑节点（10,3,NIL），而路径 10→15→NIL 只有 2 个黑节点（10,NIL）。若要合法，需在 15 的左子补一个黑色节点使右路径也有 3 黑。**关键教训：验证性质 5 必须逐条路径数黑色节点，不能只看局部。**
 
 **自测 2**：以下树是否为合法红黑树？
 
-```
-      8(B)
-     /    \\
-   4(R)   12(R)
-  / \\    / \\
- 2(B) 6(B) 10(B) 14(B)
+```mermaid
+graph TD
+    N8["8(B)"] --> N4["4(R)"]
+    N8 --> N12["12(R)"]
+    N4 --> N2["2(B)"]
+    N4 --> N6["6(B)"]
+    N12 --> N10["10(B)"]
+    N12 --> N14["14(B)"]
+    style N8 fill:#333,color:#fff
+    style N4 fill:#f00,color:#fff
+    style N12 fill:#f00,color:#fff
+    style N2 fill:#333,color:#fff
+    style N6 fill:#333,color:#fff
+    style N10 fill:#333,color:#fff
+    style N14 fill:#333,color:#fff
 ```
 
 > 答案：**合法**。① 根黑 ② 红色 4、12 的子节点全黑 ③ 每条到 NIL 的路径有 3 个黑色节点。全部五条性质满足。
 
 **自测 3**：以下树违反了哪条性质？
 
-```
-      10(B)
-     /    \\
-   5(R)   15(B)
-  / \\
- 3(R) 8(R)
+```mermaid
+graph TD
+    N10["10(B)"] --> N5["5(R)"]
+    N10 --> N15["15(B)"]
+    N5 --> N3["3(R)"]
+    N5 --> N8["8(R)"]
+    style N10 fill:#333,color:#fff
+    style N5 fill:#f00,color:#fff
+    style N15 fill:#333,color:#fff
+    style N3 fill:#f00,color:#fff
+    style N8 fill:#f00,color:#fff
 ```
 
 > 答案：**违反性质 4**——节点 5 是红色，其左子 3 也是红色，构成红-红相邻。若 15（叔叔）是黑色，则需旋转+变色修复。
@@ -325,6 +344,20 @@ void rb_destroy(RBTree* t) {
  free(t->NIL);
  t->root = t->NIL = NULL;
 }
+
+void rb_inorder(RBTree* t, RBNode* node) {
+ if (node == t->NIL) return;
+ rb_inorder(t, node->left);
+ printf("%d ", node->data);
+ rb_inorder(t, node->right);
+}
+
+void rb_preorder(RBTree* t, RBNode* node) {
+ if (node == t->NIL) return;
+ printf("%d ", node->data);
+ rb_preorder(t, node->left);
+ rb_preorder(t, node->right);
+}
 ```
 
 ### 插入修复的三种情况详解
@@ -475,6 +508,129 @@ graph TD
  G2 -.->|"再按情况2 右旋 g + 变色"| END[" 平衡"]
 ```
 
+### 红黑树删除（含修复）
+
+```c
+RBNode* rb_minimum(RBTree* t, RBNode* node) {
+ while (node->left != t->NIL)
+  node = node->left;
+ return node;
+}
+
+static void rb_transplant(RBTree* t, RBNode* u, RBNode* v) {
+ if (u->parent == t->NIL)
+  t->root = v;
+ else if (u == u->parent->left)
+  u->parent->left = v;
+ else
+  u->parent->right = v;
+ v->parent = u->parent;
+}
+
+static void rb_delete_fixup(RBTree* t, RBNode* x) {
+ while (x != t->root && x->color == BLACK) {
+  if (x == x->parent->left) {
+   RBNode* w = x->parent->right; // 兄弟节点
+   if (w->color == RED) {
+    // 情况 1：兄弟是红色 → 变色 + 旋转，转化为情况 2/3/4
+    w->color = BLACK;
+    x->parent->color = RED;
+    rb_left_rotate(t, x->parent);
+    w = x->parent->right;
+   }
+   if (w->left->color == BLACK && w->right->color == BLACK) {
+    // 情况 2：兄弟是黑色且两个子节点都是黑色 → 兄弟变红，上移
+    w->color = RED;
+    x = x->parent;
+   } else {
+    if (w->right->color == BLACK) {
+     // 情况 3：兄弟是黑色，右子黑左子红 → 变色 + 旋转，转化为情况 4
+     w->left->color = BLACK;
+     w->color = RED;
+     rb_right_rotate(t, w);
+     w = x->parent->right;
+    }
+    // 情况 4：兄弟是黑色，右子红色 → 旋转 + 变色，修复完成
+    w->color = x->parent->color;
+    x->parent->color = BLACK;
+    w->right->color = BLACK;
+    rb_left_rotate(t, x->parent);
+    x = t->root;
+   }
+  } else {
+   // 对称情况：x 是右孩子
+   RBNode* w = x->parent->left;
+   if (w->color == RED) {
+    w->color = BLACK;
+    x->parent->color = RED;
+    rb_right_rotate(t, x->parent);
+    w = x->parent->left;
+   }
+   if (w->right->color == BLACK && w->left->color == BLACK) {
+    w->color = RED;
+    x = x->parent;
+   } else {
+    if (w->left->color == BLACK) {
+     w->right->color = BLACK;
+     w->color = RED;
+     rb_left_rotate(t, w);
+     w = x->parent->left;
+    }
+    w->color = x->parent->color;
+    x->parent->color = BLACK;
+    w->left->color = BLACK;
+    rb_right_rotate(t, x->parent);
+    x = t->root;
+   }
+  }
+ }
+ x->color = BLACK;
+}
+
+int rb_delete(RBTree* t, int value) {
+ // 查找待删除节点
+ RBNode* z = t->root;
+ while (z != t->NIL) {
+  if (value == z->data) break;
+  z = (value < z->data) ? z->left : z->right;
+ }
+ if (z == t->NIL) return 0; // 未找到
+
+ RBNode* y = z;           // y 是实际可能被删除的节点（最多一个子节点）
+ Color y_original = y->color;
+ RBNode* x;               // x 是 y 的子节点（将替代 y 的位置）
+
+ if (z->left == t->NIL) {
+  x = z->right;
+  rb_transplant(t, z, z->right);
+ } else if (z->right == t->NIL) {
+  x = z->left;
+  rb_transplant(t, z, z->left);
+ } else {
+  // z 有两个孩子：找后继（右子树最小值）
+  y = rb_minimum(t, z->right);
+  y_original = y->color;
+  x = y->right;
+  if (y->parent == z) {
+   x->parent = y; // x 可能是 NIL
+  } else {
+   rb_transplant(t, y, y->right);
+   y->right = z->right;
+   y->right->parent = y;
+  }
+  rb_transplant(t, z, y);
+  y->left = z->left;
+  y->left->parent = y;
+  y->color = z->color;
+ }
+
+ free(z);
+ if (y_original == BLACK)
+  rb_delete_fixup(t, x);
+ return 1;
+}
+```
+
 ---
 
 ## 各语言标准库对比
@@ -507,11 +663,11 @@ graph TD
 | [981](https://leetcode.cn/problems/time-based-key-value-store/) | 基于时间的键值存储 | TreeMap 操作 |
 | [493](https://leetcode.cn/problems/reverse-pairs/) | 翻转对 | 有序集合 + 范围计数 |
 
-### 408 手算自测清单
+### 核心推演清单
 
-红黑树在 408 中是**选择题概念考点**，考的是判断与记忆，不是手写代码：
+红黑树重点考查判断与记忆，不要求手写代码：
 
-| 自测 | 位置 | 考什么 |
+| 自测 | 位置 | 要点 |
 |------|------|--------|
 | 性质验证 ×3 问 | 五个性质节 | 给树判断是否合法（五条逐一验证） |
 

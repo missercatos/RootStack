@@ -2,8 +2,6 @@
 
 建议先阅读: [[E_链表_LinkedList|链表]]
 
-> **考研 408 导引**：跳表**不在 408 考纲内**，但作为增值内容收录。Redis ZSet 的底层实现是工程面试高频话题。正文备有 1 组查找手算自测。
-
 ---
 
 ## 原理
@@ -66,10 +64,20 @@ $$
 
 以 $p = 0.5$ 的跳表为例，假设已插入键 `3, 7, 10, 14, 22, 28, 35`，各节点层级随机分配如下：
 
-```
-Level 2: head ─────────────────────→ 14 ─────────→ NULL
-Level 1: head ──────→ 7 ──────→ 14 ──────→ 28 ──→ NULL
-Level 0: head → 3 → 7 → 10 → 14 → 22 → 28 → 35 → NULL
+```mermaid
+flowchart LR
+  subgraph L2 ["Level 2"]
+    direction LR
+    H2["head"] --> N14L2["14"] --> NULL2["NULL"]
+  end
+  subgraph L1 ["Level 1"]
+    direction LR
+    H1["head"] --> N7["7"] --> N14L1["14"] --> N28["28"] --> NULL1["NULL"]
+  end
+  subgraph L0 ["Level 0"]
+    direction LR
+    H0["head"] --> N3["3"] --> N7L0["7"] --> N10["10"] --> N14L0["14"] --> N22["22"] --> N28L0["28"] --> N35["35"] --> NULL0["NULL"]
+  end
 ```
 
 **查找 22 的过程**：
@@ -197,6 +205,65 @@ void sl_insert(SkipList* sl, int key, int value) {
  node->forward[i] = update[i]->forward[i]; // 插入链表的标准操作
  update[i]->forward[i] = node;
  }
+}
+
+// 删除: 移除指定 key 的节点, 返回 1 表示删除成功, 0 表示 key 不存在
+int sl_delete(SkipList* sl, int key) {
+ SkipNode* update[MAX_LEVEL];
+ sl_find(sl, key, update);
+ SkipNode* target = update[0]->forward[0];
+ if (!target || target->key != key) return 0;
+
+ for (int i = 0; i < sl->level; i++) {
+  if (update[i]->forward[i] != target) break;
+  update[i]->forward[i] = target->forward[i];
+ }
+ free(target);
+
+ while (sl->level > 1 && !sl->header->forward[sl->level - 1])
+  sl->level--;
+ return 1;
+}
+
+// 范围查询: 将 [lo, hi] 内的所有 key 写入 result, 返回元素个数
+int sl_range_query(SkipList* sl, int lo, int hi, int* result) {
+ int count = 0;
+ SkipNode* cur = sl->header->forward[0];
+ while (cur && cur->key <= hi) {
+  if (cur->key >= lo)
+   result[count++] = cur->key;
+  cur = cur->forward[0];
+ }
+ return count;
+}
+
+// 计数: 返回跳表中的元素总数
+int sl_count(SkipList* sl) {
+ int count = 0;
+ SkipNode* cur = sl->header->forward[0];
+ while (cur) {
+  count++;
+  cur = cur->forward[0];
+ }
+ return count;
+}
+
+// 打印: 逐层输出跳表结构 (用于调试)
+void sl_print(SkipList* sl) {
+ for (int i = sl->level - 1; i >= 0; i--) {
+  SkipNode* cur = sl->header->forward[i];
+  printf("Level %d: HEAD", i);
+  while (cur) {
+   printf(" -> %d", cur->key);
+   cur = cur->forward[i];
+  }
+  printf(" -> NULL\n");
+ }
+}
+
+// 获取当前跳表的最大层数
+int sl_get_height(SkipList* sl) {
+ return sl->level;
 }
 
 void sl_destroy(SkipList* sl) {

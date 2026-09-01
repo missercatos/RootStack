@@ -2,8 +2,6 @@
 
 建议先阅读: [[D_容器_Container|容器概览]], [[S_图_Graph|图]] — 并查集是图连通性判断的基础工具。
 
-> **考研 408 导引**：并查集是**选择题+偶尔简答题考点**。核心是路径压缩与按秩合并的原理、合并/查找的均摊复杂度 $O(\alpha(n))$、Kruskal 算法中并查集的应用。带权并查集为增值内容。正文备有 2 组闭卷手算自测。
-
 ---
 
 ## 原理
@@ -147,17 +145,18 @@ parent: [1,1,1,1,4]   rank: [0,2,0,1,0]
 | 5 | Union(4,0) | 4,0 | 1<2 | rank[0]>rank[4] → parent[4]=0 | `[0,0,0,2,0,4]` |
 
 最终树：
-```
-  0 (rank=2)
-  ↑↑↑
-  1 2 4
-     ↑   ↑
-     3   5
+```mermaid
+graph TD
+    0["0 (rank=2)"] --> 1
+    0 --> 2
+    0 --> 4
+    2 --> 3
+    4 --> 5
 ```
 
 6 个元素合并为 1 个集合，最大深度 2（按秩合并保证树高 $\leq \log n$）。
 
-**408 自测：并查集操作**
+**核心推演：并查集操作**
 
 初始 7 个节点 `[0,1,2,3,4,5,6]`，依次执行：
 `Union(0,1)`, `Union(2,3)`, `Union(4,5)`, `Union(0,2)`, `Union(4,6)`, `Union(0,4)`
@@ -175,12 +174,14 @@ parent: [1,1,1,1,4]   rank: [0,2,0,1,0]
 > - Union(0,4): rank[0]=2 > rank[4]=1 → parent[4]=0 → `[0,0,0,2,0,4,4]`
 >
 > 最终 parent：`[0,0,0,2,0,4,4]`
-> ```
->   0 (rank=2)      ← 根
->   ↑↑↑
->   1 2 4
->      ↑   ↑↑
->      3   5 6
+> ```mermaid
+> graph TD
+>     0["0 (rank=2) ← 根"] --> 1
+>     0 --> 2
+>     0 --> 4
+>     2 --> 3
+>     4 --> 5
+>     4 --> 6
 > ```
 >
 > ② Find(5) 路径压缩：5→4→0(根)。压缩后 parent[5]=0，parent[4] 已指向 0。压缩前后 parent[5] 从 4 变为 0。
@@ -256,6 +257,29 @@ void uf_union(UnionFind* uf, int x, int y) {
 
 int uf_connected(UnionFind* uf, int x, int y) {
  return uf_find(uf, x) == uf_find(uf, y);
+}
+
+int uf_count_components(UnionFind* uf) {
+ int count = 0;
+ for (int i = 0; i < uf->n; i++)
+  if (uf->parent[i] == i) count++;
+ return count;
+}
+
+int uf_get_size(UnionFind* uf, int x) {
+ return uf->size[uf_find(uf, x)];
+}
+
+int uf_find_iterative(UnionFind* uf, int x) {
+ int root = x;
+ while (uf->parent[root] != root)
+  root = uf->parent[root];
+ while (uf->parent[x] != x) {
+  int next = uf->parent[x];
+  uf->parent[x] = root;
+  x = next;
+ }
+ return root;
 }
 
 void uf_destroy(UnionFind* uf) {
