@@ -2,8 +2,6 @@
 
 建议先阅读: [[D_容器_Container|容器概览]], [[J_树_Tree_BST_AVL|树 BST AVL]]（二叉树概念 + 完全二叉树 + 数组表示）
 
-> **考研 408 导引**：本章应试核心是**完全二叉树的数组表示**（父子下标公式）、**sift-up / sift-down 的操作语句**（含交换条件与终止条件）、**Floyd 建堆过程**（从最后一个非叶子节点起逐个下沉的逐步轨迹）和**堆排序过程**（n 次交换 + 下沉的逐步轨迹）。Top-K、优先队列为应用常客。d-ary 堆、堆排序比快排慢的访存分析为超纲增值内容。正文备有 2 组闭卷手算自测。
-
 ---
 
 ## 原理
@@ -121,24 +119,28 @@ $$
 **初始状态**：`[4, 1, 3, 2, 16, 9, 10]`
 
 **树形结构**：
-```
-        4 (0)
-      /   \
-    1(1)   3(2)
-   / \    / \
-  2(3) 16(4) 9(5) 10(6)
+```mermaid
+graph TD
+    N0["4 (0)"] --> N1["1 (1)"]
+    N0 --> N2["3 (2)"]
+    N1 --> N3["2 (3)"]
+    N1 --> N4["16 (4)"]
+    N2 --> N5["9 (5)"]
+    N2 --> N6["10 (6)"]
 ```
 
 **第 1 步**：从 idx=2（值 3）开始，最后一个非叶子节点
 - 子节点：left=5(值 9)，right=6(值 10)，最大子 = 6(值 10)
 - `10 > 3`，交换 → idx=6，已是叶子，停止
 
-```
-        4 (0)
-      /   \
-    1(1)   10(2)
-   / \    / \
-  2(3) 16(4) 9(5) 3(6)
+```mermaid
+graph TD
+    N0["4 (0)"] --> N1["1 (1)"]
+    N0 --> N2["10 (2)"]
+    N1 --> N3["2 (3)"]
+    N1 --> N4["16 (4)"]
+    N2 --> N5["9 (5)"]
+    N2 --> N6["3 (6)"]
 ```
 数组：`[4, 1, 10, 2, 16, 9, 3]`
 
@@ -146,12 +148,14 @@ $$
 - 子节点：left=3(值 2)，right=4(值 16)，最大子 = 4(值 16)
 - `16 > 1`，交换 → idx=4，已是叶子，停止
 
-```
-        4 (0)
-      /   \
-    16(1)   10(2)
-   / \    / \
-  2(3) 1(4) 9(5) 3(6)
+```mermaid
+graph TD
+    N0["4 (0)"] --> N1["16 (1)"]
+    N0 --> N2["10 (2)"]
+    N1 --> N3["2 (3)"]
+    N1 --> N4["1 (4)"]
+    N2 --> N5["9 (5)"]
+    N2 --> N6["3 (6)"]
 ```
 数组：`[4, 16, 10, 2, 1, 9, 3]`
 
@@ -161,18 +165,20 @@ $$
 - idx=1 的子节点：left=3(值 2)，right=4(值 1)，最大子 = 3(值 2)
 - `2 > 4` 不成立，停止
 
-```
-       16(0)
-      /   \
-    4(1)   10(2)
-   / \    / \
-  2(3) 1(4) 9(5) 3(6)
+```mermaid
+graph TD
+    N0["16 (0)"] --> N1["4 (1)"]
+    N0 --> N2["10 (2)"]
+    N1 --> N3["2 (3)"]
+    N1 --> N4["1 (4)"]
+    N2 --> N5["9 (5)"]
+    N2 --> N6["3 (6)"]
 ```
 数组：`[16, 4, 10, 2, 1, 9, 3]`
 
 最终状态 `16 ≥ 4,10 ≥ 2,1,9,3`——最大堆性质满足。
 
-**408 自测：Floyd 建堆**
+**自测：Floyd 建堆**
 
 给定数组 `[5, 3, 8, 1, 2, 7, 4]`（7 个元素），写出 Floyd 建堆的每一步（哪些节点被下沉、交换了几次、最终数组）。
 
@@ -294,6 +300,15 @@ int mh_top(const MaxHeap* h, int* out) {
  return 0;
 }
 
+// 减小键值并上浮（用于 Dijkstra 优先队列）
+// 前置条件: idx < size 且 new_key < data[idx]
+int mh_decrease_key(MaxHeap* h, size_t idx, int new_key) {
+ if (idx >= h->size || new_key > h->data[idx]) return -1;
+ h->data[idx] = new_key;
+ sift_up(h, idx);
+ return 0;
+}
+
 // Floyd build-heap: O(n)
 void mh_build(MaxHeap* h, int* arr, size_t n) {
  free(h->data);
@@ -302,6 +317,63 @@ void mh_build(MaxHeap* h, int* arr, size_t n) {
  h->capacity = n;
  for (int i = (int)n / 2 - 1; i >= 0; i--)
  sift_down(h, (size_t)i);
+}
+```
+
+### 最小堆
+
+最小堆是最大堆的对偶——堆顶始终是全局最小值。Dijkstra 最短路径、Top-K（维护大小为 K 的最小堆取最大 K 个）、合并 K 个有序流均依赖最小堆。以下为最小堆的核心操作（结构与最大堆完全对称，仅比较方向相反）：
+
+```c
+typedef struct {
+ int* data;
+ size_t size;
+ size_t capacity;
+} MinHeap;
+
+void mh_min_init(MinHeap* h) { h->data = NULL; h->size = 0; h->capacity = 0; }
+void mh_min_destroy(MinHeap* h) { free(h->data); h->data = NULL; h->size = h->capacity = 0; }
+
+static void min_sift_up(MinHeap* h, size_t idx) {
+ while (idx > 0) {
+  size_t parent = (idx - 1) / 2;
+  if (h->data[parent] <= h->data[idx]) break;
+  int t = h->data[parent]; h->data[parent] = h->data[idx]; h->data[idx] = t;
+  idx = parent;
+ }
+}
+
+static void min_sift_down(MinHeap* h, size_t idx) {
+ size_t n = h->size;
+ while (1) {
+  size_t smallest = idx;
+  size_t left = 2 * idx + 1, right = 2 * idx + 2;
+  if (left < n && h->data[left] < h->data[smallest]) smallest = left;
+  if (right < n && h->data[right] < h->data[smallest]) smallest = right;
+  if (smallest == idx) break;
+  int t = h->data[idx]; h->data[idx] = h->data[smallest]; h->data[smallest] = t;
+  idx = smallest;
+ }
+}
+
+int mh_min_push(MinHeap* h, int value) {
+ if (h->size >= h->capacity) {
+  size_t new_cap = h->capacity == 0 ? 8 : h->capacity * 2;
+  int* p = realloc(h->data, new_cap * sizeof(int));
+  if (!p) return -1;
+  h->data = p; h->capacity = new_cap;
+ }
+ h->data[h->size++] = value;
+ min_sift_up(h, h->size - 1);
+ return 0;
+}
+
+int mh_min_extract_min(MinHeap* h, int* out) {
+ if (h->size == 0) return -1;
+ *out = h->data[0];
+ h->data[0] = h->data[--h->size];
+ if (h->size > 0) min_sift_down(h, 0);
+ return 0;
 }
 ```
 
@@ -378,25 +450,25 @@ void heap_sort(int* arr, size_t n) {
 
 共 **9 步**，总比较次数约 $9 \times 4 = 36$ 次（$n \log_2 n$ 的量级）。
 
-**408 自测：堆排序**
+**自测：堆排序**
 
 给定最大堆 `[20, 15, 18, 10, 12, 16, 14]`，执行堆排序的前 3 步，写出每步交换+下沉后的数组。
 
-> 答案：
->
-> 初始：`[20, 15, 18, 10, 12, 16, 14]`
->
-> ① 交换 20↔14 → `[14, 15, 18, 10, 12, 16] | 20`
->    14 下沉：与 18(右子) 交换 → `[18, 15, 14, 10, 12, 16]`；14 在 idx=2，子节点 5(值16)、6(值14)，16 > 14 → 再交换 → `[18, 15, 16, 10, 12, 14]`
->    状态：`[18, 15, 16, 10, 12, 14, 20]`
->
-> ② 交换 18↔14 → `[14, 15, 16, 10, 12] | 18, 20`
->    14 下沉：与 16(右子) 交换 → `[14, 15, 16, ...]`；14 在 idx=2，子节点 5(值12)，12 < 14 不成立 → 不动
->    状态：`[16, 15, 14, 10, 12, 18, 20]`
->
-> ③ 交换 16↔12 → `[12, 15, 14, 10] | 16, 18, 20`
->    12 下沉：与 15(左子) 交换 → `[15, 12, 14, 10]`；12 在 idx=1，子节点 3(值10)，10 < 12 不成立 → 不动
->    状态：`[15, 12, 14, 10, 16, 18, 20]`
+答案：
+
+初始：`[20, 15, 18, 10, 12, 16, 14]`
+
+① 交换 20↔14 → `[14, 15, 18, 10, 12, 16] | 20`
+   14 下沉：与 18(右子) 交换 → `[18, 15, 14, 10, 12, 16]`；14 在 idx=2，子节点 5(值16)、6(值14)，16 > 14 → 再交换 → `[18, 15, 16, 10, 12, 14]`
+   状态：`[18, 15, 16, 10, 12, 14, 20]`
+
+② 交换 18↔14 → `[14, 15, 16, 10, 12] | 18, 20`
+   14 下沉：与 16(右子) 交换 → `[14, 15, 16, ...]`；14 在 idx=2，子节点 5(值12)，12 < 14 不成立 → 不动
+   状态：`[16, 15, 14, 10, 12, 18, 20]`
+
+③ 交换 16↔12 → `[12, 15, 14, 10] | 16, 18, 20`
+   12 下沉：与 15(左子) 交换 → `[15, 12, 14, 10]`；12 在 idx=1，子节点 3(值10)，10 < 12 不成立 → 不动
+   状态：`[15, 12, 14, 10, 16, 18, 20]`
 
 ---
 
@@ -432,12 +504,12 @@ void heap_sort(int* arr, size_t n) {
 | [1046](https://leetcode.cn/problems/last-stone-weight/) | 最后一块石头的重量 | 最大堆模拟 |
 | [23](https://leetcode.cn/problems/merge-k-sorted-lists/) | 合并K个升序链表 | 最小堆 + 链表 |
 
-### 408 手算自测清单
+### 核心推演清单
 
-笔试题与上面的 LeetCode 互补——考的是闭卷手算，全部在正文中带完整答案：
+练习题与上面的 LeetCode 互补——侧重手算推演，全部在正文中带完整答案：
 
-| 自测 | 位置 | 考什么 |
-|------|------|--------|
+| 自测 | 位置 | 内容 |
+|------|------|------|
 | Floyd 建堆 ×1 问 | 建堆手算轨迹节 | 从序列建堆的逐步下沉过程 |
 | 堆排序 ×1 问 | 堆排序手算轨迹节 | 交换 + 下沉的逐步数组状态 |
 

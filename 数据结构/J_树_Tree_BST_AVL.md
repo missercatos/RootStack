@@ -2,8 +2,6 @@
 
 建议先阅读: [[D_容器_Container|容器概览]], [[F_栈_Stack|栈]]（递归与栈的关系），[[G_队列_Queue|队列]]（层序遍历依赖队列）
 
-> **考研 408 导引**：本章应试核心是**四种遍历的序列输出**、**前序+中序唯一确定二叉树**的手算重建、**BST 删除**（三种情况的逐步操作）和 **AVL 建树**（给插入序列逐步画树并标注旋转类型）；哈夫曼树构建与编码为高频手算题。层序遍历、线索二叉树为概念题。红黑树/B 树/线段树见各自章节。正文备有 6 组闭卷手算自测。
-
 ---
 
 ## 原理
@@ -19,18 +17,27 @@
 ![[../assets/images/二叉树.png]]
 ![[../assets/images/树形结构.png]]
 
+```mermaid
+graph TD
+    ROOT["Root 深度=0"] --> A["A 深度=1"]
+    ROOT --> B["B 深度=1"]
+    A --> C["C d=2"]
+    A --> D["D d=2"]
+    B --> E["E d=2"]
+    C --> F["F d=3"]
+    C --> G["G d=3"]
+    style ROOT fill:#4a90d9,color:#fff
+    style A fill:#5ba3e6,color:#fff
+    style B fill:#5ba3e6,color:#fff
+    style C fill:#7ec8e3,color:#333
+    style D fill:#7ec8e3,color:#333
+    style E fill:#7ec8e3,color:#333
+    style F fill:#afa,color:#333
+    style G fill:#afa,color:#333
 ```
- [Root 深度=0] ← 层 0
- / \
- [A 深度=1] [B 深度=1] ← 层 1
- / \ \
- [C d=2] [D d=2] [E d=2] ← 层 2
- / \
-[F d=3] [G d=3] ← 层 3 (叶子)
 
 节点 F 的高度 = 0 (叶子), 节点 A 的高度 = 2, 树的高度 = 3
 节点 F 的深度 = 3 (从根起的边数)
-```
 
 | 术语 | 定义 | 例（以 F 为参考） |
 |------|------|---------|
@@ -73,12 +80,14 @@ graph TD
 
 以这棵完全二叉树为例：
 
-```
-        1
-      /   \
-     2     3
-    / \   / \
-   4   5 6   7
+```mermaid
+graph TD
+    N1["1"] --> N2["2"]
+    N1 --> N3["3"]
+    N2 --> N4["4"]
+    N2 --> N5["5"]
+    N3 --> N6["6"]
+    N3 --> N7["7"]
 ```
 
 | 遍历 | 序列 | 过程 |
@@ -88,15 +97,16 @@ graph TD
 | 后序 | 4, 5, 2, 6, 7, 3, 1 | 左→右→根：叶子先输出，根最后 |
 | 层序 | 1, 2, 3, 4, 5, 6, 7 | 逐层从左到右：BFS 遍历 |
 
-**408 自测：遍历序列**
+**自测：遍历序列**
 
 给定二叉树：
-```
-      A
-     / \
-    B   C
-   / \   \
-  D   E   F
+```mermaid
+graph TD
+    A["A"] --> B["B"]
+    A --> C["C"]
+    B --> D["D"]
+    B --> E["E"]
+    C --> F["F"]
 ```
 写出前序、中序、后序、层序遍历序列。
 
@@ -123,13 +133,13 @@ graph TD
 
 **第 5 步**：F 是叶子。
 
-```
-重建结果：
-      A
-     / \
-    B   C
-   / \ /
-  D  E F
+```mermaid
+graph TD
+    A["A"] --> B["B"]
+    A --> C["C"]
+    B --> D["D"]
+    B --> E["E"]
+    C --> F["F"]
 ```
 
 **自测**：前序 `[1,2,4,5,3,6,7]` + 中序 `[4,2,5,1,6,3,7]`，画出二叉树。
@@ -191,50 +201,52 @@ graph TD
 以 BST `[8, 3, 10, 1, 6, 14, 4, 7, 13]` 为例，逐步删除：
 
 **初始树**：
-```
-        8
-       / \
-      3   10
-     / \    \
-    1   6   14
-       / \  /
-      4   7 13
+```mermaid
+graph TD
+    N8["8"] --> N3["3"]
+    N8 --> N10["10"]
+    N3 --> N1["1"]
+    N3 --> N6["6"]
+    N10 --> N14["14"]
+    N6 --> N4["4"]
+    N6 --> N7["7"]
+    N14 --> N13["13"]
 ```
 
 **删除 7（情况 1：叶子）**：直接删除，父节点 6 的 right 置 NULL。
-```
-        8
-       / \
-      3   10
-     / \    \
-    1   6   14
-       /   /
-      4   13
+```mermaid
+graph TD
+    N8["8"] --> N3["3"]
+    N8 --> N10["10"]
+    N3 --> N1["1"]
+    N3 --> N6["6"]
+    N10 --> N14["14"]
+    N6 --> N4["4"]
+    N14 --> N13["13"]
 ```
 
 **删除 6（情况 2：单子）**：6 只有左子 4，用 4 代替 6 的位置。
-```
-        8
-       / \
-      3   10
-     / \    \
-    1   4   14
-           /
-          13
+```mermaid
+graph TD
+    N8["8"] --> N3["3"]
+    N8 --> N10["10"]
+    N3 --> N1["1"]
+    N3 --> N4["4"]
+    N10 --> N14["14"]
+    N14 --> N13["13"]
 ```
 
 **删除 3（情况 3：双子）**：3 有左子 1 和右子 4。找中序后继——右子树最小值 = 4。将 4 复制到 3 的位置，删除原 4 节点（叶子）。
-```
-        8
-       / \
-      4   10
-     /     \
-    1     14
-           /
-          13
+```mermaid
+graph TD
+    N8["8"] --> N4["4"]
+    N8 --> N10["10"]
+    N4 --> N1["1"]
+    N10 --> N14["14"]
+    N14 --> N13["13"]
 ```
 
-**408 自测：BST 删除**
+**自测：BST 删除**
 
 给定 BST `[15, 6, 18, 3, 7, 17, 20, 2, 4, 13, 9]`，删除 6 后画出新树（写出所用情况）。
 
@@ -242,27 +254,30 @@ graph TD
 >
 > 6 有左子(3)和右子(7) → 情况 3。中序后继 = 右子树最小值 = 7。
 > 用 7 替换 6，删除原 7（叶子）。
-> ```
->       15
->      /  \
->     7    18
->    / \  /  \
->   3  (空) 17  20
->  / \
-> 2   4
+> ```mermaid
+> graph TD
+>     N15["15"] --> N7["7"]
+>     N15 --> N18["18"]
+>     N7 --> N3["3"]
+>     N18 --> N17["17"]
+>     N18 --> N20["20"]
+>     N3 --> N2["2"]
+>     N3 --> N4["4"]
 > ```
 > 右子树：13 和 9 仍在 15 的左子树中——等一下，需要重新检查原始树的结构。
 >
 > 更正：原始 BST 中 13 在 18 的左子树路径上（15→18→17→13 不对）。按 BST 性质，13 < 15 应在 15 的左子树。实际原始树为：15(根), 左子树(6→3→(2,4), 7→(...)), 右子树(18→17, 20)。13 应在 15 的左子树中——它大于 6 小于 15，所以在 6 的右子树中。6 的右子树有 7 和 13。13 > 7 所以在 7 的右子树。删除 6 后 7 替上来，13 仍在 7 的右子树：
 >
-> ```
->        15
->       /  \
->      7    18
->     / \  /  \
->    3  13 17  20
->   / \
->  2   4
+> ```mermaid
+> graph TD
+>     N15["15"] --> N7["7"]
+>     N15 --> N18["18"]
+>     N7 --> N3["3"]
+>     N7 --> N13["13"]
+>     N18 --> N17["17"]
+>     N18 --> N20["20"]
+>     N3 --> N2["2"]
+>     N3 --> N4["4"]
 > ```
 > 情况 3（双子）：用中序后继 7 替换 6。
 
@@ -339,7 +354,7 @@ graph TD
 - BF=2 且新值 > 左子值 → **LR**（先左旋后右旋）
 - BF=-2 且新值 < 右子值 → **RL**（先右旋后左旋）
 
-**408 自测：AVL 建树**
+**自测：AVL 建树**
 
 插入序列 `[10, 20, 30, 25, 28, 27]`，画出每次插入后的 AVL 树并标注旋转类型。
 
@@ -548,20 +563,169 @@ AVLNode* avl_insert(AVLNode* root, int value) {
 }
 ```
 
+### AVL 删除
+
+删除比插入复杂——删除后沿路径回溯更新高度时，失衡可能出现在任意祖先节点，且旋转类型需根据**左右子树的高度**判断（而非插入时的值比较）。
+
+```c
+AVLNode* avl_delete(AVLNode* root, int value) {
+ if (!root) return NULL;
+ if (value < root->data)
+  root->left = avl_delete(root->left, value);
+ else if (value > root->data)
+  root->right = avl_delete(root->right, value);
+ else {
+  // 找到目标节点
+  if (!root->left || !root->right) {
+   AVLNode* tmp = root->left ? root->left : root->right;
+   free(root);
+   return tmp;
+  }
+  // 双子节点: 用中序后继替换
+  AVLNode* succ = root->right;
+  while (succ->left) succ = succ->left;
+  root->data = succ->data;
+  root->right = avl_delete(root->right, succ->data);
+ }
+
+ root->height = max(height(root->left), height(root->right)) + 1;
+ int balance = bf(root);
+
+ // LL: 左子树过高
+ if (balance > 1 && bf(root->left) >= 0)
+  return rotate_right(root);
+ // LR: 左子树的右子树过高
+ if (balance > 1 && bf(root->left) < 0) {
+  root->left = rotate_left(root->left);
+  return rotate_right(root);
+ }
+ // RR: 右子树过高
+ if (balance < -1 && bf(root->right) <= 0)
+  return rotate_left(root);
+ // RL: 右子树的左子树过高
+ if (balance < -1 && bf(root->right) > 0) {
+  root->right = rotate_right(root->right);
+  return rotate_left(root);
+ }
+ return root;
+}
+```
+
+> **与插入的关键区别**：插入时只需检查一次旋转（因为插入只影响一条路径上的一个节点）。删除后回溯过程中，**每个祖先都可能失衡**，且旋转后子树高度可能继续变化，因此旋转判断条件不同——插入用 `value` 与子节点值比较，删除用 `bf()` 直接判断子树平衡因子。
+
+### 哈夫曼树构建
+
+从频率数组构建哈夫曼树——每次取两个最小频率节点合并为新节点，直到剩余一个根节点。使用最小堆加速选取过程。
+
+```c
+typedef struct HuffNode {
+ int freq;
+ struct HuffNode *left, *right;
+} HuffNode;
+
+// 用最小堆构建哈夫曼树
+// freq: 字符频率数组, n: 字符数
+HuffNode* huffman_build(int* freq, int n) {
+ if (n <= 0) return NULL;
+
+ // 构建叶子节点最小堆
+ HuffNode** heap = malloc(sizeof(HuffNode*) * n);
+ int heap_size = 0;
+ for (int i = 0; i < n; i++) {
+  if (freq[i] <= 0) continue;
+  HuffNode* node = malloc(sizeof(HuffNode));
+  node->freq = freq[i];
+  node->left = node->right = NULL;
+  heap[heap_size++] = node;
+ }
+
+ // Floyd 建堆 O(n)
+ for (int i = heap_size / 2 - 1; i >= 0; i--) {
+  int idx = i;
+  while (1) {
+   int smallest = idx;
+   int l = 2 * idx + 1, r = 2 * idx + 2;
+   if (l < heap_size && heap[l]->freq < heap[smallest]->freq) smallest = l;
+   if (r < heap_size && heap[r]->freq < heap[smallest]->freq) smallest = r;
+   if (smallest == idx) break;
+   HuffNode* t = heap[idx]; heap[idx] = heap[smallest]; heap[smallest] = t;
+   idx = smallest;
+  }
+ }
+
+ // 反复合并最小的两个
+ while (heap_size > 1) {
+  // extract min
+  HuffNode* min1 = heap[0];
+  heap[0] = heap[--heap_size];
+  int idx = 0;
+  while (1) {
+   int smallest = idx;
+   int l = 2 * idx + 1, r = 2 * idx + 2;
+   if (l < heap_size && heap[l]->freq < heap[smallest]->freq) smallest = l;
+   if (r < heap_size && heap[r]->freq < heap[smallest]->freq) smallest = r;
+   if (smallest == idx) break;
+   HuffNode* t = heap[idx]; heap[idx] = heap[smallest]; heap[smallest] = t;
+   idx = smallest;
+  }
+
+  // extract min
+  HuffNode* min2 = heap[0];
+  heap[0] = heap[--heap_size];
+  idx = 0;
+  while (1) {
+   int smallest = idx;
+   int l = 2 * idx + 1, r = 2 * idx + 2;
+   if (l < heap_size && heap[l]->freq < heap[smallest]->freq) smallest = l;
+   if (r < heap_size && heap[r]->freq < heap[smallest]->freq) smallest = r;
+   if (smallest == idx) break;
+   HuffNode* t = heap[idx]; heap[idx] = heap[smallest]; heap[smallest] = t;
+   idx = smallest;
+  }
+
+  // 合并
+  HuffNode* parent = malloc(sizeof(HuffNode));
+  parent->freq = min1->freq + min2->freq;
+  parent->left = min1;
+  parent->right = min2;
+
+  // 插入堆并上浮
+  heap[heap_size++] = parent;
+  int pos = heap_size - 1;
+  while (pos > 0) {
+   int p = (pos - 1) / 2;
+   if (heap[p]->freq <= heap[pos]->freq) break;
+   HuffNode* t = heap[p]; heap[p] = heap[pos]; heap[pos] = t;
+   pos = p;
+  }
+ }
+
+ HuffNode* root = heap[0];
+ free(heap);
+ return root;
+}
+```
+
+> 时间复杂度 $O(n \log n)$（$n$ 次 extract + insert，每次 $O(\log n)$）。空间 $O(n)$。
+
 ### 树的其他重要变体
 
 **表达式树**（Expression Tree）：编译器将数学表达式解析为二叉树——操作数在叶子，运算符在内部节点。后序遍历即得到后缀表达式（RPN），可以直接求值。
 
+```mermaid
+graph TD
+    MUL["*"] --> ADD["+"]
+    MUL --> SUB["-"]
+    ADD --> T3["3"]
+    ADD --> T4["4"]
+    SUB --> T5["5"]
+    SUB --> T2["2"]
+    style MUL fill:#4a90d9,color:#fff
+    style ADD fill:#5ba3e6,color:#fff
+    style SUB fill:#5ba3e6,color:#fff
 ```
-表达式: (3 + 4) * (5 - 2)
-表达式树: [*]
- / \
- [+] [-]
- / \ / \
- 3 4 5 2
 
-后序遍历: 3 4 + 5 2 - * → 后缀表达式 → 求值结果 21
-```
+> 后序遍历: 3 4 + 5 2 - * → 后缀表达式 → 求值结果 21
 
 **线索二叉树**（Threaded Binary Tree）：将空的 left/right 指针改为指向中序的前驱/后继的线索（thread）。遍历时无需递归或栈——从第一个节点出发，沿线索可以连续访问中序后继。内存开销为每个节点 2 bit（标记 left/right 是真指针还是线索）。线索二叉树将 $O(n)$ 空间的遍历栈需求压缩到常数空间。
 
@@ -606,12 +770,12 @@ void inorder_thread(ThreadNode* node) {
 
 给定二叉树（中序序列为 D, B, A, E, C）：
 
-```
-        A
-       / \
-      B   C
-     /   /
-    D   E
+```mermaid
+graph TD
+    A["A"] --> B["B"]
+    A --> C["C"]
+    B --> D["D"]
+    C --> E["E"]
 ```
 
 | 步 | 当前节点 | left | right | 动作 | 线索状态 |
@@ -624,7 +788,7 @@ void inorder_thread(ThreadNode* node) {
 
 最终线索化后，沿线索遍历：D → B → A → E → C（中序序列），无需栈。
 
-**408 自测：线索二叉树**
+**自测：线索二叉树**
 
 二叉树中序序列为 `G, D, H, B, E, A, C, F`。① 画出线索二叉树（标注 ltag/rtag）。② 写出从节点 G 出发沿线索遍历的序列。
 
@@ -660,16 +824,18 @@ void inorder_thread(ThreadNode* node) {
 
 **编码**（左分支=0，右分支=1）：
 
-```
-          (100)
-         /     \\
-       f=45   (55)
-       0      /    \\
-            (25)   (30)
-           /  \\   /   \\
-         c=12 d=13(14) e=16
-                   /  \\
-                 a=5  b=9
+```mermaid
+graph TD
+    ROOT["(100)"] --> F["f=45"]
+    ROOT --> N55["(55)"]
+    N55 --> N25["(25)"]
+    N55 --> N30["(30)"]
+    N25 --> C["c=12"]
+    N25 --> D["d=13"]
+    N30 --> N14["(14)"]
+    N30 --> E["e=16"]
+    N14 --> A["a=5"]
+    N14 --> B["b=9"]
 ```
 
 | 字符 | 编码 | 频率x位数 |
@@ -683,7 +849,7 @@ void inorder_thread(ThreadNode* node) {
 
 总加权路径长度 $= 45+36+39+20+36+48 = 224$。若用等长编码（3 位/字符），总位数 $= (5+9+12+13+16+45) \times 3 = 300$。哈夫曼编码节省 $25\%$。
 
-**408 自测：哈夫曼**
+**自测：哈夫曼**
 
 频率表：A=27, B=8, C=15, D=15, E=30, F=5。构建哈夫曼树并写出 F 和 B 的编码。
 
@@ -691,16 +857,18 @@ void inorder_thread(ThreadNode* node) {
 >
 > 步骤：F(5)+B(8)→13；13+C(15)→28；D(15)+A(27)→42；28+E(30)→58；42+58→100
 >
-> ```
->             (100)
->            /     \\
->          (42)    (58)
->         /  \\    /   \\
->       D=15 A=27(28)  E=30
->                  /  \\
->                (13) C=15
->                / \\
->              F=5 B=8
+> ```mermaid
+> graph TD
+>     ROOT["(100)"] --> N42["(42)"]
+>     ROOT --> N58["(58)"]
+>     N42 --> D["D=15"]
+>     N42 --> A["A=27"]
+>     N58 --> N28["(28)"]
+>     N58 --> E["E=30"]
+>     N28 --> N13["(13)"]
+>     N28 --> C["C=15"]
+>     N13 --> F["F=5"]
+>     N13 --> B["B=8"]
 > ```
 >
 > F 的编码：**1000**（根→右→左→左→左）
@@ -730,12 +898,12 @@ void inorder_thread(ThreadNode* node) {
 | [105](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/) | 从前序与中序构造二叉树 | 前序+中序重建 |
 | [222](https://leetcode.cn/problems/count-complete-tree-nodes/) | 完全二叉树的节点个数 | 树的性质 |
 
-### 408 手算自测清单
+### 核心推演清单
 
-笔试题与上面的 LeetCode 互补——考的是闭卷手算，全部在正文中带完整答案：
+练习题与上面的 LeetCode 互补——侧重手算推演，全部在正文中带完整答案：
 
-| 自测 | 位置 | 考什么 |
-|------|------|--------|
+| 自测 | 位置 | 内容 |
+|------|------|------|
 | 遍历序列 ×1 问 | 遍历手算轨迹节 | 四种遍历的序列输出 |
 | 前序+中序重建 ×1 问 | 重建手算节 | 从序列画出二叉树 |
 | BST 删除 ×1 问 | BST 删除手算节 | 三种情况的逐步操作 |

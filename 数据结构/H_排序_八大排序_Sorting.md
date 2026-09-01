@@ -2,8 +2,6 @@
 
 建议先阅读: [[D_容器_Container|容器概览]], [[../算法/算法技巧/递推递归|递推递归]]
 
-> **考研 408 导引**：排序是 408 **核心考点**。选择题必考：8 种排序的复杂度对比、稳定性判断、适用场景选择。简答题常考：给序列手写某一轮排序过程、快排 partition 手算、堆排序建堆+取堆顶手算。非比较排序（基数/计数）的 $O(n)$ 复杂度突破比较排序下界的原理也是高频考点。正文每个算法已含完整逐步推导。
-
 ---
 
 ## 原理
@@ -473,6 +471,7 @@ graph TD
 ```
 
 ```c
+int partition(int* arr, int low, int high) {
  int pivot = arr[high];
  int i = low;
  for (int j = low; j < high; j++) {
@@ -507,6 +506,34 @@ int median_of_three(int* arr, int low, int high) {
  return arr[high];
 }
 ```
+
+### 快速选择
+
+```mermaid
+graph TD
+ A["quick_select(arr,l,r,k)"] --> B{"l == r?"}
+ B -->|Yes| C["return arr[l]"]
+ B -->|No| D["p ← partition(arr,l,r)"]
+ D --> E{"k == p?"}
+ E -->|Yes| F["return arr[p]"]
+ E -->|No| G{"k < p?"}
+ G -->|Yes| H["quick_select(arr,l,p-1,k)"]
+ G -->|No| I["quick_select(arr,p+1,r,k)"]
+```
+
+```c
+int quick_select(int* arr, int low, int high, int k) {
+ while (low < high) {
+ int p = partition(arr, low, high);
+ if (k == p) return arr[p];
+ else if (k < p) high = p - 1;
+ else low = p + 1;
+ }
+ return arr[low];
+}
+```
+
+基于 partition 的第 k 小元素选择。每次只递归一侧，平均 O(n)。不稳定版本（会改变元素顺序）。
 
 ### 快速排序逐步推导
 
@@ -590,6 +617,7 @@ graph TD
 ```
 
 ```c
+void heapify(int* arr, int n, int i) {
  int largest = i;
  int left = 2 * i + 1, right = 2 * i + 2;
  if (left < n && arr[left] > arr[largest]) largest = left;
@@ -778,6 +806,43 @@ void radix_sort(int* arr, int n) {
 - 稳定排序：计数排序从后往前保证稳定性
 - 适用条件：非负整数（可扩展处理负数）
 - 对比基于比较的排序（O(n log n)下界），当 k 很小时基数排序更优
+
+### 计数排序
+
+```mermaid
+graph TD
+ A["counting_sort(arr, n)"] --> B["找出最大最小值 max_val, min_val"]
+ B --> C["count[0..range] ← 0\nrange ← max_val - min_val + 1"]
+ C --> D["统计频率: count[arr[i]-min_val]++"]
+ D --> E["前缀和: count[i] += count[i-1]"]
+ E --> F["从后往前放入 output"]
+ F --> G["复制回 arr"]
+```
+
+```c
+void counting_sort(int* arr, int n) {
+ if (n == 0) return;
+ int max_val = arr[0], min_val = arr[0];
+ for (int i = 1; i < n; i++) {
+  if (arr[i] > max_val) max_val = arr[i];
+  if (arr[i] < min_val) min_val = arr[i];
+ }
+ int range = max_val - min_val + 1;
+ int* count = calloc(range, sizeof(int));
+ int* output = malloc(n * sizeof(int));
+ for (int i = 0; i < n; i++) count[arr[i] - min_val]++;
+ for (int i = 1; i < range; i++) count[i] += count[i - 1];
+ for (int i = n - 1; i >= 0; i--) {
+  output[count[arr[i] - min_val] - 1] = arr[i];
+  count[arr[i] - min_val]--;
+ }
+ memcpy(arr, output, n * sizeof(int));
+ free(count);
+ free(output);
+}
+```
+
+非比较排序，通过键值直接映射到输出位置。O(n+k) 时间，k 为数据范围。稳定排序，适用于整数且范围不大的场景。
 
 ---
 

@@ -3,8 +3,6 @@
 
 建议先阅读：[[A_数组_Array|数组]] — 稀疏矩阵的所有存储格式，最终都是把矩阵元素存在一维数组里，然后通过额外的索引数据重建二维索引。[[D_容器_Container|容器]] — 连续 vs 节点存储的性能模型直接影响三种格式的选择。
 
-> **考研 408 导引**：本章应试核心是**三元组顺序表**——定义与手写、**两种转置算法**（顺序 $O(n \cdot k)$ 与快速 $O(n+k)$）及其手算轨迹，其次是**十字链表**的结构特征。CSR 的工程细节、SpMV 缓存模型与 SIMD 属于增值内容，考纲不作要求。正文备有 4 组闭卷手算自测（见练习节清单）。
-
 ---
 
 ## 原理
@@ -30,7 +28,7 @@
 #define MAXRC   32          // 行列上限
 
 typedef struct {
-    int row, col;           // 本例 0 起算；408 教材多为 1 起算，读题先确认约定
+    int row, col;           // 本例 0 起算；读题先确认约定
     int value;
 } Triple;
 
@@ -162,11 +160,11 @@ CSR 是工业界默认的稀疏矩阵计算格式。它将 COO 中的 `row` 数�
 
 同一示例矩阵的 CSR：
 
-```
-row_ptr = [0, 2, 2, 3] // 长度 m+1 = 4
-col_index = [0, 3, 1] // 长度 k = 3
-values = [1, 2, 3] // 长度 k = 3
-```
+| 数组 | 内容 | 长度 | 说明 |
+|:----:|:----:|:----:|:-----|
+| row_ptr | [0, 2, 2, 3] | m+1 = 4 | 每行在 values 中的起止位置 |
+| col_index | [0, 3, 1] | k = 3 | 每个非零元素的列号 |
+| values | [1, 2, 3] | k = 3 | 非零元素的值（按行优先排列） |
 
 解读：
 - 第 0 行：`values[0..1]` = `(1, 2)`，对应列 `col_index[0..1]` = `(0, 3)`
@@ -267,9 +265,9 @@ void ol_swap_axes(CrossList* mat) {
 
 CSC（Compressed Sparse Column）是 CSR 的列优先镜像——将 `row_ptr` 换为 `col_ptr`（列指针），将 `col_index` 换为 `row_index`。当算法以列遍历为主（如某些线性方程组解法）时，CSC 比 CSR 更合适。MATLAB 内部以 CSC 为主格式。
 
-### 三元组顺序表的转置：408 核心算法
+### 三元组顺序表的转置：核心算法
 
-转置是稀疏矩阵章节的**头号考点**。目标：把行优先存放的三元组表 $M$ 变成 $M^T$ 的行优先三元组表——注意不只是交换 `row`/`col` 两个字段，**输出还必须按新行优先重新排序**，这才是难点所在。
+转置是稀疏矩阵章节的**头号核心知识点**。目标：把行优先存放的三元组表 $M$ 变成 $M^T$ 的行优先三元组表——注意不只是交换 `row`/`col` 两个字段，**输出还必须按新行优先重新排序**，这才是难点所在。
 
 #### 方法一：顺序转置（按列扫描），O(n·k)
 
@@ -374,7 +372,7 @@ TSMatrix fast_transpose(const TSMatrix* src) {
 
 抽查验证：$M^T$ 的第 0 行应是 $M$ 的第 0 列 $(0,0,-3,0,0,15)^T$ → 表中 Q[0]、Q[1] 两项，吻合。若用顺序转置，同样的结果需要 $6 \times 8 = 48$ 次比较才能得到。
 
-**408 自测：转置手算**
+**自测：转置手算**
 
 ① 写出 $M^T$ 的三元组表（不看上文）；② 若改用顺序转置，写出各列命中次序并统计总比较次数；③ 把 M 第 4 行改为全零后再算一遍 num 与 cpot。
 
@@ -384,7 +382,7 @@ TSMatrix fast_transpose(const TSMatrix* src) {
 
 ### 三元组形式的矩阵乘法
 
-CSR 的乘法代码在上一节已经给出，但考纲语境下的乘法是**三元组版本**：给定 A（$m \times s$）和 B（$s \times n$）的三元组表，求 C = A×B。
+CSR 的乘法代码在上一节已经给出，但另一种乘法是**三元组版本**：给定 A（$m \times s$）和 B（$s \times n$）的三元组表，求 C = A×B。
 
 朴素做法：对 A 的每个非零元 $a_{ik}$，找到 B 中所有行号为 $k$ 的非零元 $b_{kj}$，累加 $a_{ik} \cdot b_{kj}$ 到 $C_{ij}$：
 
@@ -419,20 +417,20 @@ A 的三元组：(0,0,1)、(0,2,2)、(1,1,3)；B 的三元组：(0,0,4)、(1,1,5
 
 最终 $C = \begin{pmatrix} 16 & 0 \\ 0 & 15 \end{pmatrix}$，共 $3 \times 3 = 9$ 次比较完成。
 
-**408 自测：乘法手算**
+**自测：乘法手算**
 
 设 $A = \begin{pmatrix} 0 & 2 \\ 1 & 0 \end{pmatrix}$、$B = \begin{pmatrix} 3 & 0 \\ 0 & 4 \end{pmatrix}$，写出两者的三元组表，再用上表格式手算 C = A×B，并回答：C 最多可能有多少个非零元？
 
-> 答案：
->
-> A：(0,1,2)、(1,0,1)；B：(0,0,3)、(1,1,4)。
->
-> | A 元素 | 匹配的 B 元素 | 累加到 C |
-> |:------:|:------------:|:--------:|
-> | (0,1,2) | (1,1,4) | C[0][1] += 8 |
-> | (1,0,1) | (0,0,3) | C[1][0] += 3 |
->
-> $C = \begin{pmatrix} 0 & 8 \\ 3 & 0 \end{pmatrix}$，2 个非零元。理论上限为 $\min(k_A \cdot k_B,\ m \times n) = \min(4,\ 4) = 4$ 个——本题实际只出现 2 个，但答题时上限要按公式写。
+答案：
+
+A：(0,1,2)、(1,0,1)；B：(0,0,3)、(1,1,4)。
+
+| A 元素 | 匹配的 B 元素 | 累加到 C |
+|:------:|:------------:|:--------:|
+| (0,1,2) | (1,1,4) | C[0][1] += 8 |
+| (1,0,1) | (0,0,3) | C[1][0] += 3 |
+
+$C = \begin{pmatrix} 0 & 8 \\ 3 & 0 \end{pmatrix}$，2 个非零元。理论上限为 $\min(k_A \cdot k_B,\ m \times n) = \min(4,\ 4) = 4$ 个——本题实际只出现 2 个，但实际上限按公式计算。
 
 ### 稠密矩阵乘法 vs 稀疏矩阵乘法
 
@@ -595,6 +593,46 @@ void coo_to_csr(const COOMatrix* coo,
 
 注意 `row_ptr` 的含义：在步骤②完成后，`row_ptr[i]` 是第 i 行**之前**的所有行非零元素总数；在步骤③分发过程中，`row_ptr[r] + cur[r]` 定位到当前行的**下一个可写**位置。分发完成后，`row_ptr[i]` 仍是第 i 行的起始偏移。
 
+### CSR 矩阵初始化与销毁
+
+```c
+typedef struct {
+ int m, n, nnz;
+ int* row_ptr;
+ int* col_index;
+ int* values;
+} CSRMatrix;
+
+// 从 COO 三元组构建 CSR 矩阵：O(k + m)
+void csr_init(CSRMatrix* csr, int m, int n, const Triplet* coo, int nnz) {
+ csr->m = m; csr->n = n; csr->nnz = nnz;
+ csr->row_ptr   = calloc(m + 1, sizeof(int));
+ csr->col_index = calloc(nnz, sizeof(int));
+ csr->values    = calloc(nnz, sizeof(int));
+
+ for (int p = 0; p < nnz; p++)
+  csr->row_ptr[coo[p].row + 1]++;
+ for (int i = 1; i <= m; i++)
+  csr->row_ptr[i] += csr->row_ptr[i - 1];
+
+ int* cur = calloc(m, sizeof(int));
+ for (int p = 0; p < nnz; p++) {
+  int r = coo[p].row;
+  int dest = csr->row_ptr[r] + cur[r]++;
+  csr->values[dest]    = coo[p].value;
+  csr->col_index[dest] = coo[p].col;
+ }
+ free(cur);
+}
+
+void csr_destroy(CSRMatrix* csr) {
+ free(csr->row_ptr);
+ free(csr->col_index);
+ free(csr->values);
+ csr->row_ptr = csr->col_index = csr->values = NULL;
+}
+```
+
 ---
 
 ## 各语言标准库对比
@@ -629,11 +667,11 @@ void coo_to_csr(const COOMatrix* coo,
 | [48](https://leetcode.cn/problems/rotate-image/) | 旋转图像 | 中等 | 转置+翻转 |
 | [311](https://leetcode.cn/problems/sparse-matrix-multiplication/) | 稀疏矩阵的乘法 | 中等 | COO/CSR 逐行点积（力扣英文版） |
 
-### 408 手算自测清单
+### 核心推演清单
 
-笔试题与上面的 LeetCode 互补——考的是三元组闭卷手算，全部在正文中带完整答案：
+练习题与上面的 LeetCode 互补——侧重手算推演，全部在正文中带完整答案：
 
-| 自测 | 位置 | 考什么 |
+| 自测 | 位置 | 内容 |
 |------|------|--------|
 | 转置手算（3 问） | 快速转置轨迹之后 | 写 $M^T$ 三元组表、顺序法命中次序与比较次数、num/cpot 重算 |
 | 乘法手算 | 三元组乘法示范之后 | 三元组表书写 + 逐对分发累加 + 非零元上限公式 |
