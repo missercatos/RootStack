@@ -1009,6 +1009,69 @@ int mat_set(Matrix2D* m, size_t i, size_t j, int value) {
 
 动态数组的扩容实现（含均摊 O(1) 的数学证明）见 [[D_容器_Container|容器章节]]。
 
+### 二分查找完整版（含边界处理）
+
+实际工程中很少只找"等于 target 的位置"——更常见的是找边界：第一个 ≥ target、第一个 > target、最后一个 == target。以下是左闭右开 `[lo, hi)` 写法的完整工具集：
+
+```c
+#include <stddef.h>
+
+// 标准二分：返回 target 的下标，不存在返回 -1
+int bsearch_eq(const int* a, int n, int target) {
+    int lo = 0, hi = n;
+    while (lo < hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (a[mid] < target)      lo = mid + 1;
+        else if (a[mid] > target) hi = mid;
+        else                      return mid;    // 找到
+    }
+    return -1;
+}
+
+// lower_bound：第一个 >= target 的位置；全部小于则返回 n
+int bsearch_lower(const int* a, int n, int target) {
+    int lo = 0, hi = n;
+    while (lo < hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (a[mid] < target) lo = mid + 1;
+        else                 hi = mid;
+    }
+    return lo;
+}
+
+// upper_bound：第一个 > target 的位置；全部 ≤ target 则返回 n
+int bsearch_upper(const int* a, int n, int target) {
+    int lo = 0, hi = n;
+    while (lo < hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (a[mid] <= target) lo = mid + 1;
+        else                  hi = mid;
+    }
+    return lo;
+}
+
+// 第一个 == target 的位置；不存在返回 -1
+int bsearch_first(const int* a, int n, int target) {
+    int pos = bsearch_lower(a, n, target);
+    return (pos < n && a[pos] == target) ? pos : -1;
+}
+
+// 最后一个 == target 的位置；不存在返回 -1
+int bsearch_last(const int* a, int n, int target) {
+    int pos = bsearch_upper(a, n, target) - 1;
+    return (pos >= 0 && a[pos] == target) ? pos : -1;
+}
+
+// target 出现次数；不存在返回 0
+int bsearch_count(const int* a, int n, int target) {
+    int lo = bsearch_lower(a, n, target);
+    int hi = bsearch_upper(a, n, target);
+    return hi - lo;      // [lo, hi) 内全是 target
+}
+```
+
+六个函数共享同一个循环不变量：`[0, lo)` 全部 < target（或 ≤ target），`[hi, n)` 全部 ≥ target（或 > target）。唯一的区别在 `if` 条件的 `<` vs `<=`——这一个字符的差异决定了边界落在哪一侧。LeetCode 34（查找元素首末位置）跑两遍 `bsearch_lower` + `bsearch_upper` 即可；LeetCode 35（搜索插入位置）直接返回 `bsearch_lower` 的结果。
+
 ---
 
 ## 各语言标准库对比
