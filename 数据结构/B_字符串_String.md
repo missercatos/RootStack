@@ -204,6 +204,8 @@ int bf_search(const char* T, int n, const char* P, int m) {
 }
 ```
 
+![[bf_search.gif]]
+
 最坏情况 $O(n \cdot m)$：当 $T$ = `"aaaaaaaaaa"`，$P$ = `"aaaab"` 时，每次匹配到 $P$ 的最后一个字符才失败，$i$ 回溯后重复扫描已比对过的字符。BF 的瓶颈在于——失配时丢弃了已匹配部分的所有信息，将 $i$ 回退至 $i+1$ 重新开始。
 
 **手算示范**：以 $T$ = `"ababcabcab"`、$P$ = `"abcab"` 为例（下标从 0 开始），BF 的完整比较轨迹：
@@ -296,6 +298,7 @@ int kmp_index(SString* T, SString* P, int next[]) {
 }
 ```
 
+![[kmp.gif]]
 **next 手算示范**：求 $P$ = `"abcab"` 的 next 数组——
 
 | j | 看 P[1..j-1] | 最长相等真前后缀 | Border 长度 | next[j] |
@@ -454,9 +457,8 @@ Boyer-Moore 是实践中最快的单模式匹配算法——它从模式串的�
 Rabin-Karp 用滚动哈希（rolling hash）将字符串比较转化为哈希值比较：先计算 $P$ 的哈希，然后滑动窗口计算 $T$ 中每个长度 $m$ 的子串哈希（每次滑动 O(1) 更新），只有哈希匹配时才逐字符验证。适用于同时搜索多个模式串的场景——每个模式串存一个哈希值，一次扫描即可。
 
 ### 字符串上的动态规划：编辑距离与 LCS
-
+*建议优先看一下动态规划章节[[动态规划]]*
 把"两个字符串如何互相变化"建模为二维网格上的递推。这是动态规划最经典的应用场景之一。
-
 #### 编辑距离（Levenshtein Distance）
 
 定义 $dp[i][j]$ 为把 $A$ 的前 $i$ 个字符变成 $B$ 的前 $j$ 个字符所需的最少操作数，允许的操作为插入、删除、替换（各计 1）：
@@ -513,6 +515,8 @@ int min_distance(const char* a, int n, const char* b, int m) {
 }
 ```
 
+![[edit_distance.gif]]
+
 编辑距离是拼写检查、DNA 序列比对（Smith-Waterman 局部对齐是它的变体）、模糊搜索的核心度量。
 
 #### 最长公共子序列（LCS）
@@ -550,6 +554,8 @@ int lcs(const char* a, int n, const char* b, int m) {
 }
 ```
 
+![[lcs.gif]]
+
 > 注意 LCS 是**子序列**（可跳字符），而"最长公共**子串**"要求连续——后者用下一节的后缀数组可以高效求解。两个名字一字之差，做法完全不同。
 
 **DP 网格填表**
@@ -559,7 +565,6 @@ int lcs(const char* a, int n, const char* b, int m) {
 ① 编辑距离：$A$ = `"ab"`、$B$ = `"ba"`，写出完整网格并给出距离。
 ② LCS：$A$ = `"abcde"`、$B$ = `"ace"`，写出完整网格并给出 LCS 长度。
 
-答案：
 
 ①
 
