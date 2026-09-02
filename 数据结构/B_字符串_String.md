@@ -456,6 +456,85 @@ Boyer-Moore 是实践中最快的单模式匹配算法——它从模式串的�
 
 Rabin-Karp 用滚动哈希（rolling hash）将字符串比较转化为哈希值比较：先计算 $P$ 的哈希，然后滑动窗口计算 $T$ 中每个长度 $m$ 的子串哈希（每次滑动 O(1) 更新），只有哈希匹配时才逐字符验证。适用于同时搜索多个模式串的场景——每个模式串存一个哈希值，一次扫描即可。
 
+以下是三种算法的核心匹配逻辑——聚焦算法本身，不含预处理表构建（完整实现见 `## 实现`）。
+
+**Boyer-Moore 坏字符规则**——从右向左比对，失配时根据坏字符在模式串中的最右位置决定跳跃距离：
+
+```c
+// BM 坏字符规则核心匹配（不含表构建，仅展示匹配逻辑）
+// bad[256] 已预构建：bad[c] = c 在 P 中最右出现的位置，不存在则为 -1
+int bm_search_core(const char* T, int n, const char* P, int m, const int* bad) {
+    int i = 0;                          // 文本扫描位置
+    while (i <= n - m) {
+        int j = m - 1;                  // 从模式串尾部向前比对
+        while (j >= 0 && T[i + j] == P[j]) j--;
+        if (j < 0) return i;            // 全部匹配
+        // 坏字符规则：将模式串滑动到 T[i+j] 与 P 中最右同字符对齐
+        i += (j - bad[(unsigned char)T[i + j]]);
+    }
+    return -1;                          // 未找到
+}
+```
+
+![[bm_search.gif]]
+坏字符规则的直觉：失配时，模式串可以安全跳过所有"坏字符在模式串中不存在"的位置——这就是 BM 平均亚线性的来源。实际 BM 还叠加好后缀规则，两者取较大跳跃量。
+
+**Rabin-Karp**——滚动哈希将逐字符比较压缩为 O(1) 哈希比对：
+
+```c
+// Rabin-Karp 核心匹配（滚动哈希，基数 256，模 10^9+7）
+#define BASE 256
+#define MOD  1000000007
+
+int rabin_karp_search(const char* T, int n, const char* P, int m) {
+    if (m > n) return -1;
+    long h = 1, hp = 0, ht = 0;
+    for (int i = 0; i < m; i++) {
+        h = (h * BASE) % MOD;                  // h = BASE^(m-1) % MOD
+        hp = (hp * BASE + P[i]) % MOD;         // 模式串哈希
+        ht = (ht * BASE + T[i]) % MOD;         // 文本首窗口哈希
+    }
+    for (int i = 0; i <= n - m; i++) {
+        if (hp == ht) {                         // 哈希命中，逐字符验证
+            int j = 0;
+            while (j < m && T[i + j] == P[j]) j++;
+            if (j == m) return i;               // 确认匹配
+        }
+        if (i < n - m) {                        // 滚动：去头加尾
+            ht = ((ht - T[i] * h) * BASE + T[i + m]) % MOD;
+            if (ht < 0) ht += MOD;
+        }
+    }
+    return -1;
+}
+```
+
+![[rabin_karp.gif]]
+
+滚动哈希的核心：$ht_{new} = (ht_{old} - T[i] \times h) \times BASE + T[i+m]$，每次 O(1) 更新窗口哈希值。哈希冲突时需逐字符验证，但实际冲突率极低。
+
+**Sunday 算法**——BM 的简化版，只看失配位置后的下一个字符决定跳步：
+
+```c
+// Sunday 核心匹配（不含 shift 表构建）
+// shift[c] = P 中不存在时返回 m+1，否则返回末字符到 c 最右出现的距离
+int sunday_search_core(const char* T, int n, const char* P, int m, const int* shift) {
+    int i = 0;
+    while (i <= n - m) {
+        int j = 0;
+        while (j < m && T[i + j] == P[j]) j++;
+        if (j == m) return i;
+        // Sunday 关键：看 T[i+m]（对齐位置后的下一个字符）
+        i += shift[(unsigned char)T[i + m]];
+    }
+    return -1;
+}
+```
+
+![[sunday_search.gif]]
+
+Sunday 比 BM 更简单：不需要好后缀规则，只依赖一个偏移表。在字符集较大（如 UTF-8 文本）时，跳步往往接近模式串长度，平均性能接近 BM。
+
 ### 字符串上的动态规划：编辑距离与 LCS
 *建议优先看一下动态规划章节[[动态规划]]*
 把"两个字符串如何互相变化"建模为二维网格上的递推。这是动态规划最经典的应用场景之一。
@@ -635,6 +714,79 @@ $$
 每轮做一次基数排序完成重排，共 $\log n$ 轮。它同时是理解后缀自动机、后缀树等更高级结构的台阶。
 
 后缀家族的关系谱系：压缩后缀 Trie 得到后缀树（Ukkonen 算法可 $O(n)$ 构建），后缀树的边按字典序整理即得后缀数组。工程实践中后缀数组因内存紧凑、缓存友好而更常用；多模式串的在线匹配则交给 [[L_字典树_Trie|Trie 章节]]的 Aho-Corasick 自动机——它们共同构成"文本索引"主题的完整工具箱。
+
+以下是后缀数组的核心实现——聚焦算法逻辑（完整模块含结构体定义见 `## 实现`）。
+
+**倍增法构建后缀数组**——从长度 1 的排名出发，每轮将排名翻倍，用基数排序重排：
+
+```c
+// 倍增法构建后缀数组 sa[0..n-1]
+// rank[i] = 起始位置为 i 的后缀当前排名，tmp[] 为辅助排序键
+void build_sa(const char* s, int n, int* sa, int* rank, int* tmp) {
+    for (int i = 0; i < n; i++) { sa[i] = i; rank[i] = s[i]; }
+    for (int k = 1; k < n; k <<= 1) {
+        // 按 (rank[i], rank[i+k]) 双关键字排序
+        auto cmp = [&](int a, int b) {
+            if (rank[a] != rank[b]) return rank[a] < rank[b];
+            int ra = a + k < n ? rank[a + k] : -1;
+            int rb = b + k < n ? rank[b + k] : -1;
+            return ra < rb;
+        };
+        std::sort(sa, sa + n, cmp);
+        // 重新编号排名
+        tmp[sa[0]] = 0;
+        for (int i = 1; i < n; i++)
+            tmp[sa[i]] = tmp[sa[i-1]] + (cmp(sa[i-1], sa[i]) ? 1 : 0);
+        for (int i = 0; i < n; i++) rank[i] = tmp[i];
+        if (rank[sa[n-1]] == n - 1) break;   // 所有后缀已区分
+    }
+
+```
+![[suffix_array.gif]]
+
+倍增的核心不变量：第 $k$ 轮结束后，`rank` 数组精确反映"长度 $2k$ 前缀"的字典序排名。$O(n \log n)$ 轮中每轮 $O(n \log n)$ 排序，总复杂度 $O(n \log^2 n)$；若用基数排序可优化至 $O(n \log n)$。
+
+**Kasai 算法构建 LCP 数组**——利用 rank 的反向映射实现 $O(n)$ 线性扫描：
+
+```c
+// Kasai 算法：由 sa[] 和 rank[] 构建 lcp[1..n-1]
+// lcp[i] = sa[rank[i]] 与 sa[rank[i]-1] 的最长公共前缀长度
+void build_lcp(const char* s, int n, const int* sa, const int* rank, int* lcp) {
+    int k = 0;
+    for (int i = 0; i < n; i++) {
+        if (rank[i] == 0) { lcp[0] = 0; continue; }
+        int j = sa[rank[i] - 1];           // 排名前一位的后缀
+        while (i + k < n && j + k < n && s[i+k] == s[j+k]) k++;
+        lcp[rank[i]] = k;
+        if (k > 0) k--;                     // 关键：rank[i+1] 的 LCP 至少比 k 小 1
+    }
+}
+``````
+
+![[kasai.gif]]
+
+Kasai 的 $O(n)$ 秘密：`rank[i+1]` 对应的后缀比 `rank[i]` 对应的后缀在字符串中晚一位起始，因此它们的 LCP 至少比 `rank[i]` 的 LCP 少 1——`k` 只增不减地单调递减，总比较次数 $\le 2n$。
+
+**SA 上的二分查找**——将子串搜索转化为后缀数组上的范围二分：
+
+```c
+// 在后缀数组中二分查找子串 P[0..m-1]，返回首次出现位置（-1 表示不存在）
+int sa_search(const char* s, int n, const int* sa, const char* P, int m) {
+    int lo = 0, hi = n;                     // [lo, hi) 是候选后缀范围
+    while (lo < hi) {
+        int mid = (lo + hi) / 2;
+        int cmp = memcmp(s + sa[mid], P, m < n - sa[mid] ? m : n - sa[mid]);
+        if (cmp < 0) lo = mid + 1;
+        else if (cmp > 0) hi = mid;
+        else return sa[mid];                // 找到匹配
+    }
+    return -1;
+}
+```
+
+![[sa_binary_search.gif]]
+
+二分查找在有序后缀数组上执行 $\lceil \log n \rceil$ 次比较，每次比较 $O(m)$，总复杂度 $O(m \log n)$。结合 LCP 数组还可优化为 $O(m + \log n)$（利用已知 LCP 跳过重复比较）。
 
 ---
 
@@ -962,7 +1114,7 @@ int rabin_karp(const char* T, int n, const char* P, int m) {
 }
 ```
 
-### Sunday 算法
+### Sunday 算法(完整部分)
 
 Sunday 是 BM 的简化版——失配时看**对齐位置后面的下一个字符**（即 $T[i+m]$），查偏移表决定跳跃距离。
 
@@ -988,6 +1140,118 @@ int sunday_search(const char* T, int n, const char* P, int m) {
  i += shift[(unsigned char)T[i + m]];
  }
  return -1;
+}
+```
+
+### 后缀数组完整模块
+
+```c
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    int* sa;            // 后缀数组：sa[k] = 排名第 k 的后缀起始下标
+    int* rank;          // rank[i] = 起始位置 i 的后缀排名
+    int* lcp;           // lcp[k] = sa[k] 与 sa[k-1] 的最长公共前缀长度
+    int n;
+} SuffixArray;
+
+// 辅助：交换两个整数
+static void swap_int(int* a, int* b) { int t = *a; *a = *b; *b = t; }
+
+// 基数排序辅助：按第二关键字排序后，再按第一关键字计数排序
+static void radix_sort(int* sa, int* rank, int* tmp, int n, int k) {
+    int cnt[256] = {0};
+    for (int i = 0; i < n; i++)
+        cnt[(rank[i + k < n ? rank[i + k] : 0] + 1) & 255]++;
+    for (int i = 1; i < 256; i++) cnt[i] += cnt[i-1];
+    for (int i = n - 1; i >= 0; i--)
+        tmp[--cnt[(rank[sa[i] + k < n ? rank[sa[i] + k] : 0] + 1) & 255]] = sa[i];
+    memset(cnt, 0, sizeof(cnt));
+    for (int i = 0; i < n; i++) cnt[rank[tmp[i]] + 1]++;
+    for (int i = 1; i < 256; i++) cnt[i] += cnt[i-1];
+    for (int i = n - 1; i >= 0; i--)
+        sa[--cnt[rank[tmp[i]] + 1]] = tmp[i];
+}
+
+// 构建后缀数组（倍增法 + 基数排序，O(n log n)）
+SuffixArray* sa_build(const char* s) {
+    int n = (int)strlen(s);
+    SuffixArray* sa_data = malloc(sizeof(SuffixArray));
+    sa_data->n = n;
+    sa_data->sa   = malloc(n * sizeof(int));
+    sa_data->rank = malloc(n * sizeof(int));
+    sa_data->lcp  = malloc(n * sizeof(int));
+    int* tmp = malloc(n * sizeof(int));
+
+    // 初始：按单字符排序
+    for (int i = 0; i < n; i++) {
+        sa_data->sa[i] = i;
+        sa_data->rank[i] = s[i];
+    }
+    for (int gap = 1; gap < n; gap <<= 1) {
+        // 基数排序：先按第二关键字，再按第一关键字
+        radix_sort(sa_data->sa, sa_data->rank, tmp, n, gap);
+        radix_sort(sa_data->sa, sa_data->rank, tmp, n, 0);
+        // 重新编号排名
+        tmp[sa_data->sa[0]] = 0;
+        for (int i = 1; i < n; i++) {
+            int eq = sa_data->rank[sa_data->sa[i]] == sa_data->rank[sa_data->sa[i-1]]
+                  && sa_data->rank[sa_data->sa[i]+gap] == sa_data->rank[sa_data->sa[i-1]+gap];
+            tmp[sa_data->sa[i]] = tmp[sa_data->sa[i-1]] + (eq ? 0 : 1);
+        }
+        for (int i = 0; i < n; i++) sa_data->rank[i] = tmp[i];
+        if (tmp[sa_data->sa[n-1]] == n - 1) break;
+    }
+
+    // Kasai 算法构建 LCP 数组
+    int k = 0;
+    sa_data->lcp[0] = 0;
+    for (int i = 0; i < n; i++) {
+        if (sa_data->rank[i] == 0) { k = 0; continue; }
+        int j = sa_data->sa[sa_data->rank[i] - 1];
+        while (i + k < n && j + k < n && s[i+k] == s[j+k]) k++;
+        sa_data->lcp[sa_data->rank[i]] = k;
+        if (k > 0) k--;
+    }
+
+    free(tmp);
+    return sa_data;
+}
+
+// 子串查找：在后缀数组中二分查找 P，返回首次出现下标（-1 表示不存在）
+int sa_search(const SuffixArray* sa, const char* s, const char* P) {
+    int m = (int)strlen(P), n = sa->n;
+    int lo = 0, hi = n;
+    while (lo < hi) {
+        int mid = (lo + hi) / 2;
+        int cmp = memcmp(s + sa->sa[mid], P, (m < n - sa->sa[mid] ? m : n - sa->sa[mid]));
+        if (cmp < 0) lo = mid + 1;
+        else if (cmp > 0) hi = mid;
+        else return sa->sa[mid];
+    }
+    return -1;
+}
+
+// 最长重复子串：取 lcp 数组的最大值
+int sa_longest_repeated(const SuffixArray* sa) {
+    int best = 0, best_pos = 0;
+    for (int i = 1; i < sa->n; i++) {
+        if (sa->lcp[i] > best) {
+            best = sa->lcp[i];
+            best_pos = sa->sa[i];
+        }
+    }
+    return best_pos;    // 调用方用 s[best_pos .. best_pos+best-1] 取子串
+}
+
+// 释放后缀数组
+void sa_destroy(SuffixArray* sa) {
+    if (!sa) return;
+    free(sa->sa);
+    free(sa->rank);
+    free(sa->lcp);
+    free(sa);
 }
 ```
 
