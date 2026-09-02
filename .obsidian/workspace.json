@@ -92,7 +92,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -271,11 +271,19 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "87ce84e81aadf603",
+  "active": "46737c986a8f89a8",
   "lastOpenFiles": [
-    "数据结构/DSA学习路线.md",
-    "数据结构/B_字符串_String.md",
     "数据结构/A_数组_Array.md",
+    "数据结构/B_字符串_String.md",
+    "assets/lcs.gif",
+    "assets/1.py",
+    "assets/edit_distance.gif",
+    "算法/算法技巧/动态规划.md",
+    "assets/kmp.gif",
+    "assets/bf_search.gif",
+    "bf_search.gif",
+    "1.py",
+    "数据结构/DSA学习路线.md",
     "_build/public/路径G-Java全栈路径.html",
     "_build/public/路径F-Rust学习路径.html",
     "_build/public/路径E-红队职业路径.html",
@@ -284,18 +292,11 @@
     "_build/public/路径B-CPP主线.html",
     "_build/public/路径A-C主线.html",
     "_build/public/计算机网络/F_应用层.html",
-    "_build/public/计算机网络/E_传输层.html",
-    "_build/public/计算机网络/D_网络层.html",
     "_build/public/assets/images/string/strstr_kmp_indices.svg",
     "_build/public/assets/images/string/prefix_str_3.svg",
     "_build/public/assets/images/string/prefix_str_2.svg",
     "_build/public/assets/images/string/prefix_str_1.svg",
     "_build/public/assets/images/string/manacher3.png",
-    "_build/public/assets/images/string/manacher2.png",
-    "_build/public/assets/images/string/manacher1.png",
-    "_build/public/assets/images/string/d7aede532892b71ee610d249c12f1df1.jpg",
-    "_build/public/assets/images/misc/cdq-divide.svg",
-    "_build/public/assets/images/geometry/rotating-calipers2.png",
     "数据结构/G_队列_Queue.md",
     "red_team/ctf_trea/Web/SQL/mysql结构/02-UA注入.md",
     "rust/1入门/05-盒子与标签：所有权入门.md",
@@ -317,7 +318,6 @@
     "_build/node_modules/colorjs.io/README.md",
     "_build/node_modules/yaml/README.md",
     "_build/node_modules/@esbuild/linux-x64/README.md",
-    "_build/node_modules/preact/README.md",
     "docs/Canvas.canvas",
     "密码学/未命名.canvas",
     "未命名.canvas"
