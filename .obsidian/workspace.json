@@ -92,7 +92,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -271,8 +271,12 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "46737c986a8f89a8",
+  "active": "87ce84e81aadf603",
   "lastOpenFiles": [
+    "red_team/ctf_trea/Web/PHP反序列化/02-实战-ZJCTF2019.md",
+    "red_team/ctf_trea/Web/PHP反序列化/01-反序列化原理.md",
+    "red_team/ctf_trea/Web/PHP反序列化",
+    "数据结构/B_字符串_String.md",
     "assets/字符串动画/sunday_search.gif",
     "assets/字符串动画/1.py",
     "assets/字符串动画/rabin_karp.gif",
@@ -290,9 +294,7 @@
     "assets/字符串动画/edit_distance.gif",
     "assets/字符串动画/bf_search.gif",
     "数据结构/A_数组_Array.md",
-    "assets/字符串动画/sunday.gif",
     "assets/字符串动画",
-    "数据结构/B_字符串_String.md",
     "assets/1.py",
     "算法/算法技巧/动态规划.md",
     "1.py",
@@ -302,7 +304,6 @@
     "_build/public/路径E-红队职业路径.html",
     "_build/public/路径D-DSA算法刷题.html",
     "_build/public/路径C-C向下兼容C++.html",
-    "_build/public/路径B-CPP主线.html",
     "数据结构/G_队列_Queue.md",
     "red_team/ctf_trea/Web/SQL/mysql结构/02-UA注入.md",
     "rust/1入门/05-盒子与标签：所有权入门.md",
@@ -318,7 +319,6 @@
     "_build/node_modules/typescript/SECURITY.md",
     "_build/node_modules/typescript/README.md",
     "_build/node_modules/@bufbuild/protobuf/README.md",
-    "_build/node_modules/@img/sharp-libvips-linuxmusl-x64/README.md",
     "docs/Canvas.canvas",
     "密码学/未命名.canvas",
     "未命名.canvas"
