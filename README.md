@@ -104,9 +104,9 @@ RootStack/ ├ v0.17.0
 ├── 路径B-CPP主线.md C++ 主线: 从零到应用开发
 ├── 路径C-C向下兼容C++.md C → C++ 向下兼容
 ├── 路径D-DSA算法刷题.md 竞赛策略完全路线图 (力扣 + 多OJ)
-├── 路径E-红队职业路径.md 网络安全职业路径 (含CTF→SRC/比赛分化)
+├── 路径E-红队职业路径.md 渗透测试工程师职业路径 (含CTF→SRC/比赛分化)
 ├── 路径F-Rust学习路径.md Rust 学习路径 (含力扣练习与竞赛OJ)
-├── 路径G-Java全栈路径.md Java 全栈职业路径 (Java核心+前端闭环 Phase 0-11)
+├── 路径G-Java全栈路径.md Java全栈工程师职业路径 (Java核心+前端闭环 Phase 0-11)
 ├── 路径-考研408方向.md 408考研统一入口（四科阅读方向 + 章节索引整合）
 ├── 路径-工程化底层方向.md 底层系统工程化路径 (C/汇编/OS/内核)
 ├── 路径-工程化应用方向.md 应用层工程化路径 (C++/前后端/数据库)
@@ -337,7 +337,6 @@ Linux 6.1 开始正式支持 Rust 内核模块。未来的趋势不是 C vs Rust
 | 考研408路径 | [路径-考研408方向](路径-考研408方向.md) | 408计算机统考四科系统备考 |
 | 工程化底层 | [路径-工程化底层方向](路径-工程化底层方向.md) | C/汇编/OS/内核/驱动与性能工程 |
 | 工程化应用 | [路径-工程化应用方向](路径-工程化应用方向.md) | C++/前后端/数据库/网络应用开发 |
-| G: Java 全栈 | [路径G-Java全栈路径](路径G-Java全栈路径.md) | 直接学全栈开发, Java 为后端核心 (Spring体系) |
 
 ## 职业路径（分支）
 
@@ -345,7 +344,8 @@ Linux 6.1 开始正式支持 Rust 内核模块。未来的趋势不是 C vs Rust
 
 | 路径 | 文件 | 适合人群 |
 |------|------|---------|
-| E: 红队 (ArchStrike) | [路径E-红队职业路径](路径E-红队职业路径.md) | 网络安全/渗透测试/CTF/红队攻防 |
+| E: 渗透测试工程师 | [路径E-红队职业路径](路径E-红队职业路径.md) | 网络安全/渗透测试/CTF/红队攻防 |
+| G: Java 全栈工程师 | [路径G-Java全栈路径](路径G-Java全栈路径.md) | 直接学全栈开发, Java 为后端核心 (Spring体系) |
 | Rust 特殊方向 | [路径F-Rust学习路径](路径F-Rust学习路径.md) | Rust 系统编程与工具开发 |
 
 ---
@@ -391,7 +391,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | 前端开发 | [前端引导阅读](前端开发/引导阅读.md) | HTML/CSS/JS/TS + Vue/React/Angular + 可视化, 按需路线 (~91篇) |
 | Linux 教程 | [Linux 百科全书式教程](linux/README.md) | 66章 + 4发行版 + WSL专项 + Shell编程 + 服务器运维 + 虚拟机与环境变量实战 |
 | Lua | [Lua 教程](lua-tutorial/00-lua简介.md) | 基础→进阶→C/C++集成→Neovim/Love2D (7篇) |
-| 红队 | [红队知识库总目录](red_team/总目录与快速查询.md) | ArchStrike渗透体系, ~148篇, 职业路径 |
+| 渗透测试工程师 | [红队知识库总目录](red_team/总目录与快速查询.md) | ArchStrike渗透体系, ~148篇, 职业路径 |
 | 自制安全工具箱 | [missercatos/tools](https://github.com/missercatos/tools) (本地 ~/hackingtools) | SQL注入自动化 sqlinject 等自研工具; CTF 教程见红队知识库 |
 
 ---
@@ -448,12 +448,31 @@ git push origin my-feature
 
 ---
 
+## 近期任务
+
+ 主要是两大任务，完善数据结构章节，与完善系统运维章节。
+ 本教程虽然是整合了已有的开源知识，但大部分需要手动筛查和优化，即使有AI辅助也很难做完。另外本教程还有一些是没有被开源的教程，需要自己去探索撰写。
+
+---
+
+## 维护日志
+
+<p align="center">
+  <a href="./journal.txt" download>
+    <button style="padding:8px 24px;font-size:14px;border:1px solid #ccc;border-radius:6px;cursor:pointer;background:#f5f5f5;">维护日志</button>
+  </a>
+</p>
+
+---
+
 ## 致谢
 
 本教程体系的开发过程中使用了以下 AI 辅助工具：
 
 - [opencode](https://opencode.ai) — 项目重构与内容批量处理
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — 方案设计、内容编写与代码审查
+
+**AI 生成内容声明**：本教程中由 AI 辅助生成的内容包括：GIF 动态图片、结构图、相关开源知识库/项目仓库/书籍的搜索整理、文件路径整理与归纳。其余内容由作者人工编写与审核。
 
 感谢所有通过 [问题讨论区](ISSUES.md) 和 Pull Request 参与贡献的读者。
 
