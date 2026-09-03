@@ -106,9 +106,9 @@ RootStack/ ├ v0.17.0
 ├── 路径B-CPP主线.md C++ 主线: 从零到应用开发
 ├── 路径C-C向下兼容C++.md C → C++ 向下兼容
 ├── 路径D-DSA算法刷题.md 竞赛策略完全路线图 (力扣 + 多OJ)
-├── 路径E-红队职业路径.md 网络安全职业路径 (含CTF→SRC/比赛分化)
+├── 路径E-红队职业路径.md 渗透测试工程师职业路径 (含CTF→SRC/比赛分化)
 ├── 路径F-Rust学习路径.md Rust 学习路径 (含力扣练习与竞赛OJ)
-├── 路径G-Java全栈路径.md Java 全栈职业路径 (Java核心+前端闭环 Phase 0-11)
+├── 路径G-Java全栈路径.md Java全栈工程师职业路径 (Java核心+前端闭环 Phase 0-11)
 ├── 路径-考研408方向.md 408考研统一入口（四科阅读方向 + 章节索引整合）
 ├── 路径-工程化底层方向.md 底层系统工程化路径 (C/汇编/OS/内核)
 ├── 路径-工程化应用方向.md 应用层工程化路径 (C++/前后端/数据库)
@@ -336,7 +336,6 @@ Linux 6.1 开始正式支持 Rust 内核模块。未来的趋势不是 C vs Rust
 | C: C→C++ | [路径C-C向下兼容C++](路径C-C向下兼容C++.md) | 先 C 后 C++ 向下兼容 |
 | D: DSA 刷题 | [路径D-DSA算法刷题](路径D-DSA算法刷题.md) | 数据结构与算法/力扣练习/竞赛入门 |
 | F: Rust 学习 | [路径F-Rust学习路径](路径F-Rust学习路径.md) | C++ 之后的系统编程进阶 |
-| G: Java 全栈 | [路径G-Java全栈路径](路径G-Java全栈路径.md) | 直接学全栈开发, Java 为后端核心 (Spring体系) |
 
 ## 职业路径（分支）
 
@@ -344,7 +343,8 @@ Linux 6.1 开始正式支持 Rust 内核模块。未来的趋势不是 C vs Rust
 
 | 路径 | 文件 | 适合人群 |
 |------|------|---------|
-| E: 红队 (ArchStrike) | [路径E-红队职业路径](路径E-红队职业路径.md) | 网络安全/渗透测试/CTF/红队攻防，含CTF→SRC/比赛分化 |
+| E: 渗透测试工程师 | [路径E-红队职业路径](路径E-红队职业路径.md) | 网络安全/渗透测试/CTF/红队攻防，含CTF→SRC/比赛分化 |
+| G: Java 全栈工程师 | [路径G-Java全栈路径](路径G-Java全栈路径.md) | 直接学全栈开发, Java 为后端核心 (Spring体系) |
 
 > 本教程体系可当作类百科全书使用，内容完善但体量庞大。若作为教程从头通读，效率不高。建议按照路径文件中的推荐阅读顺序，结合索引文件进行选择性学习。同时推荐与 AI 进行问答互动学习——在自认为掌握语法或数据结构之后，去 [力扣](https://leetcode.cn/) 做几道题验证即可。如遇到错误，不建议死磕，可用 AI 辅助纠正思路。
 
@@ -385,7 +385,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | 数据库 | [数据库教学目录](数据库/数据库目录.md) | MySQL深入 + PostgreSQL/SQLite/MSSQL/Oracle/MongoDB/Redis (12篇) |
 | Java 全栈 | [Java 教程目录](java/java目录.md) | 入门 → 深入 → 工程化/Spring全家桶 (48篇), 路径G |
 | 前端开发 | [前端引导阅读](前端开发/引导阅读.md) | HTML/CSS/JS/TS + Vue/React/Angular + 可视化, 按需路线 (~91篇) |
-| 红队 | [红队知识库总目录](red_team/总目录与快速查询.md) | ArchStrike渗透体系, ~125篇, 职业路径 |
+| 渗透测试工程师 | [红队知识库总目录](red_team/总目录与快速查询.md) | ArchStrike渗透体系, ~125篇, 职业路径 |
 | AI Agent | [AI_Agent工具使用教程](AI_Agent工具使用教程.md) | 编码 Agent 工具推荐、安装、使用哲学 |
 
 ---
@@ -442,9 +442,20 @@ git push origin my-feature
 
 ---
 
-## 求 Star
+## 近期任务
 
-如果这个项目对你有帮助，欢迎在 [GitHub](https://github.com/missercatos/RootStack) 点个 **Star** (｡>﹏<｡) 你的支持是我们更新的动力！
+ 主要是两大任务，完善数据结构章节，与完善系统运维章节。
+ 本教程虽然是整合了已有的开源知识，但大部分需要手动筛查和优化，即使有AI辅助也很难做完。另外本教程还有一些是没有被开源的教程，需要自己去探索撰写。
+
+---
+
+## 维护日志
+
+<p align="center">
+  <a href="./journal.txt" download>
+    <button style="padding:8px 24px;font-size:14px;border:1px solid #ccc;border-radius:6px;cursor:pointer;background:#f5f5f5;">维护日志</button>
+  </a>
+</p>
 
 ---
 
@@ -455,39 +466,6 @@ git push origin my-feature
 - [opencode](https://opencode.ai) — 项目重构与内容批量处理
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — 方案设计、内容编写与代码审查
 
-关于这些工具的详细介绍、安装使用、安全风险及作者的 Agent 使用哲学，见 [AI_Agent工具使用教程](AI_Agent工具使用教程.md)。
+**AI 生成内容声明**：本教程中由 AI 辅助生成的内容包括：GIF 动态图片、结构图、相关开源知识库/项目仓库/书籍的搜索整理、文件路径整理与归纳。其余内容由作者人工编写与审核。
 
 感谢所有通过 [问题讨论区](ISSUES.md) 和 Pull Request 参与贡献的读者。
-
----
-## 近期任务
-
- 主要是两大任务，撰写密码学部分，与筛查优化数据结构部分。
- 本教程虽然是整合了已有的开源知识，但大部分需要手动筛查和优化，即使有AI辅助也很难做完。另外本教程还有一些是没有被开源的教程，需要自己去探索撰写。
- 
----
-## 近期更新
-
-> 以下为项目管理员维护的更新日志。新增内容、删除内容、重大修改请在此处简要记录。
-
-| 日期 | 变更类型 | 说明 |
-| ---- | --------- | ------------------------------------------------------------------------------------------------ |
-| 7.13 | 首次提交项目 | 将作者以前的cpp_deep,c-learning项目整合起来并删减整理形成的一套教程 |
-| 7.17 | 新增职业路径 | red_team/网络安全模块(~125篇, ArchStrike体系), 路径E红队职业路径, 学习/职业路径区分 |
-| 7.18 | OI-wiki移植 | 从 OI-wiki 移植 32 篇算法文件: 图论(15篇) + 字符串扩展(8篇) + DP进阶(9篇), 新建 算法/图论/ 算法/字符串扩展/ 算法/DP进阶/ |
-| 7.18 | Rust 教程整合 | 新增 Rust 教程体系 (~55篇: 入门14+深入11+实践6+工程12+重构6)，路径F-Rust学习路径，rust目录.md 索引，Rust内核融入 内核/Rust内核/，跨模块双链接 |
-| 7.20 | 新增密码学 | 密码学是计算领域的一门重要学科，所以创建密码学部分。专门列一个类目。 |
-| 7.22 | 网站上线 | 部署至 Cloudflare Pages，域名 rootstack.misser.top，GitHub Actions 自动发布 |
-| 7.22 | 内容更新 | Linux 推荐改为 Mint，新增网安发行版说明，增加求 Star 链接，版本升至 0.5.0 |
-| 7.31 | 新增Lua教程 | 新增 lua-tutorial/ (7篇: 简介+安装+基础+进阶+C/C++集成+Neovim+Love2D)，双链接接入 README/index，版本升至 0.8.0 |
-| 8.11 | 新增Python教程 | 新增 python/ (~60篇: 入门7+精通8+实战5+库索引+工程化6+量化分析6+科学计算5+可视化5+图形4+Web5+AI6)，定位为C程序员的Python工具手册，双链接接入 README/index，版本升至 0.9.0 |
-| 8.12 | 汇编重构+硬件操作 | 汇编基础/ 重构为分目录体系 (1基础/4篇 + 2硬件操作/11篇: Port I/O/MMIO/特权级/内联汇编精通/中断IDT/UART/VGA/PIT/键盘/引导/ARM)，以"直接操作硬件"为核心，全部示例 QEMU 可跑，版本升至 0.10.0 |
-| 8.13 | 全库规范性修订 | 全库去除 emoji 表情符号 (141 文件)；python/汇编 选择题→力扣题目链接 (~770道)；ASCII 字符画→Mermaid 渲染图 (~20处)；README/index 补 python 条目+双链接修复；python 新增"写在教程之前"(三平台下载+编辑器)+全章 Windows/macOS 补充；新增 vim教程.md (Windows安装+快捷键+指令大全)。版本升至 0.11.0 |
-| 8.14 | 编辑器三连+环境准备 | python 新增 1入门/00_准备工作.md (三平台环境配置+终端跑Python+编辑器选择)；vim教程.md 补全第九节"现代 Vim 上位替代" (IDE Vim插件/Neovim/LazyVim/ARKVim)；新增 VSCODE的配置与使用.md (三平台安装+中文界面+字体连字+插件配置+功能/快捷键+单语言替代)。版本升至 0.12.0
-| 8.15 | dsh+npm 工具教程 | 新增 dsh.md (DeepSeek Harness: 安装/Web UI/Profile/插件安装卸载/插件开发与发布)；新增 npm.md (通用 npm 教程: 安装配置/版本管理/npx/workspaces/发布/排障)，两篇互相链接。版本升至 0.13.0
-| 8.16 | 数据库三线扩充 | 新增 数据库/ (12篇: MySQL深入5章 + PostgreSQL/SQLite/MSSQL/Oracle/MongoDB/Redis)；red_team 新增 数据库安全/ (10篇: 渗透探测/MySQL UDF/MSSQL xp_cmdshell/Oracle/PostgreSQL/Redis 未授权与主从RCE/MongoDB/口令破解/工具链)；ctf_trea/Web 新增 SQL/ (16篇: 整数型/字符型/报错/布尔盲注/时间盲注 + mysql结构 Cookie/UA/Referer/二次注入/过滤空格/AND_OR/ORDER_BY/UPDATE/综合训练)。版本升至 0.14.0
-| 8.17 | Java 全栈体系 + 三语言补缺 | 新增 java/ (48篇: 1入门18章三平台配置+OOP核心 / 2深入12章集合源码+并发+JVM / 3工程化18章 Maven+Spring全家桶+Docker/CI+应急排查+GitHub项目实战+架构入门)；新增 路径G-Java全栈路径 (Phase 0-10, 前端/运维规划中)；补缺 c语言教程/4工程化/ (CMake深入+C项目工程化)、cpp深化教程 16-17 (CMake进阶+Conan/vcpkg)、cpp第三方库 网络Web框架实战、rust 实践07 axum + 工程13-14 (sqlx+workspace)。版本升至 0.15.0 |
-| 8.18 | DeepSeek Harness 框架深度教程 | 新增 deepseek-harness/ (26篇: 1认知3篇 范式跃迁+dsh全景+Cordis论文《A Programming Paradigm for Spatiotemporal Composability》精读 / 2架构7篇 Cordis内核+Fiber生命周期+Profile与Bundle分层+服务DI+事件四语义+能力三角色+LLM适配器StreamChunk+沙箱审批 / 3实战开发9篇 monorepo源码导读+插件全流程+defineTool+Config+Schemastery+热重载+类型安全+会话日志+发布 / 4设计自己的Harness7篇 决策树+200行Cordis骨架源码+工具流水线+多模型路由+安全审计+可观测回放+完整架构蓝图)；dsh.md 与新目录互链。版本升至 0.16.0 |
-| 8.19 | 前端开发全栈目录 | 新增 前端开发/ (~91篇, 九子目录): 引导阅读.md 按需求六路线导引+四条技术栈组合 / 01-基础 HTML+CSS+JavaScript+TypeScript 21篇 / 02-CSS框架 Tailwind+Bootstrap5深入+Bootstrap4/Foundation速查 10篇 / 03-JS框架 Vue2/Vue3/React/Next.js/Angular 深入+AngularJS速查 25篇 / 04-DOM与交互+05-工具库+07-图标 12篇 / 06-数据可视化 Chart.js+ECharts+Highcharts+SVG 12篇 / 08-项目实战 企业官网+后台管理(Vue3)+数据看板(React)+电商首页(Tailwind) 4篇 / 09-融会贯通 工程化+Java前后端联调+技术栈选型 3篇；路径G 新增 Phase 11 前端闭环并接入引导阅读。版本升至 0.17.0 |
-| 8.20 | Linux 教程大扩充与全局重编号 | linux/ 主教程 63→66 章并整体 +2 重编号（07-63 → 08-65，57 个文件 rename，290 处内链同步修复）：新增 [[linux/00-Linux快速上手]] 新手急救手册（中文输入法 fcitx5/ibus、中文字体 fontconfig、联网 nmcli/netplan、显卡/WiFi 驱动、屏幕显示、软件安装入门、报错速查，双链发行版专项）/ [[linux/07-PATH深入与环境变量全书]]（export 本质、PATH 搜索与 hash 缓存、配置文件加载链、开发工具链/系统行为/密钥安全/systemd 与容器变量实战、调试排查）三链接：06 章 6.8 节互引 + resources/环境变量速查.md 配套速查卡 / [[linux/09-虚拟机配置与打包]]（Type-1/Type-2、VirtualBox/VMware/KVM/Vagrant 配置快照、OVA/OVF 打包分发、Windows Hyper-V/macOS UTM/Linux KVM 三宿主机方案、live-build/archiso/mkosi 自定义 ISO）；新增 linux/WSL/ 目录 8 章（入门安装/WSL2 架构网络/systemd 与 WSLg/Docker 集成/VS Code 与 SSH/开发环境实战/与虚拟机协作/运维排障）；修复历史遗留断链 20+ 处。版本升至 0.18.0 |
-| 8.21 | SQL注入章节全面重写 + 自制工具箱 | 重写 red_team/ctf_trea/Web/SQL/ 全部 14 章（基础五章 整数型/字符型/报错/布尔盲注/时间盲注 + mysql结构九场景 Cookie/UA/Refer/二次/过滤空格/AND_OR/ORDER_BY/UPDATE/综合训练）：统一"确认注入→探测列数→爆库→爆表爆列→提取数据"五步 curl 实操方法论，每章含可直接执行的完整命令流、bash 自动化猜解脚本与例题思路表；SQL总目录.md 增加五步方法论总纲+mysql结构专项目录；自制工具 sqlinject 落位 ~/hackingtools/web/注入/sqlinject（zipapp 单文件可执行）+ web/源代码/sqlinject/ 六模块源码（cli/detector/extractor/blind/bypass/utils），支持 GET/POST/Cookie/UA/Referer 五种注入点、布尔/时间盲注自动化、八种 WAF tamper 绕过与自定义 payload，-h/--help 完整指南，已在本地模拟靶场完成全模式端到端验证。版本升至 0.19.0 |

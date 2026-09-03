@@ -1,0 +1,32 @@
+RootStack 维护日志
+==================
+以下为项目管理员维护的更新日志。新增内容、删除内容、重大修改均在此处记录。
+
+| 日期 | 变更类型 | 说明 |
+| ---- | --------- | ------------------------------------------------------------------------------------------------ |
+| 7.13 | 首次提交项目 | 将作者以前的cpp_deep,c-learning项目整合起来并删减整理形成的一套教程 |
+| 7.17 | 新增职业路径 | red_team/网络安全模块(~125篇, ArchStrike体系), 路径E红队职业路径, 学习/职业路径区分 |
+| 7.18 | OI-wiki移植 | 从 OI-wiki 移植 32 篇算法文件: 图论(15篇) + 字符串扩展(8篇) + DP进阶(9篇), 新建 算法/图论/ 算法/字符串扩展/ 算法/DP进阶/ |
+| 7.18 | Rust 教程整合 | 新增 Rust 教程体系 (~55篇: 入门14+深入11+实践6+工程12+重构6)，路径F-Rust学习路径，rust目录.md 索引，Rust内核融入 内核/Rust内核/，跨模块双链接 |
+| 7.20 | 新增密码学 | 密码学是计算领域的一门重要学科，所以创建密码学部分。专门列一个类目。 |
+| 7.22 | 网站上线 | 部署至 Cloudflare Pages，域名 rootstack.misser.top，GitHub Actions 自动发布 |
+| 7.22 | 内容更新 | Linux 推荐改为 Mint，新增网安发行版说明，版本升至 0.5.0 |
+| 7.31 | 新增Lua教程 | 新增 lua-tutorial/ (7篇: 简介+安装+基础+进阶+C/C++集成+Neovim+Love2D)，双链接接入 README/index，版本升至 0.8.0 |
+| 8.11 | 新增Python教程 | 新增 python/ (~60篇: 入门7+精通8+实战5+库索引+工程化6+量化分析6+科学计算5+可视化5+图形4+Web5+AI6)，定位为C程序员的Python工具手册，双链接接入 README/index，版本升至 0.9.0 |
+| 8.12 | 汇编重构+硬件操作 | 汇编基础/ 重构为分目录体系 (1基础/4篇 + 2硬件操作/11篇: Port I/O/MMIO/特权级/内联汇编精通/中断IDT/UART/VGA/PIT/键盘/引导/ARM)，以"直接操作硬件"为核心，全部示例 QEMU 可跑，版本升至 0.10.0 |
+| 8.13 | 全库规范性修订 | 全库去除 emoji 表情符号 (141 文件)；python/汇编 选择题→力扣题目链接 (~770道)；ASCII 字符画→Mermaid 渲染图 (~20处)；README/index 补 python 条目+双链接修复；python 新增"写在教程之前"(三平台下载+编辑器)+全章 Windows/macOS 补充；新增 vim教程.md (Windows安装+快捷键+指令大全)。版本升至 0.11.0 |
+| 8.14 | 编辑器三连+环境准备 | python 新增 1入门/00_准备工作.md (三平台环境配置+终端跑Python+编辑器选择)；vim教程.md 补全第九节"现代 Vim 上位替代" (IDE Vim插件/Neovim/LazyVim/ARKVim)；新增 VSCODE的配置与使用.md (三平台安装+中文界面+字体连字+插件配置+功能/快捷键+单语言替代)。版本升至 0.12.0 |
+| 8.15 | dsh+npm 工具教程 | 新增 dsh.md (DeepSeek Harness: 安装/Web UI/Profile/插件安装卸载/插件开发与发布)；新增 npm.md (通用 npm 教程: 安装配置/版本管理/npx/workspaces/发布/排障)，两篇互相链接。版本升至 0.13.0 |
+| 8.16 | 数据库三线扩充 | 新增 数据库/ (12篇: MySQL深入5章 + PostgreSQL/SQLite/MSSQL/Oracle/MongoDB/Redis)；red_team 新增 数据库安全/ (10篇: 渗透探测/MySQL UDF/MSSQL xp_cmdshell/Oracle/PostgreSQL/Redis 未授权与主从RCE/MongoDB/口令破解/工具链)；ctf_trea/Web 新增 SQL/ (16篇: 整数型/字符型/报错/布尔盲注/时间盲注 + mysql结构 Cookie/UA/Referer/二次注入/过滤空格/AND_OR/ORDER_BY/UPDATE/综合训练)。版本升至 0.14.0 |
+| 8.17 | Java 全栈体系 + 三语言补缺 | 新增 java/ (48篇: 1入门18章三平台配置+OOP核心 / 2深入12章集合源码+并发+JVM / 3工程化18章 Maven+Spring全家桶+Docker/CI+应急排查+GitHub项目实战+架构入门)；新增 路径G-Java全栈路径 (Phase 0-10, 前端/运维规划中)；补缺 c语言教程/4工程化/ (CMake深入+C项目工程化)、cpp深化教程 16-17 (CMake进阶+Conan/vcpkg)、cpp第三方库 网络Web框架实战、rust 实践07 axum + 工程13-14 (sqlx+workspace)。版本升至 0.15.0 |
+| 8.18 | DeepSeek Harness 框架深度教程 | 新增 deepseek-harness/ (26篇: 1认知3篇 范式跃迁+dsh全景+Cordis论文精读 / 2架构7篇 Cordis内核+Fiber生命周期+Profile与Bundle分层+服务DI+事件四语义+能力三角色+LLM适配器StreamChunk+沙箱审批 / 3实战开发9篇 monorepo源码导读+插件全流程+defineTool+Config+Schemastery+热重载+类型安全+会话日志+发布 / 4设计自己的Harness7篇 决策树+200行Cordis骨架源码+工具流水线+多模型路由+安全审计+可观测回放+完整架构蓝图)；dsh.md 与新目录互链。版本升至 0.16.0 |
+| 8.19 | 前端开发全栈目录 | 新增 前端开发/ (~91篇, 九子目录): 引导阅读.md 按需求六路线导引+四条技术栈组合 / 01-基础 HTML+CSS+JavaScript+TypeScript 21篇 / 02-CSS框架 Tailwind+Bootstrap5深入+Bootstrap4/Foundation速查 10篇 / 03-JS框架 Vue2/Vue3/React/Next.js/Angular 深入+AngularJS速查 25篇 / 04-DOM与交互+05-工具库+07-图标 12篇 / 06-数据可视化 Chart.js+ECharts+Highcharts+SVG 12篇 / 08-项目实战 企业官网+后台管理(Vue3)+数据看板(React)+电商首页(Tailwind) 4篇 / 09-融会贯通 工程化+Java前后端联调+技术栈选型 3篇；路径G 新增 Phase 11 前端闭环并接入引导阅读。版本升至 0.17.0 |
+| 8.20 | Linux 教程大扩充与全局重编号 | linux/ 主教程 63→66 章并整体 +2 重编号（07-63 → 08-65，57 个文件 rename，290 处内链同步修复）：新增 00-Linux快速上手 新手急救手册 / 07-PATH深入与环境变量全书 / 09-虚拟机配置与打包；新增 linux/WSL/ 目录 8 章；修复历史遗留断链 20+ 处。版本升至 0.18.0 |
+| 8.21 | SQL注入章节全面重写 + 自制工具箱 | 重写 red_team/ctf_trea/Web/SQL/ 全部 14 章：统一"确认注入→探测列数→爆库→爆表爆列→提取数据"五步 curl 实操方法论；自制工具 sqlinject 落位 ~/hackingtools/web/注入/sqlinject，支持 GET/POST/Cookie/UA/Referer 五种注入点、布尔/时间盲注自动化、八种 WAF tamper 绕过。版本升至 0.19.0 |
+| 9.3 | 数据结构全21章百科全书化 | 数据结构/ 全21章百科全书化改造完成，总行数14,231，408/考研=0，Mermaid 90+，Phase 1-5全部完成 |
+| 9.3 | Linux新增分区/Btrfs/ZFS章节 | 新增 66-分区结构(668行)、67-分区工具(768行)、68-LVM(961行)、69-Btrfs(1643行)、70-ZFS(684行)；修改 17-备份与恢复(+151行误删恢复)、10-进程管理(+53行disown/孤儿进程) |
+| 9.3 | CTF反序列化教程完成 | 新增 red_team/ctf_trea/Web/PHP反序列化/ 2文件1166行：01-反序列化原理(775行)+02-实战-ZJCTF2019(391行)，含完整解题步骤与flag获取 |
+| 9.3 | Docker教程完成 | 新增 docker/ 14文件4,210行：安装/架构/命令/镜像/Dockerfile/网络/存储/Compose/实战/加速/注意事项/排查/虚拟环境 |
+| 9.3 | KiCad教程完成 | 新增 kicad/ 11文件3,188行：安装/快捷键/主题/原理图/封装符号/PCB/输出/插件/视频资源/FAQ |
+| 9.3 | Arch AUR故障排查+网络加速 | 02-pacman包管理高级.md 新增10.5 AUR安装失败排查(+282行)；新增 07-浏览器与终端网络加速.md(509行) |
+| 9.3 | 主页重构与维护日志 | 去除求Star区域；近期更新改为维护日志按钮(下载journal.txt)；近期任务改为完善数据结构章节与系统运维章节；JAVA全栈改为Java全栈工程师职业路径；红队路径改为渗透测试工程师职业路径；ISSUES页增加GitHub跳转链接与知识点疑问参与方式；AI生成声明明确为GIF动态图片、结构图、知识库搜索、文件路径整理归纳；Arch网络加速章节重命名为archlinux上的软件下载网络问题.md并重构为系统教程+Q&A格式 |

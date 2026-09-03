@@ -11,6 +11,11 @@
 2. **有更好的解释方式?** — 如果某个章节的讲解不够清晰，欢迎给出你的角度
 3. **想贡献内容?** — Fork 本仓库，提交 Pull Request。项目组会在实践检验和综合讨论之后进行合并
 4. **实验验证?** — 如果你对某个观点进行了实践验证（正确的或证伪的），请分享你的过程
+5. **知识点疑问?** — 对某一块知识点有疑问、希望求解，可在 Issues 中提出，项目组或其他读者会协助解答
+
+## 跳转到 GitHub Issues
+
+[前往 GitHub Issues 页面提交议题](https://github.com/missercatos/RootStack/issues)
 
 ## 讨论前的提醒
 
@@ -20,4 +25,4 @@
 
 ---
 
-> 提交方式: Fork 本仓库后发起 Pull Request，或在 Issues 页面提交讨论议题。
+> 提交方式: Fork 本仓库后发起 Pull Request，或在 [Issues 页面](https://github.com/missercatos/RootStack/issues)提交讨论议题。
