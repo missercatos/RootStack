@@ -765,6 +765,284 @@ ls /var/lib/pacman/local/
 
 ---
 
+## 10.5 AUR 安装失败排查
+
+### 10.5.1 核心原则
+
+```
+AUR 包本质是用户维护的 PKGBUILD 脚本，质量参差不齐。
+装不上就去官网直接下载，比折腾 PKGBUILD 效率高得多。
+yay/paru 只是帮你执行 makepkg，不是万能的。
+```
+
+### 10.5.2 常见错误与处理方式
+
+#### 错误 1：sha256sums 不允许空值
+
+```
+==> 错误： sha256sums 不允许空值。
+==> 错误： sha256sums 不允许空值。
+ -> 下载源文件时出错: /home/a/.cache/yay/tor-browser-bin
+    context: exit status 12
+```
+
+原因：PKGBUILD 中 sha256sums 数组为空或格式错误。AUR 包更新版本后，维护者没更新哈希值。
+
+解决方案：
+
+```bash
+# 方案 A：清理构建缓存后重试（最简单）
+rm -rf ~/.cache/yay/tor-browser-bin
+yay -S tor-browser-bin
+
+# 方案 B：手动修改 PKGBUILD（推荐）
+yay -S tor-browser-bin --edit
+# 编辑器打开后找到 sha256sums=()
+# 改为：sha256sums=('SKIP')
+# 保存退出后继续安装
+
+# 方案 C：直接从官网下载二进制包（最省事）
+# 去 https://www.torproject.org/download/ 下载 Linux 版本
+# 解压后直接运行，不走 AUR
+```
+
+#### 错误 2：网络问题
+
+```
+==> 正在拉取源文件...
+curl: (28) Connection timed out after 300002 milliseconds
+==> 错误： 下载源文件时出错
+```
+
+原因：AUR 包的 source 数组中包含外网链接，国内访问超时。
+
+解决方案：
+
+```bash
+# 临时设置代理
+export https_proxy=http://127.0.0.1:7890
+export http_proxy=http://127.0.0.1:7890
+yay -S <包名>
+
+# 永久配置代理（yay）
+# 编辑 ~/.config/yay.conf
+# 添加：
+# BottomUp
+# SudoLoop
+# 或者在 /etc/environment 中设置全局代理
+
+# 永久配置代理（paru）
+# 编辑 ~/.config/paru.conf
+# 添加：
+# BottomUp
+# SudoLoop
+```
+
+#### 错误 3：包冲突
+
+```
+:: tor-browser-bin 与 tor-browser 存在冲突
+:: tor-browser-bin 与 tor-browser-alpha-bin 存在冲突
+```
+
+原因：系统中已安装同类型包，或多个 AUR 包互相冲突。
+
+解决方案：
+
+```bash
+# 查看冲突的是什么
+yay -S <包名> 2>&1 | grep "conflicting"
+
+# 删掉冲突的包再装
+yay -R <冲突包名>
+yay -S <新包名>
+
+# 强制替换（如果确定要换）
+yay -S <新包名> --overwrite '*'
+```
+
+#### 错误 4：依赖问题
+
+```
+:: 以下软件包无法满足依赖关系：
+  <包名>: 需要 <依赖名>
+```
+
+原因：系统未全量更新，或依赖包在 AUR 中但未安装。
+
+解决方案：
+
+```bash
+# 先全量更新系统
+sudo pacman -Syu
+
+# 再装 AUR 包
+yay -S <包名>
+
+# 如果依赖也是 AUR 包，yay 会自动处理
+# 如果依赖找不到，检查是否在正确的仓库中
+```
+
+#### 错误 5：数据库锁
+
+```
+error: failed to init transaction (unable to lock database)
+```
+
+原因：另一个 pacman/yay 进程正在运行，或上次运行异常中断留下锁文件。
+
+解决方案：
+
+```bash
+# 检查是否有 pacman 进程在运行
+ps aux | grep pacman
+
+# 如果没有，删除锁文件
+sudo rm /var/lib/pacman/db.lck
+```
+
+#### 错误 6：PGP 签名错误
+
+```
+error: tor-browser-bin: signature is unknown trust
+```
+
+原因：密钥环过期或未更新。
+
+解决方案：
+
+```bash
+# 更新密钥环
+sudo pacman -Sy archlinux-keyring
+
+# 临时跳过签名验证（不推荐，仅测试）
+yay -S <包名> --skipinteg
+
+# 重新初始化密钥
+sudo pacman-key --init
+sudo pacman-key --populate archlinux
+```
+
+#### 错误 7：构建失败（makepkg 报错）
+
+```
+==> 错误： 在 build() 中发生错误。
+```
+
+原因：缺少编译依赖（makedepends），或源码编译环境不完整。
+
+解决方案：
+
+```bash
+# 进入构建目录查看详细错误
+cd ~/.cache/yay/<包名>
+makepkg -si
+
+# 查看 PKGBUILD 中的 makedepends
+grep makedepends PKGBUILD
+
+# 安装缺失的编译依赖
+sudo pacman -S <缺失的依赖>
+
+# 重新构建
+makepkg -si
+```
+
+### 10.5.3 AUR 助手配置优化
+
+```bash
+# yay 配置文件：~/.config/yay.conf
+BottomUp        # 搜索结果从下往上显示
+SudoLoop        # 循环使用 sudo，避免反复输入密码
+CleanAfter      # 安装后自动清理构建缓存
+BuildDir=/tmp   # 构建目录（默认 ~/.cache/yay）
+
+# paru 配置文件：~/.config/paru.conf
+BottomUp
+SudoLoop
+CleanAfter
+BuildDir=/tmp
+```
+
+### 10.5.4 实战案例：tor-browser-bin 安装失败
+
+```bash
+# 1. 搜索 tor-browser
+yay -S tor-browser
+:: 对于 %! (string=tor-browser)有 2 个结果：
+:: AUR 软件库
+    1) tor-browser-alpha-bin
+    2) tor-browser-bin
+
+# 2. 选择 tor-browser-bin（输入 2）
+输入数字 (默认=1): 2
+
+# 3. 提示构建文件已存在
+:: 清理哪些包的构建文件？
+==> [N]没有 [A]全部 [Ab]中止 [I]已安装 [No]未安装
+# 选择 A（全部清理）
+
+# 4. 提示显示差异
+:: 显示哪些包的差异？
+==> [N]没有 [A]全部 [Ab]中止 [I]已安装 [No]未安装
+# 选择 N（不看差异）
+
+# 5. 报错：sha256sums 不允许空值
+==> 错误： sha256sums 不允许空值。
+ -> 下载源文件时出错: /home/a/.cache/yay/tor-browser-bin
+    context: exit status 12
+
+# 6. 解决：手动修改 PKGBUILD
+yay -S tor-browser-bin --edit
+# 找到 sha256sums=('') 或 sha256sums=()
+# 改为 sha256sums=('SKIP')
+# 保存退出，继续安装
+
+# 或者直接去官网下载
+# https://www.torproject.org/download/
+```
+
+### 10.5.5 AUR 包质量评估
+
+```bash
+# 在 AUR 页面查看：
+# 1. Votes（投票数）：越高越可靠
+# 2. Popularity（热度）：近期安装量
+# 3. 最后修改时间：超过 1 年未更新的要谨慎
+# 4. 评论区：看其他人反馈的问题
+
+# 命令行查看包信息
+yay -Ss <包名>
+# 查看 PKGBUILD 内容
+yay -S <包名> ---edit  # 不保存退出即可查看
+
+# 检查依赖是否合理
+yay -Si <包名>
+```
+
+### 10.5.6 替代方案
+
+```bash
+# 如果 AUR 装不上，考虑以下替代方案：
+
+# 1. 官网直接下载二进制包
+# 适合：Tor Browser、Chrome、VS Code 等
+
+# 2. Flatpak
+flatpak install flathub <应用名>
+
+# 3. Snap
+sudo snap install <应用名>
+
+# 4. AppImage
+# 下载 .AppImage 文件，chmod +x 后直接运行
+
+# 5. 官方仓库可能有替代包
+pacman -Ss <关键词>
+```
+
+---
+
 ## 10. 相关资源
 
 - pacman 官方手册: `man pacman`
@@ -772,9 +1050,13 @@ ls /var/lib/pacman/local/
 - Arch Wiki 镜像列表: https://wiki.archlinux.org/title/Mirrors
 - Arch Linux Archive: https://archive.archlinux.org/
 - Arch Wiki pacman: https://wiki.archlinux.org/title/Pacman
+- Arch Wiki AUR: https://wiki.archlinux.org/title/AUR
+- Arch Wiki yay: https://wiki.archlinux.org/title/Yay
+- Arch Wiki paru: https://wiki.archlinux.org/title/Paru
 - 官方下载: https://archlinux.org/download/
 - 清华镜像: https://mirrors.tuna.tsinghua.edu.cn/archlinux/
 - 中科大镜像: https://mirrors.ustc.edu.cn/archlinux/
+- AUR 搜索: https://aur.archlinux.org/
 - [[../arch/01-安装指南|Arch 安装指南]]
 - [[../arch/03-AUR打包与上传|AUR 打包与上传]]
 - [[../arch/06-自定义系统打包|自定义系统打包]]
