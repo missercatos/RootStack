@@ -376,6 +376,122 @@ yay -S sing-box
 
 ---
 
+## 5.5 新版：日常用机「默认直连 + 需要时才加速」模式
+
+> 这一批问题是针对"普通日用浏览器/软件走默认网络，只有 Clash 运行时才加速"这一套用法的新增问答，接着上面继续往下排。
+
+### Q: 现在想只让"当前这一个终端"走代理、其它不受影响，用什么指令？
+
+当前默认 shell 是 fish，直接在终端里输入：
+
+```fish
+proxyon        # 默认 127.0.0.1:7890（HTTP+SOCKS5 同一混合端口）
+proxyon 7891   # 或指定其它端口
+proxyoff       # 关闭当前终端代理，恢复默认网络
+proxycheck     # 查看当前终端代理状态
+```
+
+bash/zsh 里用标准 export：
+
+```bash
+export http_proxy=http://127.0.0.1:7890
+export https_proxy=http://127.0.0.1:7890
+export all_proxy=socks5://127.0.0.1:7890
+# 只对"当前这个终端"生效，关闭终端即失效
+unset http_proxy https_proxy all_proxy   # 取消
+```
+
+**关键点**：`export` 只影响当前 shell 及其启动的子进程，不影响其它终端、不影响从应用菜单打开的 GUI 程序。
+
+### Q: 想只让"某一个软件/某一条命令"走代理、其它不动？
+
+用 `env` 前缀，只对这一次命令生效：
+
+```bash
+# 只让这一条 git clone 走 clash
+env https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 \
+    git clone https://github.com/xxx/xxx
+
+# 只让 yay 这一次走代理
+env https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 yay -S 软件名
+
+# 命令行程序通用写法(HTTP代理)
+env ALL_PROXY=socks5://127.0.0.1:7890 curl https://www.google.com
+```
+
+给 GUI 程序（浏览器等）单独走代理则要看它自己的参数：
+
+```bash
+google-chrome-stable --proxy-server="http://127.0.0.1:7890"
+# Firefox 不走命令行代理，需在 设置→网络设置 里手动填
+```
+
+### Q: 终端能不能做到"Clash 开着就自动加速，Clash 关了就正常上网"？
+
+可以，fish 里已内置自动检测（config.fish 里的 `__proxy_auto`，每次按回车前自动执行一次）：
+
+- 检测到本机有 `127.0.0.1:7890` 端口在监听 → 自动 export 终端代理变量；
+- 没检测到 → 自动 unset，走默认网络。
+
+所以：不开 Clash 时 git/AUR/脚本都能正常连国内；`clash` 一开，新敲的命令自动就走代理了。用 `proxycheck` 可随时查看当前是"自动/手动/默认网络"哪种模式。
+
+如果开了自动还想锁死某端口，用 `proxyon <端口>`（会置为手动模式，自动检测不再覆盖）；`proxyoff` 退回自动。
+
+### Q: 现在 `clash` 命令怎么用？为什么以前一输入就显示"已在运行"？
+
+现在把 `clash` 做成了一个管理命令，默认就是启动：
+
+```bash
+clash             # 启动(后台)，等价 clash start
+clash status      # 查看运行状态、监听端口
+clash restart     # 重启
+clash stop        # 停止
+```
+
+以前的 bug：脚本里用 `pgrep -x clash` 判断是否在运行，而脚本自己文件名也叫 `clash`，于是"自己查到自己"，永远显示已在运行。新版改成**查 9090 API 是否健康 + PID 文件**，不再自误判。
+
+### Q: 为什么以前 Clash 明明开着、端口也设了，浏览器/Steam 还是没加速？
+
+两个常见坑，现已修：
+
+1. **加载了错误的配置**：直接 `cd ~/clash && ./clash`（不带 `-d`）会去读 `~/.config/clash/config.yaml`（一个只有 `mixed-port: 7890`、没有任何节点/规则的残缺文件），当然不加速。现在统一用 `clash` 命令，它强制 `-d ~/clash` 加载真正的 `~/clash/config.yaml`（含节点和规则）。
+2. **端口协议对不上**：旧配置里 HTTP 是 7890、SOCKS5 是 7891，两码事。很多软件按"SOCKS5 填 7890"去填，就连不上。现在改成单一 **mixed-port 7890**，同一个端口同时支持 HTTP 和 SOCKS5，任何软件填 `127.0.0.1:7890` 都能通。
+
+### Q: 现在的浏览器/软件网络策略到底是怎么分工的？
+
+| 对象 | 行为 | 说明 |
+|------|------|------|
+| Chrome / Firefox | 默认直连，不绑任何端口 | 日用浏览器，出问题也从应用菜单启动 |
+| 终端里的 git/yay/脚本 | Clash 开→自动加速；关→默认网络 | fish 自动检测，见上文 |
+| Mullvad Browser | 自动绑定 `127.0.0.1:7890` | 启动脚本自动写入 profile 的 SOCKS5 代理 |
+| Steam | 想加速就用专门命令启动，平时直接开 | 见下一条 |
+
+### Q: Steam 想走 Clash 加速，终端输入什么？
+
+不要改 Steam 本身，启动时手动带代理即可（需先 `clash` 开着）：
+
+```bash
+# 方式一：项目自带的加速启动脚本
+steamd
+
+# 方式二：或手动等效命令(直接在终端跑)
+env http_proxy=http://127.0.0.1:7890 https_proxy=http://127.0.0.1:7890 steam
+```
+
+直接点桌面图标开 Steam 就是默认网络、不加速；想要加速每次在终端跑上面任一条即可。
+
+### Q: 怎么确认现在 clash 真在加速（而不是白开）？
+
+```bash
+clash status                     # 应显示 7890 在监听
+curl -x http://127.0.0.1:7890 -s -m 8 https://www.google.com -o /dev/null -w "%{http_code}\n"   # 期望 200
+curl -x socks5://127.0.0.1:7890 -s -m 8 https://www.google.com -o /dev/null -w "%{http_code}\n" # 期望 200
+# 出口 IP(应为代理节点所在地区)
+curl -x http://127.0.0.1:7890 -s https://ipinfo.io/ip
+```
+
+---
+
 ## 6. 速查卡片
 
 ### 常用命令
