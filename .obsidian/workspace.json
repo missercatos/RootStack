@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "git.md",
+                "file": "linux/distro/arch/07-archlinux上的软件下载网络问题.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "git"
+              "title": "07-archlinux上的软件下载网络问题"
             }
           },
           {
@@ -273,6 +273,7 @@
   },
   "active": "87ce84e81aadf603",
   "lastOpenFiles": [
+    "git.md",
     "kicad/README.md",
     "kicad/10-常见问题与技巧.md",
     "kicad/09-视频学习资源.md",
@@ -299,7 +300,6 @@
     "docker/04-镜像原理与管理.md",
     "docker/03-命令速查.md",
     "docker/02-核心概念与架构.md",
-    "docker/01-安装与配置.md",
     "docker",
     "red_team/ctf_trea/Web/PHP反序列化",
     "assets/字符串动画/sunday_search.gif",
