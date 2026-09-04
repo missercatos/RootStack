@@ -41,6 +41,20 @@
             "state": {
               "type": "markdown",
               "state": {
+                "file": "linux/23-SSH远程管理.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "23-SSH远程管理"
+            }
+          },
+          {
+            "id": "bae5e368ef71c90d",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
                 "file": "linux/distro/arch/07-archlinux上的软件下载网络问题.md",
                 "mode": "source",
                 "source": false
@@ -273,6 +287,8 @@
   },
   "active": "87ce84e81aadf603",
   "lastOpenFiles": [
+    "linux/distro/arch/07-archlinux上的软件下载网络问题.md",
+    "linux/23-SSH远程管理.md",
     "git.md",
     "kicad/README.md",
     "kicad/10-常见问题与技巧.md",
@@ -298,8 +314,6 @@
     "docker/06-网络.md",
     "docker/05-Dockerfile详解.md",
     "docker/04-镜像原理与管理.md",
-    "docker/03-命令速查.md",
-    "docker/02-核心概念与架构.md",
     "docker",
     "red_team/ctf_trea/Web/PHP反序列化",
     "assets/字符串动画/sunday_search.gif",
