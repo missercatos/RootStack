@@ -492,6 +492,64 @@ curl -x http://127.0.0.1:7890 -s https://ipinfo.io/ip
 
 ---
 
+## 5.6 AUR 构建出错（编译/打包阶段）
+
+> 下载、代理都没问题，但 `yay` 卡在 makepkg 的 `build()`/`package()` 阶段报错。以下问答接着上面往下排。
+
+### Q: yay 装 Python 包时报 `ModuleNotFoundError: No module named 'pkg_resources'`，怎么解决？
+
+**现象**（以 `yay -S dirsearch` 为例）：
+
+```
+File "/home/a/.cache/yay/dirsearch/src/dirsearch-0.4.3/lib/core/installation.py", line 22, in <module>
+    import pkg_resources
+ModuleNotFoundError: No module named 'pkg_resources'
+==> 错误： 在 build() 中发生一个错误。
+```
+
+**原因**：`pkg_resources` 是 setuptools 自带的旧模块。`python-setuptools` 从 **v81 开始弃用、v82+ 已彻底移除** 它（本机是 84.0.0）。很多 2023 年前写的、后续没人维护的 AUR Python 包（如 dirsearch 0.4.3）还在 `setup.py`/入口脚本里 `import pkg_resources`，于是 build 直接炸。
+
+```bash
+# 确认是不是这个原因
+python -c "import pkg_resources"   # ModuleNotFoundError = 就是这个原因
+python -c "import setuptools; print(setuptools.__version__)"  # 通常 >= 82
+```
+
+**解决方案**（临时绕过，不降级系统 setuptools）：手改该包 PKGBUILD 的 `prepare()`，把源码里的 `pkg_resources` 用法打掉或改成可选，再重装：
+
+```bash
+# 1. 编辑 yay 缓存里的 PKGBUILD（改完保存）
+nano ~/.cache/yay/dirsearch/PKGBUILD
+
+# 2. 在 prepare() 里追加(以 dirsearch 为例；每个包改法略不同)
+#    让 pkg_resources import 失败时降级为普通 Exception，并跳过依赖自检
+#    sed -i '23c\...' dirsearch.py  # 把 import 行替换成 try/except
+#    sed -i '/^import pkg_resources$/d' lib/core/installation.py
+#    sed -i 's/.*pkg_resources.require.*/    return  # deps by distro/' lib/core/installation.py
+
+# 3. 重新打包并安装
+cd ~/.cache/yay/dirsearch
+makepkg -f --noconfirm
+sudo pacman -U dirsearch-*.pkg.tar.zst
+```
+
+**原则**：AUR 包的本意是"依赖由 Arch 官方包显式提供"，所以把 `pkg_resources` 那套运行时自检删掉是安全的——缺失的依赖本应由 PKGBUILD 的 `depends` 装好。
+
+**根治**：这类老包通常上游早已停更。可优先找是否有人维护的 fork/更新版（如 `dirsearch-git`），或给上游发 PR 改用 `importlib.metadata` 替代 `pkg_resources`。
+
+### Q: 装 Python AUR 包遇到 `pkg_resources` 相关问题，有没有通用一键办法？
+
+如果经常碰到老包 import `pkg_resources`，可**给当前用户装一个兼容 shim**，让 `import pkg_resources` 不再报错（仅作临时兜底，不推荐用于生产）：
+
+```bash
+# 法一：装一个旧版 setuptools 的用户级副本，仅提供 pkg_resources
+pip install --user "setuptools<81"   # 但会与系统 python-setuptools 同时存在，慎用
+```
+
+更推荐：逐包在 PKGBUILD 里打补丁（见上一条），而不是动全系统的 setuptools。
+
+---
+
 ## 6. 速查卡片
 
 ### 常用命令
