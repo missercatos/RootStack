@@ -1119,22 +1119,22 @@ type slice struct {
 
 ## 练习
 
-| 题号 | 题目 | 难度 | 知识点 |
-| ----------------------------------------------------------------------- | ----------- | :-: | ---------- |
-| [26](https://leetcode.cn/problems/remove-duplicates-from-sorted-array/) | 删除有序数组中的重复项 | 入门 | 原地修改、快慢指针 |
-| [27](https://leetcode.cn/problems/remove-element/) | 移除元素 | 入门 | 原地修改、快慢指针 |
-| [283](https://leetcode.cn/problems/move-zeroes/) | 移动零 | 入门 | 双指针 + 原地修改 |
-| [88](https://leetcode.cn/problems/merge-sorted-array/) | 合并两个有序数组 | 入门 | 逆向双指针 |
-| [704](https://leetcode.cn/problems/binary-search/) | 二分查找 | 入门 | 二分模板 |
-| [303](https://leetcode.cn/problems/range-sum-query-immutable/) | 区域和检索 - 数组不可变 | 入门 | 前缀和 |
-| [34](https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/) | 在排序数组中查找元素的第一个和最后一个位置 | 中等 | 二分边界（lower_bound 变体） |
-| [209](https://leetcode.cn/problems/minimum-size-subarray-sum/) | 长度最小的子数组 | 中等 | 可变滑动窗口 |
-| [167](https://leetcode.cn/problems/two-sum-ii-input-array-is-sorted/) | 两数之和 II - 输入有序数组 | 中等 | 对撞双指针 |
-| [15](https://leetcode.cn/problems/3sum/) | 三数之和 | 中等 | 排序 + 对撞双指针 |
-| [1109](https://leetcode.cn/problems/corporate-flight-bookings/) | 航班预订统计 | 中等 | 差分数组 |
-| [153](https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array/) | 寻找旋转排序数组中的最小值 | 中等 | 二分变体（与 34 对比边界写法） |
-| [54](https://leetcode.cn/problems/spiral-matrix/) | 螺旋矩阵 | 中等 | 行列边界收缩 |
-| [42](https://leetcode.cn/problems/trapping-rain-water/) | 接雨水 | 困难 | 双指针 / 前缀最大值 |
+| 题号                                                                                          | 题目                    | 难度  | 知识点                  |
+| ------------------------------------------------------------------------------------------- | --------------------- | :-: | -------------------- |
+| [26](https://leetcode.cn/problems/remove-duplicates-from-sorted-array/)                     | 删除有序数组中的重复项           | 入门  | 原地修改、快慢指针            |
+| [27](https://leetcode.cn/problems/remove-element/)                                          | 移除元素                  | 入门  | 原地修改、快慢指针            |
+| [283](https://leetcode.cn/problems/move-zeroes/)                                            | 移动零                   | 入门  | 双指针 + 原地修改           |
+| [88](https://leetcode.cn/problems/merge-sorted-array/)                                      | 合并两个有序数组              | 入门  | 逆向双指针                |
+| [704](https://leetcode.cn/problems/binary-search/)                                          | 二分查找                  | 入门  | 二分模板                 |
+| [303](https://leetcode.cn/problems/range-sum-query-immutable/)                              | 区域和检索 - 数组不可变         | 入门  | 前缀和                  |
+| [34](https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/) | 在排序数组中查找元素的第一个和最后一个位置 | 中等  | 二分边界（lower_bound 变体） |
+| [209](https://leetcode.cn/problems/minimum-size-subarray-sum/)                              | 长度最小的子数组              | 中等  | 可变滑动窗口               |
+| [167](https://leetcode.cn/problems/two-sum-ii-input-array-is-sorted/)                       | 两数之和 II - 输入有序数组      | 中等  | 对撞双指针                |
+| [15](https://leetcode.cn/problems/3sum/)                                                    | 三数之和                  | 中等  | 排序 + 对撞双指针           |
+| [1109](https://leetcode.cn/problems/corporate-flight-bookings/)                             | 航班预订统计                | 中等  | 差分数组                 |
+| [153](https://leetcode.cn/problems/find-minimum-in-rotated-sorted-array/)                   | 寻找旋转排序数组中的最小值         | 中等  | 二分变体（与 34 对比边界写法）    |
+| [54](https://leetcode.cn/problems/spiral-matrix/)                                           | 螺旋矩阵                  | 中等  | 行列边界收缩               |
+| [42](https://leetcode.cn/problems/trapping-rain-water/)                                     | 接雨水                   | 困难  | 双指针 / 前缀最大值          |
 
 ### 核心推演清单
 

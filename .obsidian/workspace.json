@@ -50,20 +50,6 @@
             }
           },
           {
-            "id": "87ce84e81aadf603",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "linux/23-SSH远程管理.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "23-SSH远程管理"
-            }
-          },
-          {
             "id": "bae5e368ef71c90d",
             "type": "leaf",
             "state": {
@@ -92,35 +78,21 @@
             }
           },
           {
-            "id": "074116920a0a805e",
+            "id": "c9aeaa3973e896b1",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "red_team/ctf_trea/Web/SQL/mysql结构/02-UA注入.md",
+                "file": "python/1入门/00_README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "02-UA注入"
-            }
-          },
-          {
-            "id": "0d10b65d529ab538",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "git.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "git"
+              "title": "00_README"
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 5
       }
     ],
     "direction": "vertical"
@@ -299,35 +271,35 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "8875f59c73ceb2c2",
+  "active": "c9aeaa3973e896b1",
   "lastOpenFiles": [
-    "数据结构/DSA学习路线.md",
-    "linux/23-SSH远程管理.md",
+    "python/1入门/00_README.md",
+    "数据结构/A_数组_Array.md",
+    "数据结构/B_字符串_String.md",
+    "().md",
+    "数据结构/G_队列_Queue.md",
     "linux/distro/arch/07-archlinux上的软件下载网络问题.md",
+    "菜鸟教程python3.md",
+    "python/1入门/00_准备工作.md",
+    "python/1入门/01_认识Python与python_-c_一行流.md",
+    "python/1入门/03_列表与字典：C数组与结构体的平替.md",
+    "python/1入门/02_变量与类型：从C迁移.md",
+    "python/2精通/01_PyObject与引用计数：Python的内存真相.md",
+    "python/1入门/07_模块与包：import机制与pip.md",
+    "python/1入门/06_类与继承：从struct到class.md",
+    "python/1入门/05_异常处理与pdb调试.md",
+    "python/1入门/04_字符串与文件读写.md",
+    "java/1入门/02_Linux环境配置.md",
+    "java/1入门/00_Java是什么.md",
+    "linux/07-PATH深入与环境变量全书.md",
+    "linux/06-命令行基础与Shell入门.md",
+    "linux/03-FHS文件系统层次标准.md",
+    "linux/23-SSH远程管理.md",
+    "数据结构/DSA学习路线.md",
     "git.md",
     "kicad/README.md",
     "kicad/10-常见问题与技巧.md",
-    "kicad/09-视频学习资源.md",
-    "kicad/08-社区插件.md",
-    "kicad/07-3D查看与输出.md",
-    "kicad/06-PCB编辑器.md",
-    "kicad/05-封装与符号编辑器.md",
-    "kicad/04-原理图编辑器.md",
-    "kicad/03-主题与美化.md",
-    "kicad/02-快捷键与自定义.md",
-    "kicad/01-安装与界面.md",
     "kicad",
-    "数据结构/A_数组_Array.md",
-    "docker/README.md",
-    "docker/13-Docker与虚拟环境.md",
-    "docker/12-故障排查.md",
-    "docker/11-使用注意事项.md",
-    "docker/10-镜像加速.md",
-    "docker/09-项目容器化实战.md",
-    "docker/08-Docker-Compose.md",
-    "docker/07-存储与数据持久化.md",
-    "docker/06-网络.md",
-    "docker/05-Dockerfile详解.md",
     "docker",
     "red_team/ctf_trea/Web/PHP反序列化",
     "assets/字符串动画/sunday_search.gif",
