@@ -25,18 +25,18 @@ title: "C++ 功能库 — allocator"
 
 ### 默认分配器
 
-```
+```cpp
 FUNCTION demo_default:
  alloc = ALLOCATOR<INT>()
  p = alloc.ALLOCATE(10) // 分配 10 个 int 空间
  CONSTRUCT(p, 42) // 在 p 位置构造 int(42)
  DESTROY(p) // 析构对象
  alloc.DEALLOCATE(p, 10) // 释放空间
-```
+```cpp
 
 ### PMR —— 内存池
 
-```
+```cpp
 FUNCTION demo_pmr:
  // 预分配缓冲区
  buffer = BYTE[1024 * 1024] // 1MB
@@ -52,11 +52,11 @@ FUNCTION demo_pmr:
 
  // 或通过 traits 临时切换
  v2 = VECTOR<INT>(100, 0, &pool)
-```
+```cpp
 
 ### 不同场景使用不同分配策略
 
-```
+```cpp
 FUNCTION demo_multi_pool:
  // 场景 1：临时计算，大量小分配 → 单调缓冲区（快速）
  temp_buf = BYTE[4096]
@@ -66,11 +66,11 @@ FUNCTION demo_multi_pool:
  sync_pool = SYNCHRONIZED_POOL_RESOURCE()
 
  // 场景 3：跨线程共享 → 同步内存池
-```
+```cpp
 
 ### 自定义分配器
 
-```
+```cpp
 FUNCTION demo_custom_allocator:
  CLASS LoggingAllocator<T>:
  ALLOCATE(n):
@@ -86,7 +86,7 @@ FUNCTION demo_custom_allocator:
 
  v = VECTOR<INT, LoggingAllocator<INT>>()
  v.PUSH(42) // 输出 "分配 xxx 字节"
-```
+```cpp
 
 ---
 

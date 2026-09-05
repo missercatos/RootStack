@@ -51,7 +51,7 @@ C++ 标准库提供丰富的序列修改算法：复制、移动、替换、去�
 
 ### 复制与变换
 
-```
+```cpp
 FUNCTION demo_copy_transform:
  src = [1, 2, 3, 4, 5]
  dst = ARRAY OF SIZE(src.SIZE())
@@ -65,11 +65,11 @@ FUNCTION demo_copy_transform:
  TRANSFORM(src, dst, LAMBDA(x):
  RETURN x * 10
  )
-```
+```cpp
 
 ### erase-remove idiom
 
-```
+```cpp
 FUNCTION demo_remove:
  v = [1, 3, 2, 3, 5, 3]
 
@@ -79,11 +79,11 @@ FUNCTION demo_remove:
  v.ERASE(REMOVE_IF(v, LAMBDA(x):
  RETURN x % 2 == 0 // 移除所有偶数
  ), v.END()) // v = [1, 3, 5]
-```
+```cpp
 
 ### 去重与反转
 
-```
+```cpp
 FUNCTION demo_unique_reverse:
  v = [3, 1, 2, 3, 2, 1]
 
@@ -93,11 +93,11 @@ FUNCTION demo_unique_reverse:
  REVERSE(v) // [3, 2, 1]
 
  ROTATE(v, v.BEGIN() + 1) // [2, 1, 3] 左旋
-```
+```cpp
 
 ### 填充与生成
 
-```
+```cpp
 FUNCTION demo_fill:
  v = VECTOR<INT>(5)
  FILL(v, 42) // [42, 42, 42, 42, 42]
@@ -106,7 +106,7 @@ FUNCTION demo_fill:
  GENERATE(v, LAMBDA:
  RETURN counter++
  ) // [0, 1, 2, 3, 4]
-```
+```cpp
 
 ---
 

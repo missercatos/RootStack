@@ -31,7 +31,7 @@ title: "C++ 功能库 — string"
 
 ## 典型用法
 
-```
+```cpp
 FUNCTION demo_string:
  s1 = STRING("hello")
  s2 = STRING(5, 'x') // "xxxxx"
@@ -48,11 +48,11 @@ FUNCTION demo_string:
 
  PRINT s3.SIZE() // 11
  PRINT s3[0] // 'h'
-```
+```cpp
 
 ### 数值转换
 
-```
+```cpp
 FUNCTION demo_convert:
  num_str = TO_STRING(42) // "42"
  pi_str = TO_STRING(3.14159) // "3.141590"
@@ -60,7 +60,7 @@ FUNCTION demo_convert:
  n = STRING_TO_INT("123") // 123
  d = STRING_TO_DOUBLE("3.14") // 3.14
  x = STRING_TO_INT("42abc") // 42，忽略尾部非数字
-```
+```cpp
 
 ---
 

@@ -1,8 +1,5 @@
 ---
-title: "template <typename T, typename Container = deque<T>>
-class queue
-template <typename T, typename Container = vector<T>, typename Compare = less<typename Container::value_type>>
-class priority_queue"
+title: "std::queue 队列"
 ---
 
 queue 和 priority_queue 均为**容器适配器**。queue 封装底层容器实现先进先出（FIFO）：队尾插入，队首删除。priority_queue 基于堆实现，保证队首始终为优先级最高的元素（默认最大值）。
@@ -39,7 +36,7 @@ queue 和 priority_queue 均为**容器适配器**。queue 封装底层容器实
 
 ### 伪代码示例
 
-```
+```cpp
 queue<int> q
 
 // BFS 广度优先搜索
@@ -63,7 +60,7 @@ while not circle.empty():
  circle.pop()
  print circle.front()
  circle.pop()
-```
+```asm
 
 ---
 
@@ -93,7 +90,7 @@ while not circle.empty():
 
 ### 指定大/小根堆
 
-```
+```asm
 // 默认大根堆
 priority_queue<int> maxHeap
 
@@ -103,11 +100,11 @@ priority_queue<int, vector<int>, greater<int>> minHeap
 // 自定义比较器
 struct Compare { bool operator()(int a, int b) { return a > b; } }
 priority_queue<int, vector<int>, Compare> pq
-```
+```cpp
 
 ### 伪代码示例
 
-```
+```cpp
 // 合并果子（小根堆）
 priority_queue<int, vector<int>, greater<int>> pq
 for each x in fruits:
@@ -130,7 +127,7 @@ while not pq.empty():
  if dist[v] > dist[u] + w:
  dist[v] = dist[u] + w
  pq.push({dist[v], v})
-```
+```cpp
 
 ## 相关链接
 

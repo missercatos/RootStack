@@ -33,7 +33,7 @@ C++ 的标准输入输出基于**流(stream)抽象**——`cin`/`cout` 提供类
 
 ## 典型用法
 
-```
+```cpp
 FUNCTION demo_io:
  x = 0
  INPUT >> x // 类型自动匹配
@@ -44,11 +44,11 @@ FUNCTION demo_io:
  GETLINE(INPUT, line) // 读取整行（含空格）
 
  ERROR << "错误信息" << ENDL // 无缓冲，立即输出
-```
+```cpp
 
 ### 格式控制
 
-```
+```cpp
 FUNCTION demo_format:
  OUTPUT << HEX << 255 // "ff"
  OUTPUT << OCT << 8 // "10"
@@ -58,11 +58,11 @@ FUNCTION demo_format:
 
  OUTPUT << SETW(8) << SETFILL('0') << 42 // "00000042"
  OUTPUT << LEFT << SETW(10) << "name" // "name "
-```
+```cpp
 
 ### 流状态
 
-```
+```cpp
 FUNCTION demo_state:
  x = 0
  IF INPUT >> x THEN // 成功返回 cin（可转 bool）
@@ -72,7 +72,7 @@ FUNCTION demo_state:
  INPUT.IGNORE(1000, '\n') // 丢弃缓冲区中错误内容
  PRINT "输入无效"
  END IF
-```
+```cpp
 
 ---
 

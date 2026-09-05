@@ -1,8 +1,5 @@
 ---
-title: "template <typename Key, typename Compare = less<Key>>
-class set
-template <typename Key, typename Compare = less<Key>>
-class multiset"
+title: "std::set 有序集合"
 ---
 
 ## 底层数据结构
@@ -41,7 +38,7 @@ class multiset"
 
 ## 伪代码示例
 
-```
+```cpp
 set<int> s
 
 // 插入（自动去重）
@@ -68,7 +65,7 @@ s.erase(42)
 
 // multiset 删除一个重复值
 ms.erase(ms.find(5)) // 仅删除一个 5
-```
+```cpp
 
 ## 相关链接
 

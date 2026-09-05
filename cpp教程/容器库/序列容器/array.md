@@ -1,6 +1,5 @@
 ---
-title: "template <typename T, size_t N>
-class array"
+title: "std::array 定长数组"
 ---
 
 ## 底层数据结构
@@ -41,7 +40,7 @@ class array"
 
 ## 伪代码示例
 
-```
+```cpp
 // 创建固定大小 5 的数组，全部初始化 0
 array<int, 5> arr = {1, 2, 3, 4, 5}
 
@@ -58,7 +57,7 @@ arr.fill(0)
 
 // 传给 C 接口
 legacy_function(arr.data(), arr.size())
-```
+```cpp
 
 ## 相关链接
 

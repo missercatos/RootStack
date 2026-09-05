@@ -1,5 +1,5 @@
 ---
-title: "class string"
+title: "std::string 字符串"
 ---
 
 ## 底层数据结构
@@ -45,7 +45,7 @@ title: "class string"
 
 ## 伪代码示例
 
-```
+```cpp
 string s = "hello"
 
 // 追加
@@ -69,7 +69,7 @@ getline(in, s)
 // 数值转换
 num_str = to_string(3.14)
 val = stoi("12345")
-```
+```cpp
 
 ## 相关链接
 

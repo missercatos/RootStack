@@ -1,6 +1,5 @@
 ---
-title: "template <typename T1, typename T2>
-struct pair"
+title: "std::pair 键值对"
 ---
 
 ## 底层数据结构
@@ -30,7 +29,7 @@ struct pair"
 
 ## 伪代码示例
 
-```
+```asm
 // 创建
 p1 = pair<string, int>("apple", 5)
 p2 = make_pair("banana", 3)
@@ -63,7 +62,7 @@ if not ok:
 priority_queue<pair<int, string>> pq
 pq.push({3, "taskA"})
 pq.push({1, "taskB"}) // 1 < 3，默认大根堆中 taskB 优先级更高
-```
+```cpp
 
 ## 相关链接
 

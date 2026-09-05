@@ -22,7 +22,7 @@ title: "C++ 功能库 — sstream"
 
 ### 格式化拼接
 
-```
+```cpp
 FUNCTION demo_format:
  ss = OSTRINGSTREAM()
 
@@ -32,11 +32,11 @@ FUNCTION demo_format:
 
  result = ss.STR()
  PRINT result // "Name: Alice, Age: 25, Score: 87.50"
-```
+```cpp
 
 ### 从字符串解析
 
-```
+```cpp
 FUNCTION demo_parse:
  input = ISTRINGSTREAM("3.14 42 hello world")
 
@@ -47,11 +47,11 @@ FUNCTION demo_parse:
 
  input >> pi >> n >> w1 >> w2
  PRINT pi, n, w1, w2 // 3.14 42 hello world
-```
+```cpp
 
 ### 逐行解析 CSV 风格数据
 
-```
+```cpp
 FUNCTION demo_csv:
  data = "Alice,25,Engineer\nBob,30,Designer\n"
  ss = STRINGSTREAM(data)
@@ -65,11 +65,11 @@ FUNCTION demo_csv:
  GETLINE(line_ss, ROLE, ',')
  PRINT name, age, role
  END WHILE
-```
+```cpp
 
 ### 类型转换工具模式
 
-```
+```cpp
 FUNCTION safe_convert:
  // 字符串 → int（带校验）
  s = "42abc"
@@ -80,7 +80,7 @@ FUNCTION safe_convert:
  ELSE
  PRINT "转换失败或有多余字符"
  END IF
-```
+```cpp
 
 ---
 

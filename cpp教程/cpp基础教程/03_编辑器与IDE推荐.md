@@ -11,7 +11,7 @@ graph LR
  Editor[编辑器 VSCode/Vim] -->|LSP| clangd[clangd 语言服务器]
  clangd -->|读取| compile_commands.json
  clangd -->|调用| Compiler[编译器前端]
-```
+```cpp
 
 clangd 是 LLVM 项目的 LSP 服务器，使用 Clang 的前端分析代码，因此其错误诊断与编译器完全一致。clangd 依赖 `compile_commands.json` 获取每个源文件的编译选项（头文件路径、宏定义等）。
 
@@ -19,7 +19,7 @@ CMake 生成该文件的方式：
 ```bash
 cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -B build
 ln -s build/compile_commands.json .
-```
+```bash
 
 ---
 
@@ -74,7 +74,7 @@ JetBrains 出品，CMake 原生集成。学生可申请免费 License。
 
 ```bash
 sudo apt install neovim clangd
-```
+```cpp
 
 核心配置：安装 vim-plug 插件管理器，安装 `coc.nvim` 插件，执行 `:CocInstall coc-clangd`。
 

@@ -36,7 +36,7 @@ C++20 新增 `semaphore`、`latch`、`barrier` 等高级同步原语。
 
 ### lock_guard —— 最简互斥
 
-```
+```cpp
 FUNCTION demo_lock_guard:
  mtx = MUTEX()
  counter = 0
@@ -53,11 +53,11 @@ FUNCTION demo_lock_guard:
  END FOR
  FOR t IN threads: t.JOIN()
  PRINT counter // 始终为 10
-```
+```cpp
 
 ### unique_lock + 条件变量
 
-```
+```cpp
 FUNCTION demo_cv:
  mtx = MUTEX()
  cv = CONDITION_VARIABLE()
@@ -79,11 +79,11 @@ FUNCTION demo_cv:
  cv.NOTIFY_ONE() // 唤醒等待线程
 
  waiter.JOIN()
-```
+```cpp
 
 ### shared_mutex —— 读写锁
 
-```
+```cpp
 FUNCTION demo_rwlock:
  rw = SHARED_MUTEX()
  cache = MAP<INT, STRING>()
@@ -97,11 +97,11 @@ FUNCTION demo_rwlock:
  lock = UNIQUE_LOCK(rw) // 独占锁（写）
  cache[KEY] = new_value // 写者独占
  END LAMBDA
-```
+```cpp
 
 ### latch —— 一次性同步点
 
-```
+```cpp
 FUNCTION demo_latch:
  done_latch = LATCH(5) // 计数 5
 
@@ -114,7 +114,7 @@ FUNCTION demo_latch:
 
  done_latch.WAIT() // 计数到 0 后继续
  PRINT "全部完成"
-```
+```cpp
 
 ---
 

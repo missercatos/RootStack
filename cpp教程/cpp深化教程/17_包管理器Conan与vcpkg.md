@@ -23,7 +23,7 @@ timeline
     2021 : Conan 2 重构发布 : 新 profile 与 CMakeDeps 生成器
     2023 : vcpkg 清单模式成为默认推荐 : 两大工具分庭抗礼
     2026 : 企业私服普及 : C++ 迎来自己的 Maven 时刻
-```
+```bash
 
 ### 两大主流方案定位
 
@@ -40,7 +40,7 @@ timeline
 git clone https://github.com/microsoft/vcpkg.git ~/vcpkg   # 本体只是个工具仓库
 ~/vcpkg/bootstrap-vcpkg.sh                                  # 下载编译出 vcpkg 可执行文件
 ~/vcpkg/vcpkg search spdlog                                 # 搜索可用 port
-```
+```cpp
 
 ### 经典模式 vs 清单模式
 
@@ -48,7 +48,7 @@ git clone https://github.com/microsoft/vcpkg.git ~/vcpkg   # 本体只是个工�
 
 ```bash
 vcpkg install fmt spdlog nlohmann-json    # 装进 vcpkg/installed，所有项目共享
-```
+```cpp
 
 缺点：依赖状态记录在 vcpkg 目录而非项目里，换机器无法复现。现代做法是清单模式（manifest mode）——项目根放一份 `vcpkg.json`：
 
@@ -63,7 +63,7 @@ vcpkg install fmt spdlog nlohmann-json    # 装进 vcpkg/installed，所有项�
   ],
   "builtin-baseline": "a1b2c3d4e5f6"
 }
-```
+```cpp
 
 - `dependencies` 即 pom.xml 的 `<dependencies>`；
 - `builtin-baseline` 锁定整个注册表快照（相当于 lockfile 的锚点）；
@@ -90,7 +90,7 @@ vcpkg 与 CMake 的全部魔法浓缩在一个 toolchain 参数里：
 
 ```bash
 cmake -B build -DCMAKE_TOOLCHAIN_FILE=$HOME/vcpkg/scripts/buildsystems/vcpkg.cmake
-```
+```cmake
 
 toolchain 做了什么：拦截 `find_package`，改从 `vcpkg_installed` 里找；找不到的自动按清单安装再找。之后 CMakeLists.txt 完全不需要感知 vcpkg 的存在：
 
@@ -104,7 +104,7 @@ target_link_libraries(myapp PRIVATE
     fmt::fmt
     spdlog::spdlog
     nlohmann_json::nlohmann_json)
-```
+```cmake
 
 ### Conan 2：conanfile / profile / conan install
 
@@ -123,7 +123,7 @@ CMakeToolchain       # 生成 conan_toolchain.cmake（含 ABI/标准库等全局
 
 [layout]
 cmake_layout         # 采用社区标准的 build 目录布局
-```
+```cpp
 
 复杂需求（条件依赖、自研包）升级为 `conanfile.py`：
 
@@ -139,7 +139,7 @@ class MyappConan(ConanFile):
     def requirements(self):
         if self.settings.os == "Windows":
             self.requires("winreg/1.4.1")               # 平台条件依赖
-```
+```cpp
 
 profile 是 Conan 对"构建环境"的完整描述（对应 vcpkg 的 triplet 但更细）：
 
@@ -152,7 +152,7 @@ compiler=gcc
 compiler.version=13
 compiler.libcxx=libstdc++11     # 关键项！标准库 ABI 选择
 build_type=Release
-```
+```cpp
 
 两步走流程：
 
@@ -160,14 +160,14 @@ build_type=Release
 pip install conan                       # Conan 本体是 Python 工具
 conan profile detect                    # 首次使用自动探测本机生成默认 profile
 conan install . --build=missing         # 解析依赖图，缺二进制则本地源码构建
-```
+```cpp
 
 `conan install` 执行后产出 `conan_toolchain.cmake` 与一批 `*-config.cmake`，接入 CMake 同样只有一行：
 
 ```bash
 cmake -B build -DCMAKE_TOOLCHAIN_FILE=build/conan/conan_toolchain.cmake \
       -DCMAKE_BUILD_TYPE=Release
-```
+```cmake
 
 CMakeLists.txt 内的 `find_package`/`target_link_libraries` 写法与 vcpkg 方案完全相同——**两大管理器最终都收敛到 CMake 的 config 模式接口上**，这正是现代生态的统一出口。
 
@@ -209,7 +209,7 @@ graph TD
     B["spdlog/1.14 需要 fmt/10.2.1"] --> R
     R -->|"取交集，全局只保留一份"| F["fmt/10.2.1 唯一实例"]
     R -->|"无法交集时直接报错"| E["ERROR: version conflict<br/>要求开发者用 override 显式裁决"]
-```
+```cpp
 
 对比 Maven 的"最近路径优先"静默仲裁，C++ 包管理器选择宁可报错也不猜——因为 ABI 不兼容的两个版本共存于一个进程会直接崩溃，静默仲裁在这里是危险的。遇到冲突时用 `overrides`（vcpkg）或 `conflict`/统一 requires（Conan）手动收敛到同一版本。
 
@@ -224,14 +224,14 @@ vcpkg 与 Conan 都支持包的 feature（特性）机制，类似 Maven 的 cla
     { "name": "ffmpeg", "features": ["x264", "openssl"], "default-features": false }
   ]
 }
-```
+```cpp
 
 ```python
 # Conan 侧写法
 def requirements(self):
     self.requires("opencv/4.9.0")
     self.options["opencv/*"].with_ffmpeg = True     # 打开 opencv 的 ffmpeg 后端
-```
+```cmake
 
 按需裁剪能显著缩短首次构建时间（ffmpeg 全特性编译可能超过一小时），也是控制二进制体积的手段。
 
@@ -265,7 +265,7 @@ find_package(nlohmann_json CONFIG REQUIRED)
 add_executable(myapp main.cpp)
 target_link_libraries(myapp PRIVATE
     fmt::fmt spdlog::spdlog nlohmann_json::nlohmann_json)
-```
+```asm
 
 ```cpp
 // main.cpp —— 三个库各司其职：格式化 / 日志 / JSON 解析
@@ -289,7 +289,7 @@ int main() {
     spdlog::warn("retry count: {}/{}", fmt::format("{:>3}", 2), 5);
     return 0;
 }
-```
+```cpp
 
 ### 方案 A：vcpkg 清单模式全流程
 
@@ -300,12 +300,12 @@ int main() {
   "dependencies": [ "fmt", "spdlog", "nlohmann-json" ],
   "builtin-baseline": "<从 vcpkg 仓库取一个 commit hash>"
 }
-```
+```cpp
 
 ```bash
 cmake -B build -DCMAKE_TOOLCHAIN_FILE=$HOME/vcpkg/scripts/buildsystems/vcpkg.cmake
 cmake --build build && ./build/myapp
-```
+```cpp
 
 首次 configure 会自动安装三个依赖到 `build/vcpkg_installed/x64-linux`，全程无需手动干预。
 
@@ -323,7 +323,7 @@ CMakeToolchain
 
 [layout]
 cmake_layout
-```
+```cpp
 
 ```bash
 conan profile detect                    # 初始化默认 profile
@@ -331,7 +331,7 @@ conan install . --build=missing         # 拉取或构建依赖并生成集成�
 cmake --preset conan-release            # Conan 生成的 preset 自动带上 toolchain
 cmake --build --preset conan-release
 ./build/Release/myapp
-```
+```cmake
 
 两次运行输出完全一致，证明：**只要库方遵守 config 模式导出规范，消费侧可以自由更换包管理器而代码零改动**。这是现代 C++ 依赖生态最重要的工程性质。
 

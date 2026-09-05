@@ -30,7 +30,7 @@ title: "C++ 功能库 — regex"
 
 ## 典型用法
 
-```
+```cpp
 FUNCTION demo_regex:
  pattern = REGEX("[0-9]+")
 
@@ -45,11 +45,11 @@ FUNCTION demo_regex:
 
  result = REGEX_REPLACE(s, pattern, "#")
  PRINT result // "abc#def#ghi"
-```
+```cpp
 
 ### 捕获组
 
-```
+```cpp
 FUNCTION demo_capture:
  email_pattern = REGEX(R"((\w+)@(\w+\.\w+))")
  s = "contact@example.com"
@@ -60,11 +60,11 @@ FUNCTION demo_capture:
  PRINT match[1] // "contact" 第一个捕获组
  PRINT match[2] // "example.com" 第二个捕获组
  END IF
-```
+```cpp
 
 ### 遍历所有匹配
 
-```
+```cpp
 FUNCTION demo_iter:
  pattern = REGEX("[0-9]+")
  s = "a=10, b=20, c=30"
@@ -75,7 +75,7 @@ FUNCTION demo_iter:
  PRINT it.STR()
  it++
  END WHILE // 依次输出: 10 20 30
-```
+```cpp
 
 ---
 

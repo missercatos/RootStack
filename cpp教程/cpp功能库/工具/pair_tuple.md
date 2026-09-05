@@ -25,7 +25,7 @@ title: "C++ 功能库 — pair / tuple"
 
 ### pair
 
-```
+```cpp
 FUNCTION demo_pair:
  p = PAIR<STRING, INT>("Alice", 25)
  PRINT p.FIRST, p.SECOND // Alice 25
@@ -41,11 +41,11 @@ FUNCTION demo_pair:
  // 用于函数返回多值
  minmax = MINMAX_ELEMENT(v) // 返回 pair<迭代器, 迭代器>
  auto [min_it, max_it] = minmax
-```
+```cpp
 
 ### tuple
 
-```
+```cpp
 FUNCTION demo_tuple:
  t = MAKE_TUPLE("Charlie", 28, 1.75, true)
  PRINT GET<0>(t) // Charlie（按索引）
@@ -55,11 +55,11 @@ FUNCTION demo_tuple:
 
  // 按类型取（只有无重复类型时可用）
  PRINT GET<STRING>(t) // Charlie
-```
+```cpp
 
 ### tie —— 解包到已有变量
 
-```
+```cpp
 FUNCTION demo_tie:
  s = STRING(); i = 0; d = 0.0
  TIE(s, i, d) = MAKE_TUPLE("hello", 42, 3.14)
@@ -73,11 +73,11 @@ FUNCTION demo_tie:
  IF MAKE_TUPLE(a1, a2) < MAKE_TUPLE(b1, b2) THEN
  PRINT "先比 first，再比 second"
  END IF
-```
+```cpp
 
 ### 高级技巧
 
-```
+```cpp
 FUNCTION demo_advanced:
  // 拼接 tuple
  t1 = MAKE_TUPLE(1, 2)
@@ -92,7 +92,7 @@ FUNCTION demo_advanced:
  SORT(items, LAMBDA(a, b):
  RETURN a.SECOND < b.SECOND // 按 value 排序
  )
-```
+```cpp
 
 ---
 

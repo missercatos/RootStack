@@ -1,6 +1,5 @@
 ---
-title: "template <typename T, typename Container = deque<T>>
-class stack"
+title: "std::stack 栈"
 ---
 
 ## 底层数据结构
@@ -31,7 +30,7 @@ class stack"
 
 ## 伪代码示例
 
-```
+```asm
 stack<int> st
 
 // 压入
@@ -68,7 +67,7 @@ while n > 0:
 while not bits.empty():
  print bits.top()
  bits.pop()
-```
+```cpp
 
 stack 没有 `clear()`，清空用 `while (!empty()) pop()` 或 `st = stack<int>()`。
 stack 没有迭代器，遍历只能通过反复 top() + pop() 清空式输出。

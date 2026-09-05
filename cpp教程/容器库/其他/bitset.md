@@ -1,6 +1,5 @@
 ---
-title: "template <size_t N>
-class bitset"
+title: "std::bitset 位集"
 ---
 
 ## 底层数据结构
@@ -38,7 +37,7 @@ class bitset"
 
 ## 伪代码示例
 
-```
+```cpp
 bitset<8> bs
 
 // 置位（最低位是第 0 位）
@@ -78,7 +77,7 @@ for each k in 0..N-1:
  for each i in 0..N-1:
  if reach[i][k]:
  reach[i] = reach[i] | reach[k]
-```
+```cpp
 
 ## 相关链接
 

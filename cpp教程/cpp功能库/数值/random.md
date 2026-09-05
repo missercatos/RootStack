@@ -36,7 +36,7 @@ C++ `<random>` 库将随机数生成器与概率分布解耦——生成器(engi
 
 ### 基本工作流
 
-```
+```cpp
 FUNCTION demo_random:
  rd = RANDOM_DEVICE() // 真随机源
  gen = MT19937(rd()) // 用真随机数做种子
@@ -45,11 +45,11 @@ FUNCTION demo_random:
  FOR i = 1 TO 5:
  PRINT dice(gen) // 每次调用产生新随机数
  END FOR
-```
+```cpp
 
 ### 各种分布
 
-```
+```cpp
 FUNCTION demo_distributions:
  gen = MT19937(RANDOM_DEVICE()())
 
@@ -64,27 +64,27 @@ FUNCTION demo_distributions:
 
  choices = DISCRETE_DIST({1, 3, 6}) // 权重 1:3:6
  PRINT choices(gen) // 索引 2 概率最高
-```
+```cpp
 
 ### 洗牌
 
-```
+```cpp
 FUNCTION demo_shuffle:
  v = [1, 2, 3, 4, 5, 6]
  gen = MT19937(RANDOM_DEVICE()())
  SHUFFLE(v, gen) // 随机打乱
  PRINT v // e.g. [3, 1, 5, 2, 6, 4]
-```
+```cpp
 
 ### 随机项目选择
 
-```
+```cpp
 FUNCTION demo_sample:
  src = [10, 20, 30, 40, 50]
  dst = ARRAY OF SIZE(3)
  gen = MT19937(RANDOM_DEVICE()())
  SAMPLE(src, dst, 3, gen) // 不重复抽样 3 个
-```
+```cpp
 
 ---
 

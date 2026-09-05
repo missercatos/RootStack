@@ -36,7 +36,7 @@ C++ 标准库的查找与统计算法基于输入迭代器，能在任意容器�
 
 ### 查找
 
-```
+```cpp
 FUNCTION demo_find:
  v = [10, 20, 30, 40, 50]
 
@@ -50,11 +50,11 @@ FUNCTION demo_find:
  PRINT *it // 30（第一个 >25 的元素）
 
  it = ADJACENT_FIND([1, 2, 3, 3, 4]) // 指向第二个 3
-```
+```cpp
 
 ### 统计
 
-```
+```cpp
 FUNCTION demo_count:
  v = [1, 2, 3, 2, 4, 2, 5]
 
@@ -63,11 +63,11 @@ FUNCTION demo_count:
  PRINT COUNT_IF(v, LAMBDA(x):
  RETURN x % 2 == 0 // 偶数个数
  ) // 4
-```
+```cpp
 
 ### 批量判断
 
-```
+```cpp
 FUNCTION demo_all_any_none:
  v = [10, 20, 30, 40]
 
@@ -82,7 +82,7 @@ FUNCTION demo_all_any_none:
  PRINT NONE_OF(v, LAMBDA(x):
  RETURN x < 0 // 全不是负数?
  ) // true
-```
+```cpp
 
 ---
 

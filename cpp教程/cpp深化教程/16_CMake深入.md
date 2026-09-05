@@ -13,7 +13,7 @@ find_package(OpenSSL 3.0 REQUIRED)     # 版本参数会参与兼容性检查
 
 get_target_property(loc OpenSSL::SSL IMPORTED_LOCATION)
 message(STATUS "libssl 位于: ${loc}")  # imported target 可查询元数据
-```
+```cpp
 
 三种 IMPORTED 配置域对应不同场景：
 
@@ -24,7 +24,7 @@ set_target_properties(coolutil PROPERTIES
     IMPORTED_LOCATION_RELEASE /opt/opt/libcoolutil.a   # Release 用这份
     INTERFACE_INCLUDE_DIRECTORIES /opt/include          # 传给使用方
 )
-```
+```cmake
 
 自己手写 IMPORTED 声明的典型场景：预编译 SDK（厂商只发 `.a/.so + 头文件`）。把它包装成 target 后，下游 `target_link_libraries(app PRIVATE coolutil)` 一行搞定，无需再碰路径细节。
 
@@ -34,7 +34,7 @@ set_target_properties(coolutil PROPERTIES
 add_library(mylib::mylib ALIAS mylib)      # 项目内别名，带命名空间风格
 
 target_link_libraries(app PRIVATE mylib::mylib)
-```
+```cmake
 
 价值在于**命名一致性**：无论 mylib 是本项目子目录里的真 target、FetchContent 拉进来的，还是 find_package 找到的 IMPORTED，使用方永远写同一个名字 `mylib::mylib`。开源库的标准姿势就是同时提供两者——本地的真实 target 和安装导出的同名 alias，让源码集成与二进制集成无缝切换。
 
@@ -51,7 +51,7 @@ target_compile_options(mylib PRIVATE
 target_compile_definitions(mylib PRIVATE
     $<$<CONFIG:Debug>:MYLIB_VERBOSE_LOG>   # 只有 Debug 配置定义此宏
 )
-```
+```cpp
 
 最关键的一对是 install/export 场景下的**路径分身术**：
 
@@ -60,7 +60,7 @@ target_include_directories(mylib PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>   # 源码内构建：指源码树
     $<INSTALL_INTERFACE:include>                             # 安装后消费：指相对前缀
 )
-```
+```cmake
 
 为什么必须这样拆？因为 build 树里的绝对路径在安装到别机器后毫无意义，而 `include` 相对路径在 build 阶段又不成立。两个表达式让同一份 target 元数据在两种生命周期里各自指向正确位置。
 
@@ -74,7 +74,7 @@ graph LR
     end
     T["target_include_directories(PUBLIC)"] --> S
     T --> P
-```
+```cpp
 
 ---
 
@@ -90,7 +90,7 @@ FetchContent_Declare(fmt
     GIT_SHALLOW    TRUE            # 浅克隆只取该 tag，大幅提速
 )
 FetchContent_MakeAvailable(fmt)
-```
+```cpp
 
 锁定的意义：`GIT_TAG main` 意味着每次 configure 可能拉到不同代码，昨天能编译今天报错，等于把不确定性引入版本控制体系。正确做法与 Maven 固定版本号同理——tag 即坐标。团队级复现可再加 `FETCHCONTENT_SOURCE_DIR_<NAME>` 指向本地镜像做离线构建。
 
@@ -108,12 +108,12 @@ set(CPACK_PACKAGE_CONTACT        "dev@example.com")   # deb/rpm 维护者字段
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)                # 自动计算 .deb 依赖
 set(CPACK_RPM_PACKAGE_LICENSE    "MIT")
 include(CPack)                                        # 必须放最后
-```
+```cpp
 
 ```bash
 cpack -G "DEB;RPM;ZIP"     # 一次生成多种格式
 ls *.deb *.rpm *.zip
-```
+```cpp
 
 对比手工维护 `debian/control` 与 `.spec` 文件，CPack 让"打包"退化为 install 规则的自然延伸。CI 里配合 matrix 可以同轮产出多发行版工件。
 
@@ -135,7 +135,7 @@ extern template class Matrix<float>;    // extern：告诉本 TU 不要重复实
 // matrix.cpp —— 在唯一的地方定义实例化
 template class Matrix<float>;
 template class Matrix<double>;
-```
+```cpp
 
 效果：使用 `Matrix<float>` 的 100 个 .cpp 都不再各自展开模板体，只引用 .cpp 里那一份符号。代价是可用类型集合被固定，泛型库（header-only）无法采用——这正是 header-only 与构建速度的取舍点。
 
@@ -151,7 +151,7 @@ target_precompile_headers(myengine
         <algorithm>
 )
 # CMake 会自动生成 cmake_pch.hxx，强制所有源文件先包含这些头并共享其编译结果
-```
+```cpp
 
 工作原理图解：
 
@@ -168,7 +168,7 @@ graph TD
         P --> B2["b.cpp 直接加载缓存"]
         P --> D2["c.cpp 直接加载缓存"]
     end
-```
+```cpp
 
 收益衡量标准：全量重编时间下降 30% 以上的项目才值得上 PCH；小项目反而增加复杂度。注意 PCH 只放**稳定不变**的头——把自己频繁修改的头塞进去会让每次改动都触发全量重编，适得其反。
 
@@ -182,7 +182,7 @@ graph TD
 ```bash
 cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 ls build/compile_commands.json   # 每个源文件的精确编译命令清单
-```
+```cmake
 
 这份 JSON 是现代 C++ 工具链的通用输入格式：
 
@@ -238,7 +238,7 @@ install(EXPORT tinyjsonTargets
     NAMESPACE tinyjson::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/tinyjson
 )
-```
+```cmake
 
 ### header-only 库的全部价值浓缩
 
@@ -269,7 +269,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 # 大型项目可选：为 main.cpp 所在 target 上预编译头
 target_precompile_headers(json_app PRIVATE
     <string> <vector> <iostream>)
-```
+```asm
 
 ```cpp
 // main.cpp —— 使用方对集成方式完全无感知
@@ -281,7 +281,7 @@ int main() {
     std::cout << doc["name"].as_string() << "\n";   // root
     return 0;
 }
-```
+```cpp
 
 验证流程：
 
@@ -289,7 +289,7 @@ int main() {
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build && ./build/json_app
 ctest --test-dir build --output-on-failure
-```
+```cpp
 
 ### 打包发布（CPack 补完）
 
@@ -299,7 +299,7 @@ ctest --test-dir build --output-on-failure
 set(CPACK_GENERATOR "TGZ")
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 include(CPack)
-```
+```cmake
 
 执行 `cpack -G TGZ` 得到源码/安装包，上传 release 页并附 SHA256，即可被任何下游 FetchContent 按 tag 锁定消费——完成从"我写了库"到"生态可依赖"的最后一步。
 

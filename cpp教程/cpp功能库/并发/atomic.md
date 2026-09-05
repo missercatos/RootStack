@@ -37,7 +37,7 @@ title: "C++ 功能库 — atomic"
 
 ### 无锁计数器
 
-```
+```cpp
 FUNCTION demo_counter:
  counter = ATOMIC<INT>(0)
 
@@ -53,11 +53,11 @@ FUNCTION demo_counter:
  END FOR
  FOR t IN threads: t.JOIN()
  PRINT counter // 始终为 10000
-```
+```cpp
 
 ### CAS 循环 —— 无锁更新
 
-```
+```cpp
 FUNCTION demo_cas:
  value = ATOMIC<INT>(0)
 
@@ -70,11 +70,11 @@ FUNCTION demo_cas:
  END IF
  // expected 已被更新为当前值，继续重试
  END LOOP
-```
+```cpp
 
 ### 原子标志位
 
-```
+```cpp
 FUNCTION demo_flag:
  flag = ATOMIC<BOOL>(false)
 
@@ -86,11 +86,11 @@ FUNCTION demo_flag:
  ELSE
  PRINT "其他线程已占用"
  END IF
-```
+```cpp
 
 ### 内存序使用
 
-```
+```cpp
 FUNCTION demo_memory_order:
  // acquire-release 成对使用
  ready = ATOMIC<BOOL>(false)
@@ -105,7 +105,7 @@ FUNCTION demo_memory_order:
  THIS_THREAD::YIELD()
  END WHILE
  PRINT data // 保证输出 42
-```
+```cpp
 
 ---
 
