@@ -148,18 +148,6 @@ importlib.reload(counter) # 强制重新加载
 
 > Python 的模块缓存（`sys.modules` 字典）保证了每个模块只被加载一次。这相当于 C 语言中每个 `.o` 文件只被链接一次——但 Python 是在运行时内存中做这道查重。
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> Python 中同一个模块被 `import` 多次，每次都会重新执行模块代码。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: Python 在 `sys.modules` 字典中缓存已加载的模块。后续的 `import` 直接从缓存返回模块对象，不会重新执行模块代码。需要使用 `importlib.reload()` 强制重新加载。
-
 ---
 
 ### 第二节： `__name__ == "__main__"` 与模块的双重身份
@@ -260,18 +248,6 @@ echo ""
 echo "=== 作为模块 ==="
 python -c "import sys; sys.path.insert(0, '/tmp'); import wordcount; print(wordcount.stats('hello world python'))"
 ```
-
-### 小节练习
-
-
-> [!question] 判断题 1
-> C 语言可以用 `#ifdef __MAIN__` 宏实现与 Python 的 `if __name__ == "__main__"` 完全等价的功能。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: C 语言没有与 `__name__ == "__main__"` 完全等价的机制。虽然可以在编译时通过 `-DMAIN` 定义宏来条件编译 `main` 函数，但这是**编译时**决定而非**运行时**决定，且不支持"同一个 .o 既可链接到库也可作为可执行文件入口"的场景。
 
 ---
 
@@ -396,9 +372,6 @@ print('json module location:', json.__file__)
 
 > `sys.path` 是 Python 中"查找模块"的路线图。修改 `sys.path` 相当于 C 语言中的 `-I`（头文件路径）和 `-L`/`LD_LIBRARY_PATH`（库路径）的运行时综合。
 
-### 小节练习
-
-
 ---
 
 ### 第四节：pip 与 venv —— 第三方库管理
@@ -488,18 +461,6 @@ python -m pip search "json schema" 2>&1 || echo "(pip search 在较新版本中�
 python -m pip list --outdated
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> venv 虚拟环境会复制整个 Python 解释器到虚拟环境目录中。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `venv` 不会复制完整的 Python 解释器——它创建指向系统 Python 的符号链接（或轻量级副本），只复制 `site-packages` 等目录。不同的虚拟环境共享同一个解释器二进制文件，但各自有独立的库安装目录。
-
 ---
 
 ### 第五节：常用标准库速览
@@ -572,90 +533,6 @@ print('5! =', result)
 "
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> Python 的 `os` 模块提供了与 C 标准库 `<unistd.h>` 完全一致的系统调用接口。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: Python 的 `os` 模块提供了**高级的、跨平台的抽象**，不是底层系统调用的一对一映射。例如 `os.listdir()` 内部在所有平台上调用不同的系统 API（Linux 是 `getdents`，Windows 是 `FindFirstFile`）。要直接访问 POSIX 系统调用，需要使用 `os` 模块的底层函数（如 `os.read()`）或 `ctypes` 库。
-
----
-
-## 章节测试
-
-### 一、判断题（正确选，错误选）
-
-> [!question] 判断题 1
-> C 语言的 `#include` 不仅包含函数声明，还执行被包含文件中的代码。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `#include` 只在预处理阶段做文本替换——将头文件内容**复制粘贴**到源文件中。头文件中如果有函数定义（不是声明）会导致链接时重复定义错误。Python 的 `import` 则真正**执行**被导入模块的代码。
-
-> [!question] 判断题 2
-> Python 中 `import sys; sys.path.insert(0, '.')` 可以动态修改模块搜索路径。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `sys.path` 是一个普通的 Python 列表，可以在运行时修改（追加、插入、删除路径）。修改后的路径立即影响后续的 `import` 语句。这比 C 语言编译时的 `-I` 选项灵活得多。
-
-> [!question] 判断题 3
-> `pip install` 安装的第三方包会自动对所有 Python 虚拟环境生效。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: 每个虚拟环境有独立的 `site-packages` 目录。pip 安装的包只对**当前激活的虚拟环境**有效。这也是虚拟环境的核心价值——不同项目可以依赖不同版本的同一包，互不冲突。
-
-> [!question] 判断题 4
-> Python 的模块缓存（`sys.modules`）在程序退出时自动清空。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `sys.modules` 是一个普通的字典，存于进程内存中。当 Python 进程退出时，操作系统回收所有进程内存，包括 `sys.modules`。下次启动时，所有模块需要重新加载。
-
-> [!question] 判断题 5
-> 如果没有 `__init__.py` 文件，一个包含 Python 文件的目录仍然可以被 Python 3.3+ 当作命名空间包导入。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: Python 3.3 引入了**隐式命名空间包**（PEP 420）——不需要 `__init__.py` 的目录也可以成为一个包。但普通包（regular package）创建 `__init__.py` 仍是推荐的明确做法。
-
-> [!question] 判断题 6
-> `from module import *` 会导入模块中所有变量和函数（包括以 `_` 开头的私有名称）。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: 如果模块定义了 `__all__` 列表，`from module import *` 只导入该列表中的名称。如果未定义 `__all__`，则导入所有**不以下划线开头**的名称。这是 Python 的约定式封装。
-
-> [!question] 判断题 7
-> `python -m venv myenv` 创建的虚拟环境会被源代码管理系统（如 git）自动忽略。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: git 不会"自动"忽略虚拟环境目录——除非项目中存在 `.gitignore` 文件明确排除它。标准操作是在项目根目录的 `.gitignore` 中添加 `venv/` 或 `myenv/` 等虚拟环境目录名。
-
----
-
-
 ---
 
 ## 力扣练习
@@ -665,81 +542,3 @@ print('5! =', result)
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
 | — | 本章无对应力扣题 | — | 请用动手练习题自检 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：创建一个命令行工具包
-> **难度**: 简单
->
-> 创建一个名为 `filetool` 的 Python 包，包含以下目录结构：
-> ```mermaid
-> graph TB
->  ROOT["filetool/"]
->  ROOT --> INIT["__init__.py"]
->  ROOT --> CORE["core.py<br/>count_lines, count_words, count_bytes"]
->  ROOT --> FMTR["formatters.py<br/>format_json, format_csv"]
->  ROOT --> MAIN["__main__.py<br/>python -m filetool 入口"]
-> ```
->
-> 要求：
-> 1. `python -m filetool file.txt` 时自动调用 `core.py` 中的统计函数并打印结果
-> 2. `__init__.py` 中导出核心函数，让用户能 `from filetool import count_lines`
-> 3. 编写 `setup.py` 或 `pyproject.toml` 使包可以被 `pip install -e .` 安装
-
-> [!example] 练习题 2：C 头文件 vs Python 模块对比实验
-> **难度**: 简单
->
-> 创建一对等价的程序：
->
-> **C 版本**：
-> - `math_utils.h` 和 `math_utils.c`（定义 `int add(int, int)`）
-> - `main.c`（调用 `add`）
-> - Makefile（编译并链接）
->
-> **Python 版本**：
-> - `math_utils.py`（定义 `def add(a, b): return a + b`）
-> - `main.py`（`from math_utils import add`）
->
-> 对比：
-> 1. 从源代码到成功运行的步骤数
-> 2. 修改 `math_utils` 后是否需要重新"编译"（Python 的 .pyc 更新）
-> 3. 运行时的模块加载时间（用 `python -m timeit` 和 `time` 命令）
->
-> 写一份简短的对比总结。
-
-> [!example] 练习题 3：虚拟环境与依赖管理实战
-> **难度**: 简单
->
-> 完成以下完整的依赖管理操作：
-> 1. 创建一个虚拟环境 `project_env`
-> 2. 激活虚拟环境
-> 3. 安装 `requests`、`click`、`rich` 三个包
-> 4. 用 `pip freeze` 导出 `requirements.txt`
-> 5. 退出虚拟环境
-> 6. 删除虚拟环境目录
-> 7. 重新创建同名虚拟环境
-> 8. 用 `pip install -r requirements.txt` 恢复依赖
-> 9. 编写一个简短的脚本验证三个包都可以成功 `import`
->
-> 将你执行的所有命令记录下来，形成一个"虚拟环境使用手册"。
-
-> [!example] 练习题 4：使用标准库替代 C 工具
-> **难度**: 简单
->
-> 从以下 C 常用命令行工具中选择一个，用 Python 标准库（不安装第三方包）重写：
->
-> | C 工具 | 功能 | Python 标准库模块 |
-> |--------|------|-------------------|
-> | `grep` | 文件内容搜索 | `re`, `pathlib` |
-> | `find` | 文件查找 | `pathlib`, `os` |
-> | `tar` | 归档管理 | `tarfile` |
-> | `diff` | 文件对比 | `difflib` |
->
-> 你的 Python 实现要求：
-> 1. 提供与原始工具兼容的命令行接口（用 `argparse`）
-> 2. 作为模块可导入（`if __name__ == "__main__"` 守卫）
-> 3. 正确处理错误情况（文件不存在、权限不足等）
->
-> 对比：C 版本和 Python 版本的代码行数、错误处理代码量、可移植性。

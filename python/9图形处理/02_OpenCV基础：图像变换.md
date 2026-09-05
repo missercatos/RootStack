@@ -64,18 +64,6 @@ img_pil = Image.fromarray(cv2.cvtColor(img_cv, cv2.COLOR_BGR2RGB))
 python -c "import cv2; img = cv2.imread('test.jpg'); edges = cv2.Canny(img, 100, 200); cv2.imwrite('edges.jpg', edges)"
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> `cv2.imread` 读取不存在的文件时返回 `None`，不抛出异常。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: OpenCV 的 `imread` 在文件不存在或无法解码时静默返回 `None`，不抛异常。这是 C++ API 风格——生产环境中请始终检查 `if img is None:`。
-
 ---
 
 ### 第二节：缩放与几何变换
@@ -135,18 +123,6 @@ float M[6] = {cos_a, -sin_a, cx - cos_a*cx + sin_a*cy,
 
 OpenCV 的 `warpAffine` 在内部使用了高度优化的 SIMD 指令（SSE/AVX）来加速插值计算，比手写的 C 循环快 5-20 倍。对 C 程序员来说，这相当于免费获得了手写汇编级别的优化。
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> `cv2.resize(img1, (512, 512))` 可以接收不同尺寸的输入图像，自动处理缩放。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: `resize` 不关心输入的尺寸，只要是一个合法的 `numpy.ndarray` 即可。对 C 程序员意味着：不需要先 `malloc` 正确尺寸的目标缓冲区。
-
 ---
 
 ### 第三节：滤波与平滑
@@ -182,18 +158,6 @@ filtered = cv2.filter2D(img, -1, kernel) # -1 表示输出同深度
 ```
 
 C 程序员会发现 `cv2.filter2D` 和手写卷积循环在逻辑上完全一致——不同之处在于 OpenCV 内部使用了 `cv::filter2D`，后者根据核大小和数据类型自动选择最优实现（SIMD、多线程）。
-
-### 小节练习
-
-> [!question] 判断题 1
-> 中值滤波对高斯噪声的处理效果优于高斯模糊。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: 中值滤波的强项是**椒盐噪声**（孤立异常像素），因为它取中位数天然排除极端值。高斯模糊更适合**高斯噪声**（整体性随机波动）。两者适用场景不同。
-
 
 ---
 
@@ -239,18 +203,6 @@ kernel_cross = cv2.getStructuringElement(cv2.MORPH_CROSS, (5,5))
 ```
 
 形态学操作在 C 中对应——对每个像素，在结构元素覆盖区域内求最小值（腐蚀）或最大值（膨胀）。OpenCV 使用查表法和 SIMD 加速，比 naive C 循环快一个数量级。
-
-### 小节练习
-
-
-> [!question] 判断题 1
-> `cv2.threshold` 的 `THRESH_OTSU` 标志要求输入图像必须是灰度图。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: Otsu 算法基于灰度直方图计算最佳阈值，因此必须是单通道灰度图。传入三通道图像会报错。
 
 ---
 
@@ -313,72 +265,6 @@ Gx = [[-1, 0, 1], Gy = [[-1,-2,-1],
 edges = cv2.Canny(img, 100, 200) // → 1 行
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> `cv2.Sobel` 的 `ksize` 参数只能是奇数。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: Sobel 核需要中心对称，因此核尺寸必须是奇数（1, 3, 5, 7）。如果传入偶数，OpenCV 会报错。
-
----
-
-## 章节测试
-
-### 一、判断题（正确选，错误选）
-
-> [!question] 判断题 1
-> `cv2.imread` 返回的是 Pillow 的 `Image` 对象。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `cv2.imread` 返回的是 `numpy.ndarray`（形状 `[H, W, C]`），不是 Pillow Image。这是 OpenCV 与 Pillow 最本质的数据结构差异。
-
-> [!question] 判断题 2
-> OpenCV 的 `cv2.cvtColor(img, cv2.COLOR_BGR2RGB)` 修改原始数组。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `cvtColor` 返回新数组，不会原地修改输入。这是函数式风格，输入和输出可以是同一个数组（但内部仍是先计算再覆盖）。
-
-> [!question] 判断题 3
-> 高斯模糊的内核大小 `(5, 5)` 中，标准差的默认值由核大小自动计算。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: `GaussianBlur` 的 `sigmaX` 参数若设为 0，则自动从核大小计算：`sigma = 0.3*((ksize-1)*0.5 - 1) + 0.8`。
-
-> [!question] 判断题 4
-> 腐蚀操作（erode）会使二值图像中白色前景区域变大。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: 腐蚀缩小白色区域（取邻域最小值），膨胀扩大白色区域（取邻域最大值）。记住：腐蚀→缩小，膨胀→扩大。
-
-> [!question] 判断题 5
-> `cv2.Canny` 的内部实际调用了 `cv2.Sobel` 计算梯度。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: Canny 算法的第二步梯度计算就是用的 Sobel 算子（默认 3x3）。你可以通过对同一图像分别调用 `Sobel` 和观察 Canny 中间结果来验证。
-
----
-
-
 ---
 
 ## 力扣练习
@@ -390,52 +276,3 @@ edges = cv2.Canny(img, 100, 200) // → 1 行
 | 48 | 旋转图像 | https://leetcode.cn/problems/rotate-image/ | 图像旋转90度 |
 | 832 | 翻转图像 | https://leetcode.cn/problems/flipping-an-image/ | 水平翻转与颜色反转 |
 | 867 | 转置矩阵 | https://leetcode.cn/problems/transpose-matrix/ | 矩阵转置、图像变换基础 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：灰度化 + 边缘检测流水线
-> **难度**: 简单
->
-> 使用 `python -c` 一行流完成以下管道：
-> - 读取 `input.jpg`
-> - 转为灰度
-> - 高斯模糊（5×5）
-> - Canny 边缘检测（阈值 80, 160）
-> - 保存为 `edges.png`
->
-> 然后将这一行改写为 Python 脚本 `edge_pipeline.py`，包含完整的错误处理和参数化。
-
-> [!example] 练习题 2：自定义滤波器对比
-> **难度**: 简单
->
-> 用 C 和 Python 分别实现
-> - Python：`cv2.filter2D` 使用自定义核
-> - C：手写 3×3 卷积函数
->
-> 用 5 个不同核（均值、高斯近似、锐化、拉普拉斯、Sobel X）分别测试两张不同尺寸的图像（64×64 和 1920×1080），记录两种实现的耗时差异。分析为什么小图上手写 C 可能更快，但大图上 OpenCV 反超。
-
-> [!example] 练习题 3：文档图像去噪与二值化
-> **难度**: 简单
->
-> 给定一张手机拍摄的文档照片（光照不均、有噪声）：
-> 1. 转灰度 → 高斯模糊去噪
-> 2. 使用自适应阈值（`adaptiveThreshold`）二值化
-> 3. 对比全局阈值（Otsu）和自适应阈值的效果差异
-> 4. 用形态学闭运算去除文字中的小孔洞
-> 5. 保存最终结果
->
-> 整理成一个函数 `clean_document(input_path, output_path, block_size=11, C=2)`。
-
-> [!example] 练习题 4：图像边缘强度热力图
-> **难度**: 简单
->
-> 使用 Sobel 算子计算 x 和 y 方向的梯度，合成梯度幅值图像：
-> 1. 分别计算 Gx 和 Gy
-> 2. 用 `cv2.magnitude` 合成幅值
-> 3. 归一化到 [0, 255]
-> 4. 应用伪彩色映射（`cv2.applyColorMap`）生成热力图
-> 5. 将热力图与原图混合：`cv2.addWeighted(original, 0.5, heatmap, 0.5, 0)`
->
-> 对比 `COLORMAP_JET`、`COLORMAP_HOT`、`COLORMAP_VIRIDIS` 的效果。

@@ -60,18 +60,6 @@ YMIN, YMAX = -1.5, 1.5
 
 > `time.perf_counter()` 提供系统上可用的最高精度时钟，不受系统时间调整影响，是 Python 基准测试的首选。
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> `time.time()` 和 `time.perf_counter()` 在基准测试中可以互换使用。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `time.time()` 可能受系统时钟调整（NTP 同步）影响且精度较低。`time.perf_counter()` 是单调时钟，专为短时高精度测量设计。
-
 ---
 
 ### 第二节：纯 Python 与 NumPy 向量化
@@ -146,18 +134,6 @@ result_np, t_np = benchmark(
 ```
 
 > NumPy 向量化版本仍有一个**外层 Python 循环**（`for n in range(maxiter)`），但内层操作（`z[mask]**2`, `np.abs(z) > 2`）全部在 C 层面执行。这是典型的"半向量化"——外层迭代无法消除时，每次迭代都是高效的 C 操作。
-
-### 小节练习
-
-
-> [!question] 判断题 1
-> 将纯 Python 的 Mandelbrot 用 `numba.jit` 包装，速度可以接近 C 级别。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: Numba 可以将纯 Python 的数值循环 JIT 编译为 LLVM 机器码，通常达到接近 C 的速度，且无需像 Cython 那样额外写 .pyx 文件。
 
 ---
 
@@ -238,18 +214,6 @@ result_cy, t_cy = benchmark(
 > - `@wraparound(False)` — 关闭负索引处理
 > - `cdivision(True)` — 使用 C 除法规避 ZeroDivisionError
 > 这些是"把安全气囊关掉跑得更快"，仅在调试完成后使用。
-
-### 小节练习
-
-
-> [!question] 判断题 1
-> Cython 编译生成的 .so 文件可以直接被纯 Python 代码 `import` 使用。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: Cython 编译输出的是标准的 Python C 扩展模块（.so 或 .pyd），可以被 Python 直接 `import`，与用 C 编写的扩展模块无异。
 
 ---
 
@@ -429,81 +393,6 @@ python -m memory_profiler mandelbrot_benchmark.py
 
 > 详细的 C 扩展技术选型（ctypes vs Cython vs pybind11），参见 [[../2精通/07_pybind11与Cython：给C_C++库披上Python外衣|pybind11 与 Cython]]。
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> Cython 生成的扩展模块不能取代纯 C .so 的位置。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: Cython 编译生成的 .so 是标准的 Python C 扩展，完全可以替代手工编写的 C 扩展模块。实际上很多主流库（如 lxml、scikit-learn 的部分）就是用 Cython 编写的。
-
----
-
-## 章节测试
-
-### 一、判断题（正确选，错误选）
-
-> [!question] 判断题 1
-> 在基准测试中，运行第一次的结果应该被丢弃以消除冷启动效应。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: 第一次运行包含 CPU 缓存未命中、字节码加载等"冷启动"开销，通常代表性较差。预热后的计时更稳定。
-
-> [!question] 判断题 2
-> Cython 代码中 `cdef int i` 声明的变量 i 仍然是 Python 的 int 对象。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `cdef int i` 声明的变量是原生 C `int` 类型，直接存储在 C 栈上，操作速度与 C 相同，不涉及 Python 对象分配。
-
-> [!question] 判断题 3
-> `time.perf_counter()` 的精度在所有操作系统上完全一致。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `perf_counter()` 的底层实现因操作系统而异（Linux 用 `clock_gettime(CLOCK_MONOTONIC)`，Windows 用 `QueryPerformanceCounter`），精度通常在纳秒到微秒范围内但不完全相同。
-
-> [!question] 判断题 4
-> 如果 NumPy 向量化已经足够快（达到可接受的运行时间），就不应该再投入时间去写 Cython 或 C 扩展。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: 这是实用主义工程原则——如果当前方案已经满足业务需求（如秒级响应），额外的优化是"过早优化"，应把开发时间投入到更有价值的特性上。
-
-> [!question] 判断题 5
-> cProfile 可以分析 Cython 编译后的 C 代码的行级性能。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: cProfile 是 Python 层面的剖析器，只能看到 Cython 中那些调用 Python C API 的代码。纯 C 类型的循环对 cProfile 透明。需要对 C 层剖析应使用 perf 或 valgrind/callgrind。
-
-> [!question] 判断题 6
-> ctypes 调用 C 函数时，Python GIL（全局解释器锁）被释放。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 部分正确（需要手动释放）
-> > **解析**: ctypes 默认**持有** GIL 调用 C 函数。需要在调用前手动 `ctypes.pythonapi.PyGILState_Ensure` / 配合 `ctypes.CFUNCTYPE` 或显式释放 GIL。Cython 可以通过 `with nogil:` 上下文显式释放。
-
----
-
-
 ---
 
 ## 力扣练习
@@ -513,40 +402,3 @@ python -m memory_profiler mandelbrot_benchmark.py
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
 | — | 本章无对应力扣题 | — | 请用动手练习题自检 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：多方案矩阵乘法基准测试
-> **难度**: 简单
->
-> 实现五个版本的矩阵乘法（N=500）：（1）纯 Python 三重循环；（2）NumPy `dot()`；（3）用 `numba.jit` 加速纯 Python 循环；（4）用 Cython 编写并编译；（5）用 `scipy.linalg.blas.dgemm`（直接调用 BLAS）。比较它们的速度和精度。解释为什么 BLAS 版本可能比手写 Cython 还快（BLAS 使用了分块和多线程）。
-
-> [!example] 练习题 2：cProfile 剖析实战
-> **难度**: 简单
->
-> 使用 cProfile 剖析纯 Python 的 Mandelbrot 实现。从剖析输出中提取耗费时间最多的 3 个函数。使用 `pstats.Stats` 的 `print_callers` 分析函数被调用的上下文。尝试对热函数进行简单优化（如将复合表达式拆分、使用局部变量别名），观察剖析结果的变化。
-
-> [!example] 练习题 3：memory_profiler 监控
-> **难度**: 简单
->
-> 编写一个程序生成大量 NumPy 临时中间数组（如链式操作 `((a+b)*(c+d))/(e-f)` 不显式分配中间变量）。使用 `memory_profiler` 监控每条语句的内存增量。对比使用 `np.add(a, b, out=tmp)` 等显式 out 参数的版本，验证内存节省效果。报告峰值内存的差异。
-
-> [!example] 练习题 4：GIL 释放对并行性能的影响
-> **难度**: 简单
->
-> 编写一个计算密集型函数（如计算 π 的 Chudnovsky 算法），实现三个版本：（1）纯 Python；（2）Cython 带 `with nogil:` ；（3）C 扩展通过 ctypes 释放 GIL。使用 `concurrent.futures.ThreadPoolExecutor` 测试多线程加速比。解释为什么版本（1）多线程无加速，而（2）（3）有加速。对比进程池（ProcessPoolExecutor）的行为。
-
-> [!example] 练习题 5：完整性能报告
-> **难度**: 简单
->
-> 对 Mandelbrot 的所有五种实现进行系统性基准测试，收集以下维度的数据：
-> - 在不同网格大小（100×100, 500×500, 2000×2000）下的运行时间
-> - cProfile 输出的 top 5 热函数
-> - memory_profiler 的峰值内存
-> - 代码行数（不含空行和注释）
->
-> 汇总为表格和柱状图，撰写一份简洁的性能分析报告，回答："对于 [特定场景]，推荐使用 [方案]，因为 [原因]"。使用 `matplotlib` 绘制加速比对比图。
-
-> 性能优化是一个循环：剖析 → 识别瓶颈 → 优化 → 再剖析。详细剖析技巧参见 [[../../数学/|数学专题]] 和 [[../8数据可视化/|数据可视化]] 中绘图相关内容。

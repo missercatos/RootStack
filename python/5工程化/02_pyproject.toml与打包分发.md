@@ -137,9 +137,6 @@ addopts = "-ra -q --strict-markers"
 
 > `[tool.*]` 配置段是 pyproject.toml 的另一大优势——把 ruff、mypy、pytest、coverage 等工具的配置全部集中在同一个文件中，类似于 CMakeLists.txt 集中管理 C 项目的编译选项、测试设置、安装规则。
 
-### 小节练习
-
-
 ---
 
 ### 第二节：构建后端对比
@@ -209,9 +206,6 @@ mylib = ["*.so", "*.dll", "*.dylib"]
 
 > 如果你的 Python 包通过 ctypes 或 cffi 调用 C 预编译库，setuptools 能将 `.so` 文件一同打包进 wheel。
 
-### 小节练习
-
-
 ---
 
 ### 第三节：构建产物 —— wheel 与 sdist
@@ -272,18 +266,6 @@ pip install git+https://github.com/user/repo.git
 
 > 与 C 对比：`pip install -e .` 相当于 C 项目的 `make && make install`（源码方式），而 wheel 安装相当于 `apt install xxx.deb`（预编译包）。`-e`（editable）模式创建指向源码目录的链接，修改 `.py` 文件无需重新安装——这比 C 的增量编译更直接，因为 Python 没有编译步骤。
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> `pip install -e .` 安装后修改源码需要重新执行该命令才能生效。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `-e`（editable）模式通过 `.pth` 文件将源码目录注入 `sys.path`，修改 `.py` 文件后即刻生效，无需重新安装。
-
 ---
 
 ### 第四节：pyproject.toml vs CMakeLists.txt 全面对比
@@ -336,70 +318,6 @@ set_target_properties(fib PROPERTIES
 
 > 这种混合项目中，CMake 负责编译 C 共享库，pyproject.toml 负责打包 Python 代码和编译好的 `.so`。
 
-### 小节练习
-
-
----
-
-## 章节测试
-
-### 一、判断题
-
-> [!question] 判断题 1
-> pyproject.toml 是 Python 项目的唯一合法配置文件格式，所有 Python 项目必须使用它。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: pyproject.toml 是 PEP 推荐的现代标准，但许多现有项目仍使用 `setup.py` + `setup.cfg` 格式。新项目建议使用 pyproject.toml。
-
-> [!question] 判断题 2
-> hatchling 和 setuptools 都是构建后端，可以互相替代。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: 两者都是符合 PEP 517 标准的构建后端，可以互相替代。hatchling 更现代、更快，setuptools 更传统、支持 C 扩展。
-
-> [!question] 判断题 3
-> wheel 文件是二进制的平台无关包，可在任何操作系统上直接安装。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: 纯 Python wheel（`py3-none-any`）是平台无关的，但包含 C 扩展的 wheel（如 `cp312-linux_x86_64`）是平台相关的，只能在特定平台和 Python 版本上安装。
-
-> [!question] 判断题 4
-> `pip install -e .` 会将项目编译为 wheel 后再安装。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `-e`（editable）模式不产生 wheel 文件，而是通过 `.pth` 文件将源码路径注册到 site-packages，实现"修改即生效"。
-
-> [!question] 判断题 5
-> `[project.optional-dependencies]` 中定义的依赖在 `pip install .` 时会被自动安装。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: 可选依赖需要显式指定才会安装，如 `pip install ".[dev]"` 安装 dev 组依赖。`pip install .` 只安装 `dependencies` 中的必需依赖。
-
-> [!question] 判断题 6
-> sdist（源码分发包）中包含编译好的 `.so` 文件。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: sdist（`.tar.gz`）只包含源代码，wheel（`.whl`）才包含预编译内容。用户从 sdist 安装时需要本地编译（包括 C 扩展）。
-
-
 ---
 
 ## 力扣练习
@@ -409,52 +327,3 @@ set_target_properties(fib PROPERTIES
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
 | — | 本章无对应力扣题 | — | 请用动手练习题自检 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：创建一个可安装的 Python 包
-> **难度**: 简单
->
-> 1. 创建以下目录结构：
-> ```mermaid
-> graph TB
->  MYTOOL["mytool/"]
->  MYTOOL --> PPROJ2["pyproject.toml"]
->  MYTOOL --> SRC2["src/"]
->  SRC2 --> MYTOOL2["mytool/"]
->  MYTOOL2 --> INIT2["__init__.py"]
->  MYTOOL2 --> CLI["cli.py<br/>def main(): print(...)"]
->  MYTOOL2 --> UTILS2["utils.py<br/>def add(a, b): return a + b"]
-> ```
-> 2. 在 pyproject.toml 中配置 `[project.scripts]`，使 `mytool` 命令可以调用 `cli.main`
-> 3. 用 `pip install -e .` 安装，验证 `mytool` 命令可用
-> 4. 用 `python -m build` 构建 wheel，查看 `dist/` 目录中的产物
-
-> [!example] 练习题 2：对比三种构建后端
-> **难度**: 简单
->
-> 为同一个简单项目分别编写 hatchling、setuptools、flit 三种构建方式的 pyproject.toml。用 `python -m build` 构建，对比：
-> - 构建速度（用 `time` 测量）
-> - 生成的 wheel 大小
-> - wheel 的文件名差异
-> - sdist 的内容差异（`tar -tzf dist/*.tar.gz`）
-
-> [!example] 练习题 3：混合项目的打包
-> **难度**: 简单
->
-> 创建一个包含 C `.so` 文件的 Python 包：
-> 1. 编写 `libhello.c`（导出 `const char* hello()` 函数），编译为 `libhello.so`
-> 2. 编写 Python 包 `hello_wrapper/，用 ctypes 调用 libhello.so`
-> 3. 配置 pyproject.toml（使用 setuptools），使 `libhello.so` 被打包进 wheel
-> 4. 构建 wheel，在另一个虚拟环境中安装并测试
-
-> [!example] 练习题 4：入口点与命令行工具
-> **难度**: 简单
->
-> 编写一个名为 `c-build` 的命令行工具：
-> - 接受参数 `--project-dir` 和 `--build-type`（Debug/Release）
-> - 在当前目录查找 `CMakeLists.txt`，执行 `cmake -B build -DCMAKE_BUILD_TYPE=...`
-> - 配置 pyproject.toml 使其可通过 `pip install` 后直接调用 `c-build`
-> - （提示：使用 `subprocess.run` 封装 cmake 命令）

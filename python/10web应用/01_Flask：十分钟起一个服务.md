@@ -272,114 +272,142 @@ def pipe_query():
 
 ---
 
-### 小节练习
+### 第七节：蓝图（Blueprint）——模块化路由
 
+大型项目中，所有路由写在一个文件里不可维护。Blueprint 允许将路由拆分到不同模块：
 
-> [!question] 判断题 1
-> Flask 内置的开发服务器可以直接用于生产环境。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: Flask 的 `app.run()` 启动的是 Werkzeug 开发服务器，单线程、无进程管理、无安全加固，仅适合开发测试。生产环境必须使用 gunicorn 等 WSGI 服务器。
+```python
+# blueprints/auth.py
+from flask import Blueprint, request, jsonify
 
+auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
----
+@auth_bp.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    # 验证逻辑...
+    return jsonify({'token': 'xxx'})
 
-## 章节测试
+@auth_bp.route('/register', methods=['POST'])
+def register():
+    return jsonify({'status': 'registered'})
+```
 
-### 一、判断题（正确选 ，错误选 ）
+```python
+# app.py
+from flask import Flask
+from blueprints.auth import auth_bp
 
-> [!question] 判断题 1
-> Flask 是一个全栈 Web 框架，内置 ORM 和表单验证。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: Flask 是"微框架"，核心仅包含路由、请求/响应、模板渲染。ORM（如 SQLAlchemy）、表单验证（如 WTForms）、用户认证等需要通过扩展添加。Django 才是内置 ORM 的全栈框架。
+app = Flask(__name__)
+app.register_blueprint(auth_bp)
 
-> [!question] 判断题 2
-> `app = Flask(__name__)` 中的 `__name__` 用于让 Flask 确定模板和静态文件的根目录。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: Flask 通过 `__name__` 获取当前模块的路径，从而定位 `templates/` 和 `static/` 目录的位置。
+# 路由变为 /auth/login, /auth/register
+```
 
-> [!question] 判断题 3
-> `jsonify()` 返回的是普通字符串，需要手动设置 Content-Type。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `jsonify()` 返回一个 `Response` 对象，已自动设置 `Content-Type: application/json`。
-
-> [!question] 判断题 4
-> Flask 的路由装饰器可以在同一个函数上使用多次，绑定多个 URL。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: 可以对同一个函数叠加多个 `@app.route()` 装饰器，一个函数响应多个 URL。
-
-> [!question] 判断题 5
-> `url_for('static', filename='style.css')` 会生成 `/static/style.css` 这样的路径。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `url_for('static', filename='...')` 生成静态文件的完整 URL 路径，默认为 `/static/` 前缀。
+类比 C：Blueprint 类似把 `switch-case` 拆分成多个 `.c` 文件中的函数表，再通过 `register` 统一注册。
 
 ---
 
+### 第八节：中间件与钩子
+
+```python
+@app.before_request
+def before():
+    # 每个请求之前执行（认证检查、日志等）
+    if request.endpoint != 'login' and not check_auth():
+        return jsonify({'error': 'unauthorized'}), 401
+
+@app.after_request
+def after(response):
+    # 每个请求之后执行（添加 headers、CORS 等）
+    response.headers['X-Request-Time'] = str(time.time())
+    return response
+
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({'error': 'not found'}), 404
+
+@app.errorhandler(500)
+def server_error(e):
+    return jsonify({'error': 'internal server error'}), 500
+```
 
 ---
 
-## 力扣练习
+### 第九节：Flask 与数据库
 
-以下题目用于验证本章所学内容：
+```python
+# SQLite（轻量方案）
+import sqlite3
 
-| 题号 | 题目 | 链接 | 涉及知识点 |
-|------|------|------|-----------|
-| — | 本章无对应力扣题 | — | 请用动手练习题自检 |
+def get_db():
+    if 'db' not in g:
+        g.db = sqlite3.connect('app.db')
+        g.db.row_factory = sqlite3.Row
+    return g.db
 
+@app.teardown_appcontext
+def close_db(exception):
+    db = g.pop('db', None)
+    if db is not None:
+        db.close()
 
+@app.route('/users')
+def users():
+    db = get_db()
+    rows = db.execute('SELECT * FROM users').fetchall()
+    return jsonify([dict(r) for r in rows])
+```
 
-### 动手练习题
+```python
+# SQLAlchemy（ORM 方案）
+from flask_sqlalchemy import SQLAlchemy
 
-> [!example] 练习题 1：最小 Web 服务
-> **难度**: 简单
->
-> 写一个 5 行的 Flask 应用，访问根路径 `/` 返回 `"Hello, C Programmer!"`。用浏览器验证后，尝试用 `curl http://127.0.0.1:5000` 查看原始 HTTP 响应。
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+db = SQLAlchemy(app)
 
-> [!example] 练习题 2：JSON API 端点
-> **难度**: 简单
->
-> 实现一个 `/api/v1/fib/<int:n>` 端点，返回前 n 个斐波那契数的 JSON 数组。要求：
-> - n ≤ 100，超出返回 400 错误
-> - 返回格式 `{"status": "ok", "data": [0, 1, 1, 2, ...]}`
-> - 用 `curl` 和浏览器分别测试
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80))
 
-> [!example] 练习题 3：C 后端封装
-> **难度**: 简单
->
-> 写一个 C 程序 `compute.c`，接受命令行参数 `<op> <a> <b>`，输出计算结果到 stdout：
-> ```c
-> // int main(int argc, char **argv) → 解析 argv[1]/[2]/[3] → printf("%d\n", result)
-> ```
-> 编译后，在 Flask 路由中通过 `subprocess.run` 调用该程序，将结果封装为 JSON API 返回。
+# db.create_all()  # 创建表
+# User.query.all()  # 查询
+```
 
-> [!example] 练习题 4：多路由表单
-> **难度**: 简单
->
-> 实现两个路由：
-> - `GET /form` — 显示 HTML 表单（含姓名、年龄两个字段）
-> - `POST /form` — 接收表单数据，显示提交结果页面
->
-> 使用 `render_template` 渲染 HTML 模板，模板中展示表单数据。
+---
+
+### 第十节：WebSocket 实时通信
+
+```bash
+pip install flask-sock
+```
+
+```python
+from flask_sock import Sock
+import json
+
+sock = Sock(app)
+
+@sock.route('/ws')
+def echo(ws):
+    while True:
+        data = ws.receive()
+        ws.send(json.dumps({'echo': data}))
+```
+
+适用场景：实时日志推送、聊天、股票行情。
+
+---
+
+## 速查卡片
+
+| 需求 | 命令 |
+|------|------|
+| 安装 | `pip install flask` |
+| 创建应用 | `app = Flask(__name__)` |
+| 路由 | `@app.route('/path')` |
+| JSON 响应 | `jsonify({'key': 'value'})` |
+| 模板渲染 | `render_template('tpl.html', var=val)` |
+| 蓝图 | `Blueprint('name', __name__)` |
+| 启动 | `app.run(debug=True)` |
+| 生产部署 | `gunicorn app:app` |

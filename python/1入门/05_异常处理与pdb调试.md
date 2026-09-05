@@ -127,18 +127,6 @@ for ex, desc in exceptions.items():
 
 > 注意 `IndexError` 和 `KeyError` 都是 `LookupError` 的子类。如果你要同时捕获索引错误和键错误，可以写 `except LookupError`。
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> Python 的 `except` 块可以捕获操作系统信号（如 SIGINT）导致的 `KeyboardInterrupt`。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `KeyboardInterrupt` 在 Python 中是 `BaseException` 的子类（不是 `Exception`），可以被 `except BaseException` 捕获，但不能被 `except Exception` 捕获。通常不建议捕获 `KeyboardInterrupt`，因为这会阻止用户用 Ctrl+C 中断程序。
-
 ---
 
 ### 第二节：raise 与自定义异常
@@ -226,18 +214,6 @@ except NetworkError as e:
 "
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> 自定义异常类可以继承自内置异常类，形成异常层次结构。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: 推荐所有自定义异常继承自 `Exception`（而非 `BaseException`）。自定义异常类可以有自己的属性和方法，可以形成层次结构（如 `NetworkError → TimeoutError`），调用方可以用 `except NetworkError` 捕获所有网络相关异常。
-
 ---
 
 ### 第三节：traceback —— 读懂错误信息
@@ -304,18 +280,6 @@ except IndexError:
  print(f' {frame.line.strip()}')
 "
 ```
-
-### 小节练习
-
-
-> [!question] 判断题 1
-> `traceback.format_exc()` 只能在 `except` 块内部使用。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `format_exc()` 依赖 `sys.exc_info()` 获取当前线程的异常信息，而异常信息只在 `except` 块内部保持活跃。在 `except` 块外调用会得到 `NoneType: None`。
 
 ---
 
@@ -437,81 +401,6 @@ except Exception:
 
 > `pdb.post_mortem()` 就像是给 Python 程序做的"尸检"——程序已经崩溃了，但你仍然可以检查崩溃瞬间的所有变量状态。这类似于用 GDB 加载 core dump 文件。
 
-### 小节练习
-
-
----
-
-## 章节测试
-
-### 一、判断题（正确选，错误选）
-
-> [!question] 判断题 1
-> Python 的 `try` 语句必须至少包含一个 `except` 或 `finally` 块。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `try` 不能单独出现——必须配合 `except` 子句、`finally` 子句或两者。`try ... finally`（无 except）、`try ... except`（无 finally）、`try ... except ... else ... finally` 都合法。
-
-> [!question] 判断题 2
-> `KeyError` 和 `IndexError` 都是 `LookupError` 的子类。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: 两者都表示"查找失败"——`KeyError` 是字典键查找失败，`IndexError` 是序列索引查找失败。因此 `except LookupError` 可以同时捕获这两种异常。
-
-> [!question] 判断题 3
-> 空白 `except:` 子句会捕获所有异常，包括 `KeyboardInterrupt` 和 `SystemExit`。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: 裸 `except:`（没有指定异常类型）会捕获**所有**异常——包括 `SystemExit`、`KeyboardInterrupt` 和 `GeneratorExit`（都继承自 `BaseException`）。这通常是不推荐的坏习惯——它会阻止用户用 Ctrl+C 中断程序。
-
-> [!question] 判断题 4
-> Python 的异常处理机制在内存使用上有显著性能开销。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: Python 的 `try/except` 在无异常时基本上零开销（`try` 块设置了"异常处理跳转表"，但不增加每条指令的执行成本）。只有在异常实际被抛出时，才需要构造 traceback 对象和执行栈回退（unwinding）——这个过程确实有开销。
-
-> [!question] 判断题 5
-> `finally` 块中的 `return` 语句会覆盖 `try` 块中的 `return`。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: 如果 `finally` 块中包含 `return` 语句，它将覆盖 `try` 或 `except` 块中的任何返回值或异常。"finally 中的 return 是无情的"——记住这条规则。
-
-> [!question] 判断题 6
-> pdb 可以调试正在运行的 Python 进程（附加模式），类似 GDB 的 `gdb -p PID`。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: 可以使用 `gdb -p PID` 附加到 Python 进程（需要有调试符号），或用第三方工具 `py-spy`、`pystack` 查看 Python 层级调用栈。标准库 pdb 本身额外支持通过信号（`SIGUSR1`）触发已运行进程进入调试模式。
-
-> [!question] 判断题 7
-> 在 `except` 块中重新 `raise` 而不带参数，会重新抛出当前被捕获的异常。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `raise` 不带参数只在 `except` 块内有效——它会重新抛出当前正在处理的异常，保留原始 traceback。不要用 `raise e`（会重置 traceback），应该直接用 `raise`。
-
----
-
-
 ---
 
 ## 力扣练习
@@ -522,65 +411,3 @@ except Exception:
 |------|------|------|-----------|
 | 278 | 第一个错误的版本 | https://leetcode.cn/problems/first-bad-version/ | 二分查找、错误检测模式 |
 | 374 | 猜数字大小 | https://leetcode.cn/problems/guess-number-higher-or-lower/ | 二分查找、边界处理 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：异常转换器
-> **难度**: 简单
->
-> 编写一个函数 `safe_int_parser(x)`，它接受任意类型的输入：
-> - 如果是 `int`，直接返回
-> - 如果是 `float`，返回整数部分（截断）
-> - 如果是 `str`，尝试用 `int()` 转换
-> - 如果是其他类型，抛出一个清晰的 `TypeError`，带上类型信息
->
-> 使用 `try/except` 处理所有可能的异常，确保函数永远不会崩溃。编写测试代码验证各种输入。
-
-> [!example] 练习题 2：用 pdb 调试栈溢出
-> **难度**: 简单
->
-> 编写一个名为 `deeprecursion.py` 的文件：
-> ```python
-> def recurse(n):
-> if n == 0:
-> return 0
-> return 1 + recurse(n) # BUG: 应该是 n-1，这是无限递归！
->
-> recurse(10)
-> ```
->
-> 使用 `python -m pdb` 调试这个脚本：
-> 1. 在 `recurse` 函数设置断点
-> 2. 每次中断时检查 `n` 的值
-> 3. 使用 `bt` 查看调用栈，观察无限递归时栈帧不断增长
-> 4. 记录从调试器中发现问题和修复问题的时间
->
-> 对比：在 GDB 中调试 C 语言的无限递归（`int recurse(int n) { return 1 + recurse(n); }`）步骤有何不同？
-
-> [!example] 练习题 3：配置文件加载器
-> **难度**: 简单
->
-> 编写一个 `load_config(path)` 函数，尝试依次加载以下格式的配置文件：
-> 1. JSON（`json.load`）
-> 2. 如果 JSON 无效，尝试按行解析为 `key=value` 格式
-> 3. 如果文件不存在，返回默认配置 `{}`
-> 4. 如果文件编码错误，用 `latin-1` 等备选编码重试
->
-> 用多重 `try/except` 实现优雅的降级策略。为每种失败情况提供有意义的错误信息和警告。
-
-> [!example] 练习题 4：编写可调试的脚本
-> **难度**: 简单
->
-> 编写一个带 `--debug` 命令行开关的脚本 `process.py`：
-> - 正常模式下处理输入文件
-> - 当 `--debug` 启用时，遇到异常自动进入 `pdb.post_mortem()`
-> - 在关键位置插入 `breakpoint()` 调用（可通过 `--no-breakpoints` 禁用）
->
-> 使用 `argparse` 处理命令行参数（参考 [[../2进阶/python标准库|标准库教程]]）。
->
-> 完成后用以下命令测试：
-> ```bash
-> PYTHONBREAKPOINT=pdb.set_trace python process.py --debug input.txt
-> ```

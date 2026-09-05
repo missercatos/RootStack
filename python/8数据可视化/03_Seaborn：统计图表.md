@@ -97,18 +97,6 @@ penguins = sns.load_dataset('penguins')
 # columns: species, island, bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g, sex
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> `pd.read_csv(sys.stdin)` 要求管道中的数据必须是严格的 CSV 格式（逗号分隔）。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `pd.read_csv()` 支持通过 `sep` 参数指定任意分隔符（空格：`sep='\s+'`，制表符：`sep='\t'`，竖线：`sep='|'`）。还支持 `skiprows`（跳过行）、`comment`（注释行）、`names`（指定列名）等参数。
-
 ---
 
 ### 第二节：数据分布绑图 —— 箱线图与提琴图
@@ -203,9 +191,6 @@ fig.tight_layout()
 fig.savefig('grouped_distribution.png')
 ```
 
-### 小节练习
-
-
 ---
 
 ### 第三节：变量关系绑图 —— 回归图与配对图
@@ -290,18 +275,6 @@ sns.jointplot(data=df_bench, x='input_size', y='time_ms',
  marginal_kws={'bins': 30})
 plt.savefig('jointplot.png')
 ```
-
-### 小节练习
-
-
-> [!question] 判断题 1
-> `lmplot()` 绑制的回归线是固定斜率的直线。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `lmplot()` 默认（`order=1`）绑制线性回归，但通过 `order=2` 可绑二次曲线，`logistic=True` 可绑逻辑回归曲线。它使用 `statsmodels` 或 `scipy` 在底层进行拟合计算。
 
 ---
 
@@ -389,18 +362,6 @@ plt.savefig('clustermap.png')
 ```
 
 > `clustermap` 在 heatmap 基础上增加了行和列的**层次聚类树状图**（dendrogram）。相似的行（或列）会被归到一起，方便发现数据中的隐藏模式。这是一种无监督学习，不要任何先验知识。
-
-### 小节练习
-
-
-> [!question] 判断题 1
-> `sns.clustermap()` 的聚类结果依赖于数据矩阵的行和列顺序。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `clustermap` 会**重新排列**行和列的顺序，将相似的聚集在一起——原始顺序不影响最终聚类结果。如果你希望保留原始顺序，应使用普通的 `heatmap`。
 
 ---
 
@@ -501,81 +462,6 @@ gcc -O0 -o sort_stats sort_stats.c
 ./sort_stats | python3 plot_sorts.py
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> `sns.set_theme(style='whitegrid')` 只影响 Seaborn 绑图，不影响 Matplotlib 绑图。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `sns.set_theme()` 修改的是 Matplotlib 的全局 `rcParams`，因此会**同时影响** Seaborn 和 Matplotlib 的绑图。这是 Seaborn 的设计初衷——让所有 Matplotlib 绑图自动变好看。
-
----
-
-## 章节测试
-
-### 一、判断题（正确选，错误选）
-
-> [!question] 判断题 1
-> Seaborn 是完全独立的绑图库，不依赖 Matplotlib。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: Seaborn 建立在 Matplotlib 之上，所有绑图调用最终都会转化为 Matplotlib 的 API。导入 seaborn 后，`plt.savefig()` 仍然正常工作。
-
-> [!question] 判断题 2
-> 箱线图中箱子中间的横线是平均值。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: 箱子中间的横线是**中位数**（median），不是平均值（mean）。中位数将数据分为上下各一半；平均值受极端值影响大，不是箱线图的主要展示对象。
-
-> [!question] 判断题 3
-> `sns.pairplot(df)` 可以处理包含分类变量的 DataFrame，分类变量自动被忽略。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: `pairplot` 默认只对**数值型列**绑图（自动跳过字符串、类别等非数值列）。也可以用 `vars` 参数手动指定要绑图的列。
-
-> [!question] 判断题 4
-> `sns.heatmap()` 必须使用正方形的矩阵数据。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `heatmap()` 支持任意行列数的矩阵。使用 `square=True` 可以使每个单元格显示为正方形（但矩阵本身不必是方阵）。
-
-> [!question] 判断题 5
-> `sns.lmplot()` 使用 `hue` 分组后，每个组会绑制独立的回归线。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: 当指定 `hue` 时，`lmplot` 对每个分组分别绑制回归线（不同颜色）。也可以使用 `col` 或 `row` 参数将不同组放在不同子图中。
-
-> [!question] 判断题 6
-> 相关矩阵中对角线的值始终为 1.0。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: 对角线是每个变量与自身的相关系数，总是 1.0（完全正相关）。热力图常用 `mask=np.triu()` 隐藏对角线上方的重复信息。
-
----
-
-
 ---
 
 ## 力扣练习
@@ -585,54 +471,3 @@ gcc -O0 -o sort_stats sort_stats.c
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
 | — | 本章无对应力扣题 | — | 请用动手练习题自检 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：C 排序算法性能 Seaborn 分析
-> **难度**: 简单
->
-> 编写 C 程序测试四种排序算法（bubble、insertion、quick、merge）在 5 种输入规模（100, 200, 500, 1000, 2000）下的运行时间，每种组合重复测试 10 次。输出 CSV 格式：
-> ```
-> algorithm,n,time_ms,run
-> bubble,100,12.3,1
-> bubble,100,11.8,2
-> ...
-> ```
-> 用 Python + Seaborn 完成：
-> 1. 箱线图：按 `algorithm` 分组，展示时间分布（`hue='algorithm'` 或直接用 `x='algorithm'`）
-> 2. 提琴图：按 `algorithm` 分组，添加 `hue='algorithm'`
-> 3. 对数坐标折线图（Seaborn 风格，手动 ax 操作）
-> 4. `pairplot` 概览（需要将数据透视/重塑）
->
-> 保存为 `sort_seaborn_report.png`（带 `fig.suptitle`）
-
-> [!example] 练习题 2：相关性矩阵可视化
-> **难度**: 简单
->
-> 编写 C 程序生成一个 8 维随机数据（每维度 200 个样本），每列代表不同的性能度量（如 CPU、内存、磁盘 I/O、网络延迟等），在 C 程序中引入一定的相关性（例如 CPU 和内存正相关）。输出为空格分隔的数值矩阵。Python 脚本：
-> 1. 用 `np.loadtxt` 读取数据
-> 2. 计算 `np.corrcoef` 相关性矩阵
-> 3. 用 `sns.heatmap` 绑制带注释的相关性热力图
-> 4. 用 `sns.clustermap` 绑制带聚类的热力图
->
-> 保存为 `correlation_analysis.png`
-
-> [!example] 练习题 3：lmplot 分组回归分析
-> **难度**: 简单
->
-> 编写 C 程序生成两种数据结构（链表和动态数组）在不同元素数量下的插入、查找、删除耗时数据。输出格式：`structure,operation,n,time_us`
-> Python 脚本：
-> 1. 读取数据到 DataFrame
-> 2. 用 `sns.lmplot` 分别展示结构 × 操作组合下的 n vs time 关系（使用 `hue='operation'` 和 `col='structure'`）
-> 3. 观察回归线的斜率：链表和数组在哪种操作下差异最大？
-
-> [!example] 练习题 4：python -c 一行流 Seaborn 绑图
-> **难度**: 简单
->
-> 用 `python -c` 一行流完成以下 Seaborn 绑图（使用 tips 内置数据集）：
-> 1. 箱线图：`tips` vs `day`，按 `sex` 分组着色
-> 2. 保存为 `tips_boxplot.png`
->
-> 使用 `python -c` 风格（分号 + 多行），确保 `matplotlib.use('Agg')` 已设置。

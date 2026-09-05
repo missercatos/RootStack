@@ -79,9 +79,6 @@ pytest -k "test_add"
 pytest -v -s
 ```
 
-### 小节练习
-
-
 ---
 
 ### 第二节：fixture 机制
@@ -157,18 +154,6 @@ def build_dir(project_root):
  return build
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> conftest.py 中的 fixture 需要显式导入才能在测试函数中使用。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: conftest.py 中的 fixture 会被 pytest 自动发现并注入到同目录及子目录下的测试函数中，无需显式 import。
-
 ---
 
 ### 第三节：参数化测试与标记
@@ -241,9 +226,6 @@ pytest -m "not slow"
 # 列出所有标记
 pytest --markers
 ```
-
-### 小节练习
-
 
 ---
 
@@ -422,18 +404,6 @@ def clib(build_c_library):
  # ctypes 自动管理句柄
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> 用 pytest 测试 C 代码时，ctypes 方案比 subprocess 方案更底层，能直接调用 C 函数。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: ctypes 直接加载 `.so` 并调用导出的 C 函数（白盒），`subprocess` 通过进程间通信与可执行文件交互（黑盒）。ctypes 适合测试库函数，subprocess 适合测试完整的 CLI 程序。
-
 ---
 
 ### 第五节：pytest vs C 测试框架全面对比
@@ -452,70 +422,6 @@ def clib(build_c_library):
 
 > **关键洞察**：pytest 最大的优势不是语法糖，而是"用 Python 编写测试逻辑"。当你需要生成海量测试数据、读取 JSON 配置文件、调用外部 API 验证结果时，Python 的生态远胜于 C。
 
-### 小节练习
-
-
----
-
-## 章节测试
-
-### 一、判断题
-
-> [!question] 判断题 1
-> pytest 只能测试 Python 代码，不能用于测试 C 程序。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: pytest 通过 `subprocess` 可以黑盒测试任何可执行文件（包括 C 程序），通过 `ctypes` 可以直接调用 C 共享库中的函数。
-
-> [!question] 判断题 2
-> pytest fixture 中 `yield` 前的代码在每次测试前执行，`yield` 后的代码在每次测试后执行。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: fixture 中的 `yield` 将代码分为 setUp（前）和 tearDown（后）两部分，这是 pytest fixture 实现资源管理的关键机制。
-
-> [!question] 判断题 3
-> conftest.py 必须放在项目根目录才能被 pytest 识别。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: conftest.py 可以放在任意测试目录下，其 fixture 自动对该目录及所有子目录中的测试可见。多个 conftest.py 可以共存，作用域分层。
-
-> [!question] 判断题 4
-> `@pytest.mark.parametrize` 中的每个参数组合对应独立的测试用例，有独立的通过/失败状态。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: 每个参数组合生成独立的测试节点，pytest 的输出中可看到 `test_name[param0-param1]` 格式的独立测试标识符。
-
-> [!question] 判断题 5
-> pytest 的 `assert` 和 Python 内置的 `assert` 是完全不同的两套机制。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: pytest 使用 Python 内置的 `assert` 语句，但通过 AST 重写提供了更丰富的失败信息（如显示表达式两边的值）。它是同一个 `assert` 关键字，但 pytest 增强了其输出。
-
-> [!question] 判断题 6
-> 使用 ctypes 调用 C 库时，必须在每个测试函数中重新加载 `.so` 文件。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: 使用 `scope="module"` 或 `scope="session"` 的 fixture 可以在多个测试间共享同一个库加载句柄，避免重复加载。
-
-
 ---
 
 ## 力扣练习
@@ -525,42 +431,3 @@ def clib(build_c_library):
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
 | — | 本章无对应力扣题 | — | 请用动手练习题自检 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：pytest 基础练习
-> **难度**: 简单
->
-> 实现一个 `calculator.py`，包含 `add`、`subtract`、`multiply`、`divide` 函数：
-> 1. 为每个函数编写 3 个以上测试用例
-> 2. 使用 `@pytest.mark.parametrize` 参数化 `add` 测试
-> 3. 为 `divide` 添加 `pytest.raises(ZeroDivisionError)` 测试
-> 4. 运行 `pytest -v` 确保全部通过
-
-> [!example] 练习题 2：用 pytest 测试 C 排序程序
-> **难度**: 简单
->
-> 1. 用 C 编写 `sort.c`：读取标准输入的整数（空格分隔），输出排序结果
-> 2. 编写 pytest fixture：编译 `sort.c`，编译失败时 fails 测试
-> 3. 编写参数化测试：空输入、单元素、正序、逆序、重复元素、大量随机数
-> 4. 添加超时检测（`subprocess.run` 的 `timeout` 参数），防止死循环挂起测试
-
-> [!example] 练习题 3：ctypes 测试 C 链表
-> **难度**: 简单
->
-> 1. 用 C 实现链表：`list_create`、`list_append`、`list_get`、`list_size`、`list_destroy`
-> 2. 编译为共享库
-> 3. 用 ctypes 映射结构体 `struct Node` 和所有函数签名
-> 4. 编写 pytest 测试：创建 → 追加 → 读取 → 检查大小 → 销毁
-> 5. 使用 scope="module" 的 fixture 确保库只编译一次
-
-> [!example] 练习题 4：为现有 C 项目添加 pytest 测试基础设施
-> **难度**: 简单
->
-> 假设你有一个 C 项目（使用了 Makefile），为其建立 pytest 测试基础设施：
-> 1. 编写 `tests/conftest.py`：包含编译 fixture、临时目录 fixture、测试数据 fixture
-> 2. 编写 `tests/test_build.py`：验证 `make` 编译成功、可执行文件存在
-> 3. 编写 `tests/test_integration.py`：用 subprocess 测试程序的典型输入输出
-> 4. 编写 `Makefile` 的 `test` 目标：先编译 C 代码，再运行 `pytest`

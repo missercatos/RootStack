@@ -168,9 +168,6 @@ my_variable = "should be lowercase"
 ruff format before.py # 进一步格式化缩进和换行
 ```
 
-### 小节练习
-
-
 ---
 
 ### 第二节：mypy —— 静态类型检查
@@ -298,18 +295,6 @@ mypy -m myproject.core
 mypy --html-report ./mypy-report src/
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> Python 的类型注解在运行时会被解释器强制执行类型检查。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: Python 的类型注解在运行时**完全不做检查**——解释器仅将注解保存到 `__annotations__` 字典中，不会因类型不匹配而抛出错误。类型检查由 mypy 这类静态工具在运行前单独执行。
-
 ---
 
 ### 第三节：ruff + mypy 在 CI 中的配置
@@ -375,9 +360,6 @@ pre-commit install
  }
 }
 ```
-
-### 小节练习
-
 
 ---
 
@@ -454,79 +436,6 @@ ruff check src/ # lint 检查
 mypy --strict src/ # 类型检查
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> ruff check 可以检测出 Python 代码中的类型错误（如 `int` 传递给需要 `str` 的函数）。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: ruff 不做类型推断，不检查类型兼容性。类型错误需要 mypy 来检测。ruff 检查的是风格（E/W）、逻辑错误（F）、命名（N）、常见 bug（B）等。
-
----
-
-## 章节测试
-
-### 一、判断题
-
-> [!question] 判断题 1
-> ruff 是 Python 标准库的一部分，安装 Python 后自动可用。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: ruff 是第三方工具，需通过 `pip install ruff` 安装。Python 标准库不包含 lint 或格式化工具。
-
-> [!question] 判断题 2
-> mypy 可以在不运行 Python 代码的情况下发现类型错误。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: mypy 是静态类型检查器，通过分析源码（而非运行代码）来检查类型兼容性。这与 C 编译器在编译时检查类型类似。
-
-> [!question] 判断题 3
-> Python 的类型注解（如 `x: int = 5`）在运行时会被解释器强制执行。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: Python 运行时不会对类型注解做任何检查。注解仅作为元数据保存，类型检查由 mypy 等外部工具负责。
-
-> [!question] 判断题 4
-> `ruff check --fix` 可以自动修复所有检测到的问题。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `--fix` 只能修复标记为 `[*]`（可自动修复）的规则。部分规则需要人工判断和修改，ruff 会在输出中标注。
-
-> [!question] 判断题 5
-> `ruff format` 的格式化风格与 black 完全兼容。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `ruff format` 设计为 black 的兼容替代品，格式输出与 black 一致。项目可以从 black 无缝迁移到 ruff format。
-
-> [!question] 判断题 6
-> clang-format 和 ruff format 都是纯格式化工具，不做任何逻辑检查。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: clang-format 和 ruff format 都只关注代码格式（缩进、换行、空格），不涉及逻辑正确性。逻辑检查由 clang-tidy（C）和 ruff check（Python）负责。
-
-
 ---
 
 ## 力扣练习
@@ -536,51 +445,3 @@ mypy --strict src/ # 类型检查
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
 | — | 本章无对应力扣题 | — | 请用动手练习题自检 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：修复一个"问题百出"的 Python 文件
-> **难度**: 简单
->
-> 创建 `messy.py`，故意引入以下问题：
-> - 未使用的导入（`import os, json, math`）
-> - 混乱的 import 顺序
-> - 不一致的缩进（空格和制表符混用）
-> - 未使用的变量
-> - 类名使用小写（`class myclass`）
-> - 多余的空格和空行
->
-> 用 `ruff check messy.py` 列出所有问题，然后用 `ruff check --fix` + `ruff format` 自动修复。对比修复前后的文件。
-
-> [!example] 练习题 2：为现有项目添加类型注解
-> **难度**: 简单
->
-> 取一个已存在的 Python 脚本（200 行以上），渐进式添加类型注解：
-> 1. 先用 `mypy --check-untyped-defs` 查看当前状态
-> 2. 为所有公共函数添加参数和返回值类型
-> 3. 运行 `mypy --strict`，记录错误数量
-> 4. 逐步修复类型错误，直到 `mypy --strict` 零错误
-> 5. 在 pyproject.toml 中配置 mypy 和 ruff
-
-> [!example] 练习题 3：为 C/Python 混合项目配置质量检查
-> **难度**: 简单
->
-> 为一个混合项目（C 代码在 `src/`，Python 脚本在 `scripts/`）配置质量检查：
-> 1. 编写 `Makefile` 的 `lint` 目标：
-> - C 代码：`clang-format --dry-run` + `clang-tidy`
-> - Python 代码：`ruff check` + `ruff format --check` + `mypy`
-> 2. 配置 `.pre-commit-config.yaml`：
-> - C 代码：clang-format 钩子
-> - Python 代码：ruff + mypy 钩子
-> 3. 运行 `make lint` 确保通过
-
-> [!example] 练习题 4：对比 ruff 与 flake8 的输出
-> **难度**: 简单
->
-> 安装 flake8 和 ruff，在同一个项目中运行两者：
-> 1. `flake8 src/ --max-line-length=100`
-> 2. `ruff check src/`
-> 3. 对比输出差异——哪些规则 ruff 检测到但 flake8 没有？
-> 4. 用 `time` 比较两者运行速度

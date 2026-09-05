@@ -101,18 +101,6 @@ fig.write_html('benchmark_interactive.html')
 
 > 交互式图表让你可以直接在浏览器中悬停查看每个数据点的精确值——不再需要像 Matplotlib 那样在图上手动 `annotate` 标注关键点。
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> Plotly 图表只能在 Jupyter Notebook 中交互，保存为 HTML 后失去交互功能。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `write_html()` 生成的 HTML 文件是**完整独立**的，包含所有交互功能和数据的 plotly.js 库（默认从 CDN 加载）。用浏览器打开后，所有交互功能（缩放、平移、悬停、选区）都正常可用。
-
 ---
 
 ### 第二节：graph_objects —— 深入到每一层
@@ -234,18 +222,6 @@ fig.update_yaxes(title_text='exp(x)', secondary_y=True, color='red')
 fig.write_html('dual_axis.html')
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> `make_subplots(rows=2, cols=2)` 创建的四个子图必须使用相同的图表类型。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: 每个子图可以独立使用不同的 trace 类型。比如 (1,1) 放 `go.Scatter`（折线图），(1,2) 放 `go.Bar`（柱状图），(2,1) 放 `go.Histogram`（直方图），(2,2) 放 `go.Heatmap`（热力图）。在同一 Figure 中混合多种图表类型是 Plotly 的一大优势。
-
 ---
 
 ### 第三节：高级交互 —— 3D 图与联动
@@ -345,18 +321,6 @@ fig.write_html('linked_views.html')
 
 > `legendgroup` 让同一组的 trace 共享图例项。点击图例中的某一项，所有图表中该组数据同时显示/隐藏——这对 C 程序的多维基准测试数据非常有用。
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> Plotly 的 `legendgroup` 参数仅影响图例的显示顺序，不影响其他功能。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `legendgroup` 将多个 trace 绑定到同一个图例项。点击该图例项时，所有同组的 trace 在多子图中**同时**显示/隐藏。这是实现多面板联动选择的关键参数。
-
 ---
 
 ### 第四节：Plotly vs Matplotlib —— 选择指南与静态导出
@@ -412,81 +376,6 @@ fig.write_html('output.html')
 
 > 将交互式 HTML 分享给同事：他们不需要安装 Python、不需要编译 C 程序，甚至不需要任何开发环境——用浏览器就能看到完整的互动数据。
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> `fig.write_html('output.html')` 生成的文件包含所有数据和交互逻辑，不需要服务器支持。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: Plotly 生成的 HTML 是**纯静态文件**，所有交互功能由浏览器端的 plotly.js 库完成（默认从 CDN 加载）。不需要 Python 服务器、不需要数据库、不需要任何后端——直接用 `file://` 协议打开即可。
-
----
-
-## 章节测试
-
-### 一、判断题（正确选，错误选）
-
-> [!question] 判断题 1
-> Plotly 图表的核心是 HTML + JavaScript，浏览器负责渲染和数据交互。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: Plotly Python 库本质上是一个数据驱动的前端——它将数据转化为 JSON，嵌入基于 plotly.js 的 HTML 模板。图表的渲染、缩放、悬停等交互都由浏览器端的 JavaScript 引擎完成。
-
-> [!question] 判断题 2
-> Plotly Express (`px`) 和 `graph_objects` (`go`) 是两个互斥的 API，不能混用。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `px` 生成的 `Figure` 对象与 `go.Figure()` 是同一种类型。你可以用 `px.line()` 创建基础图表，然后用 `fig.add_trace(go.Scatter(...))` 添加更多图层。两者可以无缝混用。
-
-> [!question] 判断题 3
-> Plotly 的 `write_html()` 默认包含 plotly.js 库（~3MB），导致生成的 HTML 文件较大。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: 默认 `include_plotlyjs='cdn'`，HTML 只包含一个指向 CDN 的 `<script>` 标签（约 100 字节）。如果将 `include_plotlyjs=True`，plotly.js 会被内嵌，文件约 3MB；也可以设为 `'directory'` 让 JS 文件保存在本地目录。
-
-> [!question] 判断题 4
-> `px.scatter_3d()` 使用 OpenGL 或 WebGL 在浏览器中渲染。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: Plotly 的 3D 图表（`scatter_3d`、`surface`、`mesh3d` 等）在浏览器中使用 WebGL 渲染，利用 GPU 加速。这也是为什么 3D 图表比 2D 消耗更多浏览器资源。
-
-> [!question] 判断题 5
-> Plotly 只能在 Python 中使用，没有其他语言的版本。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: Plotly 同时支持 Python、R、Julia、MATLAB、JavaScript（plotly.js 是核心引擎）、F# 和 .NET 等多种语言。不同语言生成的图表在交互行为上完全一致。
-
-> [!question] 判断题 6
-> `make_subplots(rows=2, cols=1, shared_xaxes=True)` 在 Plotly 中不支持。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `make_subplots()` 的 `shared_xaxes=True` 和 `shared_yaxes=True` 参数完全支持。共享后，缩放/平移一个子图时其他子图同步变化。
-
----
-
-
 ---
 
 ## 力扣练习
@@ -496,47 +385,3 @@ fig.write_html('output.html')
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
 | — | 本章无对应力扣题 | — | 请用动手练习题自检 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：C 程序输出的交互式散点图
-> **难度**: 简单
->
-> 编写 C 程序输出 200 个随机点（x, y, category）数据（空格分隔）。用 Plotly Express 生成交互式散点图：
-> - X 轴：x，Y 轴：y
-> - 颜色：`category` 分类着色
-> - 悬停数据：同时显示 x 和 y 的精确值
-> - 保存为 HTML 文件
-> - 尝试在浏览器中缩放、平移、点击图例控制数据显隐
-
-> [!example] 练习题 2：3D 性能数据可视化
-> **难度**: 简单
->
-> 编写 C 程序，模拟多个算法在不同输入规模和数据分布下的性能。输出四列：`algorithm n time memory`。Python 脚本：
-> 1. 读取数据到 DataFrame
-> 2. 用 `px.scatter_3d(x='n', y='time', z='memory', color='algorithm')` 生成 3D 散点图
-> 3. 设置 `log_x=True`、`log_y=True`
-> 4. 添加悬停提示（`hover_data`）显示完整的 n/time/memory 三维
-> 5. 保存后截图，记录你的旋转角度观察
-
-> [!example] 练习题 3：多面板联动仪表盘
-> **难度**: 简单
->
-> 使用 `make_subplots` 创建一个 2×1 的联动面板：
-> - 上图：散点图（x vs y），按类别着色
-> - 下图：箱线图（y 按类别分组），使用相同的颜色方案
-> - 两个图使用 `legendgroup` 实现联动（点击图例切换）
-> - 使用 Iris 或你自己生成的模拟数据
-> - 保存为 `linked_dashboard.html`
-
-> [!example] 练习题 4：Matplotlib vs Plotly 对比
-> **难度**: 简单
->
-> 使用同一份 C 程序生成的基准测试数据（至少包含 input_size 和 time_us 两列），分别用 Matplotlib 和 Plotly 绑制：
-> - 折线图（对数坐标）
-> - 散点图（带颜色映射的时间渐变）
-> - 柱状图（三种不同数据规模的对比）
->
-> 总结两者在代码量、图表美观度、交互性、文件大小方面的差异。

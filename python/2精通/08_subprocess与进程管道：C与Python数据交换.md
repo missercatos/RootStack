@@ -93,18 +93,6 @@ stderr:
 returncode: 0
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> `subprocess.run(['echo', '$HOME'], text=True)` 会输出当前用户的家目录。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: 不设置 `shell=True` 时，`$HOME` 不会展开——shell 变量展开需要 shell 在执行前处理。输出的是字面文本 `$HOME`。要获得 HOME 的值用 `os.environ['HOME']`。
-
 ---
 
 ### 第二节：Popen — 双向管道通信
@@ -233,18 +221,6 @@ Exit code: 0
 ```
 
 > **关键细节**：C 程序中每次 `printf` 后必须 `fflush(stdout)`！否则输出留在 C 的缓冲区中，Python 端可能永远收不到。Python 端也可使用 `bufsize=1`（行缓冲）或 `bufsize=0`（无缓冲）。
-
-### 小节练习
-
-
-> [!question] 判断题 1
-> C 程序的 `printf` 输出会立即被 subprocess 的管道读取，无需额外处理。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: C 的 `stdout` 默认是**全缓冲**（当连接到管道而非终端时）。必须用 `fflush(stdout)` 或 `setvbuf(stdout, NULL, _IOLBF, 0)`（行缓冲模式）来确保输出被立即写入管道。
 
 ---
 
@@ -394,18 +370,6 @@ print(data) # {'id': 1, 'values': [1.1, 2.2, 3.3], ...}
 | MessagePack | 中等 | 快 | 无 | 需要 schema-free 且体积敏感 |
 | Protocol Buffers | 小 | 快 | 无 | 需要强 schema 验证和版本兼容 |
 
-### 小节练习
-
-> [!question] 判断题 1
-> 二进制 struct 格式在 C 和 Python 之间交换数据，必须处理端序（endianness）问题。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: 不同平台的端序（x86 小端 vs ARM 可选）和结构体对齐策略可能不同。使用 struct 时应用明确端序的格式符（`<` 小端或 `>` 大端），和 `#pragma pack` 或 `__attribute__((packed))` 确保对齐一致。
-
-
 ---
 
 ### 第四节：Python 调用 C 分析处理管道
@@ -515,72 +479,6 @@ result = subprocess.run(['ffmpeg', '-i', 'input.mp4', '-vn', 'output.mp3'])
 PyRun_SimpleString("analyze(data)"); // 零开销！
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> subprocess 比内嵌 CPython 更安全，因为 Python 的崩溃不会导致 C 程序崩溃。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: subprocess 中 C 和 Python 在独立的操作系统进程中运行。一方崩溃不会影响另一方。内嵌模式中，Python 的段错误直接导致整个进程退出。
-
----
-
-## 章节测试
-
-### 一、判断题
-
-> [!question] 判断题 1
-> `subprocess.run(['./a.out'], capture_output=True)` 会同时捕获 stdout 和 stderr。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `capture_output=True` 等价于 `stdout=PIPE, stderr=PIPE`，同时捕获标准输出和错误输出。结果可通过 `result.stdout` 和 `result.stderr` 获取。
-
-> [!question] 判断题 2
-> `subprocess.run()` 是异步的，不等待子进程结束就返回。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `subprocess.run()` 是**同步阻塞**的——它会等待子进程执行完毕才返回。需要异步执行时应使用 `subprocess.Popen()`。
-
-> [!question] 判断题 3
-> Popen 的 `communicate()` 方法可以多次调用来持续交换数据。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `communicate()` 是一次性的——发送所有输入后等待进程结束，读取所有输出。多次调用 `communicate()` 会抛出异常。需要持续交互时，应手动读写 `proc.stdin` 和 `proc.stdout`。
-
-> [!question] 判断题 4
-> C 程序写入 stdout 的数据，在管道另一端的 Python 中通过 `proc.stdin.read()` 读取。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: C 程序的 stdout 对应于 Python 端的 `proc.stdout`。`proc.stdin` 是 Python 向 C 程序发送数据（C 程序从 stdin 读取）。
-
-> [!question] 判断题 5
-> JSON 不适合传递二进制数据（如图片），因为会导致体积膨胀。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: JSON 不支持原生的二进制数据。二进制数据需 Base64 编码后嵌入 JSON 字符串，编码膨胀约 33%，且增加了编解码开销。
-
----
-
-
 ---
 
 ## 力扣练习
@@ -590,47 +488,3 @@ PyRun_SimpleString("analyze(data)"); // 零开销！
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
 | — | 本章无对应力扣题 | — | 请用动手练习题自检 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：C 日志 → Python 分析
-> **难度**: 简单
->
-> 1. 编写 C 程序 `loggen`，每秒输出一条 JSON 格式的模拟网络日志到 stdout
-> 2. 编写 Python 脚本，用 `subprocess.Popen` 读取日志流，实时统计：
-> - 每秒的请求数（QPS）
-> - 平均响应时间
-> - 错误请求的比例（状态码 >= 400）
-> 3. 每 5 秒打印一次统计摘要
-
-> [!example] 练习题 2：二进制数据管道
-> **难度**: 简单
->
-> 1. C 程序 `imgproc` 从 stdin 读取 BMP 图像字节，处理后写到 stdout
-> 2. Python 脚本用 `subprocess.Popen` 启动 `imgproc`，通过管道传递图像数据
-> 3. 注意处理大文件时避免死锁（使用 `proc.communicate()` 或正确的读写顺序）
-
-> [!example] 练习题 3：三种互操作方案对比
-> **难度**: 简单
->
-> 同一个功能（C 程序计算 100 万个数的统计值并传回 Python），用三种方式实现：
-> 1. subprocess + JSON 管道
-> 2. subprocess + 二进制 struct 管道
-> 3. ctypes 调用 C 共享库函数
->
-> 对比实现难度、代码量、运行时间和数据传输开销。撰写简短的选择建议。
-
-> [!example] 练习题 4：多进程协作
-> **难度**: 简单
->
-> 实现一个数据处理管道，多个 C 程序和 Python 脚本通过管道串联：
-> ```
-> [C: data_generator] → [Python: filter_anomalies.py] → [C: aggregate]
-> ```
-> - `data_generator` 输出传感器数据（二进制 struct 流）
-> - `filter_anomalies.py` 读取数据，用 3-sigma 规则过滤异常，输出正常数据
-> - `aggregate` 读取过滤后的数据，计算均值和方差并打印摘要
->
-> 使用 shell 管道或 Python 的 `subprocess.Popen` 串联。体会 Unix 管道哲学。

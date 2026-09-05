@@ -156,9 +156,6 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 小节练习
-
-
 ---
 
 ### 第三节：深入理解虚拟环境机制
@@ -218,17 +215,6 @@ python -c "import sys; [print(p) for p in sys.path]"
 # 3. site-packages（虚拟环境或系统）
 # 4. 标准库路径
 ```
-
-### 小节练习
-
-> [!question] 判断题 1
-> 虚拟环境激活后，`pip install` 安装的包会放到系统 site-packages 目录。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: 激活虚拟环境后，pip 会将包安装到虚拟环境的 `lib/pythonX.Y/site-packages/` 目录，与系统 site-packages 完全隔离。
 
 ---
 
@@ -318,18 +304,6 @@ source .venv/bin/activate
 uv pip sync requirements.txt
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> uv 完全兼容 pip 的命令行语法，可以无缝替代 pip。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `uv pip install`、`uv pip freeze`、`uv pip list` 等命令与 pip 语法保持一致，可以无缝替换。
-
 ---
 
 ### 第五节：C 项目中使用 Python 虚拟环境
@@ -400,70 +374,6 @@ test: venv
 
 > 这个模式在 C 项目中很常见：用 Python 做代码生成（替代部分 awk/sed/m4），用 C 做核心逻辑。虚拟环境确保生成脚本的依赖不会污染系统。
 
-### 小节练习
-
-
----
-
-## 章节测试
-
-### 一、判断题
-
-> [!question] 判断题 1
-> 虚拟环境是一个完整的 Python 安装副本，不依赖任何系统 Python 文件。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: 虚拟环境通过符号链接（或复制少量文件）引用系统 Python 解释器，并非完整副本。它只复制了 pip、activate 脚本和空的 site-packages 目录。
-
-> [!question] 判断题 2
-> `deactivate` 命令会删除虚拟环境。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `deactivate` 仅退出当前虚拟环境，恢复到系统 Python。虚拟环境目录保留不变，可以再次 `source .venv/bin/activate` 激活。
-
-> [!question] 判断题 3
-> `requirements.txt` 和虚拟环境目录 `.venv/` 都应该提交到 Git 仓库。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `requirements.txt` 应提交（它是依赖清单），`.venv/` 不应提交（它包含平台相关的二进制文件，其他开发者应自己创建虚拟环境）。
-
-> [!question] 判断题 4
-> uv 是用 Python 实现的包管理器工具。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: uv 是用 Rust 编写的，正是 Rust 的高性能特性让 uv 比 pip 快 10-100 倍。
-
-> [!question] 判断题 5
-> 在虚拟环境激活状态下执行 `pip install`，包会安装到系统的 `/usr/lib/python3*/site-packages/`。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: 激活虚拟环境后，pip 将包安装到虚拟环境的 `lib/pythonX.Y/site-packages/` 中，与系统完全隔离。
-
-> [!question] 判断题 6
-> `LD_LIBRARY_PATH` 的作用与 Python 虚拟环境完全等价。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `LD_LIBRARY_PATH` 仅改变运行时库搜索的优先级，不提供版本隔离。虚拟环境则提供完整的环境隔离，包括 pip、Python 解释器路径、site-packages。
-
-
 ---
 
 ## 力扣练习
@@ -473,48 +383,3 @@ test: venv
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
 | — | 本章无对应力扣题 | — | 请用动手练习题自检 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：虚拟环境全生命周期
-> **难度**: 简单
->
-> 完成以下操作序列并记录每一步的输出：
-> 1. 创建项目目录 `venv-lab/`，用 `python -m venv .venv` 创建虚拟环境
-> 2. 激活前后分别运行 `python -c "import sys; print(sys.prefix)"`，对比输出
-> 3. 在虚拟环境中安装 `requests`，用 `pip show requests` 查看安装位置
-> 4. 用 `pip freeze > requirements.txt` 导出依赖
-> 5. 删除 `.venv/`，用 `requirements.txt` 重建环境
-> 6. 验证重建后 `requests` 仍然可用
-
-> [!example] 练习题 2：uv 速度对比
-> **难度**: 简单
->
-> 1. 分别用 `time pip install numpy pandas matplotlib` 和 `time uv pip install numpy pandas matplotlib` 安装同一组包，记录时间
-> 2. 用 `uv pip compile pyproject.toml -o requirements.txt` 创建一个锁定文件
-> 3. 阅读锁定文件，找出每个包的精确版本和其依赖树
-
-> [!example] 练习题 3：混合项目中的虚拟环境
-> **难度**: 简单
->
-> 创建一个包含 C 代码和 Python 测试脚本的混合项目：
-> 1. `src/main.c` — 计算斐波那契数列的 C 程序
-> 2. `test/test_fib.py` — 用 `subprocess` 运行 C 程序并验证输出的 pytest 测试
-> 3. 编写 Makefile，包含 `venv` 目标和 `test` 目标：
-> - `make venv` 创建虚拟环境并安装 pytest
-> - `make test` 编译 C 程序 + 在虚拟环境中运行 pytest
-> 4. 将 `.venv/` 加入 `.gitignore`，`requirements.txt` 提交到 Git
-
-> [!example] 练习题 4：理解 sys.path 与隔离机制
-> **难度**: 简单
->
-> 1. 分别在系统 Python 和虚拟环境中运行以下代码，对比 `sys.path` 的差异：
-> ```python
-> import sys
-> import pprint
-> pprint.pprint(sys.path)
-> ```
-> 2. 修改 `pyvenv.cfg`，将 `include-system-site-packages` 设为 `true`，重新激活后再次打印 `sys.path`，观察变化
-> 3. 解释为什么虚拟环境能隔离依赖——从 `sys.path` 的角度论证

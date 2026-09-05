@@ -69,9 +69,7 @@
 [生态权威工具合集](https://github.com/vinta/awesome-python) -涵盖了python社区的大量第三方库，工具列表
 
 
-
 ---
 python生态很大，资源很多，以上只是一些经典和热门的资源，其实还有众多资源可以自己搜寻。
 
-据己所需，找到自己所需方向的python教学即可，如果只是需要单纯的作为小白入门python,根据时效性和基础性，推荐[黑马程序员AI+python教学](https://www.bilibili.com/video/BV1sHU9BmEne/) 和[菜鸟教程-python3](https://www.runoob.com/python3/python3-tutorial.html) 
-
+据己所需，找到自己所需方向的python教学即可，如果只是需要单纯的作为小白入门python,根据时效性和基础性，推荐[黑马程序员AI+python教学](https://www.bilibili.com/video/BV1sHU9BmEne/) 和[菜鸟教程-python3](https://www.runoob.com/python3/python3-tutorial.html)
