@@ -90,18 +90,6 @@ plt.savefig('hist.png')
 
 > `hist()` 自动完成分桶和计数——相当于 C 中你手动写的一个 `int bins[N]` 数组和遍历统计代码。
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> Matplotlib 的 `plt.hist()` 需要用户手动指定每个 bin 的数据分布。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `plt.hist()` 自动完成分桶（binning）和计数工作。你只需要传入原始数据，指定 `bins` 数量即可。
-
 ---
 
 ### 第二节：读取 C 程序输出 —— 文件与标准输入
@@ -200,18 +188,6 @@ plt.savefig('out.png')
 
 > `np.loadtxt` 内部用 C 语言实现数据解析，性能接近纯 C，远快于 Python 的逐行循环。
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> Python 的 `sys.stdin` 在读取完所有数据后需要手动调用 `close()` 来释放资源。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: 当脚本退出或 `sys.stdin` 被垃圾回收时，Python 会自动关闭标准输入。手动 `close()` 甚至可能导致后续代码无法读取任何输入（包括 `input()`）。
-
 ---
 
 ### 第三节：非交互式绑图 —— savefig vs show
@@ -285,18 +261,6 @@ plt.plot(x, y)
 plt.savefig('pipe_plot.png')
 "
 ```
-
-### 小节练习
-
-
-> [!question] 判断题 1
-> `plt.savefig('out.pdf')` 生成的 PDF 图表放大后会出现锯齿。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: PDF（和 SVG）是**矢量格式**，不包含像素信息。无论放大多少倍，线条和文字始终保持清晰。只有 PNG/JPG 等位图格式才会有锯齿问题。
 
 ---
 
@@ -389,81 +353,6 @@ fig.savefig('matrix_heatmap.png')
 gcc -o matrix_gen matrix_gen.c -lm && ./matrix_gen | python3 matrix_plot.py
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> `plt.plot(x, y)` 和 `ax.plot(x, y)` 在只有一个子图时效果完全相同。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: 在有唯一 `Axes` 时，`plt.plot()` 内部默认操作当前的 `Axes` 对象。但当你有多个子图时，命令式 API 只能操作最后一个创建的 `Axes`，必须切换到对象式才能精确控制每个子图。
-
----
-
-## 章节测试
-
-### 一、判断题（正确选，错误选）
-
-> [!question] 判断题 1
-> `plt.plot([1, 2], [3, 4])` 绑制的是散点图。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `plt.plot()` 默认绑制折线图（line plot），将相邻数据点用线段连接。散点图应使用 `plt.scatter()`。
-
-> [!question] 判断题 2
-> Matplotlib 的 `savefig('output.jpg')` 和 `savefig('output.pdf')` 生成的图片质量完全相同。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: JPG 是有损压缩的位图格式，PDF 是矢量格式。PDF 可以无限缩放不失真，JPG 放大后会出现明显的压缩伪影和锯齿。
-
-> [!question] 判断题 3
-> 使用 `python -c` 一行流绑图时，必须显式调用 `matplotlib.use('Agg')`。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: 仅在**无 GUI 环境**（如远程 SSH 服务器）中才需要设置 `Agg` 后端。在有桌面环境的本地机器上，默认后端（如 `TkAgg`）同样支持 `savefig()`。
-
-> [!question] 判断题 4
-> `np.loadtxt('data.txt')` 可以自动处理文件中包含注释行的情况。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: `np.loadtxt()` 默认跳过以 `#` 开头的注释行。你可以通过 `comments` 参数指定其他注释字符。
-
-> [!question] 判断题 5
-> Matplotlib 只能在 Python 脚本中使用，不能在 `python -c` 一行流中使用。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: Matplotlib 完全支持 `python -c` 一行流。多行代码用换行符分隔，只需确保 `import matplotlib.pyplot as plt` 在绑图操作之前即可。
-
-> [!question] 判断题 6
-> `ax.grid(True)` 设置的网格线默认是实线且完全不透明。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: 默认网格线是较浅的灰色虚线（`linestyle='-'`? 不，实际上默认是实线但透明度较低）。建议显式指定 `linestyle='--'` 和 `alpha=0.3` 以获得专业外观。
-
----
-
-
 ---
 
 ## 力扣练习
@@ -473,47 +362,3 @@ gcc -o matrix_gen matrix_gen.c -lm && ./matrix_gen | python3 matrix_plot.py
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
 | — | 本章无对应力扣题 | — | 请用动手练习题自检 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：从 C 程序管道绑图
-> **难度**: 简单
->
-> 编写一个 C 程序 `sine_gen.c`，输出 `x` 从 0 到 2π 共 100 个点的 `sin(x)` 和 `cos(x)` 值（两列，空格分隔）。然后：
-> 1. 编译并运行 C 程序，用管道将输出传给 Python 脚本
-> 2. Python 脚本读取 stdin 数据，绑制在同一张图上：`sin(x)`（蓝色实线）和 `cos(x)`（红色虚线）
-> 3. 添加图例、网格和标题
-> 4. 保存为 `sine_cos.png`
->
-> 要求使用 `fig, ax = plt.subplots()` 对象式 API。
-
-> [!example] 练习题 2：基准测试数据可视化
-> **难度**: 简单
->
-> 编写 C 程序测量不同数量级下的冒泡排序耗时（n=100, 500, 1000, 5000），输出格式 `n time_ms`。然后：
-> 1. 用 Python 读取数据，绑制散点图 + 拟合曲线
-> 2. 添加对数坐标轴（`ax.set_xscale('log')` / `ax.set_yscale('log')`）
-> 3. 在图上标注每个点的具体耗时数值（`ax.annotate`）
-> 4. 保存为 `bubble_bench.png`
-
-> [!example] 练习题 3：矩阵热力图
-> **难度**: 简单
->
-> 编写 C 程序生成一个 20×20 的矩阵，每个元素为 `exp(-((i-10)²+(j-10)²)/50)`。用管道连接 Python：
-> 1. Python 用 `np.loadtxt(sys.stdin)` 读取矩阵
-> 2. 用 `ax.imshow()` 绑制热力图，附带 colorbar
-> 3. 分别保存为 PNG（`heatmap.png`）和 PDF（`heatmap.pdf`）
-> 4. 比较两个文件的大小，记录你的观察
-
-> [!example] 练习题 4：python -c 一行流绑图挑战
-> **难度**: 简单
->
-> 用 `python -c` 一行流完成以下任务（不允许创建 .py 文件）：
-> 1. 生成 x = [1, 2, ..., 100]，y = [x² mod 97 for x in xs]
-> 2. 绑制 scatter(x, y)，颜色按 y 值映射（`c=y, cmap='plasma'`）
-> 3. 添加 colorbar
-> 4. 保存为 `oneliner.png`
->
-> 提示：使用双引号包裹代码，分号分隔多条语句。

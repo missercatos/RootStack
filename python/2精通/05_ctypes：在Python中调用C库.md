@@ -81,18 +81,6 @@ libc.printf.restype = c_int
 libc.printf(b'Hello from ctypes!\n') # 必须传 bytes，不是 str
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> ctypes 使用 C 共享库时不需要经过 C 编译器。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: ctypes 是纯 Python 实现，直接通过 `dlopen`/`LoadLibrary` 加载已编译的共享库（.so/.dll），不需要编译步骤。这一点与 Cython/pybind11 不同。
-
 ---
 
 ### 第二节：类型映射
@@ -170,9 +158,6 @@ print(arr.value) # 999
 ```
 
 > `byref()` vs `pointer()`：`byref()` 创建轻量的临时指针（不增加引用计数），仅用于函数调用的参数传递。`pointer()` 创建持久的指针对象，可以被多次使用。
-
-### 小节练习
-
 
 ---
 
@@ -298,18 +283,6 @@ total = libgeo.array_sum(data, 5)
 print(f'数组和: {total}') # 16.5
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> ctypes 的结构体在传递给 C 函数时，行为与 C 语言中的结构体传递完全一致。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: ctypes 默认**按值传递**结构体，会复制整个结构体。如果需要按指针传递（类似 C 的 `struct Point *`），需要用 `byref()` 或 `pointer()`。务必确保 `argtypes` 中的声明与 C 函数签名匹配。
-
 ---
 
 ### 第四节：回调函数
@@ -366,9 +339,6 @@ libc.qsort(arr, len(arr), sizeof(c_int), CMPFUNC(py_cmp))
 print([arr[i] for i in range(5)]) # [1, 2, 5, 8, 9]
 ```
 
-### 小节练习
-
-
 ---
 
 ### 第五节：错误处理与高级用法
@@ -421,63 +391,6 @@ libc.memmove(dst, src, 5)
 print(dst.raw[:5]) # b'hello'
 ```
 
-### 小节练习
-
-
----
-
-## 章节测试
-
-### 一、判断题
-
-> [!question] 判断题 1
-> ctypes 使用 C 共享库必须经过编译链接步骤。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: ctypes 在运行时动态加载已编译的共享库（.so/.dll），无需编译。它是纯 Python 实现，直接使用操作系统的动态加载机制（dlopen/LoadLibrary）。
-
-> [!question] 判断题 2
-> ctypes 的 `c_int(0)` 等价于 C 语言的 `int x = 0;`。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `c_int(0)` 在 Python 中创建一个代表 C `int` 值的对象，其内存布局和大小与 C 的 `int` 一致，可以安全地传递给 C 函数。
-
-> [!question] 判断题 3
-> ctypes 的回调函数对象在被 Python 垃圾回收后，C 端仍可安全调用。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: 回调对象的生命周期必须覆盖 C 端使用它的整个区间。一旦被 Python GC 回收，C 端调用该函数指针会导致段错误或未定义行为。
-
-> [!question] 判断题 4
-> `byref()` 创建的指针可以安全地保存在全局变量中以后使用。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `byref()` 只返回一个临时的 C 指针对象，仅在函数调用期间有效。如果需要在函数调用之外保存指针，必须使用 `pointer()`。
-
-> [!question] 判断题 5
-> ctypes 可以调用 C++ 库中没有 `extern "C"` 修饰的函数。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: ctypes 依赖 C ABI 的符号名。C++ 函数有 name mangling，除非使用 `extern "C"` 或知道 mangled 名称（并处理 C++ ABI 差异），否则无法直接调用。
-
----
-
-
 ---
 
 ## 力扣练习
@@ -487,47 +400,3 @@ print(dst.raw[:5]) # b'hello'
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
 | — | 本章无对应力扣题 | — | 请用动手练习题自检 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：调用 C 标准库
-> **难度**: 简单
->
-> 使用 ctypes 调用以下 libc 函数并验证结果：
-> - `strlen` — 计算字符串长度
-> - `memcmp` — 比较内存区域
-> - `qsort` — 排序数组（带回调函数）
-> - `rand` / `srand` — 随机数生成
->
-> 每个函数注意正确设置 `argtypes` 和 `restype`。
-
-> [!example] 练习题 2：封装自定义 C 库
-> **难度**: 简单
->
-> 1. 编写一个 C 共享库 `libstats.so`，实现：
-> - `double mean(double *data, int len)` — 计算均值
-> - `double stdev(double *data, int len)` — 计算标准差
-> - `void sort(double *data, int len)` — 原地排序
-> 2. 用 ctypes 加载并封装为一个 Python 类 `StatsAnalyzer`
-> 3. 用 NumPy 的随机数组测试性能 vs 纯 Python 实现
-
-> [!example] 练习题 3：回调与事件系统
-> **难度**: 简单
->
-> 1. 编写一个 C 库，提供事件注册机制：
-> - `void on_event(int event_type, void (*callback)(int))`
-> - `void trigger_event(int event_type)` — 调用所有注册的回调
-> 2. 在 Python 端注册回调（打印日志、统计事件次数）
-> 3. 验证 Python 回调被正确调用，且多次触发结果正确
-
-> [!example] 练习题 4：性能对比实验
-> **难度**: 简单
->
-> 对比以下三种方式计算 100 万个数的平方和的耗时：
-> 1. 纯 Python `sum(x*x for x in data)`
-> 2. Python 内置 `sum()` + 列表推导式
-> 3. ctypes 调用 C 函数 `double sum_squares(double *data, int len)`
->
-> 分析性能差异的来源（类型转换、调用开销、GIL），并讨论什么场景下 ctypes 能真正加速程序。

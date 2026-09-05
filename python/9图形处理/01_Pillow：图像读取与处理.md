@@ -60,18 +60,6 @@ python -c "from PIL import Image; img = Image.open('test.jpg'); img.thumbnail((1
 
 这一行完成了 C 中约 30 行代码的工作：打开 → 解码 JPEG → 缩放 → 编码 JPEG → 写入文件。
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> `Image.save('out.png')` 会自动根据文件扩展名选择编码格式。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: Pillow 根据 `save()` 的文件名后缀自动选择编码器（`.png`→PNG, `.jpg`→JPEG）。你也可以用 `format` 参数显式指定。
-
 ---
 
 ### 第二节：基本几何变换
@@ -135,18 +123,6 @@ Python 一行：
 resized = img.resize((256, 256), Image.LANCZOS)
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> `img.resize((256, 256))` 会修改原始 `img` 对象。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: Pillow 的所有变换操作都返回**新 Image 对象**，原始对象不变。这是不可变（immutable）风格，类似于 C 中传值而非传指针。
-
 ---
 
 ### 第三节：颜色模式转换与像素操作
@@ -208,18 +184,6 @@ r_hist = hist[0:256] # R 通道直方图
 g_hist = hist[256:512] # G 通道直方图
 b_hist = hist[512:768] # B 通道直方图
 ```
-
-### 小节练习
-
-
-> [!question] 判断题 1
-> `img.getpixel((0, 0))` 在 RGB 图像上返回一个包含 3 个整数的元组。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: RGB 模式下每个像素返回 `(R, G, B)` 三元组，灰度模式返回单个整数，RGBA 返回四元组。
 
 ---
 
@@ -293,72 +257,6 @@ color = ImageEnhance.Color(img).enhance(2.0)
 sharp = ImageEnhance.Sharpness(img).enhance(2.0)
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> `ImageEnhance.Brightness(img).enhance(1.0)` 返回的是原始图像的深拷贝。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `enhance(1.0)` 返回的是原始图像的**引用**（同一个对象），不是拷贝。要深拷贝请用 `img.copy()`。
-
----
-
-## 章节测试
-
-### 一、判断题（正确选，错误选）
-
-> [!question] 判断题 1
-> Pillow 的 `Image.open()` 在调用时立即将整个图像文件解码到内存中。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: Pillow 采用惰性加载（lazy loading）——`Image.open()` 只读取文件头和元数据，像素数据在第一次访问（如 `getpixel`、`resize`、`getdata`）时才真正解码。这对应 C 中的"先解析头，按需解码"策略。
-
-> [!question] 判断题 2
-> `img.crop((0,0,100,100))` 的坐标格式是 `(x1, y1, x2, y2)`，左闭右开。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: `crop` 的 box 参数是 `(left, upper, right, lower)`，裁剪区域包含 left 和 upper 但不包含 right 和 lower（即左闭右开区间）。
-
-> [!question] 判断题 3
-> Pillow 的 `Image` 对象可以直接与 numpy 数组互转。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: `numpy.array(img)` 将 Image 转为 `ndarray`（形状 `(H, W, C)`），`Image.fromarray(arr)` 反向转换。这是连接 Pillow 和 NumPy/OpenCV 世界的桥梁。
-
-> [!question] 判断题 4
-> `img.convert('L')` 使用固定的灰度转换系数，与 `cv2.cvtColor(..., cv2.COLOR_BGR2GRAY)` 使用的是同一组系数。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: Pillow 和 OpenCV 使用的灰度转换加权系数略有不同，虽然差异微乎其微但对精度敏感的场景需要注意。
-
-> [!question] 判断题 5
-> `ImageFilter.Kernel((3,3), kernel)` 中的核矩阵元素可以为负数。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: 核矩阵值可以是任意整数（正或负）。`scale` 参数用于除法归一化，`offset` 用于加偏置。这正是边缘检测核（如拉普拉斯核）需要负值的原因。
-
----
-
-
 ---
 
 ## 力扣练习
@@ -370,51 +268,3 @@ sharp = ImageEnhance.Sharpness(img).enhance(2.0)
 | 48 | 旋转图像 | https://leetcode.cn/problems/rotate-image/ | 图像旋转、矩阵变换 |
 | 733 | 图像渲染 | https://leetcode.cn/problems/flood-fill/ | 图像填充、DFS/BFS |
 | 832 | 翻转图像 | https://leetcode.cn/problems/flipping-an-image/ | 图像水平翻转与反转 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：批量缩略图生成器
-> **难度**: 简单
->
-> 编写一个 Python 脚本 `thumbnailer.py`，使用 `python -c` 一行流版：
-> - 遍历当前目录所有 `.jpg` 和 `.png` 文件
-> - 为每个文件生成 128×128 的缩略图（保持比例，填充为正方形）
-> - 缩略图保存到 `thumbs/` 子目录，文件名为 `thumb_` + 原名
-> - 使用 `Image.LANCZOS` 重采样
->
-> 提示：用 `os.makedirs('thumbs', exist_ok=True)` 创建输出目录。
-
-> [!example] 练习题 2：自定义滤镜实现
-> **难度**: 简单
->
-> 用 C 和 Python 分别实现 5×5 高斯模糊核：
-> - C 版本：手写卷积函数，对比 `stb_image.h` 的用法流程
-> - Python 版本：用 `ImageFilter.Kernel` 一行实现
-> - 对比两种实现的代码行数和性能差异
-> - 在 Python 中也手写一遍像素级卷积（用 `getpixel`/`putpixel`），感受速度差异
-
-> [!example] 练习题 3：图像格式批量转换工具
-> **难度**: 简单
->
-> 编写脚本 `convert_images.py`，接收三个命令行参数：
-> ```bash
-> python convert_images.py ./input/ ./output/ png
-> ```
-> - 将 `input/` 下所有图像文件转换为指定格式
-> - 保留原始文件名，仅改扩展名
-> - 对 JPEG 输出支持 `quality` 参数（通过第 4 个可选参数传入）
-> - 使用 `if __name__ == "__main__":` 守卫
-> - 处理文件不存在的异常
-
-> [!example] 练习题 4：图像直方图均衡化
-> **难度**: 简单
->
-> 使用 Pillow 的像素级 API 实现灰度图像的直方图均衡化：
-> 1. 计算每个灰度级（0-255）的累积分布函数（CDF）
-> 2. 将 CDF 映射为新的像素值
-> 3. 用 `putpixel` 写回图像
-> 4. 对比均衡化前后的直方图
->
-> 然后再用 `ImageOps.equalize()` 一行完成，对比结果差异。

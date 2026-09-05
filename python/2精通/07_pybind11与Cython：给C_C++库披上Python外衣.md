@@ -174,18 +174,6 @@ PYBIND11_MODULE(geometry, m) {
 }
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> pybind11 是 header-only 库，因此使用时不需要链接任何 pybind11 的 .so 文件。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: pybind11 完全由头文件组成，只需 `#include <pybind11/pybind11.h>` 即可使用。编译时只需链接 Python 本身（`-lpython3.x`）。
-
 ---
 
 ### 第三节：Cython — C 与 Python 的混血儿
@@ -305,18 +293,6 @@ def array_sum(np.ndarray[np.float64_t, ndim=1] arr):
 | `cpdef func()` | C 快速调用 + Python 可调用 | 双接口函数 |
 | `cdef class MyClass` | C 扩展类型 | 高效类（无 `__dict__`） |
 
-### 小节练习
-
-> [!question] 判断题 1
-> Cython 的 `.pyx` 文件可以直接被 Python 解释器执行。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `.pyx` 文件必须先被 Cython 编译器（`cython`）转换为 `.c` 文件，再由 C 编译器编译为 `.so`/`.pyd` 后才能被 Python 导入。
-
-
 ---
 
 ### 第四节：CFFI — 纯 Python 的 C 接口
@@ -406,9 +382,6 @@ print(lib.array_sum(arr, 3)) # 6.6
 | 学习成本 | 需懂 C 声明 | 需懂 ctypes 类型 |
 | 与 NumPy 集成 | `ffi.from_buffer` | `np.ctypeslib` |
 
-### 小节练习
-
-
 ---
 
 ### 第五节：决策表与实战建议
@@ -465,60 +438,6 @@ graph TB
 
 ---
 
-## 章节测试
-
-### 一、判断题
-
-> [!question] 判断题 1
-> pybind11 只支持绑定 C 代码，不支持 C++ 类和 STL。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: pybind11 **原生支持 C++**——类、虚函数、模板、STL 容器（`std::vector`/`std::map`）、智能指针、lambda 等。它是 C++ 到 Python 绑定的首选方案。
-
-> [!question] 判断题 2
-> Cython 生成的 C 代码依赖 Cython 运行时库才能运行。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: Cython 生成的 C 代码是自包含的，编译后的 .so 模块不需要 Cython 包本身就可以运行（只需 `pip install` 的包即可，甚至不需要 `cython` 包）。
-
-> [!question] 判断题 3
-> CFFI 的 ABI 模式需要 GCC/Clang 编译器。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: CFFI ABI 模式是纯 Python 的——它使用 `libffi` 库在运行时直接调用函数指针，不需要编译器。API 模式才需要编译器来构建 C 胶水代码。
-
-> [!question] 判断题 4
-> 使用 Cython 时必须将整个模块都写成 `.pyx` 格式，不能混用 `.py` 和 `.pyx`。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: Cython 支持渐进式加速——你可以只把性能热点函数移到 `.pyx` 文件中，其余代码保持纯 Python `.py` 文件，通过 import 互相调用。
-
-> [!question] 判断题 5
-> 分发 Python 包时，pybind11/cython/cffi 编译出的 `.so` 文件可以跨操作系统使用。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: 编译出的 `.so` 文件是平台相关的二进制文件。发布到 PyPI 时需要为不同平台（Linux/Mac/Windows）和架构（x86_64/arm64）编译各自的 wheel。
-
----
-
-
----
-
 ## 力扣练习
 
 以下题目用于验证本章所学内容：
@@ -526,50 +445,3 @@ graph TB
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
 | — | 本章无对应力扣题 | — | 请用动手练习题自检 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：三方案对比
-> **难度**: 简单
->
-> 同一个 C 函数库 `libstats.c`（包含 mean、stdev、sort），分别用以下三种方案绑定并在 Python 调用：
-> 1. ctypes（纯 Python，标准库）
-> 2. CFFI ABI 模式
-> 3. pybind11 或 Cython（选择一种）
->
-> 对比代码量、调用性能（用 `timeit`）、和开发体验。
-
-> [!example] 练习题 2：pybind11 封装小型 C++ 类库
-> **难度**: 简单
->
-> 编写一个 C++ 矩阵运算库 `Mat2x2`（2x2 矩阵：加法、乘法、求逆、行列式），用 pybind11 包装为 Python 类。要求：
-> - 支持 `+` 和 `*` 运算符
-> - 支持 `str()` / `repr()`
-> - 从 Python 的 list-of-lists 构造
-> - 编译为可 pip 安装的包结构
-
-> [!example] 练习题 3：Cython 加速 Python 代码
-> **难度**: 简单
->
-> 有一段纯 Python 代码（计算 1000 万次循环的数值运算），将其改写为 Cython：
-> 1. 首先不加类型声明，仅用 `cythonize` 编译（观察小幅加速）
-> 2. 添加 `cdef` 类型声明（观察大幅加速）
-> 3. 用 typed memoryview 替换 Python list
-> 4. 对比每个步骤的性能变化
->
-> 理解"Python 慢在哪"和"Cython 快在哪"。
-
-> [!example] 练习题 4：CFFI 在无头文件场景下的实战
-> **难度**: 简单
->
-> 你只有一个第三方 `.so` 文件（无头文件），但知道函数签名：`double transform(double input)`。用 CFFI ABI 模式调用它：
-> 1. 通过 `nm -D libfoo.so` 或 `readelf -s` 确认符号名
-
-> **跨平台提示**：
-> - **Windows**：用 `dumpbin /exports foo.dll`（需 Visual Studio Build Tools），或用 `objdump -t foo.dll`（MinGW）
-> - **macOS**：用 `nm -g libfoo.dylib` 或 `otool -tV libfoo.dylib`
-> 2. 编写 `ffi.cdef()` 声明
-> 3. 加载并调用
-> 4. 对比如果需要传递 struct 参数时 ctypes 和 CFFI 的差异

@@ -96,18 +96,6 @@ ax_bottom.hist(np.random.randn(1000), bins=40, alpha=0.7)
 fig.savefig('nested_grid.png')
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> `GridSpec(2, 3)` 定义的网格中，子图必须完全占满某个网格单元，不能跨越多行多列。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `GridSpec` 支持的索引方式 `gs[row_start:row_end, col_start:col_end]` 允许子图跨越任意范围的行和列。这正是它相对于 `plt.subplots()` 的核心优势。
-
 ---
 
 ### 第二节：共享坐标轴与双 Y 轴
@@ -204,18 +192,6 @@ ax3.fill_between(n, 0, cpu, alpha=0.2, color='g')
 fig.tight_layout()
 fig.savefig('benchmark_multi.png')
 ```
-
-### 小节练习
-
-
-> [!question] 判断题 1
-> `sharex=True` 的子图，修改任意一个子图的 X 轴标签会影响所有子图。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `sharex=True` 共享的是**轴的范围和刻度**，不是轴标签（label）。每个子图仍有独立的 `set_xlabel()`。建议只在最底部子图设置 X 标签，避免重复。
 
 ---
 
@@ -361,9 +337,6 @@ plt.style.use('my_style.mplstyle')
 
 > 样式文件相当于 C 项目中的 `.h` 头文件——定义全局常量，避免在每个源文件中重复设置。团队项目中使用统一的样式表确保图表外观一致。
 
-### 小节练习
-
-
 ---
 
 ### 第四节：实战 —— 多面板 C 基准测试报告
@@ -474,81 +447,6 @@ fig.tight_layout()
 fig.savefig('benchmark_report.png', dpi=150)
 ```
 
-### 小节练习
-
-> [!question] 判断题 1
-> `ax.loglog()` 是将 X 轴和 Y 轴都设为对数坐标的方法。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: `loglog()` 同时将两个坐标轴设为对数尺度（等价于 `plot()` + `set_xscale('log')` + `set_yscale('log')`）。对应的有 `semilogx()`（仅 X 轴对数）和 `semilogy()`（仅 Y 轴对数）。
-
-
----
-
-## 章节测试
-
-### 一、判断题（正确选，错误选）
-
-> [!question] 判断题 1
-> `plt.subplots(2, 2)` 创建的 4 个子图必须有相同的大小。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: `subplots()` 按均匀网格排列，所有子图大小相同。如果需要不同的子图大小，应使用 `GridSpec` 或 `subplot2grid`。
-
-> [!question] 判断题 2
-> `ax.annotate()` 的箭头自动指向 `xy` 参数指定的数据坐标位置。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: `annotate('text', xy=(x, y), xytext=(x', y'))` 中 `xy` 是箭头的**指向位置**（数据坐标），`xytext` 是文本的**放置位置**。箭头从文本位置指向 `xy`。
-
-> [!question] 判断题 3
-> `ax.tick_params(axis='both', direction='in')` 让刻度线显示在坐标轴的内侧。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: `direction` 参数可取 `'in'`、`'out'`、`'inout'`，分别控制刻度线朝向坐标轴内侧、外侧或两侧。
-
-> [!question] 判断题 4
-> Matplotlib 的样式表（style sheets）只能使用内置的，不能自定义。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: 你可以创建 `.mplstyle` 文件并在 `plt.style.use('path/to/my_style.mplstyle')` 中使用。样式表的内容是 `rcParams` 参数的键值对，功能等同于 `plt.rcParams.update({...})`。
-
-> [!question] 判断题 5
-> `ax.twinx()` 创建的新坐标系与原坐标系共享 Y 轴。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `twinx()` 共享的是 **X 轴**，创建独立的 Y 轴。`twiny()` 则是共享 Y 轴，创建独立的 X 轴。名字中的 `x` 表示"共享 x"。
-
-> [!question] 判断题 6
-> `np.loadtxt(sys.stdin, dtype=[('algo', 'U10'), ('n', int)])` 可以从管道直接读取结构化数据，不需要逐行解析。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: `np.loadtxt` 接受文件路径或任何类文件对象（包括 `sys.stdin`），`dtype` 参数指定结构化数组的列类型。对于规整的文本数据，这是最高效的读取方式。
-
----
-
-
 ---
 
 ## 力扣练习
@@ -558,54 +456,3 @@ fig.savefig('benchmark_report.png', dpi=150)
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
 | — | 本章无对应力扣题 | — | 请用动手练习题自检 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：C 程序性能四面板报告
-> **难度**: 简单
->
-> 编写一个 C 程序，分别测试三种排序算法（冒泡、快速、归并）在不同输入规模（n=100, 500, 1000, 5000）下的耗时。输出格式：`sort_name n time_ms`。然后：
-> 1. Python 脚本用 `np.loadtxt(sys.stdin, dtype=...)` 读取数据
-> 2. 使用 `GridSpec(2, 2)` 创建 4 面板布局：
-> - 左上：三条时间曲线（对数 X 轴）
-> - 右上：n=5000 时的柱状图对比
-> - 左下：相对快速排序的加速比曲线
-> - 右下：汇总表格（`ax.table()` 或 `ax.text()`）
-> 3. 保存为 `sort_benchmark_report.pdf`（DPI=200）
-
-> [!example] 练习题 2：双 Y 轴数据展示
-> **难度**: 简单
->
-> 模拟一个 C 网络服务器程序输出的数据（CPU 使用率和 QPS 每秒查询数），时间点为 0-60 秒：
-> 1. 手动创建数据或用 `numpy.random` 生成
-> 2. 用 `twinx()` 在同一图上展示 CPU%（蓝色，左轴）和 QPS（红色，右轴）
-> 3. 添加填充区域（`ax.fill_between`）标注 CPU > 80% 的高负载区间
-> 4. 使用 "seaborn-v0_8-darkgrid" 样式
-> 5. 标注最高 QPS 点的数值（`ax.annotate`）
-
-> [!example] 练习题 3：自定义样式表
-> **难度**: 简单
->
-> 创建自定义样式表 `mono_style.mplstyle`：
-> - 所有绑图线条为黑色（`lines.color: black`）
-> - 线宽 2.0
-> - 字体大小 14
-> - 图例无边框（`legend.frameon: False`）
-> - 图片尺寸 12×6 英寸
-> - 保存 DPI 300
->
-> 然后在 Python 脚本中应用这个样式表，绑制任意一组数据的折线图。观察效果并与默认样式对比。
-
-> [!example] 练习题 4：从管道读取多维数据
-> **难度**: 简单
->
-> 编写 C 程序输出格式如下的数据（模拟三维传感器读数）：
-> ```
-> timestamp sensor1 sensor2 sensor3
-> 0.0 23.5 18.2 31.0
-> 0.1 23.8 18.0 30.8
-> ...
-> ```
-> 用 Python 脚本从管道读取，创建 3×1 的共享 X 轴的子图，分别展示三个传感器的时序数据。每个子图用不同的颜色和标记，添加水平虚线标注平均值。保存为 `sensor_plot.png`。

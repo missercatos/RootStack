@@ -68,9 +68,6 @@ rsync -av --exclude='*.o' --exclude='build/' src/ dst/
 python -c "import shutil; shutil.copytree('src','dst',ignore=shutil.ignore_patterns('*.o','build'))"
 ```
 
-### 小节练习
-
-
 ---
 
 ### 第二节：文本处理——grep/sed/awk 的 Python 平替
@@ -145,18 +142,6 @@ ips = set(re.findall(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', sys.stdin.read()))
 print('\n'.join(sorted(ips)))
 " < access.log
 ```
-
-### 小节练习
-
-> [!question] 判断题 1
-> `fileinput.input(inplace=True)` 会修改原文件内容。 ( )
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `inplace=True` 参数使 `fileinput` 将标准输出重定向到原文件，实现原地修改，等效于 `sed -i`。
-
 
 ---
 
@@ -236,9 +221,6 @@ for i,f in enumerate(sorted(glob.glob('split_*.csv'))):
 "
 ```
 
-### 小节练习
-
-
 ---
 
 ### 第四节：网络与系统信息
@@ -316,26 +298,6 @@ echo -n "Hello World" | python -c "import sys,base64; print(base64.b64encode(sys
 echo "SGVsbG8gV29ybGQ=" | python -c "import sys,base64; print(base64.b64decode(sys.stdin.read().strip()).decode())"
 ```
 
-### 小节练习
-
-> [!question] 判断题 1
-> `socket.connect_ex()` 在连接成功时返回 0。 ( )
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `connect_ex` 返回错误码（而非抛出异常）。返回 0 表示连接成功，返回非 0 值对应 `errno` 错误码。
-
-> [!question] 判断题 2
-> `/proc/cpuinfo` 是一个真实的磁盘文件，由操作系统写入。 ( )
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `/proc` 是 procfs 伪文件系统，其中的"文件"不存储在磁盘上，而是由 Linux 内核在读取时动态生成内容。这是内核向用户态暴露信息的接口。
-
 ---
 
 ### 第五节：数学计算与随机数
@@ -390,9 +352,6 @@ print(f'count={len(nums)} sum={sum(nums)} avg={sum(nums)/len(nums):.2f} min={min
 python -c "import math; print(f'π={math.pi:.15f} e={math.e:.15f}')"
 python -c "import math; print(math.sin(math.radians(30)), math.cos(math.radians(60)))"
 ```
-
-### 小节练习
-
 
 ---
 
@@ -452,81 +411,6 @@ for line in sys.stdin:
 
 > Python 作为管道中一环：bash 负责文件发现，Python 负责数据转换，bash 继续排序。各取所长。
 
-### 小节练习
-
-> [!question] 判断题 1
-> 在 `python -c "..."` 中不能使用换行，否则会报语法错误。 ( )
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: Python 语法允许在引号内使用换行，只要缩进正确即可。在 `python -c "..."` 中写多行代码是完全合法的常见做法。
-
-
----
-
-## 章节测试
-
-### 一、判断题（正确选，错误选）
-
-> [!question] 判断题 1
-> `python -c` 只能执行单行代码，不能写循环或条件语句。 ( )
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `python -c` 可执行任意 Python 代码，包括循环、条件、函数定义等。只需用引号括起多行代码（或在一行中用分号分隔）。
-
-> [!question] 判断题 2
-> `python -m json.tool` 可以用来格式化 JSON 文件。 ( )
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `python -m json.tool` 是标准库内置的 JSON 格式化工具，`-m` 表示以模块方式运行。
-
-> [!question] 判断题 3
-> `os.walk()` 比 `os.listdir()` 返回的结果更多，因为它递归遍历所有子目录。 ( )
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `os.walk` 递归遍历整个目录树，生成器每次 yield 一个三元组 (dirpath, dirnames, filenames)。`os.listdir` 只返回当前目录的条目名。
-
-> [!question] 判断题 4
-> Python 的 `random` 模块适合用于生成密码。 ( )
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `random` 使用可预测的 Mersenne Twister 算法，不应用于安全敏感场景。生成密码应使用 `secrets` 模块。
-
-> [!question] 判断题 5
-> `/proc/meminfo` 文件在 macOS 上也可以直接读取。 ( )
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `/proc` 是 Linux 特有的 procfs 伪文件系统，macOS 上不存在。macOS 获取系统信息需用 `sysctl` 命令或其他接口。
-
-> [!question] 判断题 6
-> 相比 bash 的 `sed -i`，`python -c` + `fileinput` 方案在 Windows 上同样可用。 ( )
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `fileinput` 模块是跨平台的。bash 的 `sed -i` 在 BSD sed（macOS）和 GNU sed 之间语法不同，而在 Windows 上根本没有 `sed`。
-
----
-
-
 ---
 
 ## 力扣练习
@@ -536,44 +420,3 @@ for line in sys.stdin:
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
 | — | 本章无对应力扣题 | — | 请用动手练习题自检 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：一行流替换 bash 管道
-> **难度**: 简单
->
-> 你有一个 `access.log` 文件。原来的 bash 管道是：
-> ```bash
-> cat access.log | grep "404" | awk '{print $1}' | sort | uniq -c | sort -rn | head -10
-> ```
-> 请改写成单个 `python -c` 调用，实现相同的功能（找出产生 404 错误最多的前 10 个 IP）。
-
-> [!example] 练习题 2：用 Python 做 C 项目的构建前检查
-> **难度**: 简单
->
-> 写一个 `python -c` 一行流，在你的 C 项目中完成以下检查：
-> 1. 确保所有 `.c` 文件都有对应的 `.h` 文件（main.c 除外）
-> 2. 确保所有 `.c` 文件都 `#include` 了对应的 `.h`
-> 3. 输出缺失对应关系的结果
->
-> 提示：使用 `os.listdir` + 文件内容 `in` 判断。
-
-> [!example] 练习题 3：生成 C 数组字面量
-> **难度**: 简单
->
-> 有时候在 C 代码中需要一个预计算的查找表（如三角函数表）。用 `python -c` 一行生成一个包含 0° 到 90° 每步 5° 的 sin 值的 C 数组声明：
-> ```c
-> const double sin_table[] = {0.000000, 0.087156, 0.173648, ... };
-> ```
-> 输出可直接复制到 C 源文件中。提示：`math.sin(math.radians(x))`。
-
-> [!example] 练习题 4：JSON 配置 → C 宏定义
-> **难度**: 简单
->
-> C 项目经常用 `#define MAX_BUFFER 1024` 等宏配置。用 `python -c` 读取 JSON 配置文件 `config.json`：
-> ```json
-> {"MAX_BUFFER": 1024, "SERVER_PORT": 8080, "LOG_LEVEL": 2}
-> ```
-> 生成对应的 `#define` 语句，输出到 `config.h`。提示：`json.load` + 字符串格式化。

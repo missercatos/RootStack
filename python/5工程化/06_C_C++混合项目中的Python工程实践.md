@@ -111,9 +111,6 @@ graph TB
 | `tests/` 混合测试 | C 测试 (`c/`)、Python 测试共存 | 纯 C 项目只有 `test/` |
 | 根配置聚合 | CMakeLists.txt + pyproject.toml | 纯 C 只有 CMakeLists.txt |
 
-### 小节练习
-
-
 ---
 
 ### 第二节：CMake 集成 Python 脚本
@@ -231,9 +228,6 @@ cmake --build build # 编译 C 代码
 cmake --build build --target pytest # 运行 Python 集成测试
 ```
 
-### 小节练习
-
-
 ---
 
 ### 第三节：Python 作为 C 项目的胶水层
@@ -330,9 +324,6 @@ class CProgramTester:
  print(f" Got: {result['got']!r}")
  return all_passed
 ```
-
-### 小节练习
-
 
 ---
 
@@ -461,18 +452,6 @@ def bidirectional_c_program():
 
 > 这个模式在 Node.js 和 Python 后端中也很常见——将高性能计算委托给 C 进程，通过 stdin/stdout 管道和 JSON 通信。优点是解耦：C 程序不需要知道 Python 的存在，只需实现一个简单的 JSON-in/JSON-out 接口。
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> subprocess 管道通信需要 C 程序专门为 Python 编写接口。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: C 程序只需实现标准输入/输出（stdin/stdout）的文本或 JSON 接口，这是一个标准的 Unix CLI 设计，与调用方语言无关。
-
 ---
 
 ### 第五节：Sphinx 文档生成
@@ -551,9 +530,6 @@ if(Python3_FOUND)
  )
 endif()
 ```
-
-### 小节练习
-
 
 ---
 
@@ -703,70 +679,6 @@ make docs # 生成 Sphinx HTML
 # 5. CI 会自动运行所有这些步骤
 ```
 
-### 小节练习
-
-
----
-
-## 章节测试
-
-### 一、判断题
-
-> [!question] 判断题 1
-> 在混合项目中，Python 脚本应放在 `src/` 目录中与 C 代码混合存放。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: Python 工具脚本应放在独立的 `python/` 或 `tools/` 目录中，`src/` 专用于 C 源码。职责分离使项目结构更清晰。
-
-> [!question] 判断题 2
-> CMake 的 `find_package(Python3 COMPONENTS Interpreter)` 只查找 Python 解释器，不查找 Python 头文件和库。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `COMPONENTS Interpreter` 仅查找 `Python3_EXECUTABLE`。如需内嵌 CPython 或编译 C 扩展，应使用 `COMPONENTS Interpreter Development`。
-
-> [!question] 判断题 3
-> subprocess + JSON 管道方式要求 C 程序在标准输出中输出 JSON，在标准错误中输出错误信息。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: 这是 Unix 的经典约定：stdout 是数据通道（JSON 输出），stderr 是诊断通道（日志、错误）。Python 端 `capture_output=True` 分别捕获两者。
-
-> [!question] 判断题 4
-> Sphinx 可以直接解析 C 源文件生成 API 文档，无需额外工具。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: Sphinx 本身只能文档化 Python 代码。文档化 C/C++ 需要 Doxygen（提取注释）→ Breathe 插件（桥接到 Sphinx）。流程是：C 源码 → Doxygen → XML → Breathe → Sphinx HTML。
-
-> [!question] 判断题 5
-> 混合项目的 `Makefile` 应该替代 `CMakeLists.txt` 来编译 C 代码。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `Makefile` 在此作为便捷命令层（`make test`、`make lint`），其内部调用 CMake。CMakeLists.txt 才是真正的构建系统配置。Makefile 提供快捷方式，CMake 负责实际编译。
-
-> [!question] 判断题 6
-> Python 类型注解（mypy 检查）对混合项目中的 Python 工具代码是可选的。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: mypy 类型检查是可选的，但对于构建脚本、代码生成器等工程代码，类型注解能显著减少运行时错误——这些工具的错误往往在半夜 CI 运行时才暴露。
-
-
 ---
 
 ## 力扣练习
@@ -776,67 +688,3 @@ make docs # 生成 Sphinx HTML
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
 | — | 本章无对应力扣题 | — | 请用动手练习题自检 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：搭建混合项目骨架
-> **难度**: 简单
->
-> 使用推荐的目录布局创建以下项目结构：
-> ```mermaid
-> graph TB
->  ROOT["hybrid-demo/"]
->  ROOT --> CMAKE["CMakeLists.txt (根构建文件)"]
->  ROOT --> MK["Makefile (便捷命令)"]
->  ROOT --> PYPROJ["pyproject.toml (Python工具配置)"]
->  subgraph SRC["src/"]
->  SRC_CMAKE["CMakeLists.txt"]
->  FIB_C["fibonacci.c (计算斐波那契)"]
->  FIB_H["fibonacci.h"]
->  end
->  ROOT --> SRC
->  subgraph PY["python/src/project_tools/"]
->  FIB_RUNNER["fib_runner.py (调用C程序的Python包装)"]
->  end
->  ROOT --> PY
->  subgraph TESTS["tests/"]
->  CONFTEST["conftest.py (编译C程序的fixture)"]
->  T_FIB["test_fibonacci.py (subprocess黑盒测试)"]
->  end
->  ROOT --> TESTS
->  SCRIPTS["scripts/"]
->  SCRIPTS --> BENCH["bench.sh"]
-> ```
->
-> 验证 `make build` 和 `make test` 都能正常工作。
-
-> [!example] 练习题 2：CMake 代码生成集成
-> **难度**: 简单
->
-> 1. 编写一个 Python 脚本 `generate_version.py`，从 `git describe --tags` 生成 `version.h`
-> 2. 在 CMakeLists.txt 中用 `add_custom_command` 集成代码生成
-> 3. 确保 `version.h` 在每次构建时自动更新（如果 git tag 变化）
-> 4. 在 `src/main.c` 中使用生成的版本宏
-
-> [!example] 练习题 3：JSON 管道数据交换
-> **难度**: 简单
->
-> 1. 用 C 实现一个 `json_calculator` 程序：
-> - 从 stdin 读取 JSON：`{"op": "add", "a": 3, "b": 5}`
-> - 在 stdout 输出 JSON：`{"result": 8}`
-> - 支持 `add`, `subtract`, `multiply`, `divide` 四种操作
-> 2. 用 Python 编写 `CalculatorClient` 类，通过 subprocess 管道与 C 程序通信
-> 3. 编写 pytest 测试，测试所有四种操作和错误处理（除零）
-
-> [!example] 练习题 4：完整的工程实践
-> **难度**: 简单
->
-> 为一个现有的小型 C 项目（>500 行 C 代码）添加 Python 工程支持：
-> 1. 重构目录布局，将 Python 脚本移入 `python/` 目录
-> 2. 创建 `pyproject.toml`，使 Python 工具可安装
-> 3. 添加 `Makefile`（build/test/lint/clean 目标）
-> 4. 创建 `.github/workflows/ci.yml`（C 编译 + Python 测试）
-> 5. 为 Python 工具添加 mypy 类型注解和 ruff lint 检查
-> 6. 确保 `make lint` 零错误、`make test` 全部通过

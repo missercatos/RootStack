@@ -63,18 +63,6 @@ raw_bytes = arr.tobytes() # 扁平化字节序列
 ptr = arr.ctypes.data_as(ctypes.POINTER(ctypes.c_uint8))
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> `ndarray.reshape()` 总是创建数据的新拷贝。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `reshape` 在可能时返回**视图（view）**——与原数组共享数据，仅改变形状和步长（stride）。但如果内存布局不连续，`reshape` 会先做一次拷贝（`copy()`）再变形。
-
 ---
 
 ### 第二节：ctypes 共享内存 —— 完全零拷贝
@@ -205,18 +193,6 @@ lib.adjust_brightness(arr_ptr, w, h, c, 30)
 # 方式 3：共享内存对象（multiprocessing.shared_memory）
 # 多个进程/线程共享同一块物理内存
 ```
-
-### 小节练习
-
-
-> [!question] 判断题 1
-> 通过 `arr.ctypes.data_as(POINTER(c_uint8))` 传给 C 函数修改后，`arr` 的内容会自动同步变化。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: `data_as` 返回的是指向 `arr` 底层内存的直接指针。C 函数对该指针的任何修改都直接作用在 NumPy 数组的内存上，因此 `arr` 的内容会"自动同步"——实际上是同一块内存。
 
 ---
 
@@ -375,18 +351,6 @@ lib.free_decoded(ctypes.byref(decoded))
 
 > 在这个流水线中，图像数据只在 C 解码 PNG 时分配了一次内存。Python 侧的 `as_array`、`fromarray`、`np.array` 中的 `fromarray` 复制了数据（因为 `.resize` 创建了新 Image），但核心的 C→Python 传递是零拷贝的。
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> 让 C 函数修改由 Python 的 `np.zeros` 分配的数组，需要通过 `arr.ctypes.data_as()` 获取指针。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: `arr.ctypes.data_as(POINTER(c_uint8))` 是获取 NumPy 数组底层 C 指针的标准方式。C 函数通过该指针可以直接原地修改 Python 中的数组数据。
-
 ---
 
 ### 第四节：struct 模块传递图像元数据
@@ -448,18 +412,6 @@ def deserialize_image(packet):
  payload_size = h * w * c * elem_size
  return np.frombuffer(packet[13:13+payload_size], dtype=dtype).reshape(h, w, c)
 ```
-
-### 小节练习
-
-> [!question] 判断题 1
-> `struct.pack('!I', 0x12345678)` 在 x86 小端机器上输出 `12 34 56 78`。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: `!` 前缀强制网络字节序（大端），与本地字节序无关。在小端 x86 机器上，`ntohl` 将收到的 `0x12345678` 转换后也是 `0x12345678`。如果不用 `!` 前缀，本地小端会输出 `78 56 34 12`。
-
 
 ---
 
@@ -543,72 +495,6 @@ shm.unlink()
 
 对于 GB 级卫星图像或视频帧流，`shared_memory` 是唯一合理的跨进程方案——没有拷贝，没有管道限制。
 
-### 小节练习
-
-> [!question] 判断题 1
-> `subprocess` 管道传输图像数据时，不存在任何数据拷贝。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: 管道传输时，数据从 C 进程的 `stdout` 内存 → 内核管道缓冲区 → Python 进程的 `stdout` bytes 对象，至少经过一次（通常是两次）拷贝。`shared_memory` 才是真正的零拷贝。
-
-
----
-
-## 章节测试
-
-### 一、判断题（正确选，错误选）
-
-> [!question] 判断题 1
-> `numpy.frombuffer(b, dtype=np.uint8)` 总是创建原始数据的拷贝。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `frombuffer` 的本质是"解释"—它在给定的缓冲区上直接构建数组视图，不创建拷贝。`numpy.frombuffer` 就是零拷贝的保证。与之对应的是 `numpy.fromiter`，它通过迭代创建拷贝。
-
-> [!question] 判断题 2
-> 通过 `arr.ctypes.data_as(POINTER(c_uint8))` 获取的指针在 Python 进程结束后仍然有效。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: 该指针指向 Python 进程中 NumPy 数组的底层内存。进程结束后（或被 GC 回收后），内存可能被释放或重用，指针变成悬空指针。C 长期持有该指针是危险的做法。
-
-> [!question] 判断题 3
-> `struct.pack('!III', w, h, c)` 的 `!` 前缀在小端 CPU 上强制使用大端字节序。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 正确
-> > > **解析**: `!` 代表"网络字节序"即大端（big-endian），C 侧对应的转换函数是 `ntohl`/`htonl`。使用统一的字节序避免了"编译器用大端、C 程序用小端"导致的数据错乱。
-
-> [!question] 判断题 4
-> `np.ctypeslib.as_array(ptr, shape)` 在 NumPy 数组被垃圾回收时会自动释放 C 侧内存。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: `as_array` 只创建视图，NumPy 不知道、也不负责这块内存的释放。必须通过 C 函数显式 `free`。如果 NumPy 数组是最后一个引用且被 GC，视图消失但底层内存仍在（导致泄漏）。
-
-> [!question] 判断题 5
-> 通过 `subprocess` 管道传输 100MB 图像，C 端 `fwrite` 完成后数据立即从物理内存消失。（ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > > 答案: 错误
-> > > **解析**: 管道使用内核缓冲区，数据在 Python 端 `read()` 之前一直保留在内核内存中。如果 Python 端读取很慢，写端可能被阻塞（管道缓冲区通常是 64KB）。
-
----
-
-
 ---
 
 ## 力扣练习
@@ -618,60 +504,3 @@ shm.unlink()
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
 | — | 本章无对应力扣题 | — | 请用动手练习题自检 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：ctypes 调用 stb_image
-> **难度**: 简单
->
-> 用 ctypes 封装 stb_image 库，实现 Python→C→Python 的零拷贝图像加载流水线：
-> 1. 下载 `stb_image.h`，用 C 包装函数编译为 `.so`
-> 2. Python 通过 ctypes 调用 C 函数读取 JPEG/PNG
-> 3. C 函数返回 `(data_ptr, width, height, channels)`
-> 4. Python 用 `as_array` 将数据转为 NumPy 数组
-> 5. 对比 `Image.open` 和 `cv2.imread` 的加载速度
-> 6. 确认 C 侧 `free` 时机正确，用 `valgrind` 检查无内存泄漏
->
-> 提示：C 包装函数需要 `include "stb_image.h"` 并定义 `STB_IMAGE_IMPLEMENTATION`。
-
-> [!example] 练习题 2：Python 处理 → C 写回管道
-> **难度**: 简单
->
-> 编写一个 C 程序 `threshold.c`，实现以下功能：
-> - 从 `stdin` 读取二进制图像数据：header（3×uint32） + 像素数据
-> - 对灰度图用 Otsu 方法计算阈值
-> - 将阈值化后的数据通过 `stdout` 写回
-> - Python 侧：加载图像 → 通过管道传给 C 程序 → 接收处理后的数据 → 显示对比
->
-> 记录 C 和 Python 分别实现 Otsu 阈值化算法的代码量和性能差异。
-
-> [!example] 练习题 3：共享内存 4K 视频帧处理
-> **难度**: 简单
->
-> 模拟一个"视频帧处理"场景，Python 和 C 共享一块图像内存：
-> 1. Python 用 `shared_memory.SharedMemory` 分配一个 `(2160, 3840, 3)` 的缓冲区
-> 2. Python 加载一张 4K 图像填充该缓冲区
-> 3. 启动一个 C 进程（`subprocess.Popen`），通过共享内存名连接
-> 4. C 进程对图像应用锐化核（`filter2D` 等价），直接写入共享内存
-> 5. Python 读取处理后的帧并用 Pillow 保存
-> 6. 测量从 Python 发起到 C 完成处理的端到端延迟
->
-> 提示：C 端用 `shm_open` / `mmap`，Python 端用 `shared_memory.SharedMemory`。
-
-> [!example] 练习题 4：构建跨语言图像处理管线
-> **难度**: 简单
->
-> 综合本章所有技术，构建一个完整的跨语言图像处理管线：
->
-> ```
-> [C 解码 PNG(libpng)] → [Python 去噪+增强] → [C 压缩 JPEG(libjpeg)] → 输出文件
-> ```
->
-> 要求：
-> - C→Python 传递使用 ctypes 共享内存（零拷贝）
-> - Python→C 传递使用 `struct` 打包 header + `subprocess` 管道
-> - 添加命令行接口：`python pipeline.py input.png output.jpg --quality 90 --denoise bilateral`
-> - 实现三个处理步骤（高斯去噪 / 对比度增强 / 缩放）和一个跳过模式（`--no-process` 直接转码）
-> - 在 README 中画出数据流图，标注每次拷贝的位置

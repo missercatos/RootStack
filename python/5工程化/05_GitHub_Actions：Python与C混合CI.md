@@ -75,9 +75,6 @@ jobs:
 
 这个矩阵生成 2 × 4 = 8 个并行任务，每个任务使用不同的 OS 和 Python 版本组合。runner 上的 Python 环境是完全隔离的——类似 8 个独立的虚拟环境。
 
-### 小节练习
-
-
 ---
 
 ### 第二节：Python + C 混合项目 CI
@@ -226,9 +223,6 @@ jobs:
  valgrind --leak-check=full --error-exitcode=1 ./build/myprogram
 ```
 
-### 小节练习
-
-
 ---
 
 ### 第三节：缓存与速度优化
@@ -286,9 +280,6 @@ uv 自带全局缓存，比 pip 的缓存更高效。
 | 构建产物 | `actions/cache` 缓存 `.venv/` | `actions/cache` 缓存 `build/` |
 | 系统包 | apt 缓存 | apt 缓存 |
 
-### 小节练习
-
-
 ---
 
 ### 第四节：矩阵构建策略
@@ -326,17 +317,6 @@ strategy:
 ```
 
 默认 `fail-fast: true` 会在任意 job 失败时取消其他正在运行的 job。对于混合项目，建议设为 `false`——C 构建在 macOS 上失败不应阻止 Linux 上的测试完成。
-
-### 小节练习
-
-> [!question] 判断题 1
-> `fail-fast: true` 表示如果有 job 失败，立即取消所有正在运行的 job。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `fail-fast: true`（默认行为）会在矩阵中任意 job 失败时取消其他仍在运行的 job。设为 `false` 可以让所有 job 独立完成，便于全面了解哪些平台/配置有问题。
 
 ---
 
@@ -482,70 +462,6 @@ jobs:
 
 > 这个工作流在每次 push 和 PR 时检查：C 代码能否编译、Python 测试能否通过、是否存在内存泄漏——覆盖了混合项目的完整质量维度。
 
-### 小节练习
-
-
----
-
-## 章节测试
-
-### 一、判断题
-
-> [!question] 判断题 1
-> GitHub Actions 的 `runs-on: ubuntu-latest` 提供一个虚拟机，用户可以在上面安装任意软件。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: GitHub Actions runner 是完整的虚拟机（Linux/macOS/Windows），用户拥有 sudo 权限，可安装 GCC、Clang、Valgrind 等任意软件。
-
-> [!question] 判断题 2
-> `strategy.matrix` 中定义的每个维度组合会生成独立的 job，在独立的 runner 上并行运行。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: 每个矩阵组合在独立的 runner 上运行，彼此环境完全隔离。这是 GitHub Actions 实现多平台多版本测试的核心机制。
-
-> [!question] 判断题 3
-> GitHub Actions 的免费计划允许无限量的 job 并行运行。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: GitHub 免费计划限制最多 20 个并发 job。超出限制的 job 会排队等待。设计矩阵时需考虑此限制。
-
-> [!question] 判断题 4
-> `actions/setup-python@v5` 的 `cache: 'pip'` 会缓存虚拟环境中的所有已安装包。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `cache: 'pip'` 只缓存 pip 的下载缓存（`~/.cache/pip`），使后续安装不需要重新下载。它不缓存已安装的包（site-packages 内容）。
-
-> [!question] 判断题 5
-> 在混合项目 CI 中，C 编译和 Python 测试不能在同一 job 中执行。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: 同一 job 中完全可以在安装 C 编译器后编译 C 代码，然后安装 Python 依赖并运行 pytest——job 内各 step 共享同一文件系统和环境。
-
-> [!question] 判断题 6
-> `needs` 关键字定义的 job 依赖关系是：如果被依赖的 job 失败，依赖它的 job 不会被跳过。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: 如果 `needs` 指向的 job 失败或跳过，依赖它的 job 也会被跳过。这是 CI 的快速失败机制——如果 lint 失败，测试 job 不必运行。
-
-
 ---
 
 ## 力扣练习
@@ -555,48 +471,3 @@ jobs:
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
 | — | 本章无对应力扣题 | — | 请用动手练习题自检 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：为纯 Python 项目创建 CI
-> **难度**: 简单
->
-> 1. 创建一个简单的 Python 项目（含 `src/`、`tests/`、`pyproject.toml`）
-> 2. 编写 `.github/workflows/ci.yml`：
-> - Python 3.9 ~ 3.12 矩阵构建
-> - ruff lint + format 检查
-> - mypy 类型检查
-> - pytest 测试运行
-> 3. Push 到 GitHub，观察 CI 运行结果
-
-> [!example] 练习题 2：为 C 项目创建 pytest CI
-> **难度**: 简单
->
-> 1. 有一个 C 项目（含 `src/`、`CMakeLists.txt`），其中 `tests/` 目录是用 pytest + subprocess 编写的测试
-> 2. 编写 CI 工作流：
-> - 安装 gcc 和 cmake
-> - 用 CMake 构建 C 代码
-> - 运行 pytest 测试（测试中调用编译好的 C 程序）
-> 3. 添加矩阵：Linux/macOS，gcc/clang
-
-> [!example] 练习题 3：混合项目 CI + 缓存优化
-> **难度**: 简单
->
-> 为混合 C/Python 项目编写完整的 CI 工作流：
-> 1. lint job（ruff + mypy + clang-format）
-> 2. test job 矩阵（OS × Python 版本 × Debug/Release）
-> 3. 使用 `cache: 'pip'` 缓存 Python 依赖
-> 4. 使用 `ccache` 缓存 C 编译
-> 5. 添加 Valgrind 检查（仅 Linux Debug）
-> 6. 配置 `fail-fast: false`
-
-> [!example] 练习题 4：CI 产物上传
-> **难度**: 简单
->
-> 在 test job 之后添加一个 build job：
-> 1. 构建 Release 版本的 `.so` 和 wheel
-> 2. 使用 `actions/upload-artifact` 上传构建产物
-> 3. 添加一个 deploy job：在有 tag 推送时，使用 `actions/download-artifact` 获取产物并发布到 GitHub Release
-> 4. 参考：[[../c语言教程/2深化/06_编译链接与ELF|C 编译链接]]

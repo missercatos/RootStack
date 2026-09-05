@@ -64,17 +64,6 @@ Python 3.12.3 (main, ...)
 
 > **关键对比**：上面的 `PyRun_SimpleString` 就等价于在终端执行 `python -c "..."`——但它在你的 C 进程内部运行，而不是启动外部子进程。这意味着 Python 代码可以直接访问 C 程序的数据结构（后面会展示）。
 
-### 小节练习
-
-> [!question] 判断题 1
-> `Py_Initialize()` 和 `Py_FinalizeEx()` 可以在程序生命周期中被多次调用。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: 一般情况下，`Py_Initialize()` 和 `Py_Finalize()` 配对使用一次。CPython 对重复初始化/清理的支持不完善（某些全局状态和扩展模块在清理后不能正确重建）。
-
 ---
 
 ### 第二节：C 和 Python 之间的值传递
@@ -166,18 +155,6 @@ int main() {
 
 > **重要规则**：每个 `PyObject*` 都遵循引用计数规则——获得新引用时引用计数 +1（创建函数自动处理），使用完后必须 `Py_DECREF()`。忘记 DECREF → 内存泄漏；过早 DECREF → 段错误。
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> `Py_None` 每次使用时都需要 `Py_INCREF`。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `Py_None` 是借用的引用（borrowed reference），如果你要持有一个引用（存储、返回等），必须先 `Py_INCREF(Py_None)`。否则它的引用计数可能被考虑为 0。
-
 ---
 
 ### 第三节：导入模块并调用 Python 函数
@@ -258,18 +235,6 @@ JSON 结果: {"name": "Alice", "age": 30}
 6. PyUnicode_AsUTF8 / PyLong_AsLong(result) → 提取返回值
 7. 对每个 PyObject* 调用 Py_DECREF → 释放引用
 ```
-
-### 小节练习
-
-> [!question] 判断题 1
-> `PyTuple_SetItem` 会自动增加传入对象的引用计数。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `PyTuple_SetItem` 会"窃取"（steal）传入对象的引用——它不增加引用计数，而是直接持有该引用。调用者不需要对传入的对象调用 `Py_DECREF`。
-
 
 ---
 
@@ -400,18 +365,6 @@ HOST=192.168.1.1 PORT=9090 DEBUG=1 ./embed_config
 
 > **这就是内嵌 Python 的威力**：配置逻辑用 Python 编写——无需重新编译 C 代码、无需重启构建系统、甚至可以在运行时动态加载/更新配置脚本。
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> 内嵌 CPython 的 C 程序在调用 `PyRun_SimpleString` 时，当前的 GIL 状态由 C 线程持有。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `Py_Initialize()` 后，调用线程自动获取 GIL。所有 CPython API 调用（除非明确声明"可释放"）都假定调用者持有 GIL。
-
 ---
 
 ### 第五节：编译与链接详解
@@ -467,71 +420,6 @@ gcc -o myapp myapp.c -I/usr/include/python3.12 -lpython3.12
 gcc -o myapp myapp.c -I/usr/include/python3.11 -lpython3.11
 ```
 
-### 小节练习
-
-> [!question] 判断题 1
-> `python3-config --embed` 选项仅在 Python 3.8+ 可用。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: Python 3.8 开始提供 `--embed` 选项，它输出完整的链接参数（包括 `-lpython3.x`）。旧版本需要手动添加 `-lpython`。
-
----
-
-## 章节测试
-
-### 一、判断题
-
-> [!question] 判断题 1
-> `#define PY_SSIZE_T_CLEAN` 是可选的定义，不影响程序行为。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `PY_SSIZE_T_CLEAN` 必须在 `#include <Python.h>` 之前定义。它确保 `PyArg_ParseTuple` 等函数使用 `Py_ssize_t` 而非旧的 `int` 类型，避免 64 位系统上的截断错误。
-
-> [!question] 判断题 2
-> `PyRun_SimpleString` 和 `PyRun_String` 都是执行 Python 代码的 API。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `PyRun_SimpleString` 适合执行语句（自动处理打印），`PyRun_String` 更底层——可选择 `Py_eval_input`（表达式）、`Py_single_input`（交互式）或 `Py_file_input`（模块）。
-
-> [!question] 判断题 3
-> `PyObject_CallObject` 可以调用 Python 对象上实现 `__call__` 方法的任何对象。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `PyObject_CallObject` 调用实现了 `tp_call` 槽位的任何对象——函数、方法、类、可调用对象都适用。但应先用 `PyCallable_Check` 验证。
-
-> [!question] 判断题 4
-> 内嵌 Python 的 C 程序中，可以通过 `Py_FinalizeEx()` 后再次 `Py_Initialize()` 来重启解释器。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: 虽然 API 文档说不应重复调用，实际上 CPython 的多次 init/finalize 支持不完善——内存泄漏和全局状态残留很常见。若需要此功能，考虑使用子进程隔离。
-
-> [!question] 判断题 5
-> Python 内嵌方式比 subprocess 方式性能更高，因为避免了进程创建和数据序列化开销。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: 内嵌方式在同一个进程内调用 Python API，数据传递是通过 C 指针和 Python 对象引用，零序列化开销。subprocess 需要启动新进程 + 序列化数据通过管道传输。
-
----
-
-
 ---
 
 ## 力扣练习
@@ -541,47 +429,3 @@ gcc -o myapp myapp.c -I/usr/include/python3.11 -lpython3.11
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
 | — | 本章无对应力扣题 | — | 请用动手练习题自检 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：最简单的内嵌
-> **难度**: 简单
->
-> 编写一个 C 程序，内嵌 Python 解释器并：
-> 1. 初始化解释器
-> 2. 执行 `print("Hello Embedded Python!")`
-> 3. 用 `PyRun_SimpleString` 执行循环计算 1 到 100 的和
-> 4. 将结果提取到 C 中并用 `printf` 输出
->
-> 编译并运行，确保链接正确。
-
-> [!example] 练习题 2：C 调用 Python 数据处理
-> **难度**: 简单
->
-> C 程序中有一个 C 数组 `double data[1000]`，通过内嵌 Python 实现：
-> 1. 将 C 数组转为 Python 的 `list`（用 `PyList_New` + `PyList_SetItem`）
-> 2. 调用 `statistics.mean()` 和 `statistics.stdev()` 计算统计值
-> 3. 将结果提取回 C 并打印
->
-> 与纯 C 实现对比代码量。
-
-> [!example] 练习题 3：Python 配置驱动
-> **难度**: 简单
->
-> 实现一个配置驱动的 C 服务器（简化版）：
-> 1. Python 配置文件 `config.py` 定义端口、超时等参数
-> 2. C 程序启动时读取配置并打印
-> 3. 支持通过 SIGUSR1 信号重新加载 Python 配置（热更新）
-> 4. 注意：信号处理函数中操作 CPython API 需要正确的 GIL 管理
-
-> [!example] 练习题 4：双向互操作
-> **难度**: 简单
->
-> 实现完整双向互操作：C 调用 Python 函数，Python 函数内又回调 C 函数：
-> 1. C 注册一个 `int c_add(int a, int b)` 函数为 Python 模块
-> 2. Python 脚本 `def process(a, b): return c_add(a, b) * 2`
-> 3. C 调用 `process(10, 20)` 获得 `60`
->
-> 理解 C 扩展函数在 Python 中的注册流程（`PyModuleDef` + `PyMethodDef`），以及它是如何和 C 内嵌代码共存于同一进程的。

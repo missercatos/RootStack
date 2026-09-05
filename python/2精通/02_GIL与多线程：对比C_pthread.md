@@ -277,18 +277,6 @@ def consumer():
  q.task_done()
 ```
 
-### 小节练习
-
-
-> [!question] 判断题 1
-> 有了 GIL，Python 多线程访问共享数据就不需要加锁了。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: GIL 保证单一字节码指令在 Python 层面的原子性，但多行高级代码之间仍可能被切换。修改共享数据结构仍需 `Lock()` 保护。
-
 ---
 
 ### 第五节：multiprocessing — 绕过 GIL
@@ -391,9 +379,6 @@ shm.unlink()
 
 > **C 对比**：C pthread 用共享地址空间实现线程间通信零开销。multiprocessing 的不同之处在于进程地址空间隔离 → 需要序列化/管道/shared_memory 来传递数据，有序列化开销。
 
-### 小节练习
-
-
 ---
 
 ### 第六节：在 C 扩展中释放 GIL
@@ -456,60 +441,6 @@ with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor:
 
 ---
 
-## 章节测试
-
-### 一、判断题
-
-> [!question] 判断题 1
-> Python 的 threading 模块在 Linux 上使用真正的 OS 线程（pthread）。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: CPython 的线程是真正的操作系统线程（Linux 上为 pthread）。GIL 限制的是同一时刻只有一个线程执行 Python 字节码，但线程本身是真实的 OS 线程。
-
-> [!question] 判断题 2
-> `daemon=True` 的线程在主线程退出后继续运行。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: 守护线程在主线程（所有非守护线程）退出时会被强制终止，不管它是否执行完毕。非守护线程会阻止程序退出。
-
-> [!question] 判断题 3
-> `multiprocessing.Pool.map()` 保证任务按输入顺序返回结果。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: `Pool.map()` 保持输入顺序，但内部任务可能是乱序执行的。如果需要乱序返回，使用 `Pool.imap_unordered()`。
-
-> [!question] 判断题 4
-> 使用 `multiprocessing` 启动进程时，子进程会复制父进程的内存空间。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 正确
-> > **解析**: Linux 上使用 fork（写时复制 COW），子进程最初与父进程共享内存页。但 Python 的引用计数会触发写操作，导致大量页面被复制。大数据的进程间传输推荐 `shared_memory`。
-
-> [!question] 判断题 5
-> `threading.Lock` 可以跨多个 `multiprocessing.Process` 使用。 （ ）
-> - [ ] 正确
-> - [ ] 错误
->
-> > [!success]- 点击查看答案
-> > 答案: 错误
-> > **解析**: `threading.Lock` 是进程内锁。跨进程同步需要使用 `multiprocessing.Lock`（基于信号量），或者 `multiprocessing.Manager().Lock()`（基于代理服务器）。
-
----
-
-
----
-
 ## 力扣练习
 
 以下题目用于验证本章所学内容：
@@ -518,42 +449,3 @@ with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor:
 |------|------|------|-----------|
 | 1114 | 按序打印 | https://leetcode.cn/problems/print-in-order/ | 多线程同步、锁机制 |
 | 1115 | 交替打印 FooBar | https://leetcode.cn/problems/print-foobar-alternately/ | 线程交替执行、信号量 |
-
-
-
-### 动手练习题
-
-> [!example] 练习题 1：验证 GIL 的 CPU 限制
-> **难度**: 简单
->
-> 编写一个 CPU 密集型函数（如计算斐波那契数列或素数判定），分别用以下方式运行并对比耗时：
-> 1. 单线程执行 4 次
-> 2. 4 个 threading.Thread 并发
-> 3. 4 个 multiprocessing.Process 并发
-> 
-> 预期：单线程 ≈ 4 线程 > 4 进程（在多核机器上）
-
-> [!example] 练习题 2：线程安全计数器
-> **难度**: 简单
->
-> 编写一个共享计数器，启动 100 个线程，每个线程执行 10000 次 `+= 1`，重复 10 次：
-> 1. 不加锁，观察最终计数是否为 1000000（通常不是）
-> 2. 加 `threading.Lock`，验证最终计数准确
-> 3. 解释为什么 GIL 没有自动保护这个场景
-
-> [!example] 练习题 3：生产者-消费者模型
-> **难度**: 简单
->
-> 使用 `queue.Queue` 实现生产者-消费者模型：
-> - 3 个生产者线程，每个生产 10 条数据
-> - 2 个消费者线程，从队列取数据并处理（模拟 I/O，使用 time.sleep）
-> - 使用 `task_done()` 和 `join()` 确保所有数据被处理完毕
-
-> [!example] 练习题 4：C 扩展释放 GIL
-> **难度**: 简单
->
-> 编写一个简单的 C 扩展（参考 [[05_ctypes：在Python中调用C库|精通 05 ctypes]] 或 [[07_pybind11与Cython：给C_C++库披上Python外衣|精通 07]]），包含：
-> - 一个 CPU 密集型 C 函数（矩阵乘法或大循环）
-> - 使用 `Py_BEGIN_ALLOW_THREADS` / `Py_END_ALLOW_THREADS` 释放 GIL
-> - 从 Python 启动 4 个线程同时调用该 C 函数
-> - 观察是否实现了真正的并行（CPU 利用率达到 400%）

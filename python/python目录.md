@@ -72,10 +72,13 @@ graph TB
  ROOT --> ENG["5工程化/ (6篇)<br/>venv/打包/测试/CI/CD"]
  ROOT --> QUANT["6量化分析/ (6篇)<br/>NumPy/Pandas/回测/性能加速"]
  ROOT --> SCI["7科学计算/ (5篇)<br/>NumPy/SciPy/SymPy + C加速对比"]
- ROOT --> VIZ["8数据可视化/ (5篇)<br/>Matplotlib/Seaborn/Plotly"]
+ ROOT --> VIZ["8数据可视化/ (6篇)<br/>Matplotlib/Seaborn/Plotly/Dash"]
  ROOT --> GFX["9图形处理/ (4篇)<br/>Pillow/OpenCV/与C库互操作"]
- ROOT --> WEB["10web应用/ (5篇)<br/>Flask/FastAPI/数据库/部署"]
+ ROOT --> WEB["10web应用/ (6篇)<br/>Flask/FastAPI/Django/数据库/部署"]
  ROOT --> AI["11人工智能/ (6篇)<br/>sklearn/PyTorch/ONNX部署(衔接C++)"]
+ ROOT --> NB["12notebook/<br/>Jupyter Notebook 交互式计算"]
+ ROOT --> SCRAPE["13爬虫/<br/>网络爬虫：requests/BeautifulSoup/Scrapy"]
+ ROOT --> CROSS["14跨语言/<br/>R/Julia 跨语言调用 (rpy2/juliacall)"]
 ```
 
 ---
@@ -86,7 +89,8 @@ graph TB
 |------|------|
 | [[../bash/bash目录\|Bash 脚本教程]] | 同为脚本语言教程，Bash偏系统/管道，Python偏通用/数据 |
 | [[../c语言教程/c目录\|C语言教程]] | 本教程前置，C↔Python互操作的核心 |
-| [[../rust/rust目录\|Rust教程]] | Rust做性能关键模块，Python做胶水 |
+| [[../cpp教程/cpp目录\|C++教程]] | pybind11 需要 C++11 |
+| [[../rust/rust目录\|Rust教程]] | Rust做性能关键模块，Python做胶水，PyO3 对应 pybind11 |
 
 ---
 
@@ -132,13 +136,16 @@ graph TB
 
 | 领域 | 入口目录 | 核心库 |
 |------|---------|--------|
-| 工程化 | [[../ISSUES\|5工程化/]] | venv/uv/pytest/ruff/pyproject.toml |
-| 量化分析 | [[../ISSUES\|6量化分析/]] | NumPy/Pandas/backtrader/akshare |
-| 科学计算 | [[../ISSUES\|7科学计算/]] | NumPy/SciPy/SymPy |
-| 数据可视化 | [[../ISSUES\|8数据可视化/]] | Matplotlib/Seaborn/Plotly |
-| 图形处理 | [[../ISSUES\|9图形处理/]] | Pillow/OpenCV |
-| Web 应用 | [[../ISSUES\|10web应用/]] | Flask/FastAPI/Django |
-| 人工智能 | [[../ISSUES\|11人工智能/]] | sklearn/PyTorch/ONNX |
+| 工程化 | [[5工程化/01_venv与uv：环境隔离\|5工程化/]] | venv/uv/pytest/ruff/pyproject.toml |
+| 量化分析 | [[6量化分析/01_NumPy数组：与C数组的血缘\|6量化分析/]] | NumPy/Pandas/backtrader/akshare |
+| 科学计算 | [[7科学计算/01_NumPy向量化：告别C式循环\|7科学计算/]] | NumPy/SciPy/SymPy |
+| 数据可视化 | [[8数据可视化/01_Matplotlib基础：画出C程序的输出\|8数据可视化/]] | Matplotlib/Seaborn/Plotly/Dash |
+| 图形处理 | [[9图形处理/01_Pillow：图像读取与处理\|9图形处理/]] | Pillow/OpenCV |
+| Web 应用 | [[10web应用/01_Flask：十分钟起一个服务\|10web应用/]] | Flask/FastAPI/Django |
+| 人工智能 | [[11人工智能/01_AI生态概览：sklearn到PyTorch\|11人工智能/]] | sklearn/PyTorch/ONNX |
+| Jupyter Notebook | [[12notebook/01_Jupyter_Notebook：交互式计算环境\|12notebook/]] | JupyterLab |
+| 网络爬虫 | [[13爬虫/01_网络爬虫：数据抓取\|13爬虫/]] | requests/BeautifulSoup/Scrapy/Playwright |
+| R/Julia 跨语言 | [[14跨语言/01_R与Julia跨语言调用\|14跨语言/]] | rpy2/juliacall |
 
 ---
 
@@ -193,3 +200,10 @@ graph TB
 - [Matplotlib 中文文档](https://matplotlib.org.cn/)
 - [FastAPI 文档](https://fastapi.tiangolo.com/zh/)
 - [PyTorch 中文文档](https://pytorch.org.cn/)
+- [Flask 文档](https://flask.palletsprojects.com/zh-cn/)
+- [Django 文档](https://docs.djangoproject.com/zh-hans/)
+- [Dash 文档](https://dash.plotly.com/)
+- [Jupyter 文档](https://jupyter.org/documentation)
+- [Scrapy 文档](https://docs.scrapy.org/)
+- [rpy2 文档](https://rpy2.github.io/)
+- [JuliaCall 文档](https://cjdoris.github.io/PythonCall.jl/stable/pythoncall/)
