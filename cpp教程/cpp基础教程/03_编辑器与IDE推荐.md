@@ -106,4 +106,3 @@ sudo apt install neovim clangd
 
 力扣: Hello,World! 练习 (用所选编辑器的编译调试功能完成)
 
-AI 自检提示：询问 AI "VSCode 中 tasks.json 和 launch.json 各负责什么，如何关联"。
