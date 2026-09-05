@@ -192,14 +192,14 @@ $$\text{arr}[i]\text{的起始地址} = \text{base} + i \times n \times \text{si
 
 再对 `arr[i][j]` 应用引理（`arr[i]` 是一维数组，下标为 $j$）：
 $$\text{addr}(i, j) = \text{base} + i \times n \times \text{sizeof}(T) + j \times \text{sizeof}(T) = \text{base} + (i \times n + j) \times \text{sizeof}(T)$$
-$\square$
+
 
 **定理（二维列优先寻址公式）**：对于 $m \times n$ 的二维数组（列优先存储），`arr[i][j]` 的地址为：
 $$\text{addr}(i, j) = \text{base} + (j \times m + i) \times \text{sizeof}(T)$$
 
 *证明*：列优先的内存解释相反——数组被视为"n 个一维数组，每个长度为 m"，即 `arr[j]` 是第 $j$ 列（长度为 $m$ 的一维数组）。因此：
 $$\text{addr}(i, j) = \text{base} + j \times m \times \text{sizeof}(T) + i \times \text{sizeof}(T) = \text{base} + (j \times m + i) \times \text{sizeof}(T)$$
-$\square$
+
 
 **步幅（stride）的物理含义**：公式中 $i$ 的系数 $n$ 和 $j$ 的系数 $1$（行优先）或 $m$ 和 $1$（列优先），分别表示该维度每增 1 时跨越的元素个数。行优先下，$i$ 每增 1 跳过完整一行（$n$ 个元素），$j$ 每增 1 只跳 1 个元素；列优先正好相反。**步幅决定了遍历时的缓存行为**——步幅越小的维度放内层循环，cache 命中率越高。
 
