@@ -83,12 +83,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "python/1入门/00_README.md",
+                "file": "python/1入门/05_异常处理与pdb调试.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "00_README"
+              "title": "05_异常处理与pdb调试"
             }
           }
         ],
@@ -273,6 +273,11 @@
   },
   "active": "c9aeaa3973e896b1",
   "lastOpenFiles": [
+    "python/1入门/04_字符串与文件读写.md",
+    "python/1入门/05_异常处理与pdb调试.md",
+    "python/1入门/03_列表与字典：C数组与结构体的平替.md",
+    "python/1入门/02_变量与类型：从C迁移.md",
+    "python/1入门/01_认识Python与python_-c_一行流.md",
     "python/1入门/00_README.md",
     "数据结构/A_数组_Array.md",
     "数据结构/B_字符串_String.md",
@@ -281,14 +286,9 @@
     "linux/distro/arch/07-archlinux上的软件下载网络问题.md",
     "菜鸟教程python3.md",
     "python/1入门/00_准备工作.md",
-    "python/1入门/01_认识Python与python_-c_一行流.md",
-    "python/1入门/03_列表与字典：C数组与结构体的平替.md",
-    "python/1入门/02_变量与类型：从C迁移.md",
     "python/2精通/01_PyObject与引用计数：Python的内存真相.md",
     "python/1入门/07_模块与包：import机制与pip.md",
     "python/1入门/06_类与继承：从struct到class.md",
-    "python/1入门/05_异常处理与pdb调试.md",
-    "python/1入门/04_字符串与文件读写.md",
     "java/1入门/02_Linux环境配置.md",
     "java/1入门/00_Java是什么.md",
     "linux/07-PATH深入与环境变量全书.md",
