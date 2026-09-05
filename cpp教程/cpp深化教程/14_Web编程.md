@@ -4,35 +4,35 @@
 
 ### TCP/IP 四层模型
 
-```
+```cpp
 应用层 ← HTTP, HTTPS, FTP, DNS
 传输层 ← TCP (可靠), UDP (不可靠), 端口号标识应用
 网络层 ← IP (路由转发), ICMP, ARP
 数据链路层 ← Ethernet, Wi-Fi, MAC 地址标识设备
 物理层 ← 传输介质（双绞线/光纤/电磁波）
-```
+```cpp
 
 数据发送时自上而下封装——每层添加自己的头部。接收时自下而上解封装。
 
 ### TCP 三次握手
 
-```
+```cpp
 Client → Server: SYN (seq=x) "我要连接"
 Server → Client: SYN+ACK (seq=y, ack=x+1) "我收到了，可以连接"
 Client → Server: ACK (ack=y+1) "我收到了你的确认"
-```
+```cpp
 
 为什么是三次而不是两次？假设只有两次握手——Client 发送 SYN 后因网络延迟被重传，旧 SYN 稍后才到 Server。Server 分配资源建立连接，但 Client 已经不需要这个连接了。三次握手让 Client 可以不回复 ACK，Server 就知道该连接请求是无效的。
 
 ### TCP 四次挥手
 
-```
+```cpp
 Client → Server: FIN "我不发数据了"
 Server → Client: ACK "收到"
 Server → Client: FIN "我也不发了"（可能间隔一段时间，期间 Server 仍可发数据）
 Client → Server: ACK "收到"
 （Client 进入 TIME_WAIT，等待 2MSL 约 1-4 分钟）
-```
+```cpp
 
 TIME_WAIT 的作用：确保最后的 ACK 被对方收到；让旧连接的迟到报文在网络中消亡。这也是 `SO_REUSEADDR` 存在的原因——允许服务器重启时立即绑定端口。
 
@@ -61,14 +61,14 @@ epoll 的两种触发模式：
 
 ### HTTP 协议格式
 
-```
+```cpp
 请求行：GET /path HTTP/1.1\r\n
 请求头：Host: www.example.com\r\n
  Content-Type: application/json\r\n
  Content-Length: 27\r\n
 空行： \r\n
 请求体：{"key": "value"}
-```
+```cpp
 
 常见状态码：200 OK, 201 Created, 301 永久移动, 400 Bad Request, 403 Forbidden, 404 Not Found, 500 Internal Server Error。
 
@@ -97,7 +97,7 @@ connect(sock, (struct sockaddr*)&addr, sizeof(addr));
 send(sock, data, len, 0);
 recv(sock, buffer, sizeof(buffer), 0);
 close(sock);
-```
+```cpp
 
 ### 服务器端
 
@@ -107,7 +107,7 @@ bind(server, (struct sockaddr*)&addr, sizeof(addr));
 listen(server, backlog);
 int client = accept(server, (struct sockaddr*)&client_addr, &len);
 // 对 client 进行 send/recv 操作
-```
+```cpp
 
 ### setsockopt 常用选项
 
@@ -115,7 +115,7 @@ int client = accept(server, (struct sockaddr*)&client_addr, &len);
 int opt = 1;
 setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)); // 端口重用
 setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &opt, sizeof(opt)); // 禁用 Nagle
-```
+```cpp
 
 ### getaddrinfo 协议无关解析
 
@@ -127,7 +127,7 @@ struct addrinfo* result;
 getaddrinfo("example.com", "80", &hints, &result);
 // 遍历 result 链表，依次尝试 connect
 freeaddrinfo(result);
-```
+```cpp
 
 ### RAII Socket 封装
 
@@ -140,7 +140,7 @@ public:
  Socket(Socket&& other) noexcept : fd(other.fd) { other.fd = -1; }
  Socket(const Socket&) = delete;
 };
-```
+```cpp
 
 ---
 

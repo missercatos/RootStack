@@ -25,7 +25,7 @@ C++ 数值模块汇集了除随机数和时间之外的数学工具：`complex` 
 
 ### complex —— 复数运算
 
-```
+```cpp
 FUNCTION demo_complex:
  a = COMPLEX<DOUBLE>(3.0, 4.0) // 3 + 4i
  b = COMPLEX<DOUBLE>(1.0, -2.0) // 1 - 2i
@@ -37,11 +37,11 @@ FUNCTION demo_complex:
  phase = ARG(a) // atan2(4,3) 弧度
  conj = CONJ(a) // 共轭: 3 - 4i
  PRINT a.REAL(), a.IMAG() // 3 4
-```
+```cpp
 
 ### numeric_limits —— 类型边界
 
-```
+```cpp
 FUNCTION demo_limits:
  PRINT NUMERIC_LIMITS<INT>::MAX() // 2147483647
  PRINT NUMERIC_LIMITS<INT>::MIN() // -2147483648
@@ -54,11 +54,11 @@ FUNCTION demo_limits:
  END IF
 
  PRINT "小数位数:", NUMERIC_LIMITS<DOUBLE>::DIGITS10 // 15
-```
+```cpp
 
 ### ratio —— 编译期有理数
 
-```
+```cpp
 FUNCTION demo_ratio:
  USING milli = RATIO<1, 1000> // 1/1000
  USING kilo = RATIO<1000, 1> // 1000/1
@@ -69,11 +69,11 @@ FUNCTION demo_ratio:
 
  // 编译期计算，零运行时开销
  USING ratio_sum = RATIO_ADD<kilo, RATIO<500,1>> // 1500/1
-```
+```cpp
 
 ### C++20 numbers 常量
 
-```
+```cpp
 FUNCTION demo_numbers:
  PRINT PI // 3.141592653589793...
  PRINT E // 2.718281828459045...
@@ -81,11 +81,11 @@ FUNCTION demo_numbers:
  PRINT PHI // 1.618033988749895...
 
  area = PI * r * r // 不再需要 #define PI
-```
+```cpp
 
 ### valarray —— 数值数组
 
-```
+```cpp
 FUNCTION demo_valarray:
  a = VALARRAY<DOUBLE>({1.0, 2.0, 3.0})
  b = VALARRAY<DOUBLE>({4.0, 5.0, 6.0})
@@ -94,7 +94,7 @@ FUNCTION demo_valarray:
  d = a * b // [4, 10, 18]
  e = a * 2.0 // [2, 4, 6]（标量广播）
  f = a.APPLY(LAMBDA(x): RETURN x*x) // [1, 4, 9]
-```
+```cpp
 
 ---
 

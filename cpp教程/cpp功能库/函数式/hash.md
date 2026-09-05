@@ -8,11 +8,11 @@ title: "C++ 功能库 — hash"
 
 ## 核心概念
 
-```
+```cpp
 unordered_map<T, U>:
  HASH<T> ──→ hash(key) ──→ 桶索引 ──→ 找到元素
  EQUAL<T> ──→ eq(a, b) ──→ 比较桶内元素
-```
+```cpp
 
 自主实现哈希需同时提供 `hash` 函数和 `equal_to` 比较。
 
@@ -28,17 +28,17 @@ unordered_map<T, U>:
 
 ### 基本类型哈希
 
-```
+```cpp
 FUNCTION demo_basic_hash:
  hasher = HASH<STRING>{} // 构造哈希对象
  h1 = hasher("hello") // 计算 "hello" 的哈希
  h2 = HASH<INT>{}(42) // 42 的哈希
  h3 = HASH<DOUBLE>{}(3.14)
-```
+```cpp
 
 ### 自定义类型的哈希（特化 hash 模板）
 
-```
+```cpp
 FUNCTION demo_custom_hash:
  USING Point = PAIR<INT, INT> // (x, y)
 
@@ -54,11 +54,11 @@ FUNCTION demo_custom_hash:
  // 现在 Point 可用作 unordered_set 的 key（默认 hash 和 equal_to）
  points = UNORDERED_SET<Point>()
  points.INSERT(Point{3, 5})
-```
+```cpp
 
 ### 自定义哈希函数对象（不特化 hash）
 
-```
+```cpp
 FUNCTION demo_custom_functor:
  USING Person = OBJECT:
  name = STRING()
@@ -80,11 +80,11 @@ FUNCTION demo_custom_functor:
 
  // 使用时显式指定
  mapping = UNORDERED_SET<Person, PersonHash, PersonEqual>()
-```
+```cpp
 
 ### 组合哈希的技巧
 
-```
+```cpp
 FUNCTION demo_hash_combine:
  // 标准做法：用 XOR 和位移组合多个哈希
  COMBINE_HASH = LAMBDA(seed, val):
@@ -100,7 +100,7 @@ FUNCTION demo_hash_combine:
  seed = COMBINE_HASH(seed, p.z)
  RETURN seed
  END HASH
-```
+```cpp
 
 ---
 

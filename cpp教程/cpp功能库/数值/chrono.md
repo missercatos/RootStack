@@ -40,7 +40,7 @@ title: "C++ 功能库 — chrono"
 
 ### 精确计时
 
-```
+```cpp
 FUNCTION demo_timer:
  start = STEADY_CLOCK::NOW()
 
@@ -54,11 +54,11 @@ FUNCTION demo_timer:
 
  us = DURATION_CAST<MICROSECONDS>(elapsed).COUNT()
  PRINT "耗时:", us, "μs"
-```
+```cpp
 
 ### C++14 时间字面量
 
-```
+```cpp
 FUNCTION demo_literals:
  USING NAMESPACE chrono_literals
 
@@ -68,11 +68,11 @@ FUNCTION demo_literals:
 
  SLEEP_FOR(100ms) // 休眠 100 毫秒
  SLEEP_FOR(1s) // 休眠 1 秒
-```
+```cpp
 
 ### 时钟的区别
 
-```
+```cpp
 FUNCTION demo_clocks:
  // system_clock: 可以转成 C 风格 time_t
  now_sys = SYSTEM_CLOCK::NOW()
@@ -84,11 +84,11 @@ FUNCTION demo_clocks:
  // ... 被测代码 ...
  t2 = STEADY_CLOCK::NOW()
  elapsed = t2 - t1 // 永远 > 0
-```
+```cpp
 
 ### 时间算术
 
-```
+```cpp
 FUNCTION demo_arithmetic:
  t1 = STEADY_CLOCK::NOW()
  t2 = t1 + 500ms // 500ms 后
@@ -96,7 +96,7 @@ FUNCTION demo_arithmetic:
 
  d = t3 - t1 // 2500ms
  PRINT DURATION_CAST<MILLISECONDS>(d).COUNT() // 2500
-```
+```cpp
 
 ---
 

@@ -21,7 +21,7 @@ title: "C++ 功能库 — function / bind"
 
 ### function —— 统一可调用对象
 
-```
+```cpp
 FUNCTION demo_function:
  // function 可以持有任何匹配签名的可调用物
  op = FUNCTION<INT(INT, INT)>()
@@ -43,11 +43,11 @@ FUNCTION demo_function:
  callbacks.PUSH(LAMBDA: PRINT "first")
  callbacks.PUSH(LAMBDA: PRINT "second")
  FOR f IN callbacks: f()
-```
+```cpp
 
 ### bind —— 参数绑定
 
-```
+```cpp
 FUNCTION demo_bind:
  ADD_FUNC add(a, b, c): RETURN a + b + c
 
@@ -59,11 +59,11 @@ FUNCTION demo_bind:
 
  reversed = BIND(add, _3, _2, _1) // 重排
  PRINT reversed(1, 2, 3) // 6（3+2+1）
-```
+```cpp
 
 ### bind 与成员函数
 
-```
+```cpp
 FUNCTION demo_member_bind:
  Printer = OBJECT:
  msg = STRING()
@@ -79,11 +79,11 @@ FUNCTION demo_member_bind:
  // 也可以用 mem_fn
  f = MEM_FN(&Printer::print_prefix)
  f(p, "Hello") // "Hello World"
-```
+```cpp
 
 ### reference_wrapper —— 按引用传递
 
-```
+```cpp
 FUNCTION demo_ref:
  counter = 0
 
@@ -91,7 +91,7 @@ FUNCTION demo_ref:
  inc = BIND(LAMBDA(n): n++, REF(counter))
  inc() // 修改的是 counter 引用
  PRINT counter // 1
-```
+```cpp
 
 ---
 

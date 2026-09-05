@@ -1,6 +1,5 @@
 ---
-title: "template <typename T>
-class deque"
+title: "std::deque 双端队列"
 ---
 
 ## 底层数据结构
@@ -35,7 +34,7 @@ class deque"
 
 ## 伪代码示例
 
-```
+```cpp
 deque<int> dq
 
 // 双端插入
@@ -56,7 +55,7 @@ for i from 1 to n:
  win.pop_front()
  if i >= k:
  print a[win.front()]
-```
+```cpp
 
 ## 相关链接
 

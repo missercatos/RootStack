@@ -46,7 +46,7 @@ title: "C++ 功能库 — span / bitset / byte"
 
 ### span —— 通用数组视图
 
-```
+```cpp
 FUNCTION demo_span:
  arr = INT[]{1, 2, 3, 4, 5, 6, 7, 8}
 
@@ -65,11 +65,11 @@ FUNCTION demo_span:
  v = VECTOR<INT>{1, 2, 3}
  PROCESS(SPAN<INT>(v)) // vector → span
  PROCESS(SPAN<INT>(arr, 3)) // C数组 → span
-```
+```cpp
 
 ### bitset —— 位集操作
 
-```
+```cpp
 FUNCTION demo_bitset:
  flags = BITSET<10>()
  flags.SET(0) // 0000000001
@@ -87,11 +87,11 @@ FUNCTION demo_bitset:
 
  n = flags.TO_ULONG() // 转为 unsigned long
  PRINT flags.TO_STRING() // "0000001011"
-```
+```cpp
 
 ### 标志位模式
 
-```
+```cpp
 FUNCTION demo_flags:
  FLAGS = ENUM:
  READ = 0
@@ -105,11 +105,11 @@ FUNCTION demo_flags:
 
  IF perms.TEST(FLAGS::READ): PRINT "可读"
  IF perms.TEST(FLAGS::EXECUTE): PRINT "可执行"
-```
+```cpp
 
 ### byte —— 字节操作
 
-```
+```cpp
 FUNCTION demo_byte:
  b1 = BYTE{0xA0}
  b2 = BYTE{0x0B}
@@ -118,7 +118,7 @@ FUNCTION demo_byte:
  shifted = b1 << 4 // 0x00（高位移出）
 
  val = TO_INTEGER<INT>(b1) // 转为 int
-```
+```cpp
 
 ---
 

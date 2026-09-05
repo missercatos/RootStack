@@ -31,7 +31,7 @@ title: "C++ 功能库 — filesystem"
 
 ### 路径操作
 
-```
+```cpp
 FUNCTION demo_path:
  p = PATH("/home/user/docs")
  full = p / "subdir" / "file.txt" // 拼接
@@ -44,11 +44,11 @@ FUNCTION demo_path:
  IF EXISTS(full) THEN
  PRINT "文件存在, 大小=", FILE_SIZE(full)
  END IF
-```
+```cpp
 
 ### 目录遍历
 
-```
+```cpp
 FUNCTION demo_iterate:
  p = PATH("/home/user/project")
 
@@ -60,11 +60,11 @@ FUNCTION demo_iterate:
  PRINT " ", path.FILENAME(), " (", entry.FILE_SIZE(), "b)"
  END IF
  END FOR
-```
+```cpp
 
 ### 文件操作
 
-```
+```cpp
 FUNCTION demo_ops:
  // 创建目录（含父目录）
  CREATE_DIRECTORIES("/tmp/a/b/c")
@@ -80,7 +80,7 @@ FUNCTION demo_ops:
 
  // 递归删除目录
  REMOVE_ALL("/tmp/a")
-```
+```cpp
 
 ---
 

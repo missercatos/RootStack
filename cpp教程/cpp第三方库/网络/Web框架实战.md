@@ -43,13 +43,13 @@ int main() {
 
     app.port(18080).multithreaded().run();    // 多 worker 线程模式启动
 }
-```
+```cpp
 
 ```bash
 g++ -std=c++17 main.cpp -o hello -lpthread    # header-only 库：无链接步骤
 ./hello
 curl http://localhost:18080/
-```
+```cpp
 
 `CROW_ROUTE` 是宏展开成路由表注册；lambda 返回值自动包成 HTTP 200 响应。整条链路没有任何魔法框架代码，就是一个事件循环 + 分发表：
 
@@ -65,7 +65,7 @@ sequenceDiagram
     R->>H: /user/<int> 命中，提取参数 42
     H-->>L: 返回 JSON 字符串
     L-->>C: 200 OK + body
-```
+```asm
 
 ### URL 参数、查询串与 JSON 请求体
 
@@ -89,7 +89,7 @@ CROW_ROUTE(app, "/search")
     if (!kw) return std::string("missing q");
     return fmt_ok(kw, page ? page : "1");
 });
-```
+```asm
 
 JSON 请求体解析：
 
@@ -102,7 +102,7 @@ CROW_ROUTE(app, "/echo").methods(crow::HTTPMethod::POST)([](const crow::request&
         {"age", body["age"].i()}                // 读整型字段
     }};
 });
-```
+```asm
 
 Crow 自带的 `crow::json` 够用于简单场景；复杂结构建议换 nlohmann-json（见实战节）。
 
@@ -128,7 +128,7 @@ CROW_MIDDLEWARES(app, RequestLogger)
 CROW_ROUTE(app, "/protected")([]{
     return "secret data";
 });
-```
+```asm
 
 与 Spring 的 Filter/Interceptor 概念完全对应，只是没有注解和反射，全靠模板参数静态组装——零运行时开销。
 
@@ -148,7 +148,7 @@ CROW_ROUTE(app, "/static/<string>")
     std::stringstream ss; ss << in.rdbuf();
     return crow::response{ss.str()};
 });
-```
+```asm
 
 生产环境更常见的分工是：C++ 只提供 API，静态资源交给 Nginx/CDN——动静分离让 C++ 进程专注计算。
 
@@ -224,7 +224,7 @@ private:
     std::unordered_map<long, Todo> items_;
     long next_id_;
 };
-```
+```asm
 
 ### 路由层：完整 CRUD
 
@@ -299,7 +299,7 @@ int main() {
 
     app.port(18080).multithreaded().run();
 }
-```
+```cpp
 
 验证一轮完整生命周期：
 
@@ -308,7 +308,7 @@ curl -X POST localhost:18080/todos -d '{"title":"buy milk"}'
 curl localhost:18080/todos
 curl -X PUT localhost:18080/todos/1 -d '{"done":true}'
 curl -X DELETE localhost:18080/todos/1
-```
+```cpp
 
 ### cpp-httplib 极简对照版
 
@@ -325,7 +325,7 @@ int main() {
     });
     svr.listen("0.0.0.0", 18081);      // 没有 JSON 类型、没有路径参数语法，
 }                                       // 一切都要手写：解析、序列化、状态码
-```
+```cpp
 
 cpp-httplib 定位是"嵌入式 HTTP 能力"（常被塞进桌面软件做本地回环接口），当 Web 框架用会缺路由参数、中间件这些基础设施——这也反衬出 Crow 的甜点位。
 
@@ -334,7 +334,7 @@ cpp-httplib 定位是"嵌入式 HTTP 能力"（常被塞进桌面软件做本地
 ```bash
 ab -n 100000 -c 200 http://localhost:18080/todos     # 总数10万 并发200
 wrk -t8 -c256 -d30s http://localhost:18080/todos     # 8线程 256连接 持续30秒
-```
+```cpp
 
 关注三个数字而非单一 QPS：
 

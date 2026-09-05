@@ -1,8 +1,5 @@
 ---
-title: "template <typename Key, typename Hash = hash<Key>, typename Equal = equal_to<Key>>
-class unordered_set
-template <typename Key, typename Hash, typename Equal>
-class unordered_multiset"
+title: "std::unordered_set 无序集合"
 ---
 
 ## 底层数据结构
@@ -40,7 +37,7 @@ class unordered_multiset"
 
 ## 伪代码示例
 
-```
+```cpp
 unordered_set<int> s
 
 // 插入（自动去重）
@@ -71,7 +68,7 @@ s.insert(43)
 
 // multiset 删除一个重复值
 ums.erase(ums.find(5))
-```
+```cpp
 
 ## 相关链接
 
