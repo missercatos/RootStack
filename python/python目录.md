@@ -69,7 +69,7 @@ graph TB
  ROOT --> ADV["2精通/ (8篇)<br/>解释器底层 + C互操作（本教程灵魂）"]
  ROOT --> PRACTICE["3实战/ (5篇)<br/>小项目：一行流、构建辅助、与C配合"]
  ROOT --> LIB["4库/<br/>标准库 + 第三方库 分类索引"]
- ROOT --> ENG["5工程化/ (6篇)<br/>venv/打包/测试/CI/CD"]
+ ROOT --> ENG["5工程化/ (7篇)<br/>venv/打包/测试/CI/CD/运行项目"]
  ROOT --> QUANT["6量化分析/ (6篇)<br/>NumPy/Pandas/回测/性能加速"]
  ROOT --> SCI["7科学计算/ (5篇)<br/>NumPy/SciPy/SymPy + C加速对比"]
  ROOT --> VIZ["8数据可视化/ (6篇)<br/>Matplotlib/Seaborn/Plotly/Dash"]
@@ -137,6 +137,7 @@ graph TB
 | 领域 | 入口目录 | 核心库 |
 |------|---------|--------|
 | 工程化 | [[5工程化/01_venv与uv：环境隔离\|5工程化/]] | venv/uv/pytest/ruff/pyproject.toml |
+| 从零运行项目 | [[5工程化/07_从零运行一个Python项目\|运行现有项目]] | 克隆/虚拟环境/pip install/运行 |
 | 量化分析 | [[6量化分析/01_NumPy数组：与C数组的血缘\|6量化分析/]] | NumPy/Pandas/backtrader/akshare |
 | 科学计算 | [[7科学计算/01_NumPy向量化：告别C式循环\|7科学计算/]] | NumPy/SciPy/SymPy |
 | 数据可视化 | [[8数据可视化/01_Matplotlib基础：画出C程序的输出\|8数据可视化/]] | Matplotlib/Seaborn/Plotly/Dash |
