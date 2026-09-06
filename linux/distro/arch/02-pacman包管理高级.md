@@ -1043,6 +1043,119 @@ pacman -Ss <关键词>
 
 ---
 
+## 9. AUR 包需要手动下载源文件的处理
+
+> 某些 AUR 包（如 DaVinci Resolve、VMware Workstation）的 PKGBUILD 不会自动下载源文件，
+> 需要你手动从官网下载安装包，然后放到 yay/paru 的缓存目录中，再执行安装。
+
+### 9.1 原理说明
+
+正常的 AUR 安装流程：
+
+```bash
+yay -S some-package
+# yay 自动：下载源码 → 执行 PKGBUILD → 构建 → 安装
+```
+
+但有些包因为许可证限制，PKGBUILD 无法包含下载链接（`source=()` 为空或标注 `SKIP`）：
+
+```bash
+# PKGBUILD 中的典型写法
+source=("DaVinci_Resolve_${pkgver}_Linux.zip"::"SKIP")
+# 或
+sha256sums=('SKIP')
+```
+
+这类包需要你手动下载源文件，放到 yay/paru 的构建缓存目录。
+
+### 9.2 完整操作流程
+
+以 DaVinci Resolve 为例：
+
+```bash
+# 1. 先用 AUR 助手安装（会失败，但会创建缓存目录）
+yay -S davinci-resolve
+
+# 2. 此时终端会提示找不到源文件，不要急着清理
+#    yay 已经在 ~/.cache/yay/davinci-resolve/ 创建了构建目录
+
+# 3. 从官网下载安装包
+#    访问 https://www.blackmagicdesign.com/products/davinciresolve
+#    下载 Linux 版本的 .zip 文件到 ~/Downloads/
+
+# 4. 将下载的文件复制到 yay 缓存目录
+cp ~/Downloads/DaVinci_Resolve_19.1.3_Linux.zip ~/.cache/yay/davinci-resolve/
+
+# 5. 再次执行安装
+yay -S davinci-resolve
+
+# 6. 安装完成后清理构建文件（可选）
+yay -Sc davinci-resolve
+```
+
+### 9.3 完整示例表格
+
+| 软件 | AUR 包名 | 下载来源 | 缓存目录 |
+|------|---------|---------|---------|
+| DaVinci Resolve | `davinci-resolve` | blackmagicdesign.com | `~/.cache/yay/davinci-resolve/` |
+| VMware Workstation | `vmware-workstation` | vmware.com | `~/.cache/yay/vmware-workstation/` |
+| Google Chrome | `google-chrome` | google.com/chrome (自动下载) | 自动处理 |
+| Microsoft Edge | `microsoft-edge-stable` | microsoft.com (自动下载) | 自动处理 |
+
+### 9.4 缓存目录说明
+
+```bash
+# yay 缓存目录结构
+~/.cache/yay/
+├── davinci-resolve/
+│   ├── PKGBUILD           # 构建脚本
+│   ├── .SRCINFO           # 包信息
+│   ├── DaVinci_Resolve_*.zip  # ← 你手动放的源文件
+│   └── *.pkg.tar.zst      # 构建好的包（安装后生成）
+
+# paru 缓存目录
+~/.cache/paru/
+└── davinci-resolve/
+    └── ...
+```
+
+### 9.5 常见问题
+
+```bash
+# 问题：找不到缓存目录
+ls ~/.cache/yay/davinci-resolve/
+# 如果目录不存在，先运行一次 yay -S davinci-resolve 让它创建
+
+# 问题：文件名必须完全匹配
+# 查看 PKGBUILD 中的 source 数组，确认文件名
+cat ~/.cache/yay/davinci-resolve/PKGBUILD | grep source
+
+# 问题：安装后想清理缓存
+yay -Sc davinci-resolve    # 清理该包的构建缓存
+yay -Scc                   # 清理所有缓存（慎用）
+
+# 问题：提示校验失败
+# 检查文件是否完整下载（对比文件大小）
+ls -lh ~/Downloads/DaVinci_Resolve_*.zip
+```
+
+### 9.6 与 pacman 缓存的区别
+
+| 缓存 | 路径 | 用途 |
+|------|------|------|
+| pacman 缓存 | `/var/cache/pacman/pkg/` | 已安装包的 .pkg.tar.zst |
+| yay/paru 缓存 | `~/.cache/yay/` 或 `~/.cache/paru/` | AUR 构建过程的源文件和中间产物 |
+
+```bash
+# 查看 pacman 已安装包缓存
+ls /var/cache/pacman/pkg/ | head -5
+
+# 查看 yay 构建缓存
+ls ~/.cache/yay/ | head -5
+```
+
+---
+
 ## 10. 相关资源
 
 - pacman 官方手册: `man pacman`
