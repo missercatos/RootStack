@@ -1,18 +1,18 @@
-# 简易计算器：从零到GUI
+# GUI
 
-## 原理
+## 
 
-GUI 框架选择 `egui`（立即模式 immediate mode），与保留模式（retained mode）的区别：
-- 立即模式：每帧重建 UI 描述，无持久 widget 树，适合工具和原型
-- 保留模式：widget 有生命周期，适合复杂应用程序
+GUI  `egui` immediate moderetained mode
+-  UI  widget 
+- widget 
 
-egui 基于 OpenGL 渲染后端，通过 `eframe` 运行。事件循环由 winit 驱动，每帧调用 `update` 函数重新绘制。按钮由 `ui.button("text").clicked()` 返回 bool，无回调注册。
+egui  OpenGL  `eframe`  winit  `update`  `ui.button("text").clicked()`  bool
 
-表达式求值使用简单的运算符扫描（状态机：读数字 → 遇到运算符 → 保存操作数 → 继续），支持 + - * / 四则运算。
+ →  →  →  + - * / 
 
 ---
 
-## 语法
+## 
 
 ```toml
 # Cargo.toml
@@ -54,11 +54,11 @@ fn main() -> Result<(), eframe::Error> {
 
 ---
 
-## 实践
+## 
 
-### 力扣问题
+### 
 
-力扣: 力扣表达式求值 — 基础表达式解析
+:  — 
 
 ```rust
 fn eval(expr: &str) -> i64 {
@@ -81,8 +81,3 @@ fn eval(expr: &str) -> i64 {
  (result + last) % 10000
 }
 ```
-
-### AI 自检
-
-1. egui 的立即模式如何避免界面闪烁？布局缓存机制是什么？
-2. `eframe::run_native` 的主事件循环结构是怎样的？
