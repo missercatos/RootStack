@@ -202,6 +202,7 @@
   },
   "active": "d21830301a75db0c",
   "lastOpenFiles": [
+    "python/5工程化/08_Conda：科学计算的环境与包管理.md",
     "rust/1入门/04-做决策：条件与循环.md",
     "linux/04-文件与目录管理.md",
     "linux/06-命令行基础与Shell入门.md",
@@ -227,7 +228,6 @@
     "linux/distro/arch/01-安装指南.md",
     "数据结构/G_队列_Queue.md",
     "cpp教程/cpp基础教程/07_条件语句.md",
-    "数据结构/B_字符串_String.md",
     "python/14跨语言",
     "python/13爬虫",
     "python/12notebook",
