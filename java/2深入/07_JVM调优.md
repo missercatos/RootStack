@@ -352,7 +352,7 @@ flowchart LR
 
 | 题目 | 链接 | 练习点 |
 |------|------|--------|
-| [滑动窗口最大值](https://leetcode.cn/problems/sliding-window-maximum/) | sliding-window-maximum | 暴力 O(nk) 到单调队列 O(n) 的完整优化过程，体会"换数据结构降复杂度" |
-| [数组中第 K 个最大元素](https://leetcode.cn/problems/kth-largest-element-in-an-array/) | kth-largest-element-in-an-array | 快速选择 vs 小顶堆两种方案的时空取舍 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | sliding-window-maximum | 暴力 O(nk) 到单调队列 O(n) 的完整优化过程，体会"换数据结构降复杂度" |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | kth-largest-element-in-an-array | 快速选择 vs 小顶堆两种方案的时空取舍 |
 
 下一章回到语言层面，学习让代码更简洁的 Stream 与函数式编程。

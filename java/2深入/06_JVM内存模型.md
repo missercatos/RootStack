@@ -734,7 +734,7 @@ public class GcObserve {
 
 | 题目 | 链接 | 练习点 |
 |------|------|--------|
-| [环形链表](https://leetcode.cn/problems/linked-list-cycle/) | linked-list-cycle | 快慢指针判环——类比引用图中检测环的存在 |
-| [相交链表](https://leetcode.cn/problems/intersection-of-two-linked-lists/) | intersection-of-two-linked-lists | 两条引用链找公共节点——类比从两个 Root 出发的可达集交点 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | linked-list-cycle | 快慢指针判环——类比引用图中检测环的存在 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | intersection-of-two-linked-lists | 两条引用链找公共节点——类比从两个 Root 出发的可达集交点 |
 
 下一章进入实战运维：当 OOM 真的发生时，怎么用工具揪出凶手。
