@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "java/1入门/00 README.md",
+                "file": "java/1入门/00_Java是什么.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "00 README"
+              "title": "00_Java是什么"
             }
           },
           {
@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "java/1入门/00 README.md",
+                "file": "java/1入门/08_条件语句.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "00 README"
+              "title": "08_条件语句"
             }
           },
           {
@@ -41,16 +41,16 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "java/1入门/01_Windows环境配置.md",
+                "file": "java/1入门/07_运算符与表达式.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "01_Windows环境配置"
+              "title": "07_运算符与表达式"
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -229,11 +229,17 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "bfed163a524ba5c9",
+  "active": "688c01905c150935",
   "lastOpenFiles": [
-    "java/1入门/00_Java是什么.md",
-    "java/1入门/00 README.md",
     "java/1入门/01_Windows环境配置.md",
+    "java/1入门/08_条件语句.md",
+    "java/1入门/05_第一个程序与jshell.md",
+    "java/1入门/04_编辑器与IDE选择.md",
+    "java/1入门/03_macOS环境配置.md",
+    "java/1入门/00_Java是什么.md",
+    "java/写在教程之前.md",
+    "java/未命名",
+    "java/1入门/00 README.md",
     "linux/06-命令行基础与Shell入门.md",
     "python/5工程化/08_Conda：科学计算的环境与包管理.md",
     "rust/1入门/04-做决策：条件与循环.md",
@@ -252,11 +258,6 @@
     "python/5工程化/07_从零运行一个Python项目.md",
     "linux/05-文本编辑器(Vim+Nano).md",
     "linux/03-FHS文件系统层次标准.md",
-    "linux/08-用户与权限管理.md",
-    "rust/4工程/15-GitHub实战项目精选.md",
-    "linux/02-多发行版安装指南.md",
-    "linux/01-Linux概述与历史.md",
-    "linux/00-Linux快速上手.md",
     "python/14跨语言",
     "python/13爬虫",
     "python/12notebook",
@@ -276,7 +277,6 @@
     "assets/字符串动画/bf_search.gif",
     "assets/字符串动画",
     "assets/1.py",
-    "1.py",
     "docs/Canvas.canvas",
     "密码学/未命名.canvas",
     "未命名.canvas"
