@@ -345,6 +345,6 @@ $2 ==> 42
 
 ## LeetCode 巩固
 
-本章无新语法，热身题不变：[两数之和](https://leetcode.cn/problems/two-sum/)。
+本章无新语法，热身题不变：[https://www.luogu.com.cn/problem/P1001](P1001 A+B Problem)。
 
 一个实用建议：在 LeetCode 网页端刷题不需要本地 IDE，但把代码同步保存到本地仓库是好习惯。等下一章学完 main 方法与 jshell，就可以把题解放进自己的 `leetcode` 目录里用 `java` 直接运行验证。

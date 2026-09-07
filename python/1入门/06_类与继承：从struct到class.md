@@ -456,6 +456,6 @@ print(c.to_json())
 
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
-| 146 | LRU 缓存 | https://leetcode.cn/problems/lru-cache/ | 类设计、双向链表+哈希表 |
-| 232 | 用栈实现队列 | https://leetcode.cn/problems/implement-queue-using-stacks/ | 类封装、双栈 |
-| 225 | 用队列实现栈 | https://leetcode.cn/problems/implement-stack-using-queues/ | 类封装、数据结构 |
+| P1022 | 计算器的改良 | https://www.luogu.com.cn/problem/P1022 | 字符串解析 |
+| P1023 |  tickets | https://www.luogu.com.cn/problem/P1023 | 栈、队列 |
+| P1024 | 四则运算 | https://www.luogu.com.cn/problem/P1024 | 栈、表达式 |

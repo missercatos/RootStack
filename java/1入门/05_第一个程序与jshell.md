@@ -374,7 +374,7 @@ javadoc -d doc CommentDemo.java   # 生成 doc/ 目录下的 HTML 文档
 
 学完以上内容已经足够写出第一道题了。
 
-[两数之和](https://leetcode.cn/problems/two-sum/)：给定整数数组 nums 和目标值 target，找出和为目标值的两个整数下标。假设恰好有一个答案，同一元素不能用两次。
+[https://www.luogu.com.cn/problem/P1001](P1001 A+B Problem)：给定整数数组 nums 和目标值 target，找出和为目标值的两个整数下标。假设恰好有一个答案，同一元素不能用两次。
 
 ### 7.1 思路
 
@@ -510,8 +510,8 @@ LeetCode 的 Java 模板只给你核心方法（signature 已定），把 `twoSu
 
 ## LeetCode 巩固
 
-本章实战已完成 [两数之和](https://leetcode.cn/problems/two-sum/) 的暴力解法。巩固建议：
+本章实战已完成 [https://www.luogu.com.cn/problem/P1001](P1001 A+B Problem) 的暴力解法。巩固建议：
 
 1. 把题解提交到 LeetCode 通过，感受在线判题流程
-2. 进阶尝试：[罗马数字转整数](https://leetcode.cn/problems/roman-to-integer/) ——练习字符串遍历与条件分支（学完 [[06_变量与数据类型|变量与数据类型]] 后更顺手）
+2. 进阶尝试：[https://www.luogu.com.cn/problem/P1001](P1001 A+B Problem) ——练习字符串遍历与条件分支（学完 [[06_变量与数据类型|变量与数据类型]] 后更顺手）
 3. 保持节奏：每章一道，攒够五十题时你对 Java 语法的肌肉记忆就建立了

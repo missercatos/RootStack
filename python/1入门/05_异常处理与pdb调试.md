@@ -409,5 +409,5 @@ except Exception:
 
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
-| 278 | 第一个错误的版本 | https://leetcode.cn/problems/first-bad-version/ | 二分查找、错误检测模式 |
-| 374 | 猜数字大小 | https://leetcode.cn/problems/guess-number-higher-or-lower/ | 二分查找、边界处理 |
+| P1020 | 导弹拦截 | https://www.luogu.com.cn/problem/P1020 | 贪心、二分 |
+| P1021 | 邮票面值设计 | https://www.luogu.com.cn/problem/P1021 | 动态规划 |

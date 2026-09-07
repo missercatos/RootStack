@@ -376,6 +376,6 @@ chmod +x check-java.sh
 
 ## LeetCode 巩固
 
-环境就绪，热身题依然是 [两数之和](https://leetcode.cn/problems/two-sum/)。macOS 用户可以在 IDEA 或终端里各跑一遍代码找找手感。
+环境就绪，热身题依然是 [https://www.luogu.com.cn/problem/P1001](P1001 A+B Problem)。macOS 用户可以在 IDEA 或终端里各跑一遍代码找找手感。
 
 下一章我们比较各家编辑器与 IDE，之后就能正式进入代码世界——从 [[05_第一个程序与jshell|第一个程序与 jshell]] 开始。

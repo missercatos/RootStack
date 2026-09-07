@@ -51,9 +51,10 @@
 
 ## 三、精选项目清单与学习路线
 
-以下八个项目按学习难度递进排列。星数为约数，随时间浮动。
+### 3.1 Web 框架类
 
-### 3.1 spring-projects/spring-petclinic（约 8k 星）
+#### spring-projects/spring-petclinic（约 8k 星）
+https://github.com/spring-projects/spring-petclinic
 
 Spring 官方示范应用，1999 年以 PetClinic 形态存在，是"教科书级分层架构"的活标本。体量小（几十个类）、技术栈标准（Spring Boot + JPA + Thymeleaf），适合通读。
 
@@ -67,47 +68,41 @@ Spring 官方示范应用，1999 年以 PetClinic 形态存在，是"教科书�
 比如图书管理系统,严格模仿它的分层与命名
 ```
 
-### 3.2 iluwatar/java-design-patterns（约 90k 星）
+#### spring-projects/spring-boot（约 76k 星）
+https://github.com/spring-projects/spring-boot
 
-GOF 二十三式及大量现代模式的 Java 实现，每个模式配 UML 与真实场景说明。不建议从头读到尾，当字典用：
-
-```text
-学习路线:
-第 1 步:只看你项目里正在用的模式(如策略、工厂、建造者)
-第 2 步:每读完一个,在自己的代码里找到或重构出一个实例
-第 3 步:进阶读组合模式章节(abstract-document、monostate)
-复刻建议:不用整库复刻,选 10 个模式各写一个
-"业务化"示例(而非书上的 Shape/Pizza 教学例子)
-```
-
-### 3.3 TheAlgorithms/Java（约 60k 星）
-
-算法大全：排序、搜索、图论、动态规划的纯 Java 实现，配合刷题食用最佳。
+Spring Boot 本体。读源码的终极目标之一——理解自动配置是怎么实现的。重点模块：`spring-boot-autoconfigure`（自动配置核心）、`spring-boot-starters`（起步依赖定义）。
 
 ```text
 学习路线:
-第 1 步:刷题卡壳时来看对应算法的标准实现(先自己写再看)
-第 2 步:对照 LeetCode 分类,按专题阅读
-第 3 步:挑几个实现写单元测试,练习 JUnit 参数化测试
-复刻建议:建一个 algorithm-notes 仓库,
-每个算法用自己的话写注释+复杂度分析+刷题链接
+第 1 步:从 @SpringBootApplication 切入，追到 @EnableAutoConfiguration
+第 2 步:读 AutoConfigurationImportSelector，理解条件注解过滤
+第 3 步:挑一个你常用的 starter（如 spring-boot-starter-web）
+        追它的自动配置类（如 ServletWebServerFactoryAutoConfiguration）
+第 4 步:看 spring.factories / AutoConfiguration.imports 文件
+复刻建议:写一个自己的 spring-boot-starter-xxx，
+        实现一个自定义的自动配置
 ```
 
-### 3.4 redisson/redisson（约 23k 星）
+#### spring-projects/spring-framework（约 58k 星）
+https://github.com/spring-projects/spring-framework
 
-功能最全的 Redis Java 客户端，分布式锁、限流器、延迟队列应有尽有。重点读它的**锁实现**：watchdog 续期、Lua 脚本保证原子性、RedLock 思想。
+Spring 框架本体。IoC、AOP、MVC 的源码全在这里。门槛最高，但读完后对 Spring 的理解会从"会用"变成"会改"。
 
 ```text
 学习路线:
-第 1 步:先用 lock/unlock,思考"宕机了锁会死吗"
-第 2 步:读 RLock 的 lock 加锁 Lua 脚本(HASH 记录持有线程)
-第 3 步:追 watchdog 默认 30 秒租期的续期逻辑
-第 4 步:对比 SETNX 手写版,理解为什么手写版本有坑
-复刻建议:手写一个简化版分布式锁(加锁 Lua + 过期 + 续期线程),
-再与 Redisson 对拍差异,收获极大
+第 1 步:从 ApplicationContext.refresh() 切入（Spring 启动的 12 个步骤）
+第 2 步:理解 BeanFactory / BeanDefinition / BeanPostProcessor 的关系
+第 3 步:AOP：从 @Aspect 到代理对象的生成过程
+第 4 步:MVC：DispatcherServlet 的请求分发链路
+复刻建议:写一个 100 行的 mini-spring：
+        BeanFactory + 生命周期回调 + 简单 AOP 代理
 ```
 
-### 3.5 mybatis/mybatis-3（约 20k 星）
+### 3.2 ORM 与数据访问类
+
+#### mybatis/mybatis-3（约 20k 星）
+https://github.com/mybatis/mybatis-3
 
 源码量适中（核心几万行），是"第一个通读的开源框架"的最佳选择。设计模式密度极高：工厂、建造者、责任链、动态代理全在里面。
 
@@ -119,24 +114,11 @@ GOF 二十三式及大量现代模式的 Java 实现，每个模式配 UML 与�
         -> Executor -> StatementHandler -> JDBC
 第 4 步:看一级/二级缓存的 PerpetualCache 与装饰器
 复刻建议:写一个 100 行的 mini-mybatis:
-解析简单 XML 映射 + 动态代理执行 SQL + 结果集映射成对象
+        解析简单 XML 映射 + 动态代理执行 SQL + 结果集映射成对象
 ```
 
-### 3.6 netty/netty（约 34k 星）
-
-Java NIO 巅峰之作，事件驱动模型的范本。门槛较高，建议有并发基础后再啃：
-
-```text
-学习路线:
-第 1 步:先懂 NIO 基础(Channel/Buffer/Selector)
-第 2 步:抓主线:EventLoop 线程模型与 pipeline 传播
-第 3 步:读 ByteBuf 的池化与引用计数
-第 4 步:看一个现成协议实现(如 HTTP 编解码器)收尾
-复刻建议:用 Netty 写一个简单的 Redis 协议客户端
-(RESP 协议文本简单,非常适合练手)
-```
-
-### 3.7 alibaba/druid（约 28k 星）
+#### alibaba/druid（约 28k 星）
+https://github.com/alibaba/druid
 
 数据库连接池加 SQL 监控，国内生产环境存量巨大。学习重点是连接池的通用原理：
 
@@ -150,7 +132,115 @@ Java NIO 巅峰之作，事件驱动模型的范本。门槛较高，建议有�
 再故意制造"借了不还",体会泄漏检测的价值
 ```
 
-### 3.8 google/guava（约 50k 星）
+#### hibernate/hibernate-orm（约 5.9k 星）
+https://github.com/hibernate/hibernate-orm
+
+JPA 规范的参考实现。如果你想理解"为什么 JPA 的方法名推导能自动生成 SQL"，答案就在 Hibernate 的 `QueryTranslatorImpl` 中。
+
+```text
+学习路线:
+第 1 步:理解 SessionFactory / Session / Transaction 的关系
+第 2 步:从 @Entity 到表结构的映射过程（SchemaExport）
+第 3 步:HQL 到 SQL 的转换过程（QueryTranslator）
+第 4 步:一级缓存（Session 缓存）与脏检查机制
+复刻建议:实现一个简化版 ORM：
+        注解解析 + 动态代理 + SQL 生成 + 结果映射
+```
+
+### 3.3 消息与中间件类
+
+#### apache/kafka（约 29k 星）
+https://github.com/apache/kafka
+
+分布式消息系统。重点读分区、副本、ISR 机制，以及消费者组的 offset 管理。
+
+```text
+学习路线:
+第 1 步:理解 Topic / Partition / Replica 的概念模型
+第 2 步:读 Producer 的 batch 发送与 ack 策略
+第 3 步:Consumer 的 offset 提交与 rebalance 机制
+第 4 步:Controller 的选举与分区分配
+复刻建议:用 Java NIO 手写一个简单的 TCP 消息服务器
+        （只支持 pub/sub，不需持久化）
+```
+
+#### rocketmq/rocketmq（约 21k 星）
+https://github.com/apache/rocketmq
+
+阿里开源的消息中间件，国内使用广泛。读 NameServer 路由发现、Broker 消息存储、ConsumeQueue 索引结构。
+
+```text
+学习路线:
+第 1 步:理解 NameServer / Broker / Producer / Consumer 架构
+第 2 步:读消息存储：CommitLog + ConsumeQueue + IndexFile
+第 3 步:事务消息的 half + check 机制
+第 4 步:消费重试与死信队列
+复刻建议:手写一个支持持久化的简单消息队列
+```
+
+#### redisson/redisson（约 23k 星）
+https://github.com/redisson/redisson
+
+功能最全的 Redis Java 客户端，分布式锁、限流器、延迟队列应有尽有。重点读它的**锁实现**：watchdog 续期、Lua 脚本保证原子性、RedLock 思想。
+
+```text
+学习路线:
+第 1 步:先用 lock/unlock,思考"宕机了锁会死吗"
+第 2 步:读 RLock 的 lock 加锁 Lua 脚本(HASH 记录持有线程)
+第 3 步:追 watchdog 默认 30 秒租期的续期逻辑
+第 4 步:对比 SETNX 手写版,理解为什么手写版本有坑
+复刻建议:手写一个简化版分布式锁(加锁 Lua + 过期 + 续期线程),
+再与 Redisson 对拍差异,收获极大
+```
+
+### 3.4 微服务与云原生类
+
+#### alibaba/spring-cloud-alibaba（约 14k 星）
+https://github.com/alibaba/spring-cloud-alibaba
+
+Spring Cloud 的阿里实现：Nacos（配置+注册）、Sentinel（限流熔断）、Seata（分布式事务）、RocketMQ（消息）。
+
+```text
+学习路线:
+第 1 步:用 Nacos 搭一个配置中心，理解配置动态刷新
+第 2 步:用 Sentinel 实现限流，理解滑动窗口计数
+第 3 步:追 Nacos 的服务发现机制（心跳 + 临时实例）
+第 4 步:看 Sentinel 的 Slot 链（责任链模式）
+复刻建议:用 ZooKeeper 手写一个简易服务注册中心
+```
+
+#### alibaba/Sentinel（约 20k 星）
+https://github.com/alibaba/Sentinel
+
+面向分布式服务架构的流量控制组件。核心概念：滑动窗口、令牌桶、热点参数限流、系统自适应保护。
+
+```text
+学习路线:
+第 1 步:理解 SlotChain 责任链（NodeSelector → ClusterBuilder → Flow → Degrade）
+第 2 步:读 FlowSlot 的限流算法（滑动窗口 + 匀速/预热/排队）
+第 3 步:DegradeSlot 的熔断降级（慢调用比例/异常比例/异常数）
+第 4 步:热点参数限流的 LRU 淘汰
+复刻建议:实现一个简化版限流器（滑动窗口 + 令牌桶）
+```
+
+#### apache/dubbo（约 40k 星）
+https://github.com/apache/dubbo
+
+阿里开源的 RPC 框架。读它的服务发现、负载均衡、集群容错、SPI 扩展机制。
+
+```text
+学习路线:
+第 1 步:理解 Provider / Consumer / Registry / Monitor 四角色
+第 2 步:追 Dubbo SPI 扩展加载机制（vs Java SPI 的增强）
+第 3 步:负载均衡策略（Random/RoundRobin/LeastActive/ConsistentHash）
+第 4 步:集群容错（Failover/Failfast/Failsafe/Forking）
+复刻建议:用 Java Socket + 反射手写一个简易 RPC 框架
+```
+
+### 3.5 并发与工具类
+
+#### google/guava（约 50k 星）
+https://github.com/google/guava
 
 Google 的 Java 工具军火库。不必通读，按需取用并读对应实现：
 
@@ -163,20 +253,152 @@ Google 的 Java 工具军火库。不必通读，按需取用并读对应实现�
 复刻建议:给自己造一个 utils 库,收录工作中重复造过的轮子
 ```
 
-### 3.9 八个项目速查表
+#### netty/netty（约 34k 星）
+https://github.com/netty/netty
 
-| 项目 | 星数 | 核心价值 | 难度 | 建议投入 |
-|------|------|----------|------|----------|
-| spring-petclinic | 8k | 分层架构范本 | 低 | 1 周 |
-| java-design-patterns | 90k | 设计模式字典 | 低 | 长期查阅 |
-| TheAlgorithms/Java | 60k | 算法参考实现 | 低 | 配合刷题 |
-| guava | 50k | 工具库与编码品味 | 中 | 按需 |
-| druid | 28k | 连接池原理+监控 | 中 | 2 周 |
-| mybatis-3 | 20k | 第一个通读的框架 | 中 | 1-2 月 |
-| redisson | 23k | 分布式锁源码 | 中高 | 2 周 |
-| netty | 34k | NIO 与事件驱动 | 高 | 2-3 月 |
+Java NIO 巅峰之作，事件驱动模型的范本。门槛较高，建议有并发基础后再啃：
 
-使用原则：同一时期主攻一个，读完一个的"学习路线四步"再开下一个；难度高的项目（netty）放在并发基础扎实之后。
+```text
+学习路线:
+第 1 步:先懂 NIO 基础(Channel/Buffer/Selector)
+第 2 步:抓主线:EventLoop 线程模型与 pipeline 传播
+第 3 步:读 ByteBuf 的池化与引用计数
+第 4 步:看一个现成协议实现(如 HTTP 编解码器)收尾
+复刻建议:用 Netty 写一个简单的 Redis 协议客户端
+(RESP 协议文本简单,非常适合练手)
+```
+
+#### TheAlgorithms/Java（约 60k 星）
+https://github.com/TheAlgorithms/Java
+
+算法大全：排序、搜索、图论、动态规划的纯 Java 实现，配合刷题食用最佳。
+
+```text
+学习路线:
+第 1 步:刷题卡壳时来看对应算法的标准实现(先自己写再看)
+第 2 步:对照 LeetCode 分类,按专题阅读
+第 3 步:挑几个实现写单元测试,练习 JUnit 参数化测试
+复刻建议:建一个 algorithm-notes 仓库,
+每个算法用自己的话写注释+复杂度分析+刷题链接
+```
+
+### 3.6 监控与 DevOps 类
+
+#### prometheus/client_java（约 2k 星）
+https://github.com/prometheus/client_java
+
+Prometheus 的 Java 客户端。学习如何暴露 JVM 指标、自定义业务指标、与 Prometheus 集成。
+
+```text
+学习路线:
+第 1 步:理解 Counter/Gauge/Histogram/Summary 四种指标类型
+第 2 步:读 JVM 指标的采集逻辑（GC/内存/线程）
+第 3 步:实现自定义 Collector 暴露业务指标
+第 4 步:理解文本格式 exposition format
+复刻建议:写一个简化版指标库（Counter + Gauge + HTTP 暴露）
+```
+
+#### arthas/arthas（约 35k 星）
+https://github.com/alibaba/arthas
+
+阿里开源的 Java 诊断工具。无需改代码、无需重启，线上实时诊断问题。
+
+```text
+学习路线:
+第 1 步:安装并使用基础命令（dashboard/thread/trace/jad）
+第 2 步:用 trace 命令追踪方法调用链路
+第 3 步:用 watch 命令观察方法入参和返回值
+第 4 步:用反编译（jad）确认线上运行的代码版本
+复刻建议:用 Java Instrumentation API 写一个简易版的
+        方法耗时统计工具（Java Agent）
+```
+
+### 3.7 构建与测试类
+
+#### alibaba/maven-proxy（约 3k 星）
+https://github.com/nicoulaj/maven-mirror（参考类）
+
+Maven 私服/镜像的实现原理。学习代理仓库、缓存策略、认证授权。
+
+```text
+学习路线:
+第 1 步:搭建 Nexus/Artifactory 私服
+第 2 步:理解远程仓库代理的请求转发逻辑
+第 3 步:读 Maven 的 settings.xml 镜像配置原理
+第 4 步:实现一个简化版的 Maven 代理（HTTP 代理 + 文件缓存）
+复刻建议:用 Spring Boot 写一个 Maven 私服的最小实现
+```
+
+#### mockito/mockito（约 14k 星）
+https://github.com/mockito/mockito
+
+Java 最流行的 Mock 框架。核心原理是 Java 动态代理 + 字节码生成。
+
+```text
+学习路线:
+第 1 步:理解 when/thenReturn/stub 的语义
+第 2 步:读 MockUtil.createMock() 的代理生成过程
+第 3 步:理解 ArgumentCaptor 和 Verify 的实现
+第 4 步:看 Mockito 如何处理 final 类和 static 方法
+复刻建议:用 JDK Proxy + InvocationHandler 写一个简化版 Mock 框架
+```
+
+### 3.8 数据库与存储类
+
+#### alibaba/nacos（约 29k 星）
+https://github.com/alibaba/nacos
+
+服务发现与配置管理平台。读它的 CP/AP 模式切换（Raft + Distro）、配置持久化、监听通知机制。
+
+```text
+学习路线:
+第 1 步:启动 Nacos Server，理解命名空间/分组/配置集
+第 2 步:读 ConfigService 的配置拉取与监听回调
+第 3 步:理解 Raft 协议在 Nacos 中的应用（CP 模式）
+第 4 步:看服务注册的临时实例 vs 永久实例
+复刻建议:用 ZooKeeper 手写一个简易配置中心
+```
+
+#### apache/flink（约 24k 星）
+https://github.com/apache/flink
+
+流批一体的计算引擎。读它的 TaskManager/JobManager 架构、状态管理、Checkpoint 机制。
+
+```text
+学习路线:
+第 1 步:用 Flink SQL 写一个实时统计 WordCount
+第 2 步:理解 DataStream / DataSet / Table API 的层次
+第 3 步:读 StateBackend 和 Checkpoint 的 exactly-once 保证
+第 4 步:看 Watermark 机制处理乱序事件
+复刻建议:用 BlockingQueue 手写一个简单的流处理引擎
+```
+
+### 3.9 完整项目速查表
+
+| 项目 | 星数 | 分类 | 核心价值 | 难度 | 建议投入 |
+|------|------|------|----------|------|----------|
+| spring-petclinic | 8k | Web 框架 | 分层架构范本 | 低 | 1 周 |
+| spring-boot | 76k | Web 框架 | 自动配置原理 | 高 | 2-3 月 |
+| spring-framework | 58k | Web 框架 | IoC/AOP/MVC 源码 | 高 | 3-6 月 |
+| mybatis-3 | 20k | ORM | 第一个通读的框架 | 中 | 1-2 月 |
+| hibernate-orm | 5.9k | ORM | JPA 参考实现 | 中高 | 2-3 月 |
+| druid | 28k | 数据库 | 连接池原理+监控 | 中 | 2 周 |
+| kafka | 29k | 消息中间件 | 分布式消息系统 | 高 | 2-3 月 |
+| rocketmq | 21k | 消息中间件 | 国产消息中间件 | 中高 | 2 周 |
+| redisson | 23k | 中间件 | 分布式锁源码 | 中高 | 2 周 |
+| spring-cloud-alibaba | 14k | 微服务 | 微服务全家桶 | 中 | 1-2 月 |
+| Sentinel | 20k | 微服务 | 限流熔断 | 中 | 2 周 |
+| dubbo | 40k | 微服务 | RPC 框架 | 中高 | 2-3 月 |
+| guava | 50k | 工具类 | 工具库与编码品味 | 中 | 按需 |
+| netty | 34k | 网络框架 | NIO 与事件驱动 | 高 | 2-3 月 |
+| TheAlgorithms/Java | 60k | 算法 | 算法参考实现 | 低 | 配合刷题 |
+| arthas | 35k | DevOps | 线上诊断工具 | 中 | 1 周 |
+| prometheus/client_java | 2k | 监控 | 指标采集 | 中 | 1 周 |
+| nacos | 29k | 存储 | 服务发现+配置 | 中高 | 2 周 |
+| flink | 24k | 计算 | 流批一体计算 | 高 | 3-4 月 |
+| mockito | 14k | 测试 | Mock 框架原理 | 中 | 1-2 周 |
+
+使用原则：同一时期主攻一个，读完一个的"学习路线四步"再开下一个；难度高的项目（netty、flink）放在并发基础扎实之后。
 
 ---
 
@@ -229,7 +451,7 @@ Spring 系项目的另一条线是启动：`new SpringApplication().run()` 做�
 
 ## 五、提 PR 全流程
 
-### 4.1 流程总览
+### 5.1 流程总览
 
 ```mermaid
 flowchart LR
@@ -410,6 +632,32 @@ git push origin --delete fix/owner-list-date-format
 | 长期无人处理 | 一到两周礼貌 ping,或换个活跃度高的项目练手 |
 
 把它当成免费的 code review 课，改完再战。事实上，多数人的前三个 PR 都是小改动——这正是社区设计的成长路径。
+
+---
+
+## 八、按难度分级的学习路线图
+
+```text
+入门阶段 (1-2周):
+├── spring-petclinic        → 理解分层架构
+├── TheAlgorithms/Java      → 算法参考实现
+└── mockito                 → 理解 Mock 原理
+
+进阶阶段 (1-2月):
+├── mybatis-3               → 第一个通读的框架
+├── druid                   → 连接池原理
+├── redisson                → 分布式锁
+├── Sentinel                → 限流熔断
+└── prometheus/client_java  → 监控指标
+
+高级阶段 (3-6月):
+├── spring-boot             → 自动配置原理
+├── spring-framework        → IoC/AOP/MVC 源码
+├── netty                   → NIO 与事件驱动
+├── kafka                   → 分布式消息
+├── flink                   → 流批一体计算
+└── arthas                  → 线上诊断
+```
 
 ---
 
