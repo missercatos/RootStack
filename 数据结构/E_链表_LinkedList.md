@@ -6,33 +6,201 @@
 
 ---
 
-## 原理
+## 从零理解链表
 
-### 链表在哪里
+### 为什么需要链表
 
-在进入定义之前，先看它藏在哪：操作系统的空闲内存页靠链表串起等待复用；Linux 内核把所有进程挂在一条双向循环链表上统一调度；LRU 缓存用双向链表维护访问次序，实现 O(1) 定位与淘汰；文本编辑器的撤销历史、编译器的符号表也都在链式结构上流动。这些场景的共同主题——**元素数量不可预知、中间增删频繁、且几乎不需要按下标随机访问**——正是链表的适用边界。
+数组有一个致命缺陷：**大小固定**。声明 `int arr[100]` 后，要么浪费 90 个空间，要么第 101 个数据放不下。即使使用动态数组（`realloc`），扩容时需要复制整个数组到新地址，代价是 $O(n)$。
 
-### 单个节点与头指针
+链表解决了这个问题：**每个节点独立分配，需要多少就加多少，不需要时就删除**。代价是失去了按下标随机访问的能力——鱼和熊掌不可兼得。
 
-一切从最小的单元开始——一个节点就是一段堆内存，装着数据和一条通往后继的指针：
+### 什么是指针
+
+在 C 语言中，变量存储在内存的某个地址上。**指针就是存储地址的变量**。
+
+```c
+int x = 42;       // x 存储在地址 0x7fff5a3b，值为 42
+int* p = &x;      // p 存储了 x 的地址，即 p 指向 x
+```
+
+| 概念 | 类比 | 说明 |
+|------|------|------|
+| 变量 | 房间 | 存储数据的内存空间 |
+| 地址 | 房间号 | 内存中每个字节的唯一编号 |
+| 指针 | 纸条上写的房间号 | 存储地址的变量，通过它能找到对应的房间 |
+
+### 为什么链表节点需要指针
+
+链表节点散落在堆内存的不同位置（不像数组那样连续存放）。要找到下一个节点，就必须知道它的地址。**指针就是"通往下一个节点的地图"**。
+
+```
+节点 A (地址 0x1000)  →  节点 B (地址 0x3000)  →  节点 C (地址 0x2000)  →  NULL
+      data=1               data=2               data=3
+      next=0x3000          next=0x2000          next=NULL
+```
+
+注意：节点在内存中的物理地址是 0x1000 → 0x3000 → 0x2000，**不是连续的**！这就是链表与数组的根本区别。
+
+### 为什么新节点的 next 是 NULL
+
+当你创建一个新节点时，它还不属于任何链表。此时它的 `next` 指针没有意义的目标，所以设为 `NULL` 表示"没有后继"：
+
+```c
+SNode* new_node = malloc(sizeof(SNode));
+new_node->data = 42;
+new_node->next = NULL;   // 还没链接到任何链表，先标记为"无后继"
+```
+
+`NULL` 是一个特殊值（通常为 0），表示"这个指针不指向任何有效内存"。链表尾节点的 `next` 也是 `NULL`，表示"后面没有节点了"。
+
+### 头指针：链表的入口
+
+整条链表只需要一个入口——**头指针** head。通过 head 可以找到第一个节点，通过第一个节点的 `next` 可以找到第二个节点，以此类推。
+
+```c
+SNode* head = NULL;   // 空链表：head 指向 NULL
+```
+
+空链表的 `head == NULL`，就像一个空的电话本——里面没有任何条目。
+
+---
+
+## 最小实现：单向链表
+
+### 节点定义
 
 ```c
 typedef struct SNode {
-    int data;
-    struct SNode* next;   // 指向后继；尾节点的 next 为 NULL
+    int data;            // 存储的数据
+    struct SNode* next;  // 指向下一个节点；尾节点为 NULL
 } SNode;
 ```
 
-整条链表只需一个入口——**头指针** head 指向第一个节点；空链表的 head == NULL。沿 next 一格格走即遍历。两个必考术语：
+**为什么 `next` 的类型是 `struct SNode*`？** 因为在结构体定义内部，编译器还不知道 `SNode` 这个名字（它还没定义完），所以必须用 `struct SNode*` 完整写法。
 
-| 术语 | 含义 | 判空条件 |
-|------|------|---------|
-| 头指针 | 指向首节点的指针，链表的唯一"身份证" | 不带哨兵：`head == NULL` |
-| 头结点（哨兵） | 首个数据节点之前的附加节点，不存有效数据 | 带哨兵：`head->next == NULL` |
+### 创建节点
 
-哨兵的价值是**统一边界**：没有它，"在表头插入"是特例（要改 head 本身）；有了它，任何位置的插入都等价于"在某节点之后插入"，代码少一个分支。容器章的 SimpleVector 是连续存储的答案，这个 SNode 则是节点存储的最小完整模型。
+```c
+SNode* create_node(int value) {
+    SNode* node = malloc(sizeof(SNode));  // 在堆上分配一个节点大小的内存
+    node->data = value;                   // 设置数据
+    node->next = NULL;                    // 新节点还没链接，先设为 NULL
+    return node;
+}
+```
 
-链表是节点存储（node-based storage）的原型。每个节点在堆上独立分配，通过指针将各节点串联起来。链表与数组的对立不仅仅是"插入 O(1) vs O(n)"的操作复杂度差异——更深层的分歧在于内存布局：连续（contiguous） vs 散列（non-contiguous）。
+**为什么用 `malloc`？** 栈上的变量在函数返回时自动销毁。链表需要长期存活，所以必须在堆上分配。
+
+### 插入节点
+
+在节点 `p` 之后插入新节点 `new`：
+
+```c
+void insert_after(SNode* p, SNode* new) {
+    new->next = p->next;   // ① 新节点先指向 p 的后继
+    p->next = new;          // ② p 再指向新节点
+}
+```
+
+**为什么顺序不能反？** 如果先写 `p->next = new`，那 `p` 原来的后继地址就丢失了（`new->next` 还没指向它），链表就断了。
+
+```mermaid
+graph LR
+    A["p"] -->|p->next| C["C"]
+    A -->|"① new->next = p->next"| B["new"]
+    B -->|"② p->next = new"| C
+```
+
+### 删除节点
+
+删除节点 `p` 之后的节点：
+
+```c
+void delete_after(SNode* p) {
+    SNode* victim = p->next;      // ① 先记住要删除的节点
+    if (victim != NULL) {
+        p->next = victim->next;   // ② p 跳过 victim，直接指向 victim 的后继
+        free(victim);              // ③ 释放 victim 的内存
+    }
+}
+```
+
+**为什么要先记住 `victim`？** 因为 `free(victim)` 之后，`victim` 指向的内存已经无效。如果先 `free` 再读 `victim->next`，就是访问已释放的内存（use-after-free），属于未定义行为。
+
+### 遍历链表
+
+```c
+void print_list(SNode* head) {
+    SNode* cur = head;           // 从头开始
+    while (cur != NULL) {        // 直到 NULL（链表末尾）
+        printf("%d -> ", cur->data);
+        cur = cur->next;         // 移动到下一个节点
+    }
+    printf("NULL\n");
+}
+```
+
+### 完整示例：构建链表并遍历
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct SNode {
+    int data;
+    struct SNode* next;
+} SNode;
+
+SNode* create_node(int value) {
+    SNode* node = malloc(sizeof(SNode));
+    node->data = value;
+    node->next = NULL;
+    return node;
+}
+
+void insert_after(SNode* p, SNode* new) {
+    new->next = p->next;
+    p->next = new;
+}
+
+void delete_after(SNode* p) {
+    SNode* victim = p->next;
+    if (victim != NULL) {
+        p->next = victim->next;
+        free(victim);
+    }
+}
+
+void print_list(SNode* head) {
+    SNode* cur = head;
+    while (cur != NULL) {
+        printf("%d -> ", cur->data);
+        cur = cur->next;
+    }
+    printf("NULL\n");
+}
+
+int main() {
+    // 创建三个节点: 1 -> 2 -> 3 -> NULL
+    SNode* head = create_node(1);
+    insert_after(head, create_node(2));
+    insert_after(head->next, create_node(3));
+
+    print_list(head);           // 输出: 1 -> 2 -> 3 -> NULL
+
+    delete_after(head);         // 删除节点 2
+    print_list(head);           // 输出: 1 -> 3 -> NULL
+
+    // 释放剩余节点
+    delete_after(head);
+    free(head);
+    return 0;
+}
+```
+
+---
+
+## 原理
 
 ### 三种基本形态
 
