@@ -743,3 +743,17 @@ Trait 是 Rust 类型系统的核心抽象机制，它以 Haskell 类型类为�
 ---
 
 *深度阅读*：Rust Compiler Dev Guide — Trait Resolution; Aaron Turon, "Specialization, coherence, and the orphan rule"; Wadler & Blott, "How to make ad-hoc polymorphism less ad hoc"
+
+---
+
+## 练习
+
+### 力扣工程题
+
+| 题号 | 题目 | 链接 | 知识点 |
+|------|------|------|--------|
+| 146 | LRU 缓存 | https://leetcode.cn/problems/lru-cache/ | 双向链表 + 哈希表 |
+| 23 | 合并 K 个升序链表 | https://leetcode.cn/problems/merge-k-sorted-lists/ | 链表、分治 |
+| 21 | 合并两个有序链表 | https://leetcode.cn/problems/merge-two-sorted-lists/ | 链表、递归 |
+| 102 | 二叉树的层序遍历 | https://leetcode.cn/problems/binary-tree-level-order-traversal/ | BFS、队列 |
+| 236 | 二叉树的最近公共祖先 | https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/ | 递归、树 |
