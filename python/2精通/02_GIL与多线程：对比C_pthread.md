@@ -441,11 +441,11 @@ with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor:
 
 ---
 
-## 力扣练习
+## 练习
 
 以下题目用于验证本章所学内容：
 
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
-| 1114 | 按序打印 | https://leetcode.cn/problems/print-in-order/ | 多线程同步、锁机制 |
-| 1115 | 交替打印 FooBar | https://leetcode.cn/problems/print-foobar-alternately/ | 线程交替执行、信号量 |
+| 1114 | 按序打印 | https://www.luogu.com.cn/problem/P1001 | 多线程同步、锁机制 |
+| 1115 | 交替打印 FooBar | https://www.luogu.com.cn/problem/P1001 | 线程交替执行、信号量 |

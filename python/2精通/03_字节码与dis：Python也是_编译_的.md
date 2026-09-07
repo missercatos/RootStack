@@ -291,10 +291,9 @@ PyObject* _PyEval_EvalFrame(PyThreadState *tstate, PyFrameObject *frame) {
 
 ---
 
-## 力扣练习
+## 练习
 
 以下题目用于验证本章所学内容：
 
 | 题号 | 题目 | 链接 | 涉及知识点 |
 |------|------|------|-----------|
-| — | 本章无对应力扣题 | — | 请用动手练习题自检 |

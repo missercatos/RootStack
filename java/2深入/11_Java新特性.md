@@ -376,7 +376,7 @@ $ ./app                              # 毫秒级启动，内存占用常为 JVM 
 
 | 题目 | 链接 | 练习点 |
 |------|------|--------|
-| [反转链表](https://leetcode.cn/problems/reverse-linked-list/) | reverse-linked-list | 迭代三指针与递归两种解法，练引用重接的肌肉记忆 |
-| [两两交换链表节点](https://leetcode.cn/problems/swap-nodes-in-pairs/) | swap-nodes-in-pairs | 在反转基础上加分组节奏，练习 prev/next 引用的精确管理 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | reverse-linked-list | 迭代三指针与递归两种解法，练引用重接的肌肉记忆 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | swap-nodes-in-pairs | 在反转基础上加分组节奏，练习 prev/next 引用的精确管理 |
 
 下一章是全教程的收官章——Java 刷题方法论与 LeetCode 导航。

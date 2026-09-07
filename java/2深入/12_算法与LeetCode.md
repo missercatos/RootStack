@@ -265,11 +265,11 @@ public class PitfallDemo {
 
 | 题目 | 链接 |
 |------|------|
-| [移动零](https://leetcode.cn/problems/move-zeroes/) | move-zeroes，快慢指针最简模型 |
-| [盛最多水的容器](https://leetcode.cn/problems/container-with-most-water/) | container-with-most-water，对撞指针贪心 |
-| [无重复字符的最长子串](https://leetcode.cn/problems/longest-substring-without-repeating-characters/) | longest-substring-without-repeating-characters，滑动窗口模板题 |
-| [三数之和](https://leetcode.cn/problems/3sum/) | 3sum，排序+对撞去重综合 |
-| [接雨水](https://leetcode.cn/problems/trapping-rain-water/) | trapping-rain-water，双指针进阶 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | move-zeroes，快慢指针最简模型 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | container-with-most-water，对撞指针贪心 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | longest-substring-without-repeating-characters，滑动窗口模板题 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | 3sum，排序+对撞去重综合 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | trapping-rain-water，双指针进阶 |
 
 滑动窗口模板骨架：右指针扩张 -> 条件不满足时左指针收缩 -> 每步更新答案。背熟这个循环不变量，一类题全通。
 
@@ -277,11 +277,11 @@ public class PitfallDemo {
 
 | 题目 | 链接 |
 |------|------|
-| [二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/) | binary-tree-inorder-traversal，递归/迭代/Morris 三解 |
-| [二叉树的最大深度](https://leetcode.cn/problems/maximum-depth-of-binary-tree/) | maximum-depth-of-binary-tree，后序递归入门 |
-| [翻转二叉树](https://leetcode.cn/problems/invert-binary-tree/) | invert-binary-tree |
-| [对称二叉树](https://leetcode.cn/problems/symmetric-tree/) | symmetric-tree，双参数递归 |
-| [验证二叉搜索树](https://leetcode.cn/problems/validate-binary-search-tree/) | validate-binary-search-tree，上下界传递 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | binary-tree-inorder-traversal，递归/迭代/Morris 三解 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | maximum-depth-of-binary-tree，后序递归入门 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | invert-binary-tree |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | symmetric-tree，双参数递归 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | validate-binary-search-tree，上下界传递 |
 
 递归心法：只想"当前节点做什么"与"返回什么给父节点"，不要展开整棵树的执行过程。
 
@@ -289,11 +289,11 @@ public class PitfallDemo {
 
 | 题目 | 链接 |
 |------|------|
-| [全排列](https://leetcode.cn/problems/permutations/) | permutations，回溯第一课 |
-| [子集](https://leetcode.cn/problems/subsets/) | subsets，选或不选 |
-| [组合总和](https://leetcode.cn/problems/combination-sum/) | combination-sum，可重复选取 |
-| [电话号码的字母组合](https://leetcode.cn/problems/letter-combinations-of-a-phone-number/) | letter-combinations-of-a-phone-number |
-| [单词搜索](https://leetcode.cn/problems/word-search/) | word-search，网格 DFS+状态还原 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | permutations，回溯第一课 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | subsets，选或不选 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | combination-sum，可重复选取 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | letter-combinations-of-a-phone-number |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | word-search，网格 DFS+状态还原 |
 
 回溯三件套：路径（已做选择）、选择列表、结束条件；递归前后对称地"做选择/撤销选择"。
 
@@ -301,11 +301,11 @@ public class PitfallDemo {
 
 | 题目 | 链接 |
 |------|------|
-| [爬楼梯](https://leetcode.cn/problems/climbing-stairs/) | climbing-stairs，DP 的 Hello World |
-| [打家劫舍](https://leetcode.cn/problems/house-robber/) | house-robber，选与不选的状态机 |
-| [零钱兑换](https://leetcode.cn/problems/coin-change/) | coin-change，完全背包 |
-| [最长递增子序列](https://leetcode.cn/problems/longest-increasing-subsequence/) | longest-increasing-subsequence，O(n^2) 与贪心+二分双解 |
-| [编辑距离](https://leetcode.cn/problems/edit-distance/) | edit-distance，二维 DP 终极试炼 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | climbing-stairs，DP 的 Hello World |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | house-robber，选与不选的状态机 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | coin-change，完全背包 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | longest-increasing-subsequence，O(n^2) 与贪心+二分双解 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | edit-distance，二维 DP 终极试炼 |
 
 动规五步法：定义状态 -> 转移方程 -> 初始化 -> 遍历顺序 -> 空间优化。
 
@@ -313,10 +313,10 @@ public class PitfallDemo {
 
 | 题目 | 链接 |
 |------|------|
-| [有效的括号](https://leetcode.cn/problems/valid-parentheses/) | valid-parentheses |
-| [最小栈](https://leetcode.cn/problems/min-stack/) | min-stack，辅助栈设计 |
-| [两数之和](https://leetcode.cn/problems/two-sum/) | two-sum |
-| [每日温度](https://leetcode.cn/problems/daily-temperatures/) | daily-temperatures，单调栈模板 |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | valid-parentheses |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | min-stack，辅助栈设计 |
+| [A+B Problem](https://www.luogu.com.cn/problem/P1001) | two-sum |
+| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | daily-temperatures，单调栈模板 |
 
 ---
 
