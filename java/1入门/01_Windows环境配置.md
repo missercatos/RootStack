@@ -367,9 +367,3 @@ setx JAVA_TOOL_OPTIONS "-encoding utf-8 -Dfile.encoding=UTF-8"
 - javac 编译（对应 gcc），java 运行（对应 ./a.out）；`java Hello` 不要带 .class 后缀
 - 中文 Windows 记住 `javac -encoding utf-8`
 - Maven/Gradle 后置到工程化篇，现在手写命令看清全流程
-
-## LeetCode 巩固
-
-环境配好后，热身一道经典题：[https://www.luogu.com.cn/problem/P1001](P1001 A+B Problem)。
-
-暂时还不用真去刷——下一章讲完语法基础，第 05 章会用它作为第一道实战题。现在可以做的准备：在 LeetCode 上把语言偏好设置为 Java 21，熟悉一下它的在线判题界面。

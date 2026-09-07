@@ -104,5 +104,5 @@ sudo apt install neovim clangd
 | SSH 远程开发 | Neovim |
 | 快速测试/查看汇编 | Godbolt |
 
-力扣: Hello,World! 练习 (用所选编辑器的编译调试功能完成)
+练习: Hello,World! 练习 (用所选编辑器的编译调试功能完成)
 

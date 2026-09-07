@@ -336,7 +336,7 @@ c_order = np.ascontiguousarray(f_order)
 
 ---
 
-## 力扣练习
+## 练习
 
 以下题目用于验证本章所学内容：
 

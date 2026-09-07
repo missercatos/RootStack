@@ -452,14 +452,3 @@ public class HttpDemo {
 | HttpClient | Java 11 起内置，同步异步双模 |
 
 ---
-
-## LeetCode 巩固
-
-网络协议本质是字符流的解析与状态管理，以下两题训练报文结构处理的直觉：
-
-| 题目 | 链接 | 练习点 |
-|------|------|--------|
-| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | valid-parentheses | 栈匹配括号——类比协议帧定界与嵌套结构校验 |
-| 字符串解码 | [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | 双栈处理"数字[内容]"嵌套——类比 TLV 报文的递归解码 |
-
-下一章把工程经验沉淀为设计模式。

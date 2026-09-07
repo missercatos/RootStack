@@ -345,14 +345,3 @@ flowchart LR
 | 容器参数 | UseContainerSupport + MaxRAMPercentage |
 
 ---
-
-## LeetCode 巩固
-
-本章训练的是性能思维而非算法本身，以下两题的多种解法对比恰好模拟"发现瓶颈并优化"的过程：
-
-| 题目 | 链接 | 练习点 |
-|------|------|--------|
-| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | sliding-window-maximum | 暴力 O(nk) 到单调队列 O(n) 的完整优化过程，体会"换数据结构降复杂度" |
-| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | kth-largest-element-in-an-array | 快速选择 vs 小顶堆两种方案的时空取舍 |
-
-下一章回到语言层面，学习让代码更简洁的 Stream 与函数式编程。

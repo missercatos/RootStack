@@ -1,6 +1,6 @@
 # 05 第一个程序与 jshell
 
-环境已就绪，本章正式写代码。我们把最简单的 Hello World 拆开揉碎——它的每一部分都藏着 Java 与 C 的重要差异；然后介绍 jshell 交互式解释器，最后用 LeetCode 第一题完成实战闭环。
+环境已就绪，本章正式写代码。我们把最简单的 Hello World 拆开揉碎——它的每一部分都藏着 Java 与 C 的重要差异；然后介绍 jshell 交互式解释器，最后用 练习题完成实战闭环。
 
 ---
 
@@ -370,11 +370,11 @@ javadoc -d doc CommentDemo.java   # 生成 doc/ 目录下的 HTML 文档
 
 ---
 
-## 七、LeetCode 实战：两数之和
+## 七、练习：两数之和
 
 学完以上内容已经足够写出第一道题了。
 
-[https://www.luogu.com.cn/problem/P1001](P1001 A+B Problem)：给定整数数组 nums 和目标值 target，找出和为目标值的两个整数下标。假设恰好有一个答案，同一元素不能用两次。
+[P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001)：给定整数数组 nums 和目标值 target，找出和为目标值的两个整数下标。假设恰好有一个答案，同一元素不能用两次。
 
 ### 7.1 思路
 
@@ -479,9 +479,9 @@ case3: [0, 1]
 | 返回数组 | malloc + 指针 + 长度出参 | 直接 `new int[]{i, j}` | GC 免去 free，也不怕悬垂指针 |
 | 无解情况 | 返回 -1 或 NULL 约定 | 抛异常 `throw new IllegalArgumentException` | 异常机制深入篇详述 |
 
-### 7.5 提交到 LeetCode
+### 7.5 提交到洛谷
 
-LeetCode 的 Java 模板只给你核心方法（signature 已定），把 `twoSum` 方法体填入即可提交。注意模板中方法是实例方法（没有 static），照抄我们的实现去掉 static 也能过。暴力法在本题的数据规模下可以通过，但最优解是哈希表一次遍历——这正是 [[06_变量与数据类型|后续章节]] 学完集合框架后的回头题。
+洛谷的 Java 模板只给你核心方法（signature 已定），把 `twoSum` 方法体填入即可提交。注意模板中方法是实例方法（没有 static），照抄我们的实现去掉 static 也能过。暴力法在本题的数据规模下可以通过，但最优解是哈希表一次遍历——这正是 [[06_变量与数据类型|后续章节]] 学完集合框架后的回头题。
 
 ---
 
@@ -508,10 +508,10 @@ LeetCode 的 Java 模板只给你核心方法（signature 已定），把 `twoSu
 - 命名规范：类大驼峰、方法变量小驼峰、常量全大写下划线
 - 实战完成两数之和暴力解法，体会了数组 length、new int[]{}、抛异常等迁移要点
 
-## LeetCode 巩固
+---
 
-本章实战已完成 [https://www.luogu.com.cn/problem/P1001](P1001 A+B Problem) 的暴力解法。巩固建议：
+## 练习
 
-1. 把题解提交到 LeetCode 通过，感受在线判题流程
-2. 进阶尝试：[https://www.luogu.com.cn/problem/P1001](P1001 A+B Problem) ——练习字符串遍历与条件分支（学完 [[06_变量与数据类型|变量与数据类型]] 后更顺手）
-3. 保持节奏：每章一道，攒够五十题时你对 Java 语法的肌肉记忆就建立了
+| 题号 | 题目 | 链接 | 知识点 |
+|------|------|------|--------|
+| P1001 | A+B Problem | https://www.luogu.com.cn/problem/P1001 | 输入输出、变量 |

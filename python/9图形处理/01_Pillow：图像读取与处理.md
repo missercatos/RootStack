@@ -259,7 +259,7 @@ sharp = ImageEnhance.Sharpness(img).enhance(2.0)
 
 ---
 
-## 力扣练习
+## 练习
 
 以下题目用于验证本章所学内容：
 

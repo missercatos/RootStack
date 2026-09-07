@@ -1,6 +1,6 @@
-# 12 算法与LeetCode
+# 12 算法与力扣
 
-这是深入篇的收官章，也是通往面试与竞赛的桥梁：搭建高效的 Java 刷题环境、整理常用数据结构 API 速查表、盘点高频踩坑点，最后给出按专题推进的刷题路线。目标是让你打开 LeetCode 后不再纠结"环境怎么弄""API 怎么写"，把精力全部留给算法本身。
+这是深入篇的收官章，也是通往面试与竞赛的桥梁：搭建高效的 Java 刷题环境、整理常用数据结构 API 速查表、盘点高频踩坑点，最后给出按专题推进的刷题路线。目标是让你打开力扣 后不再纠结"环境怎么弄""API 怎么写"，把精力全部留给算法本身。
 
 > 前置知识：本篇全部章节；联动 [[路径D-DSA算法刷题|DSA 学习路线]]。
 
@@ -10,7 +10,7 @@
 
 ### 1.1 单文件提交模板
 
-LeetCode 核心代码模式只需补全给定函数。本地练习推荐一个万能骨架：
+力扣核心代码模式只需补全给定函数。本地练习推荐一个万能骨架：
 
 ```java
 public class Solution {
@@ -37,7 +37,7 @@ public class Solution {
 }
 ```
 
-IDEA 用户建议装 "LeetCode Editor" 类插件直接刷；VS Code 有 LeetCode 扩展。
+IDEA 用户建议装 "力扣Editor" 类插件直接刷；VS Code 有 力扣扩展。
 
 ### 1.2 IO 模板：Scanner vs BufferedReader
 
@@ -255,7 +255,7 @@ public class PitfallDemo {
 | n <= 10^5 | O(n log n) | 排序、堆、二分 |
 | n >= 10^6 | O(n) 或 O(n log n) | 双指针、滑动窗口、哈希 |
 
-经验法则：Java 每秒约执行 10^8 次简单操作，LeetCode 时限一般按此放宽两到四倍。
+经验法则：Java 每秒约执行 10^8 次简单操作，力扣时限一般按此放宽两到四倍。
 
 ---
 
@@ -337,7 +337,7 @@ flowchart LR
 2. **一题多解**：暴力解先 AC，再优化到目标复杂度
 3. **隔天复盘**：错题第二天重写一遍，一周后再来一遍
 4. **控制时长**：单题卡 40 分钟看题解不丢人，理解后闭卷重写才算过
-5. 与 [[路径D-DSA算法刷题|DSA 学习路线]] 配合：理论章与对应 LeetCode 专题同步推进
+5. 与 [[路径D-DSA算法刷题|DSA 学习路线]] 配合：理论章与对应 力扣 专题同步推进
 
 ---
 
@@ -352,3 +352,14 @@ flowchart LR
 | 计划 | 专题推进 + 错题复盘 + 一题多解 |
 
 至此深入篇完结。你已经拥有：泛型与反射的底层认知、集合与并发的源码级理解、JVM 的运维能力、现代 Java 的完整语法，以及一条通往面试的刷题路线。下一步建议进入 [[java/3工程化|工程化篇]]：Maven、Spring Boot 与真实项目开发。
+
+---
+
+## 练习
+
+| 题号 | 题目 | 链接 | 知识点 |
+|------|------|------|--------|
+| 1 | 两数之和 | https://leetcode.cn/problems/two-sum/ | 哈希表 |
+| 3 | 无重复字符的最长子串 | https://leetcode.cn/problems/longest-substring-without-repeating-characters/ | 滑动窗口 |
+| 15 | 三数之和 | https://leetcode.cn/problems/3sum/ | 双指针 |
+| 53 | 最大子数组和 | https://leetcode.cn/problems/maximum-subarray/ | 动态规划 |

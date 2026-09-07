@@ -497,14 +497,11 @@ public class ParallelDemo {
 
 ---
 
-## LeetCode 巩固
+---
 
-以下题目非常适合练习 Stream 解法——先写传统循环版，再用 Stream 重写一遍对比可读性：
+## 练习
 
-| 题目 | 链接 | 练习点 |
-|------|------|--------|
-| 数组中的多数元素 | [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | groupingBy 计数一行解；进阶练 Boyer-Moore 投票 O(1) 空间 |
-| 只出现一次的数字 III | [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | 传统位运算之外，试试 Stream 的 partitioningBy 按某位二分 |
-| 两个列表的最小索引总和 | [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | HashMap 建索引 + Stream 过滤组合的经典套路 |
-
-下一章离开纯语言层面，进入 NIO 与网络编程的世界。
+| 题号 | 题目 | 链接 | 知识点 |
+|------|------|------|--------|
+| 1 | 两数之和 | https://leetcode.cn/problems/two-sum/ | Stream、Lambda |
+| 49 | 字母异位词分组 | https://leetcode.cn/problems/group-anagrams/ | Stream、Collectors |
