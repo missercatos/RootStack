@@ -464,7 +464,7 @@ gcc -O0 -o sort_stats sort_stats.c
 
 ---
 
-## 力扣练习
+## 练习
 
 以下题目用于验证本章所学内容：
 

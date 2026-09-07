@@ -410,9 +410,3 @@ sudo ufw allow 8080/tcp
 - alternatives/archlinux-java 是系统级切换兜底方案
 - 生产服务器用 jre-headless 精简运行时
 - `java Hello` 报"找不到主类"先检查当前目录与 classpath；防火墙放行是未来 Web 部署的第一坑
-
-## LeetCode 巩固
-
-Linux 下写代码刷题的体验其实更好——vim + 终端一气呵成。热身题目依然是 [https://www.luogu.com.cn/problem/P1001](P1001 A+B Problem)，可以在服务器上建个 `~/code/leetcode/` 目录练手。
-
-建议现在就把 LeetCode 语言偏好设为 Java 21。等学完 [[05_第一个程序与jshell|第一个程序与 jshell]]，我们会给出这道题的第一个 Java 实现。

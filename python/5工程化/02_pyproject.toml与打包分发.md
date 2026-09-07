@@ -320,7 +320,7 @@ set_target_properties(fib PROPERTIES
 
 ---
 
-## 力扣练习
+## 练习
 
 以下题目用于验证本章所学内容：
 

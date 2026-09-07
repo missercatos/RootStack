@@ -728,13 +728,10 @@ public class GcObserve {
 
 ---
 
-## LeetCode 巩固
+---
 
-本章无直接算法对应题，但以下两题恰好训练"引用关系"思维——与可达性分析的直觉同构：
+## 练习
 
-| 题目 | 链接 | 练习点 |
-|------|------|--------|
-| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | linked-list-cycle | 快慢指针判环——类比引用图中检测环的存在 |
-| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | intersection-of-two-linked-lists | 两条引用链找公共节点——类比从两个 Root 出发的可达集交点 |
-
-下一章进入实战运维：当 OOM 真的发生时，怎么用工具揪出凶手。
+| 题号 | 题目 | 链接 | 知识点 |
+|------|------|------|--------|
+| 146 | LRU缓存 | https://leetcode.cn/problems/lru-cache/ | 内存管理、数据结构 |

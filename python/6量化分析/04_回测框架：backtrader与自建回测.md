@@ -336,7 +336,7 @@ def apply_cost(price, volume, commission_rate=0.0003, slippage=0.001):
 
 ---
 
-## 力扣练习
+## 练习
 
 以下题目用于验证本章所学内容：
 

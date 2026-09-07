@@ -342,9 +342,3 @@ $2 ==> 42
 - 快捷键先记四个：双击 Shift 万能搜索、Alt+Enter 快速修复、Ctrl+Alt+L 格式化、Shift+F6 重命名
 - 分阶段策略：入门 CE 够用，工程化按需 UT；jshell 随时处理小验证
 - 工具为学习服务：手动 javac 流程仍要掌握，下一章从它讲起
-
-## LeetCode 巩固
-
-本章无新语法，热身题不变：[https://www.luogu.com.cn/problem/P1001](P1001 A+B Problem)。
-
-一个实用建议：在 LeetCode 网页端刷题不需要本地 IDE，但把代码同步保存到本地仓库是好习惯。等下一章学完 main 方法与 jshell，就可以把题解放进自己的 `leetcode` 目录里用 `java` 直接运行验证。

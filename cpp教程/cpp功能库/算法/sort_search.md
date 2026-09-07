@@ -204,7 +204,7 @@ std::sort(students.begin(), students.end(), [](const Student& a, const Student& 
 4. **`nth_element` vs `partial_sort`**：只要 Top-K 不要有序用 `nth_element`（O(n)），要有序用 `partial_sort`（O(n log k)）
 5. **lambda 作为比较器优先于函数指针**：编译器更容易内联
 
-## 力扣练习
+## 练习
 
 | 题号 | 题目 | 链接 | 知识点 |
 |------|------|------|--------|

@@ -293,7 +293,7 @@ int val = parse_int("abc").value_or(0);  // 0
 4. **expected 可忽略**：`parse_int("abc")` 不检查 error → 未定义行为
 5. **优先 variant over any**：类型安全 + 编译期检查 + 性能更优
 
-## 力扣练习
+## 练习
 
 | 题号 | 题目 | 链接 | 知识点 |
 |------|------|------|--------|

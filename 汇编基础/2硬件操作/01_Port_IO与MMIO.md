@@ -402,6 +402,6 @@ void write_port(unsigned short port, unsigned char value) {
 > ```
 > 这题综合了 Port I/O（PCI 配置访问）、MMIO（VGA 输出）和循环结构。
 
-## 力扣练习
+## 练习
 
 本章实践性强，请用动手练习题自检（键盘扫描码读取、VGA显存写入、PCI设备枚举）。

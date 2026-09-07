@@ -370,13 +370,10 @@ $ ./app                              # 毫秒级启动，内存占用常为 JVM 
 
 ---
 
-## LeetCode 巩固
+---
 
-链表操作最能体现"引用重新接线"的手感，也正好用上本章的 var 与增强 switch：
+## 练习
 
-| 题目 | 链接 | 练习点 |
-|------|------|--------|
-| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | reverse-linked-list | 迭代三指针与递归两种解法，练引用重接的肌肉记忆 |
-| [洛谷 P1001 A+B Problem](https://www.luogu.com.cn/problem/P1001) | swap-nodes-in-pairs | 在反转基础上加分组节奏，练习 prev/next 引用的精确管理 |
-
-下一章是全教程的收官章——Java 刷题方法论与 LeetCode 导航。
+| 题号 | 题目 | 链接 | 知识点 |
+|------|------|------|--------|
+| 1 | 两数之和 | https://leetcode.cn/problems/two-sum/ | Java新特性、var |

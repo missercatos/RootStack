@@ -192,7 +192,7 @@ std::function<int(int)> f = [offset](int x) { return x + offset; };
 
 4. **move-only 捕获与 std::function 不兼容**：`std::function` 需要拷贝，unique_ptr 不可拷贝
 
-## 力扣练习
+## 练习
 
 | 题号 | 题目 | 链接 | 知识点 |
 |------|------|------|--------|
