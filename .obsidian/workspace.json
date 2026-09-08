@@ -200,8 +200,12 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "9c233f37c63911f3",
+  "active": "c8e2d7c1de62bbc2",
   "lastOpenFiles": [
+    "数据库/elasticsearch/Elasticsearch入门教程.md",
+    "数据库/elasticsearch",
+    "数据库/mysql/07-主从复制与高可用.md",
+    "数据库/mysql/06-存储过程与触发器.md",
     "java/1入门/07_运算符与表达式.md",
     "git.md",
     "rust/1入门/06-借东西：引用与借用.md",
@@ -226,9 +230,6 @@
     "java/1入门/00 README.md",
     "linux/06-命令行基础与Shell入门.md",
     "python/5工程化/08_Conda：科学计算的环境与包管理.md",
-    "rust/1入门/04-做决策：条件与循环.md",
-    "linux/04-文件与目录管理.md",
-    "python/1入门/05_异常处理与pdb调试.md",
     "python/14跨语言",
     "python/13爬虫",
     "python/12notebook",
@@ -247,7 +248,6 @@
     "assets/字符串动画/edit_distance.gif",
     "assets/字符串动画/bf_search.gif",
     "assets/字符串动画",
-    "assets/1.py",
     "docs/Canvas.canvas",
     "密码学/未命名.canvas",
     "未命名.canvas"

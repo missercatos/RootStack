@@ -147,6 +147,24 @@ flowchart TD
 
 ---
 
+### 数据库深入（与 Phase 6-7 配合学习）
+
+Java 全栈开发离不开数据库。以下数据库教程与 Java 各阶段紧密关联：
+
+| 数据库 | 与 Java 的关联 | 教程链接 |
+|--------|----------------|----------|
+| MySQL | JDBC 驱动、MyBatis 映射、Spring Data JPA 实体 | [[数据库/mysql/01-安装与配置\|MySQL 安装]] → [[数据库/mysql/02-SQL基础语法\|SQL 基础]] → [[数据库/mysql/03-查询进阶\|查询进阶]] |
+| MySQL 深入 | 索引优化（EXPLAIN）、事务隔离级别、连接池配置 | [[数据库/mysql/04-索引事务与优化\|索引与事务]] → [[数据库/mysql/05-用户权限与备份恢复\|权限与备份]] |
+| MySQL 高级 | 存储过程调用、触发器审计、主从读写分离 | [[数据库/mysql/06-存储过程与触发器\|存储过程]] → [[数据库/mysql/07-主从复制与高可用\|主从复制]] |
+| PostgreSQL | JPA 方言、JSONB 字段、高级查询 | [[数据库/postgresql/PostgreSQL教程\|PostgreSQL 教程]] |
+| Redis | Spring Data Redis、缓存注解、分布式锁 | [[数据库/redis/Redis教程\|Redis 教程]] |
+| MongoDB | Spring Data MongoDB、文档存储 | [[数据库/mongodb/MongoDB教程\|MongoDB 教程]] |
+| Elasticsearch | Spring Data Elasticsearch、全文搜索 | [[数据库/elasticsearch/Elasticsearch入门教程\|Elasticsearch 入门]] |
+
+> **建议**：在学 Phase 6（JDBC/MyBatis）时同步学习 MySQL 01-05；在学 Phase 7（Spring Data JPA）时同步学习 MySQL 04（索引与事务）；在做 Phase 9 实战项目时按需学习 Redis/MongoDB/Elasticsearch。
+
+---
+
 ### Phase 8: 生产级工程 (约 3 周)
 
 | 序号 | 文件 | 核心内容 | 建议学时 |
