@@ -224,3 +224,10 @@
 - GNU C Library Manual: https://www.gnu.org/software/libc/manual/
 - Linux Kernel Documentation: https://docs.kernel.org/
 - GCC Online Documentation: https://gcc.gnu.org/onlinedocs/
+
+---
+
+### 相关模块
+
+- [[多语言工程化/多语言工程化目录|多语言工程化]] — C 作为跨语言底层（C ABI/FFI）与多人协作工程化
+- [[c语言教程/4工程化/02_C项目工程化|C 项目工程化]] — 单语言工程化基础：CI、静态分析、发布
