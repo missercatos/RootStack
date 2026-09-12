@@ -205,3 +205,10 @@
 - ISO C++ Standard: https://isocpp.org/
 - C++ Core Guidelines: https://isocpp.github.io/CppCoreGuidelines/
 - Compiler Explorer (Godbolt): https://godbolt.org/
+
+---
+
+### 相关模块
+
+- [[多语言工程化/多语言工程化目录|多语言工程化]] — C++ 作为高性能核心与其他语言协作（FFI/gRPC/容器化）
+- [[cpp教程/cpp深化教程/17_包管理器Conan与vcpkg|Conan 与 vcpkg]] — C++ 依赖管理与私有仓库基础
