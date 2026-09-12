@@ -13,12 +13,26 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "java/2深入/08_Stream与函数式.md",
+                "file": "linux/13-网络配置基础.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "08_Stream与函数式"
+              "title": "13-网络配置基础"
+            }
+          },
+          {
+            "id": "9022101a36503d21",
+            "type": "leaf",
+            "state": {
+              "type": "webviewer",
+              "state": {
+                "url": "https://www.luogu.com.cn/problem/P1004",
+                "title": "P1004 [NOIP 2000 提高组] 方格取数 - 洛谷",
+                "mode": "webview"
+              },
+              "icon": "globe-2",
+              "title": "P1004 [NOIP 2000 提高组] 方格取数 - 洛谷"
             }
           }
         ]
@@ -202,21 +216,24 @@
   },
   "active": "9c233f37c63911f3",
   "lastOpenFiles": [
+    "linux/03-FHS文件系统层次标准.md",
+    "java/1入门/17_文件IO.md",
+    "linux/distro/distro.md",
+    "java/1入门/08_条件语句.md",
+    "java/1入门/07_运算符与表达式.md",
+    "java/2深入/08_Stream与函数式.md",
     "assets/java/继承关系.png",
     "assets/java/包类关系.png",
     "assets/java/deepseek_mermaid_20260911_986c71.png",
     "assets/java/deepseek_mermaid_20260911_467338.png",
     "assets/java",
-    "java/1入门/08_条件语句.md",
     "java/1入门/05_第一个程序与jshell.md",
-    "java/1入门/07_运算符与表达式.md",
     "java/3工程化/06_Spring Boot快速开发.md",
     "java/3工程化/09_Spring Security.md",
     "java/3工程化/05_Spring IoC与AOP.md",
     "java/3工程化/01_Maven构建.md",
     "java/2深入/10_设计模式.md",
     "java/2深入/11_Java新特性.md",
-    "java/2深入/08_Stream与函数式.md",
     "java/2深入/07_JVM调优.md",
     "java/1入门/13_类与对象.md",
     "java/1入门/12_方法.md",
@@ -231,8 +248,6 @@
     "数据库/elasticsearch",
     "数据库/mysql/07-主从复制与高可用.md",
     "数据库/mysql/06-存储过程与触发器.md",
-    "git.md",
-    "rust/1入门/06-借东西：引用与借用.md",
     "java/未命名",
     "python/14跨语言",
     "python/13爬虫",
@@ -247,7 +262,6 @@
     "assets/字符串动画/sa_binary_search.gif",
     "assets/字符串动画/kasai.gif",
     "assets/字符串动画/suffix_array.gif",
-    "assets/字符串动画/lcs.gif",
     "docs/Canvas.canvas",
     "密码学/未命名.canvas",
     "未命名.canvas"
