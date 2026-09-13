@@ -525,7 +525,7 @@ hook 变量的值允许三种形态，运行器会自行处理：
 (add-to-list 'auto-mode-alist (cons python--auto-mode-alist-regexp 'python-mode))
 ```
 
-`c-or-c++-mode` 那条 `.h` 规则同理，它写在 progmdoes 的 `;;;###autoload` 里，因此即使 cc-mode 尚未加载，autoload 机制也会先把规则放进 `auto-mode-alist`。这带来两个实践结论：
+`c-or-c++-mode` 那条 `.h` 规则同理，它写在 `lisp/progmodes/cc-mode.el` 的 `;;;###autoload` 魔法注释里，因此即使 cc-mode 尚未加载，autoload 机制也会先把规则放进 `auto-mode-alist`。这带来两个实践结论：
 
 - **不要假设某个扩展名已经有人管。** 想确认当前生效的规则，用 `C-h v auto-mode-alist` 看真实值，而不是凭印象推理；列表中靠前的条目优先。
 - **自己的注册要放在包加载之后。** 如果某个语言包会注册同名扩展名，而你又想覆盖它，最稳的做法是用 `use-package` 的 `:mode` 关键字（它在包加载时展开），或者用 `(with-eval-after-load '那个包 (add-to-list 'auto-mode-alist ...))` 保证顺序。

@@ -186,11 +186,13 @@ with-editor 包里还带了一个同名的命令行脚本，用于在 shell 里�
 | `u` | `magit-unstage-files` | 取消暂存 |
 | `S` | `magit-stage-modified` | 暂存所有已修改与已删除文件 |
 | `U` | `magit-unstage-all` | 清空暂存区 |
-| `k` | `magit-delete-thing` | 删除光标所在对象（未跟踪文件、stash、分支、标签等） |
+| `k` | `magit-delete-thing`（由区块重映射） | 删除光标处的对象，具体行为见下方说明 |
 | `K` | `magit-file-untrack` | 把文件从版本控制中移除但保留工作区文件 |
 | `x` | `magit-reset-quickly` | 快速重置到某个提交（等价于 `git reset --hard`） |
 
-只在 diff 缓冲区里有意义的两个命令是 `magit-stage-hunk` 与 `magit-unstage-hunk`，它们与 `s`、`u` 是同一套逻辑的显式形式，在脚本或自定义键位里按名字引用更清晰。
+`k` 值得单独解释，因为它最能说明 Magit 的设计思路。`magit-delete-thing` 本身只是一个占位命令，真正的行为由**光标所在区块**决定：在未暂存或已暂存的改动上（文件、hunk、行）它被重映射为 `magit-discard`，也就是丢弃这些改动；在分支区块上是删除分支；在标签区块上是删除标签；在 stash 区块上是丢弃该储藏；在远端区块上是删除远端；在进程缓冲区里则是终止进程。因此「`k` 会不会误删东西」的正确问法是「我的光标在哪」，Magit 在执行前通常还会要求确认，丢弃不可恢复的改动前务必看清提示文字。
+
+关于「hunk 级的暂存命令」有一个常见的误解需要澄清：当前版本的 Magit **没有** `magit-stage-hunk` 与 `magit-unstage-hunk` 这两个单独的命令，暂存与取消暂存统一由上下文敏感的 `magit-stage`（`s`）与 `magit-unstage`（`u`）承担，它们会根据光标处的对象是文件、hunk 还是选中区域自动选择操作粒度。想知道某个键当前真正绑定到什么，在状态缓冲区里按 `C-h k` 再按那个键即可。
 
 ### 5.3 提交（`c` 菜单）
 
@@ -226,11 +228,14 @@ with-editor 包里还带了一个同名的命令行脚本，用于在 shell 里�
 | `P o` | `magit-push-other` | 推送其它分支 |
 | `P r` | `magit-push-refspecs` | 推送自定义 refspec |
 | `P t` / `P T` | `magit-push-tags` / `magit-push-tag` | 推送所有标签 / 单个标签 |
-| `F p` / `F u` | `magit-fetch-from-pushremote` / `-from-upstream` | 从 push-remote / 上游获取 |
-| `F a` | `magit-fetch-all` | 从所有远端获取 |
-| `F o` / `F r` / `F m` | `magit-fetch-branch` / `-refspec` / `-modules` | 获取指定分支 / refspec / 子模块 |
-| `F` 菜单的 `-p` | `--prune` | 获取时清理远端已删除的分支 |
-| `f p` / `f u` / `f e` | `magit-pull-from-pushremote` / `-from-upstream` / `magit-pull-branch` | 拉取（fetch 加合并或变基） |
+| `f p` / `f u` | `magit-fetch-from-pushremote` / `-from-upstream` | 从 push-remote / 上游获取 |
+| `f a` | `magit-fetch-all` | 从所有远端获取 |
+| `f o` / `f r` / `f m` | `magit-fetch-branch` / `-refspec` / `-modules` | 获取指定分支 / refspec / 子模块 |
+| `f` 菜单的 `-p` | `--prune` | 获取时清理远端已删除的分支 |
+| `F p` / `F u` / `F e` | `magit-pull-from-pushremote` / `-from-upstream` / `magit-pull-branch` | 拉取（fetch 之后合并或变基） |
+| `F f` / `F F` | `magit-fetch-all-no-prune` / `magit-fetch-all-prune` | 在拉取菜单里直接获取所有远端（后者带清理） |
+
+注意区分两个前缀：`f` 打开的是**获取**菜单（只更新远端跟踪分支，不动工作区），`F` 打开的是**拉取**菜单（获取之后还要合并或变基到当前分支）。`F` 菜单里也放了两个获取动作（`f` 与 `F`），方便在准备拉取前先看一眼远端状态。
 
 推送菜单里有两个力度的强制推送开关：`-f` 是 `--force-with-lease`，`-F` 是 `--force`。**始终优先用前者**：它在远端被别人更新过时会拒绝推送，而 `--force` 会直接覆盖别人的提交。
 
@@ -407,11 +412,11 @@ stateDiagram-v2
 
 Hunk（差异块）是 Git 差异输出的最小可操作单元，Magit 把「按块操作」做得比命令行更细：
 
-- `magit-stage-hunk`（默认绑定 `s`）暂存光标所在的整个 hunk；`magit-unstage-hunk`（`u`）反向操作。
-- **暂存部分行**：在一个 hunk 内用 `C-SPC` 设定 mark，移动光标选中要暂存的行，然后按 `s`，Magit 只暂存选中的部分，其余保持在工作区。这是把混杂改动拆开的核心手段。
+- 把光标放在某个 hunk 上按 `s`（`magit-stage`）暂存这**一整块**，按 `u`（`magit-unstage`）反向操作。Magit 会根据光标处的对象自动决定粒度，因此同一个 `s` 在文件行上是暂存整个文件，在 hunk 上是暂存这一块。
+- **暂存部分行**：在一个 hunk 内用 `C-SPC` 设定 mark，移动光标选中要暂存的行，然后按 `s`，Magit 只暂存选中的部分，其余保持在工作区。这是把混杂改动拆开的核心手段，也是 `git add -p` 在命令行里做不到的细粒度。
 - `magit-diff-refine-hunk` 是一个变量，取值 `nil`、`t`、`all`，控制是否把 hunk 内部再按词做二级高亮：`nil` 关闭，`t` 只对光标所在的 hunk 做精细高亮，`all` 对所有 hunk 都做。默认 `t` 在多数机器上是性能与可读性的平衡点。对应的交互命令也叫 `magit-diff-refine-hunk`，可以随时对当前 hunk 手动切换。
-- 想看清空白字符带来的差异，在 diff 菜单里打开忽略空白的开关（对应 `git diff -w`），或者直接设置 `magit-diff-arguments` 之类的变量让某类 diff 默认带上参数。
-- 反向操作一个 hunk 的改动（把已经提交的内容从工作区撤掉）用 `v`（`magit-reverse`），`a`（`magit-apply`）则用于把某个提交或 stash 的改动应用过来。
+- 想看清空白字符带来的差异，在 `d` 菜单里打开对应的忽略空白开关（对应 `git diff -w` 一类参数），或者设置 `magit-diff-arguments` 让某类 diff 默认带上参数。缩进敏感的改动（例如把空格改成 Tab）在开启忽略空白后会显示成「没有差异」，这正是它容易被误用的地方：确认自己到底改了什么时候不要开它。
+- 反向操作一个 hunk 的改动用 `v`：在改动（hunk、文件）上它被重映射为 `magit-reverse`，作用是把这块改动在**工作区**里反向应用；在某个提交上按 `v` 则对应 `magit-revert-no-commit`，作用是把那次提交的改动反向应用到工作区。`a`（`magit-apply`）用于把某个提交或 stash 的改动正向应用过来，`V`（`magit-revert`）则生成一个反向的**提交**，适用于「已经推送、只能用新提交抵消」的场景。这四个命令的差别在于「改工作区、改暂存区、还是产生新提交」，用错会得到完全不同的历史。
 
 ---
 

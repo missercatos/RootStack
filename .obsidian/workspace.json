@@ -216,6 +216,7 @@
   },
   "active": "155961fdf30b0b5a",
   "lastOpenFiles": [
+    "emacs教程/5开发环境集成/04_调试器集成.md",
     "emacs教程/3配置实践/04_界面布局与功能位置.md",
     "emacs教程/5开发环境集成/sedbJyn5j",
     "emacs教程/3配置实践/sedIOBLDG",
@@ -244,7 +245,6 @@
     "emacs教程/4插件开发/02_编写MinorMode.md",
     "emacs教程/5开发环境集成/05_Git与Magit.md",
     "emacs教程/2Elisp语言/04_列表序列与哈希表.md",
-    "emacs教程/2Elisp语言/09_Mode与Hook机制.md",
     "src-bongo/bongo-20201002.1020/images/uri-track-icon.png",
     "src-bongo/bongo-20201002.1020/images/unknown-local-file-track-icon.png",
     "src-bongo/bongo-20201002.1020/images/track-mark-icon.png",
