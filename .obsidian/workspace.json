@@ -216,6 +216,7 @@
   },
   "active": "155961fdf30b0b5a",
   "lastOpenFiles": [
+    "emacs教程/4插件开发/03_编写MajorMode与语法高亮.md",
     "emacs教程/5开发环境集成/01_补全与LSP.md",
     "emacs教程/6扩展应用/02_媒体播放器EMMS与MPV.md",
     "emacs教程/5开发环境集成/06_终端Shell与远程开发.md",
@@ -260,7 +261,6 @@
     "emacs教程/2Elisp语言/06_缓冲区文本与点.md",
     "emacs教程/1入门/05_从Vim迁移.md",
     "emacs教程/2Elisp语言/02_变量作用域与绑定.md",
-    "emacs教程/2Elisp语言/05_控制流错误处理与迭代.md",
     "assets/java/继承关系.png",
     "docs/Canvas.canvas",
     "密码学/未命名.canvas",
