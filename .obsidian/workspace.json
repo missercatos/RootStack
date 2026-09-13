@@ -20,6 +20,20 @@
               "icon": "lucide-file",
               "title": "B_字符串_String"
             }
+          },
+          {
+            "id": "571c08c3f41cdb40",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "算法/算法技巧/动态规划.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "动态规划"
+            }
           }
         ]
       }
@@ -202,10 +216,11 @@
   },
   "active": "155961fdf30b0b5a",
   "lastOpenFiles": [
+    "算法/算法技巧/动态规划.md",
+    "数据结构/B_字符串_String.md",
     "数据结构/0y_表达方式之间的转化_RepresentationConversion.md",
     "数据结构/0x_数据结构表达方式_Representation.md",
     "数据结构/0 基本知识.md",
-    "数据结构/B_字符串_String.md",
     "linux/13-网络配置基础.md",
     "多语言工程化/6持续交付/03_发布策略与回滚.md",
     "多语言工程化/4测试与质量/04_静态分析与质量门禁.md",
@@ -228,7 +243,6 @@
     "多语言工程化/5容器与编排/03_Kubernetes核心概念.md",
     "多语言工程化/1统筹与协作/05_Git协作与评审工作流.md",
     "dart/4工程化/02_CI与自动化发布.md",
-    "多语言工程化/2构建与依赖/03_依赖管理与私有仓库.md",
     "多语言工程化/3接口与协议",
     "多语言工程化/5容器与编排",
     "多语言工程化/1统筹与协作",
