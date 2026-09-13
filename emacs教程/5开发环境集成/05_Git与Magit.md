@@ -415,7 +415,7 @@ Hunk（差异块）是 Git 差异输出的最小可操作单元，Magit 把「�
 - 把光标放在某个 hunk 上按 `s`（`magit-stage`）暂存这**一整块**，按 `u`（`magit-unstage`）反向操作。Magit 会根据光标处的对象自动决定粒度，因此同一个 `s` 在文件行上是暂存整个文件，在 hunk 上是暂存这一块。
 - **暂存部分行**：在一个 hunk 内用 `C-SPC` 设定 mark，移动光标选中要暂存的行，然后按 `s`，Magit 只暂存选中的部分，其余保持在工作区。这是把混杂改动拆开的核心手段，也是 `git add -p` 在命令行里做不到的细粒度。
 - `magit-diff-refine-hunk` 是一个变量，取值 `nil`、`t`、`all`，控制是否把 hunk 内部再按词做二级高亮：`nil` 关闭，`t` 只对光标所在的 hunk 做精细高亮，`all` 对所有 hunk 都做。默认 `t` 在多数机器上是性能与可读性的平衡点。对应的交互命令也叫 `magit-diff-refine-hunk`，可以随时对当前 hunk 手动切换。
-- 想看清空白字符带来的差异，在 `d` 菜单里打开对应的忽略空白开关（对应 `git diff -w` 一类参数），或者设置 `magit-diff-arguments` 让某类 diff 默认带上参数。缩进敏感的改动（例如把空格改成 Tab）在开启忽略空白后会显示成「没有差异」，这正是它容易被误用的地方：确认自己到底改了什么时候不要开它。
+- 想看清空白字符带来的差异，在 diff 菜单（`d`）里打开 `-w`（`Ignore all whitespace`，对应 `git diff --ignore-all-space`）即可；如果希望这个开关长期生效，在同一菜单里按 `w`（`Save defaults and exit`）把它保存成默认值，Magit 会把开关写进配置，之后每次打开这个菜单都带着它。缩进敏感的改动（例如把空格改成 Tab）在开启忽略空白后会显示成「没有差异」，这正是它容易被误用的地方：确认自己到底改了什么时候不要开它。另外，hunk 内部的精细高亮本身是否忽略空白，由 `magit-diff-refine-ignore-whitespace` 控制，它默认沿用 `smerge-refine-ignore-whitespace` 的值。
 - 反向操作一个 hunk 的改动用 `v`：在改动（hunk、文件）上它被重映射为 `magit-reverse`，作用是把这块改动在**工作区**里反向应用；在某个提交上按 `v` 则对应 `magit-revert-no-commit`，作用是把那次提交的改动反向应用到工作区。`a`（`magit-apply`）用于把某个提交或 stash 的改动正向应用过来，`V`（`magit-revert`）则生成一个反向的**提交**，适用于「已经推送、只能用新提交抵消」的场景。这四个命令的差别在于「改工作区、改暂存区、还是产生新提交」，用错会得到完全不同的历史。
 
 ---
@@ -454,7 +454,7 @@ Magit 之外，还有几类包与它配合密切。
 
 ### 8.4 magit-todos：把 TODO 变成可跳转列表
 
-`magit-todos`（项目主页 https://github.com/alphapapa/magit-todos ）扫描仓库里的 `TODO`、`FIXME` 等关键词，在 Magit 状态缓冲区里插入一个区块列出它们，按 `RET` 直接跳到对应位置。关键词表、忽略的目录都能配置。它依赖 `hl-todo` 做高亮，安装时会被自动带上。
+`magit-todos`（项目主页 https://github.com/alphapapa/magit-todos ）扫描仓库里的 `TODO`、`FIXME` 等关键词，在 Magit 状态缓冲区里插入一个区块列出它们，按 `RET` 直接跳到对应位置。`magit-todos-keywords` 决定扫描哪些关键词，`magit-todos-depth` 限制扫描的目录深度（大仓库上很有用），`magit-todos-max-items` 控制条目过多时是否自动折叠区块。它依赖 `hl-todo` 做高亮，安装时会被自动带上。
 
 ```elisp
 (use-package magit-todos
@@ -462,7 +462,9 @@ Magit 之外，还有几类包与它配合密切。
   :after magit
   :config
   ;; 默认只在打开状态缓冲区时扫描，可以限制最大文件大小避免在大仓库上卡顿
-  (setq magit-todos-max-files 2000)
+  ;; 限制扫描深度与条目数，大仓库下明显更快
+  (setq magit-todos-depth 4)          ; 只往下扫四层目录，nil 表示不限
+  (setq magit-todos-max-items 20)     ; 条目超过 20 个时自动折叠该区块
   (magit-todos-mode 1))
 ```
 
@@ -535,7 +537,7 @@ Magit 在超大仓库（数十万文件、十年以上历史）上变慢，原�
 
 5. **Windows 上的进程类型。** `magit-process-connection-type` 在 Windows 上默认取 `nil`（不使用伪终端），这是为了让输出不被 pty 的换行转换弄乱。除非明确知道自己在做什么，不要改这个值。
 
-6. **日志参数与历史深度。** `magit-log-arguments` 之类的变量决定日志缓冲区默认带什么参数；在大仓库里把默认的提交数量调小，可以让 `l l` 立刻出结果。
+6. **日志参数与历史深度。** 日志缓冲区默认带什么参数由 `l` 菜单里的开关决定，同样可以用菜单里的 `Save defaults and exit` 项把常用参数保存成默认值（例如只取最近的若干条、只在当前分支上查）。在大仓库里把默认的提交数量调小，能让 `l l` 立刻出结果；需要翻更早的历史时再临时在菜单里改回来。
 
 7. **缓存与自动还原。** 打开太多文件时，Magit 的自动还原（auto-revert）会在每次刷新后检查所有相关文件，把用不到的文件关掉比调参数更有效。
 
@@ -634,7 +636,8 @@ Git 命令本身的用法，包括分支模型、远端协作、签名提交、�
   :ensure t
   :after magit
   :custom
-  (magit-todos-max-files 2000)         ; 最多扫描 2000 个文件，防止大仓库卡顿
+  (magit-todos-depth 4)                ; 只扫描四层目录，大仓库下更快
+  (magit-todos-max-items 20)           ; 条目过多时自动折叠区块
   :config
   (magit-todos-mode 1))
 
