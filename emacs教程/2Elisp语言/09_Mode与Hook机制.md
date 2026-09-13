@@ -517,6 +517,19 @@ hook 变量的值允许三种形态，运行器会自行处理：
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c-mode))
 ```
 
+有一类现象容易让人困惑：在 `emacs -Q --batch` 里查询 `auto-mode-alist`，会发现根本找不到 `.py` 的条目，但正常使用 Emacs 时打开 `.py` 文件确实会进入 Python 模式。原因是**语言包自己注册这些条目**。python.el 在加载时执行：
+
+```elisp
+;; python.el 中的实际写法（简化）
+(defconst python--auto-mode-alist-regexp "\\.py[iw]?\\'")
+(add-to-list 'auto-mode-alist (cons python--auto-mode-alist-regexp 'python-mode))
+```
+
+`c-or-c++-mode` 那条 `.h` 规则同理，它写在 progmdoes 的 `;;;###autoload` 里，因此即使 cc-mode 尚未加载，autoload 机制也会先把规则放进 `auto-mode-alist`。这带来两个实践结论：
+
+- **不要假设某个扩展名已经有人管。** 想确认当前生效的规则，用 `C-h v auto-mode-alist` 看真实值，而不是凭印象推理；列表中靠前的条目优先。
+- **自己的注册要放在包加载之后。** 如果某个语言包会注册同名扩展名，而你又想覆盖它，最稳的做法是用 `use-package` 的 `:mode` 关键字（它在包加载时展开），或者用 `(with-eval-after-load '那个包 (add-to-list 'auto-mode-alist ...))` 保证顺序。
+
 ### 6.3 interpreter-mode-alist 与重映射
 
 `interpreter-mode-alist` 把 `#!` 行里的解释器名映射到模式，键是匹配解释器文件名的正则。实测默认值里包括 `("python[0-9.]*" . python-mode)`、`("jruby" . ruby-mode)` 等。这类条目的好处是脚本即使没有扩展名也能得到正确模式。

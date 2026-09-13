@@ -104,7 +104,7 @@ graph TD
 
 ## 四、安装与基础配置
 
-Magit 不在 GNU ELPA 上，需要先配置 MELPA 源再安装。Emacs 30 内置的 `use-package` 可以直接写 `:ensure t`：
+Magit 不在 GNU ELPA 上，需要先配置 MELPA 源再安装（MELPA 的包索引页是 https://melpa.org/ ）。Emacs 30 内置的 `use-package` 可以直接写 `:ensure t`。Magit 的项目主页在 https://github.com/magit/magit ，源码、更新日志与完整手册都在那里；它的两个关键依赖 transient 与 with-editor 是独立维护的包，主页分别是 https://github.com/magit/transient 与 https://github.com/magit/with-editor 。
 
 ```elisp
 ;; 先加入 MELPA 源，Magit 只发布在这里
@@ -421,7 +421,7 @@ Magit 之外，还有几类包与它配合密切。
 
 ### 8.1 diff-hl：把改动标在边缘
 
-`diff-hl` 在 fringe（图形界面的窗口边缘）或行号区域用小块标记出新增、修改、删除的行，并且能直接对单个 hunk 做还原或暂存。它的优点是轻量，不需要打开 Magit 就能看到当前文件相对版本库的改动。
+`diff-hl` 在 fringe（图形界面的窗口边缘）或行号区域用小块标记出新增、修改、删除的行，并且能直接对单个 hunk 做还原或暂存。它的优点是轻量，不需要打开 Magit 就能看到当前文件相对版本库的改动。项目主页：https://github.com/dgutov/diff-hl 。
 
 ```elisp
 (use-package diff-hl
@@ -437,19 +437,19 @@ Magit 之外，还有几类包与它配合密切。
   (add-hook 'after-save-hook #'diff-hl-update t t))
 ```
 
-`git-gutter` 是同一类工具的另一实现，功能相近：默认在行号区域显示标记，配置项风格不同。两者选一个即可，同时开着只会互相干扰。
+`git-gutter` 是同一类工具的另一实现（https://github.com/emacsorphanage/git-gutter ），功能相近：默认在行号区域显示标记，配置项风格不同。两者选一个即可，同时开着只会互相干扰。
 
 ### 8.2 git-timemachine：在历史版本之间漫游
 
-`M-x git-timemachine` 用只读缓冲区展示当前文件在某个历史版本的内容，按 `n` 看下一个（更早的）版本，按 `p` 看上一个版本，按 `q` 退出。它适合「这个函数以前长什么样」这类问题，比反复 checkout 安全得多。
+`M-x git-timemachine` 用只读缓冲区展示当前文件在某个历史版本的内容，按 `n` 看下一个（更早的）版本，按 `p` 看上一个版本，按 `q` 退出。它适合「这个函数以前长什么样」这类问题，比反复 checkout 安全得多。项目主页在 https://codeberg.org/pidu/git-timemachine 。
 
 ### 8.3 git-link：复制远端链接
 
-`M-x git-link` 把当前行或选区所在的文件位置生成一个可以粘贴到聊天窗口的 URL，自动识别 GitHub、GitLab、Bitbucket 等常见托管平台并带上行号。`git-link-commit` 生成某个提交的链接，`git-link-homepage` 打开仓库主页。评审代码、在 issue 里引用代码时非常省事。
+`M-x git-link`（项目主页 https://github.com/sshaw/git-link ）把当前行或选区所在的文件位置生成一个可以粘贴到聊天窗口的 URL，自动识别 GitHub、GitLab、Bitbucket 等常见托管平台并带上行号。`git-link-commit` 生成某个提交的链接，`git-link-homepage` 打开仓库主页。评审代码、在 issue 里引用代码时非常省事。
 
 ### 8.4 magit-todos：把 TODO 变成可跳转列表
 
-`magit-todos` 扫描仓库里的 `TODO`、`FIXME` 等关键词，在 Magit 状态缓冲区里插入一个区块列出它们，按 `RET` 直接跳到对应位置。关键词表、忽略的目录都能配置。它依赖 `hl-todo` 做高亮，安装时会被自动带上。
+`magit-todos`（项目主页 https://github.com/alphapapa/magit-todos ）扫描仓库里的 `TODO`、`FIXME` 等关键词，在 Magit 状态缓冲区里插入一个区块列出它们，按 `RET` 直接跳到对应位置。关键词表、忽略的目录都能配置。它依赖 `hl-todo` 做高亮，安装时会被自动带上。
 
 ```elisp
 (use-package magit-todos
@@ -469,7 +469,7 @@ Magit 之外，还有几类包与它配合密切。
 
 ## 九、Forge：把 PR 和 Issue 拉进 Emacs
 
-Forge 是 Magit 作者写的配套包，把 GitHub、GitLab、Codeberg、Bitbucket 等平台上的 Pull Request 与 Issue 当作 Magit 里的区块来展示与操作。它不是 Git 的替代品，而是「代码托管平台的客户端」。
+Forge 是 Magit 作者写的配套包，把 GitHub、GitLab、Codeberg、Bitbucket 等平台上的 Pull Request 与 Issue 当作 Magit 里的区块来展示与操作。它不是 Git 的替代品，而是「代码托管平台的客户端」。项目主页：https://github.com/magit/forge 。
 
 安装与配置分三步。
 

@@ -52,7 +52,7 @@ Emacs 不是"另一个编辑器"，而是**一个用 Emacs Lisp 写成的可编�
 | Debian / Ubuntu | `sudo apt install emacs` | 版本可能偏旧，需要新版可加官方 PPA 或自行编译 |
 | Arch Linux | `sudo pacman -S emacs` | 官方仓库版本新，另有 `emacs-nativecomp` 等变体 |
 | Fedora | `sudo dnf install emacs` | |
-| macOS | `brew install --cask emacs` | 另有 `emacs-mac` 变体，两者对图形特性的支持不同 |
+| macOS | `brew install --cask emacs-app` | cask 官方名称为 `emacs-app`（旧名 `emacs` 作为别名保留）；另有 `emacs-mac` 变体，对图形特性的支持不同 |
 | Windows | `winget install GNU.Emacs` 或 `scoop install emacs` | 注意 `HOME` 环境变量；也可在 WSL 中使用 |
 
 详细步骤、图形界面与终端模式的差异、守护进程与 `emacsclient` 的配置，见 [[emacs教程/1入门/01_安装与启动|01 安装与启动]]。

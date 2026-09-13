@@ -465,13 +465,24 @@ $ find ~/Music -name '*.flac' -print > ~/Music/无损合集.m3u
      ;; 其他情况：退回回显区
      (t (message "%s" msg)))))
 
+(defun my/emms-current-track-description ()
+  "返回当前曲目的描述字符串；没有在播放时返回一句提示。
+注意 emms-show 只负责把描述送到回显区，它自己的返回值是 nil，
+所以要在别处使用这段文字，就必须照着它的做法自己拼出字符串。"
+  (if emms-player-playing-p           ; 这是一个变量，不是函数
+      (format emms-show-format
+              (emms-track-description
+               (emms-playlist-current-selected-track)))
+    "当前没有播放"))
+
 (defun my/emms-notify-current-track ()
   "在切歌时弹出桌面通知，内容取当前曲目的描述。"
-  (my/notify "EMMS" (emms-show)))
+  (my/notify "EMMS" (my/emms-current-track-description)))
 
-;; 用 emms-show 取到的字符串作为通知内容
 (add-hook 'emms-player-started-hook #'my/emms-notify-current-track)
 ```
+
+这段代码里有三个容易出错的点值得单独记住。第一，`emms-show` 的返回值是 `nil`，它只调用 `message` 或 `insert` 来产生副作用，所以 `(my/notify "EMMS" (emms-show))` 这种写法会把 `nil` 当通知内容，弹出的是字符串「nil」。第二，`emms-player-playing-p` 是**变量**而不是函数，判断时必须写成 `emms-player-playing-p`，不能加括号调用。第三，`emms-show-format` 是一个含 `%s` 的格式字符串（默认 `"Currently playing: %s"`），描述文字要靠 `emms-track-description` 从当前曲目上取。
 
 注意 `osascript` 那一条里用的是 AppleScript 语法，`display notification "内容" with title "标题"`；这里用 `shell-quote-argument` 是为了处理内容里的引号。如果曲目名里带引号导致通知失败，这是需要额外转义的边界情况，日常使用中很少遇到。
 
@@ -490,32 +501,31 @@ $ find ~/Music -name '*.flac' -print > ~/Music/无损合集.m3u
     ("示例电台 B" . "http://example.invalid:9000/live"))
   "个人电台清单。请替换为真实可用的流地址。")
 
+;; EMMS 为 URL 提供了现成的公开命令，参数都只有一个 URL 字符串：
+;;   emms-add-url   把 URL 追加进播放列表
+;;   emms-play-url  直接播放这个 URL
+;; 两者都定义在 emms-source-file.el 中，以 autoload 形式声明。
+
 (defun my/emms-add-radio (station)
-  "把 STATION（名称与地址的 cons）追加到当前 EMMS 播放列表。"
+  "把 STATION（名称与地址的 cons）加入当前 EMMS 播放列表。"
   (interactive
    (list (or (assoc (completing-read "电台：" my/radio-stations nil t)
                     my/radio-stations)
              (user-error "没有这个电台"))))
-  (with-current-buffer (emms-playlist-current-buffer-insure)
-    (goto-char (point-max))
-    (insert (format "%s\n" (cdr station)))
-    (emms-playlist-mode)
-    (emms-playlist-current-clear))
+  (emms-add-url (cdr station))
   (message "已加入电台：%s" (car station)))
+
+(defun my/emms-play-radio (station)
+  "立即播放 STATION（名称与地址的 cons）对应的流。"
+  (interactive
+   (list (or (assoc (completing-read "播放电台：" my/radio-stations nil t)
+                    my/radio-stations)
+             (user-error "没有这个电台"))))
+  (emms-play-url (cdr station))
+  (message "正在播放电台：%s" (car station)))
 ```
 
-上面这个函数里用到的 `emms-playlist-current-buffer-insure` 属于内部辅助函数，不同版本名字可能变化，所以更稳妥的写法是直接操作播放列表缓冲区并调用公开命令。下面这版只使用公开接口，可移植性更好：
-
-```elisp
-(defun my/emms-play-stream (url)
-  "把流地址 URL 追加进当前播放列表并立即播放。
-用公开命令实现，避免依赖内部函数名。"
-  (interactive "s流地址或 m3u/pls 地址：")
-  (emms-playlist-mode-go)            ; 打开（或切到）播放列表缓冲区
-  (goto-char (point-max))            ; 移到列表末尾
-  (insert url "\n")                  ; 插入一行，播放列表就是文本
-  (emms-playlist-mode-play-smart))   ; 播放光标所在的那一条
-```
+这里有一个必须强调的取舍：**不要手工往播放列表缓冲区里插入文本行。** 播放列表里每一条都带着 EMMS 的曲目文本属性，播放逻辑靠这些属性判断「这一行是什么曲目」。用 `insert` 塞进去的纯文本行缺少这些属性，看上去在列表里，播放时却会出错。所以添加内容应当一律走 `emms-add-url`、`emms-add-file` 这类公开命令，让 EMMS 自己构造正确的行。至于播放列表缓冲区里手工可做的操作（删行、调整顺序、剪切粘贴），那些命令本身就保留了行结构，因此是安全的。
 
 把电台地址存成文本文件、用 `emms-add-m3u-playlist` 一次性载入，是更适合日常使用的方式。你可以在一个 m3u 文件里放几十个电台地址，需要时载入即可。
 
@@ -1273,9 +1283,18 @@ Linux 上的音量后端选择取决于你的音频栈：
                            (shell-quote-argument title))))
    (t (message "%s：%s" title body))))
 
+(defun my/emms-current-track-description ()
+  "返回当前曲目的描述字符串，没有在播放时给出提示。
+emms-show 的返回值是 nil，所以要复用它的文字必须自己拼字符串。"
+  (if emms-player-playing-p           ; emms-player-playing-p 是变量
+      (format emms-show-format
+              (emms-track-description
+               (emms-playlist-current-selected-track)))
+    "当前没有播放"))
+
 (defun my/emms-notify-track ()
   "切歌时弹出通知。"
-  (my/notify "EMMS" (emms-show)))
+  (my/notify "EMMS" (my/emms-current-track-description)))
 
 (add-hook 'emms-player-started-hook #'my/emms-notify-track)
 ```
@@ -1330,6 +1349,36 @@ Linux 上的音量后端选择取决于你的音频栈：
 检查 `emms-mode-line-mode` 与 `emms-playing-time-mode` 是否真的开启了（用 `M-: emms-mode-line-mode` 看返回值），以及两个格式变量里是否保留了 `%s` 占位符。如果格式字符串里没有 `%s`，变量有值也不会显示出来。
 
 另外，用 `emms-player-mpv` 后端时，曲目信息与播放进度依赖 mpv 的 IPC 反馈；如果 mpv 版本过旧，反馈可能不完整，表现为进度不更新。此时升级 mpv 是有效的解决办法。
+
+---
+
+## 十四、延伸阅读与官方资料
+
+下面这些地址是本章提到的各项目的官方资料。EMMS 的变量与预设、mpv 的命令行参数都以它们为准。
+
+EMMS 与 Bongo：
+
+- EMMS 项目主页 https://www.gnu.org/software/emms/
+- EMMS 在 MELPA 上的页面 https://melpa.org/#/emms
+- Bongo 仓库 https://github.com/dbrock/bongo
+- hydra 仓库（用于做媒体面板）https://github.com/abo-abo/hydra
+
+播放器与媒体工具：
+
+- mpv 项目主页 https://mpv.io/ 与手册 https://mpv.io/manual/master/
+- mpv 源码仓库 https://github.com/mpv-player/mpv
+- FFmpeg 项目主页 https://ffmpeg.org/
+- yt-dlp 仓库 https://github.com/yt-dlp/yt-dlp
+
+Emacs 侧的 mpv 集成包（都在 MELPA 上）：
+
+- mpv.el 仓库 https://github.com/kljohann/mpv.el
+- mpvi 仓库 https://github.com/lorniu/mpvi
+
+Emacs 手册：
+
+- Elisp 参考手册（`start-process`、`make-process`、`process-send-string`、`json-encode` 的完整说明）https://www.gnu.org/software/emacs/manual/html_node/elisp/
+- GNU Emacs 手册 https://www.gnu.org/software/emacs/manual/html_node/emacs/
 
 ---
 

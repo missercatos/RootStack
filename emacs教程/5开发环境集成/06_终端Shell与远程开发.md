@@ -39,6 +39,8 @@ flowchart TD
 
 还有一个容易被忽略的维度是**输出的持久性**。`shell`、`eshell`、`term`、`vterm`、`eat` 的输出都留在缓冲区里，可以被搜索、被导出、被 diff；命令行的 `M-x compile` 与 `M-x shell-command` 也各自有独立的输出缓冲区（分别是 `*compilation*` 与 `*Shell Command Output*`），它们的优势是可以直接在输出上按 `RET` 跳到出错位置。因此「运行一次编译并定位错误」用 `M-x compile` 比在任何终端里跑 `make` 都更合适，这也是后面几篇要展开的内容。
 
+判断方案是否合适的最终标准不是「哪个功能多」，而是「打断我思路的次数少」。一次任务里如果要反复在窗口之间切换、反复重新连接、反复等一个操作超时，那么这个方案即使功能齐全也不适合你；反之，一个功能有限的方案如果让你保持在同一种操作节奏里，它就更值得长期使用。选方案时先在真实任务上各试一天，比看对比表有效得多。
+
 ---
 
 ## 二、eshell 详解
@@ -106,6 +108,8 @@ $ ls **/*.el
 ### 2.5 别名
 
 eshell 的别名与 bash 的写法不同：**参数占位用 `$*`，整个定义用单引号包住**。定义方式有两种。
+
+这一点值得多解释一句，因为它是最常见的迁移障碍。bash 的 `alias ll='ls -l'` 里没有参数占位符，追加参数时靠的是 shell 把参数拼在别名展开之后；eshell 的别名是一个命令模板，`$*` 是模板里的「所有参数」占位符，没有它就等于丢掉参数。因此从 bash 别名表抄过来时，凡是原来带 `$@` 或需要透传参数的地方，在 eshell 里都要补上 `$*`。
 
 第一种，在 eshell 里直接敲：
 
@@ -211,7 +215,7 @@ eshell 的性能瓶颈有两处：一是 Elisp 实现的 `ls`、`grep` 在目录
 
 ### 3.1 安装与依赖
 
-`vterm` 包本身只是 Elisp 包装，真正的终端模拟由一个 C 动态模块（`vterm-module.so` / `.dylib` / `.dll`）完成，因此首次安装需要编译。依赖三样：`cmake`、`libtool`（或系统等价物）、以及 libvterm 源码（包内会自动下载，也可以指向本地副本）。
+`vterm` 的源码仓库在 https://github.com/akermu/emacs-libvterm ，其中 README 记录了各平台的编译依赖与已知问题，装不上时先对照它排查。`vterm` 包本身只是 Elisp 包装，真正的终端模拟由一个 C 动态模块（`vterm-module.so` / `.dylib` / `.dll`）完成，因此首次安装需要编译。依赖三样：`cmake`、`libtool`（或系统等价物）、以及 libvterm 源码（包内会自动下载，也可以指向本地副本）。
 
 GNU/Linux（Debian/Ubuntu）：
 
@@ -283,7 +287,7 @@ vterm 把绝大多数按键直接送给终端程序（它把所有会触发 `sel
 
 ### 3.3 管理多个终端：multi-vterm
 
-`vterm` 本身每次 `M-x vterm` 都会新建一个缓冲区，缓冲区多了不好管理。`multi-vterm` 在它之上提供了编号管理与项目感知：
+`vterm` 本身每次 `M-x vterm` 都会新建一个缓冲区，缓冲区多了不好管理。`multi-vterm`（https://github.com/suonlight/multi-vterm ）在它之上提供了编号管理与项目感知：
 
 ```elisp
 (use-package multi-vterm
@@ -302,7 +306,7 @@ vterm 把绝大多数按键直接送给终端程序（它把所有会触发 `sel
 
 `eat`（Emacs Terminal）是 akib 写的纯 Elisp 终端模拟器，托管在 Codeberg：https://codeberg.org/akib/emacs-eat 。它的价值在于**不需要编译、不需要外部库**，把包装上就能用，同时提供真正的 TTY，能跑全屏程序。
 
-安装方式与普通包一样：加入 MELPA 或 NonGNU ELPA 后 `M-x package-install RET eat RET`。它以源码方式安装时依赖 `compat`，包管理器会自动处理。
+安装方式与普通包一样：加入 MELPA 或 NonGNU ELPA 后 `M-x package-install RET eat RET`。它以源码方式安装时依赖 `compat`，包管理器会自动处理。源码仓库在 https://codeberg.org/akib/emacs-eat ，问题反馈与最新说明都在那里。
 
 eat 有三种输入模式，理解它们是使用 eat 的关键：
 
@@ -352,6 +356,8 @@ line 模式下的键位是 Emacs 风格的，适合在慢速连接或远程 shel
 
 `ansi-term` 与 `term` 是同一个实现的不同入口，`M-x ansi-term` 会先询问要运行哪个 shell。它不是「更好的 term」，只是历史命名。
 
+唯一还站得住脚的选用理由是**零安装**：在不能安装任何第三方包的受限环境里（受管的企业机器、只读的系统、CI 容器），vterm 需要编译工具链、eat 需要装包，而 term 就在 Emacs 里，至少能提供一个真正的 TTY。除此之外，把 term 当作「能跑全屏程序」的备选，会发现 vterm 与 eat 在每一个维度上都更好。
+
 ---
 
 ## 六、终端缓冲区里的键位冲突
@@ -389,6 +395,10 @@ line 模式下的键位是 Emacs 风格的，适合在慢速连接或远程 shel
 
 因此正确的说法是：在 Emacs 里运行 vim 是「可以」而不是「推荐」。它适合偶发场景（临时用某个只有 vim 插件的工具、维护远端机器），不适合当日常编辑方式。
 
+如果经常需要「在 eshell 里顺手敲一个需要 TTY 的程序」，可以交给 eshell 自动处理：`eshell-visual-commands` 里列出的命令（`vi`、`top`、`less` 之类的常见项通常已在默认值里）以及 `eshell-visual-subcommands` 指定的子命令，在 eshell 里启动时不会试图直接在 eshell 缓冲区里渲染，而是被转交给一个终端缓冲区运行。`eshell-visual-options` 则用来给某些命令声明它需要的选项形式。这是「不离开 eshell 也能跑交互程序」的折中方案，代价是每次都会新开一个缓冲区，需要在多个缓冲区之间切换。
+
+反过来，如果只是想让某个程序在 Emacs 里有个稳定的显示位置，更简单的做法是给它单独开一个 vterm 或 eat 缓冲区并固定用途：一个专门跑 REPL、一个专门跑构建监视、一个专门跑数据库客户端。Emacs 的窗口管理可以按缓冲区名把固定布局恢复出来，这比每次临时决定窗口该放哪要省心得多。
+
 ---
 
 ## 八、远程开发方案对比
@@ -419,6 +429,10 @@ graph TD
 ```
 
 选型经验：**轻量远程编辑用 TRAMP，长期驻留开发用远程 daemon，需要本地工具链处理远端文件才考虑 sshfs，环境复杂且要求可复现时用容器。**
+
+判断过程可以从三个问题入手，顺序不要颠倒。第一个问题：**代码是长期驻留在远端，还是偶尔改几个文件？** 偶尔改，TRAMP 的零配置优势压倒一切；长期驻留，就不要让每个文件操作都变成网络往返。第二个问题：**你依赖的是本地工具链还是远端工具链？** 如果项目的构建、测试、依赖都定义在远端（远端有特定版本的内核头文件、GPU 驱动、数据库），那就应该让所有执行都发生在远端，此时远程 daemon 是自然选择；如果只在远端改源码、构建在本地跑，TRAMP 反而更简单。第三个问题：**断线时你能接受多大的损失？** 远程 daemon 的缓冲区与进程在断线后依然存在，TRAMP 的本地缓冲区也在，但未保存的修改与正在跑的命令会有差别。
+
+还有一个常见的坑是把不同路线混在一起用，结果得到两者的缺点。典型例子是「用 TRAMP 打开远端文件，同时在远端跑着另一个 daemon 里的 Emacs 编辑同一批文件」：两边的缓冲区各自独立，谁的修改后保存谁就覆盖对方，而 Git 只会告诉你文件被改过，不会告诉你被谁改过。要么统一到一条路线，要么明确划分「哪些目录归本地改、哪些目录归远端改」，不要靠记忆维持边界。
 
 ---
 
@@ -464,11 +478,21 @@ TRAMP 是 Emacs 内置的透明远程访问框架，语法是 `/方法:用户@�
 
 项目级插件（projectile、project.el 的索引、`consult-ripgrep`）在远程目录上要么禁用，要么改成使用远端的 `find`/`rg`。`project.el` 在 TRAMP 上部分命令会通过远端执行，行为比本地索引友好一些，但仍然不适合超大目录树。
 
-### 9.3 在远端编译与运行
+### 9.3 用 dired 管理远端目录
 
-TRAMP 支持在远端目录里执行编译命令：在远端文件的缓冲区里执行 `M-x compile`，输入的命令会在远端机器上运行（帧的默认目录是远端目录，TRAMP 会把过程与输出通道都放在远端），错误输出可以点击跳到远端文件的对应行。`M-x shell` 在远端目录里启动的 shell 也会跑在远端——这是 TRAMP 提供的一个很实用的补充。
+TRAMP 与 dired 是原生配合的：用 `C-x d` 或 `C-x C-f` 打开一个远程目录路径，得到的 dired 缓冲区与本地 dired 用法一致，`R` 重命名、`D` 删除、`C` 复制、`+` 新建目录都会作用在远端机器上。这一点在「清理服务器上的旧日志」「把本地构建产物拷上去」这类任务上比开 SSH 会话敲命令更不容易出错，因为每一步都有明确的确认与可回退的操作记录。
 
-### 9.4 性能建议与常用变量
+代价是每个 dired 操作都会触发一次或多次远端调用，因此在大目录（几千个文件）上打开会很慢，排序与过滤也要等。实践建议是：在远端 dired 里避免按 `s` 之类的反向排序（会重新读取全部条目），尽量先用 `find` 在 eshell 里把目标路径缩小，再打开具体目录。
+
+把常用的远程路径加进书签（`C-x r m` 记录、`C-x r b` 跳转）是很划算的一步：书签保存的是完整的 TRAMP 路径，下次直接跳过去，不必再手输一遍 `user@host` 与长路径。
+
+### 9.4 在远端编译与运行
+
+TRAMP 支持在远端目录里执行编译命令：在远端文件的缓冲区里执行 `M-x compile`，输入的命令会在远端机器上运行（默认目录是远端目录，TRAMP 会把过程与输出通道都放在远端），错误输出可以点击跳到远端文件的对应行。`M-x shell` 在远端目录里启动的 shell 也会跑在远端——这是 TRAMP 提供的一个很实用的补充。
+
+需要留意两点。第一，行为依赖于远端存在对应的可执行文件，例如你在本地习惯的 `rg`、`fd` 在远端可能没装，报错会出现在编译输出里而不是 Emacs 的报错里。第二，TRAMP 上的编译不会复用本地的环境变量与 PATH，远端 shell 的初始化文件（`.bashrc`、`.profile`）是否被读取取决于启动方式，遇到「本地能跑远端不行」时，先确认远端交互式 shell 里能不能跑通同样的命令。
+
+### 9.5 性能建议与常用变量
 
 - `tramp-verbose`：默认值较低。排查问题时设为 6 或 10 会写出详细的调试日志（日志缓冲区名以 `*tramp/` 开头），确认问题后再改回小数值。
 - `tramp-use-connection-share`：控制是否复用 SSH 连接（即 ControlMaster）。复用能显著减少重复连接的开销，但某些服务器配置下会报错，出问题时可以先关掉它判断。
@@ -529,6 +553,12 @@ $ emacsclient -f ~/.emacs.d/server/work -c ~/src/app/main.c
 
 `server-use-tcp` 与 `server-port` 都是真实存在的变量：前者为 `nil` 时使用本地 socket（默认 `server-socket-dir`，一般是 `/run/user/<uid>/emacs`），为 `t` 时使用 TCP，端口默认从 12345 起自动选择。使用 TCP 时 server 文件里记录着主机与端口，因此本地与远端的路径要能对应上。
 
+两种客户端各有明确的适用面，选择标准不是「哪个更好」而是「你要显示在哪」。`emacsclient -t` 复用你已经在用的 SSH 会话，不需要额外转发、不需要图形环境，在任何终端里都能工作，代价是终端只能显示文本界面，鼠标、图片、字体渲染都受终端限制，而且一旦终端窗口关掉这个框架就没了（远端 daemon 里的缓冲区不受影响）。`emacsclient -c` 打开独立的图形框架，体验与本地 Emacs 完全一致，代价是需要一条能承载 X11 或 TCP 的通道，在跨公网的高延迟链路上，图形框架的每一次重绘都更昂贵。
+
+使用 `-t` 时有两个实用技巧。加 `-n`（`--no-wait`）可以让 `emacsclient` 把文件交给已有框架后立刻返回，因此在 shell 里写 `emacsclient -s work -n file` 不会占住终端；不加 `-n` 时，`emacsclient` 会在文件被关闭后返回，返回值可以当作「编辑已完成」的信号，适合放在脚本里让用户编辑一段文本再继续。另外，`emacsclient -e` 可以直接在远端 daemon 里求值一个 Elisp 表达式并打印结果，用来做健康检查（例如前面出现的 `(emacs-pid)`）或者批量触发远端操作。
+
+还有一个容易被忽略的细节：远端 daemon 里的剪贴板与本地是两套。终端客户端（`-t`）走的是终端自己的选择机制，图形客户端（`-c`）走的是远端 X11 或系统剪贴板。如果你的常用流程是「在远端 Emacs 里复制路径，粘贴到本地浏览器」，需要额外的剪贴板转发方案，或者在 TRAMP 场景下干脆用本地 Emacs 打开远端文件。这一点在决定路线时值得先想清楚。
+
 ### 10.2 用 systemd 用户服务托管
 
 在远端（Linux）把 daemon 交给 systemd 管理，可以做到登录即启动、崩溃自动重启：
@@ -537,7 +567,7 @@ $ emacsclient -f ~/.emacs.d/server/work -c ~/src/app/main.c
 # 保存为 ~/.config/systemd/user/emacs.service
 [Unit]
 Description=Emacs text editor daemon
-Documentation=info:emacs man:emacs(1) https://www.gnu.org/software/emacs/
+Documentation=info:emacs man:emacs(1)
 
 [Service]
 Type=notify
@@ -598,11 +628,15 @@ TRAMP 可以直接进入容器，方法是把 `docker` 或 `podman` 作为 TRAMP
 
 与容器编排相关的更多内容参见 [[docker/README|Docker 教程]]，devcontainer 的规范说明见 https://containers.dev/ 。
 
+还有一点值得区分清楚：**devcontainer 与「在容器里跑 Emacs daemon」解决的不是同一个问题**。devcontainer 规范描述的是「一个项目需要什么环境、用哪个镜像、装哪些扩展、挂载哪些卷」，它的目标读者是需要一键复现开发环境的团队；而 Emacs daemon 只是运行方式，你可以把它跑在 devcontainer 定义的容器里，也可以跑在自己手写的容器里。因此两者是互补的：用 devcontainer 保证环境可复现，用容器内的 daemon 保证编辑体验与本地一致。真正需要自己动手的部分是把 Emacs 与配置装进镜像、把笔记与配置目录挂载进去，以及在容器重启后重新启动 daemon。
+
+最后提醒一个权限问题：容器里以 root 运行 Emacs 时写出的文件属主会是 root，挂载回宿主机后普通用户可能无法修改。对策是在 Dockerfile 里创建与宿主机 UID 一致的用户，或者使用 rootless podman 与用户命名空间映射（`--userns=keep-id`），而不是每次出问题再 `sudo chown`。
+
 ---
 
 ## 十二、完整配置块
 
-下面这段配置把 eshell、vterm、shell-pop 弹窗终端、TRAMP 优化组织成一个模块，可以直接抄进 init.el 后按需删减。
+下面这段配置把 eshell、vterm、shell-pop 弹窗终端（项目主页 https://github.com/kyagi/shell-pop-el ）、TRAMP 优化组织成一个模块，可以直接抄进 init.el 后按需删减。
 
 ```elisp
 ;;; ---------- eshell：别名、提示符与历史 ----------
@@ -705,6 +739,23 @@ TRAMP 可以直接进入容器，方法是把 `docker` 或 `podman` 作为 TRAMP
 **eshell 里 `ls` 的输出格式和 bash 不一样。** 这是预期的：eshell 用自己的 `ls` 实现，支持 `-l`、`-h`、`-a` 等常用选项但不是 GNU coreutils 的全部参数。想要完全一致的输出，用 `*ls`（前置 `*` 强制走外部程序）或 `which ls` 确认解析结果。
 
 **vterm 编译失败，提示找不到 `libtool`。** macOS 上通常是因为找不到 `glibtool`，把 Homebrew 的 libtool 目录加进 PATH 再重装；Linux 上装 `libtool-bin`（Debian 系需要单独装这个包，只装 `libtool` 往往不够）；Windows 上确认 MSYS2 的工具链与 Emacs 架构一致。
+
+**在 eshell 里 `cd` 到远程目录后命令全都变慢。** 这是正常的，每条命令都要经过 TRAMP 通道。判断是否值得：单条命令耗时一两秒可以接受，成批操作（例如对几百个文件跑格式化工具）就应该改成在远端 daemon 里执行，或者用一条远端命令一次处理完（`find ... -exec ...`），而不是让 Emacs 逐文件往返。
+
+**远程文件保存后权限变成 600，或者换行符被改。** 这通常与 `default-file-modes` 以及本地与远端的平台差异有关。在 TRAMP 缓冲区里保存文件时，权限由写入时的 `default-file-modes` 决定；如果远端是共享服务器（例如 `/var/www` 下的文件需要组可读），可以针对这个目录设置 `(setq-local default-file-modes #o664)`，或者干脆改用远端 daemon 方案，让文件的读写完全发生在远端。
+
+**为什么在 vterm 里按 `C-c C-c` 能把命令中断，按 `C-c` 却进了 Emacs 的前缀。** 因为 `C-c` 是 Emacs 的保留前缀，几乎所有主模式都不会把它直接交给终端；vterm 的做法是把 `C-c C-c` 这一整串重新送给终端。理解了这条规则，其它「按键没送到终端」的问题都可以按同一思路解决：查 `C-h k`，如果不是 `self-insert` 类命令，就说明被 Emacs 截获了。
+
+**在 Windows 上没有 `SHELL` 环境变量，vterm 起不来。** vterm 的默认 shell 取自 `SHELL`，Windows 上通常没有这个变量。显式设置即可，例如指向 PowerShell 或 Git for Windows 自带的 bash：
+
+```elisp
+;; Windows 上的 vterm shell 设置示例，按自己的安装路径调整
+(setq vterm-shell "C:/Program Files/Git/bin/bash.exe")
+;; 或者用 PowerShell
+;; (setq vterm-shell "powershell.exe")
+```
+
+**eshell 里的 `git log` 输出没有分页，一屏刷过去看不清。** eshell 默认不启用分页器，这是有意为之：输出进入可搜索的缓冲区，用 `C-s` 找比在 less 里翻页更方便。真的想要分页，把 `git` 的输出管给 `less` 即可（`git log | less`），或者在 vterm 里操作。
 
 ---
 

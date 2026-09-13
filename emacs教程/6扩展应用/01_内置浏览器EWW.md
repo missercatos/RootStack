@@ -1041,6 +1041,32 @@ EWW 的请求是同步的，网络慢就会阻塞。可以尝试：
 
 ---
 
+## 十一、延伸阅读与官方资料
+
+下面这些地址是本章提到的各项能力的权威来源。EWW 与 shr 的变量含义、键位定义都以官方手册与源码为准。
+
+Emacs 官方手册：
+
+- GNU Emacs 手册（包含 eww 与浏览器的章节）https://www.gnu.org/software/emacs/manual/html_node/emacs/
+- Elisp 参考手册（`url-retrieve`、`json-encode`、`libxml-parse-html-region` 等函数的完整说明）https://www.gnu.org/software/emacs/manual/html_node/elisp/
+- Elisp 参考手册单页版（便于全文检索）https://www.gnu.org/software/emacs/manual/html_mono/elisp.html
+- Org 手册（`org-store-link` 与链接处理的说明）https://orgmode.org/manual/
+- Emacs 源码镜像 https://github.com/emacs-mirror/emacs （想确认某个键位或变量的准确行为时，直接读 `eww.el` 与 `shr.el` 最可靠）
+
+xwidget-webkit 的底层依赖：
+
+- WebKitGTK 项目主页 https://webkitgtk.org/
+
+包索引与本章提到的补全框架：
+
+- MELPA 包索引 https://melpa.org/
+- consult 仓库 https://github.com/minad/consult
+- vertico 仓库 https://github.com/minad/vertico
+
+补充说明：上面这些站点中，GNU 官方手册所在的域名在部分网络环境下需要走代理才能访问。如果打不开，可以在 Emacs 里用 `C-h i` 打开本地 Info 版的 Emacs 与 Elisp 手册，内容与在线版一致，而且检索更快。
+
+---
+
 ## 小结
 
 - EWW 是内置的纯文本浏览器，共享 Emacs 的缓冲区与检索系统；它不执行 JavaScript，因此能否使用取决于「关掉 JS 后正文是否还在原始 HTML 里」。
@@ -1053,7 +1079,7 @@ EWW 的请求是同步的，网络慢就会阻塞。可以尝试：
 
 - [[emacs教程/6扩展应用/04_邮件RSS与阅读|邮件、RSS 与阅读]]
 - [[emacs教程/7进阶/03_TRAMP远程开发|TRAMP 远程开发]]
-- [[emacs教程/3配置实践/03_键位系统设计|键位系统设计]]
-- [[emacs教程/1入门/04_包管理与use-package|包管理与 use-package]]
+- [[emacs教程/3配置实践/05_自定义功能开发|自定义功能开发]]
+- [[emacs教程/1入门/03_配置文件从零开始|配置文件从零开始]]
 - [[emacs教程/2Elisp语言/04_列表序列与哈希表|列表、序列与哈希表]]
 - [[docker/README|Docker 教程]]

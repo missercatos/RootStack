@@ -75,12 +75,12 @@ elfeed 是 Emacs 生态里使用最广的订阅阅读器，作者 Christopher We
         "https://www.masteringemacs.org/feed"
 
         ;; 形式二：URL 加自动标签，该源所有条目都会带上这些标签
-        ("https://irreal.org/blog/?feed=rss2" emacs blog)
+        ("https://blog.rust-lang.org/feed.xml" rust blog)
 
         ;; 形式三：URL 加元数据再加自动标签
         ;; :title 用来给标题很长的源起一个短名字
-        ("https://www.reddit.com/r/emacs/.rss"
-         :title "r/emacs" reddit emacs)
+        ("https://this-week-in-rust.org/rss.xml"
+         :title "This Week in Rust" rust weekly)
 
         ;; 形式四：URL 加元数据，不加自动标签
         ("https://sachachua.com/blog/feed/"
@@ -89,7 +89,7 @@ elfeed 是 Emacs 生态里使用最广的订阅阅读器，作者 Christopher We
 
 自动标签（autotags）在条目第一次被发现时应用。如果修改了某个源的自定义标签，希望它对已有条目立即生效，执行 `M-x elfeed-apply-autotags-now`，它会按当前 `elfeed-feeds` 重新给已有条目打标签。
 
-上面例子里的几个源（Mastering Emacs、nullprogram、Irreal、Sacha Chua 的博客）都是长期稳定更新的技术博客。需要提醒的是：**订阅源会失效，曾经很有名的 Planet Emacsen 聚合站已经停止服务**，很多老教程里还在引用它。判断一个源是否还活着，看它在 elfeed 里是否长期抓取失败即可，失效就删掉，不必纠结。
+上面例子里的几个源（Mastering Emacs、Rust 官方博客、This Week in Rust、Sacha Chua 的博客）都是长期稳定更新的技术博客。需要提醒的是：**订阅源会失效，曾经很有名的 Planet Emacsen 聚合站已经停止服务**，很多老教程里还在引用它；同样，Reddit 与 Hacker News 这类站点会拒绝缺少浏览器特征的抓取请求，在 elfeed 里可能直接报 HTTP 错误。判断一个源是否还活着，看它是否长期抓取失败即可，失效就删掉，不必纠结。
 
 ### 2.3 用 Org 文件管理订阅源：elfeed-org
 
@@ -114,13 +114,13 @@ elfeed 是 Emacs 生态里使用最广的订阅阅读器，作者 Christopher We
 ** 必读                                                          :mustread:
 *** Emacs
 **** https://www.masteringemacs.org/feed
-**** https://irreal.org/blog/?feed=rss2
+**** https://sachachua.com/blog/feed/
 **** entry-title: \(emacs\|org-mode\)
 *** 技术
 **** [[https://github.com/skeeto/elfeed][Elfeed 提交记录]]
-**** https://news.ycombinator.com/rss                                      :hn:
+**** https://lwn.net/headlines/rss                                         :hn:
 ** 少读                                                             :low:
-**** https://example.com/feed.xml                                   :ignore:
+**** https://github.blog/feed/                                       :ignore:
 ```
 
 规则说明：
@@ -165,7 +165,7 @@ elfeed 的过滤器是一个空格分隔的表达式串，含义由表达式首�
 | `@时长A--时长B` | 时间区间 | `@5-days-ago--1-day-ago` |
 | `#N` | 最多显示 N 条 | `#100` |
 | `=regexp` | 只显示 URL 匹配该正则的源 | `=masteringemacs` |
-| `~regexp` | 排除 URL 匹配该正则的源 | `~reddit` |
+| `~regexp` | 排除 URL 匹配该正则的源 | `~github\.blog` |
 
 时长写法支持 `-ago` 后缀与多种单位，例如 `@6-months-ago`、`@2-weeks-ago`、`@1-year-ago`；也可以用具体日期区间，例如 `@2026-01-01--2026-02-01`。多个表达式是"与"的关系。
 

@@ -478,7 +478,7 @@ $ sudo dnf install emacs
 macOS 作为服务器（少见但可行）：
 
 ```bash
-$ brew install emacs        # 终端版本；图形版本可用 brew install --cask emacs
+$ brew install emacs        # 终端版本；图形版本可用 brew install --cask emacs-app
 ```
 
 在远程创建最小配置，或者把本地的 `~/.emacs.d` 用 Git 同步过去：
