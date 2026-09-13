@@ -186,6 +186,16 @@ RootStack/ ├ v0.20.0
 │ ├── 03-进阶教程.md 04-C与C++集成.md
 │   └── 05-Neovim示例.md          06-Love2D示例.md
 │
+├── emacs教程/ (47篇) Emacs 教程: 入门 → Elisp语言 → 配置实践 → 插件开发 → 开发环境集成 → 扩展应用 → 进阶
+│ ├── emacs目录.md 总索引 + 四条学习路线（完整/从Vim迁移/极速上手/深度）
+│ ├── 1入门/ (6篇) 认识Emacs/安装启动/内置教程与基本操作/配置文件从零开始/包管理与use-package/从Vim迁移
+│ ├── 2Elisp语言/ (12篇) 资源与视频/求值与类型/变量作用域/函数闭包与宏/列表序列哈希表/控制流与错误处理/缓冲区文本/文本属性与Overlay/命令键位映射/Mode与Hook/包与命名空间/调试与性能
+│ ├── 3配置实践/ (6篇) 配置工程化/主题字体与美化/键位系统设计/界面布局与功能位置/自定义功能开发/多机同步与分发
+│ ├── 4插件开发/ (4篇) 插件结构与生命周期/编写MinorMode/编写MajorMode与语法高亮/测试打包发布MELPA
+│ ├── 5开发环境集成/ (8篇) 补全与LSP/编译器集成/运行器与构建任务/调试器集成/Git与Magit/终端Shell与远程/OrgMode效率系统/主流语言实战
+│ ├── 6扩展应用/ (6篇) 内置浏览器EWW/媒体播放器EMMS与MPV/虚拟机与容器管理/邮件RSS与阅读/文件管理与笔记/AI助手集成
+│   └── 7进阶/ (5篇) 启动加速与性能优化/NativeComp与字节码/TRAMP远程开发/常见故障排查/生态社区与进阶路线
+│
 ├── python/ (~60篇)              Python 教程: 入门 → 精通 → 实战 → 专项工具
 │   ├── python目录.md
 │   ├── 1入门/ (8篇)               2精通/ (8篇)             3实战/ (5篇)
@@ -382,6 +392,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | Python | [Python 教程目录](python/python目录.md) | 入门 → 精通 → 实战 → 库 → 工程化 → 专项工具 |
 | Vim | [Vim 编辑器教程](vim教程.md) | Windows安装+快捷键大全+:指令大全+现代替代 |
 | VS Code | [VS Code 配置与使用](VSCODE的配置与使用.md) | 三平台安装+中文/字体配置+插件+快捷键 |
+| Emacs | [Emacs 教程目录](emacs教程/emacs目录.md) | 从零写配置+从Vim迁移+Elisp语言教程与资源+自己写配置写插件+编译器/运行器/浏览器/播放器/虚拟机接入 (47篇) |
 | dsh | [DeepSeek Harness 教程](dsh.md) | 安装/Web UI/Profile/插件安装与开发/发布 |
 | DSH 框架深度 | [DeepSeek Harness 完整教程](deepseek-harness/deepseek-harness目录.md) | Cordis架构+论文精读+插件实战+自建Harness (26篇) |
 | npm | [npm 教程](npm.md) | 安装配置/基本使用/版本管理/npx/进阶/排障 |
