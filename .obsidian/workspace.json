@@ -49,8 +49,7 @@
               "title": "动态规划"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -229,8 +228,9 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "de98771d6148e010",
+  "active": "155961fdf30b0b5a",
   "lastOpenFiles": [
+    "vim教程.md",
     "数据结构/B_字符串_String.md",
     "emacs教程/5开发环境集成/04_调试器集成.md",
     "emacs教程/3配置实践/04_界面布局与功能位置.md",
@@ -259,7 +259,6 @@
     "emacs教程/6扩展应用/02_媒体播放器EMMS与MPV.md",
     "emacs教程/5开发环境集成/06_终端Shell与远程开发.md",
     "emacs教程/4插件开发/02_编写MinorMode.md",
-    "emacs教程/5开发环境集成/05_Git与Magit.md",
     "src-bongo/bongo-20201002.1020/images/uri-track-icon.png",
     "src-bongo/bongo-20201002.1020/images/unknown-local-file-track-icon.png",
     "src-bongo/bongo-20201002.1020/images/track-mark-icon.png",
