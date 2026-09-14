@@ -131,7 +131,7 @@ POST /login
 {"user": "admin", "pass": {"$regex": "^a"}}  // 正则逐字符猜解密码
 ```
 
-完整 NoSQL 注入手法体系（含 PHP 数组传参、正则盲注脚本）指向 [[../ctf_trea/Web/SQL/SQL总目录|CTF SQL注入专题]] 与 [[../archstrike-web教学/04-SQL注入攻击|SQL注入实战]] 的迁移练习。
+完整 NoSQL 注入手法体系（含 PHP 数组传参、正则盲注脚本）指向 [[../ctf_trea/Web/SQL/SQL总目录|CTF SQL注入专题]] 与 [[../Web渗透/04-SQL注入攻击|SQL注入实战]] 的迁移练习。
 
 ---
 

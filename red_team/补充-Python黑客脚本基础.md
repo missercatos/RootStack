@@ -18,7 +18,7 @@
  $ python3 --version
 
  安装pip和常用库:
- $ sudo pacman -S python-pip python-requests python-scapy python-paramiko
+ $ python3 -m pip install requests scapy paramiko
 
 【1.2 基础语法 (重点掌握)】
 
@@ -392,8 +392,8 @@
  threading 多线程
  queue 线程安全队列
  os/subprocess 系统命令执行
- beautifulsoup4 HTML解析 (sudo pacman -S python-beautifulsoup4)
- pwntools CTF二进制利用 (sudo pacman -S python-pwntools)
+ beautifulsoup4 HTML解析 (pip install beautifulsoup4)
+ pwntools CTF二进制利用 (pip install pwntools)
 
 第五部分：学习路线指引
 

@@ -22,7 +22,7 @@ Flag 所表示的为目标服务器上存储的一些敏感机密的信息，这
 
 ### 与本知识库的关联
 
-本知识库基于 [[../总目录与快速查询|ArchStrike 安全知识体系]]，涵盖渗透测试、CTF、红队等领域。ArchStrike 作为安全发行版，内置了大量 CTF 常用工具（如 sqlmap、Metasploit、pwntools、hashcat 等），适合 CTF 竞赛的各个方向。
+本知识库基于 [[../总目录与快速查询|红队知识体系]]，涵盖渗透测试、CTF、红队等领域。一套完整的 Linux 安全环境通常包含大量 CTF 常用工具（如 sqlmap、Metasploit、pwntools、hashcat 等），适合 CTF 竞赛的各个方向。
 
 ### 相关文章
 

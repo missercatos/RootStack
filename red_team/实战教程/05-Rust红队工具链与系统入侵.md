@@ -1,6 +1,6 @@
 # 05 — Rust 红队工具链与系统入侵
 
-> Rust 系统教程：[[../../rust/rust目录|Rust 教程总目录]] | [[../../路径F-Rust学习路径|Rust 学习路径]]
+> Rust 系统教程：[[../../rust/rust目录|Rust 教程总目录]] | [[../../路径-Rust开发|Rust 学习路径]]
 
 > 哲学：Rust 不是一门"未来"的语言——它已经来了。actix-web 是全球最快的 Web 框架之一，hyper 是底层 HTTP 引擎，tokio 是异步运行时的事实标准，surrealDB 是新锐数据库，Cloudflare 的整个边缘计算平台都在用 Rust 重写。越来越多的关键基础设施正在被 Rust 生态吞没。红队如果不懂 Rust，就永远比对手慢一步。
 >
@@ -23,8 +23,7 @@ RustScan 自称「3 秒扫完 65535 个端口」——它不是吹牛。内部�
 
 ```bash
 # 安装
-sudo pacman -S rustscan
-# 或者从源码安装
+# 安装 rustscan：用包管理器或从 GitHub 获取（或者从源码安装）
 cargo install rustscan
 
 # 基础用法：全端口扫描单目标
@@ -140,9 +139,7 @@ ripgrep 是用 Rust 写的 `grep` 替代品，快 10-30 倍。在红队工作中
 
 ```bash
 # 安装
-sudo pacman -S ripgrep
-
-# === 密码搜索 ===
+# 安装 ripgrep：用包管理器或从 GitHub 获取（=== 密码搜索 ===）
 
 # 搜索所有包含 "password" 的文件（递归 + 忽略隐藏文件 + 智能文件类型过滤）
 rg -i "password" /var/www/html/
@@ -303,7 +300,7 @@ tokei /var/www/html/ # 看用了哪些语言、代码量
 # Rust 12 files 3400 lines ← 关键！得知目标有 Rust 组件
 
 # ======== bat: cat 替代带语法高亮（方便审计代码）========
-sudo pacman -S bat
+# 安装 bat：用包管理器或从 GitHub 获取
 bat wp-config.php # 比 cat 好 100 倍
 bat --show-all nginx.conf # 显示所有隐藏字符
 ```
@@ -1118,13 +1115,13 @@ cargo run --release -- -i shellcode.bin -f c -n sc --chunk-size 16
 
 | 工具 | 用途 | 安装命令 | 核心用法 |
 |------|------|----------|----------|
-| **rustscan** | 高速端口扫描 | `pacman -S rustscan` | `rustscan -a IP -- -sV -sC` |
-| **feroxbuster** | 目录/文件爆破 | `pacman -S feroxbuster` | `feroxbuster -u URL -w wordlist -x php` |
-| **ripgrep (rg)** | 文本搜索 | `pacman -S ripgrep` | `rg -i "password" /var/www/` |
-| **fd** | 文件查找 | `pacman -S fd` | `fd -e conf . /etc/` |
+| **rustscan** | 高速端口扫描 | `cargo install rustscan` | `rustscan -a IP -- -sV -sC` |
+| **feroxbuster** | 目录/文件爆破 | `cargo install feroxbuster` | `feroxbuster -u URL -w wordlist -x php` |
+| **ripgrep (rg)** | 文本搜索 | `cargo install ripgrep` | `rg -i "password" /var/www/` |
+| **fd** | 文件查找 | `cargo install fd-find` | `fd -e conf . /etc/` |
 | **x8** | HTTP参数发现 | `cargo install x8` | `x8 -u URL -w params.txt` |
 | **subxtract** | 子域名枚举 | `cargo install subxtract` | `subxtract -d domain -w wordlist` |
-| **bat** | 代码/文件预览 | `pacman -S bat` | `bat config.php` |
+| **bat** | 代码/文件预览 | `cargo install bat` | `bat config.php` |
 | **tokei** | 代码统计 | `cargo install tokei` | `tokei /var/www/html/` |
 | **cargo-audit** | 依赖漏洞审计 | `cargo install cargo-audit` | `cargo audit` |
 | **cargo-outdated** | 过期依赖检查 | `cargo install cargo-outdated` | `cargo outdated` |

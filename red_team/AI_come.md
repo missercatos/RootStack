@@ -135,7 +135,7 @@
  MCP 支持: 可通过 Model Context Protocol 外接任意工具
  自定义 Agent/Skill: 通过配置文件定义专属安全角色
  本地运行: 代码和配置都在本地，保障项目隐私
- Arch Linux 兼容: yay -S opencode 一键安装
+ 跨平台: 支持 Linux / macOS / Windows
 
 【3.2 opencode 配置文件体系】
 
@@ -908,7 +908,7 @@ async def handle_call_tool(name: str, arguments: dict):
  开源可审计，可信度高
  MCP 生态丰富，可对接任意工具
  自定义能力强 (Agent / Skill / Rules 三层配置)
- Arch Linux 原生支持
+ 跨平台支持 Linux / macOS / Windows
 
  劣势:
  需要 Claude API Key (付费，约 $3/小时)
@@ -1403,7 +1403,7 @@ if __name__ == "__main__":
 
 【6.1 环境准备】
 
- 本实战使用 Arch Linux + opencode + Claude:
+ 本实战使用 Linux + opencode + Claude:
 
 ```bash
 # 1. 安装 opencode
@@ -2343,11 +2343,11 @@ opencode "根据侦察报告中的发现，对 admin.example.com 的 Apache 2.4.
  结合本系列其他教程，建议按以下顺序学习:
 
  1. [[总目录与快速查询]] — 了解完整的红队知识体系
- 2. [[ArchStrike新手安装教程]] — 搭建基础工具环境
+ 2. [[工具获取与环境搭建]] — 搭建基础工具环境
  3. [[补充-Python黑客脚本基础]] — 掌握编程基础
  4. [[补充-进阶学习与缺失领域分析]] — 定位知识缺口
- 5. archstrike-recon教学 — 掌握传统侦察技术
- 6. archstrike-web教学 — 理解 Web 漏洞原理
+ 5. 信息收集 — 掌握传统侦察技术
+ 6. Web渗透 — 理解 Web 漏洞原理
  7. 本文档 — 将 AI Agent 融入工作流
  8. 持续实践 → 漏洞赏金平台 (补天, 漏洞盒子, HackerOne)
 

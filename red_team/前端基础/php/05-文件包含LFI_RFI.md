@@ -316,7 +316,7 @@ curl "http://target/index.php?file=data://text/plain,<?php phpinfo();?>"
 
 **关联**：
 - 终端命令细节见 [[04-终端PHP与curl封装器实战|04 终端 PHP 与 curl 封装器实战]]
-- 实战扩展见 [[../../archstrike-web教学/06-文件包含与命令注入|archstrike 文件包含与命令注入]]
+- 实战扩展见 [[../../Web渗透/06-文件包含与命令注入|文件包含与命令注入]]
 
 ---
 

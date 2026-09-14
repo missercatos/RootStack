@@ -97,7 +97,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/ ├ v0.21.0
+RootStack/ ├ v0.22.0
 ├── README.md ← 你在这里
 │
 ├── 路径-C开发.md C 开发: 从零到内核
@@ -240,11 +240,13 @@ RootStack/ ├ v0.21.0
 │ ├── postgresql/ sqlite/ sqlserver/ oracle/
 │ └── mongodb/ redis/ elasticsearch/
 │
-├── red_team/ (~186篇) 网络安全红队职业路径 (ArchStrike体系)
+├── red_team/ (~186篇) 网络安全红队职业路径 (Linux 通用工具链，不依赖专用发行版)
 │ ├── 网安基础知识/ (10篇) 渗透测试方法论
 │ ├── 前端基础/ (34篇) 实战教程/ (13篇，含14天实训)
 │ ├── 数据库安全/ (10篇) 各数据库渗透: 探测/提权/破解
-│ ├── archstrike-*教学/ (48篇) 10组ArchStrike工具教程
+│ ├── 渗透基础/ 信息收集/ 扫描与枚举/ 漏洞利用/ Web渗透/ 密码攻击/
+│ ├── 权限提升/ 代理与隧道/ 无线安全/ 数字取证/ 模糊测试/ 恶意软件分析/ (48篇)
+│ ├── 工具获取与环境搭建.md 工具渠道: 包管理器/GitHub/语言生态/源码/自研
 │ ├── 服务器部署与运维/ (4篇) QQ Bot攻防实战
 │ └── ctf_trea/ (~51篇) CTF竞赛知识库
 │ ├── Web/Web前置技能/ (HTTP协议/操作系统/数据库/HTML-CSS/程序语言)
@@ -265,7 +267,7 @@ RootStack/ ├ v0.21.0
 │ ├── 3实战开发/ (9篇) 源码导读 + 插件全流程 + 发布
 │ └── 4设计自己的Harness/ (7篇) 用Cordis从零造框架(含200行骨架源码)
 ├── npm.md npm 使用教程 (安装配置+版本管理+npx+进阶+排障)
-├── VERSION                      项目版本号: 0.21.0
+├── VERSION                      项目版本号: 0.22.0
 └── ISSUES.md 问题讨论与贡献指南
 ```
 
@@ -363,19 +365,17 @@ Linux 6.1 开始正式支持 Rust 内核模块。未来的趋势不是 C vs Rust
 
 ---
 
-## 关于网络安全发行版
+## 关于网络安全工作环境
 
-目前主流的面向网络安全的专用 Linux 发行版主要分三个体系：
+网络安全知识与发行版无关。RootStack 的网安部分**不依赖任何专用安全发行版**——任何主流 Linux 发行版都可以搭建完整的渗透测试环境。工具从包管理器、GitHub Releases、语言包管理器（pipx/go/cargo/npm）或源码获取，也可以自己写脚本与工具。
 
-1. **Kali Linux**（Debian 系）—— 由 Offensive Security 维护，最广为人知，工具齐全，基于 Debian 稳定版，适合从 Debian/Ubuntu 转过来的用户
-2. **Arch 系（BlackArch / ArchStrike）** —— 滚动更新，工具库极大（BlackArch 有 2800+ 工具），DIY 程度高，适合熟悉 Arch 的用户
-3. **Parrot OS**（Debian 系，独立分支）—— 轻量、注重隐私和开发环境，CTF 场景常见，介于 Kali 和日常使用之间
+如果你想用现成的安全发行版，主流选择有三类，仅作参考：
 
-每个体系各有优劣：Kali 装完即用但臃肿；Arch 系灵活但需要一定 Linux 基础；Parrot 在资源和功能之间平衡较好。
+1. **Kali Linux**（Debian 系）—— 由 Offensive Security 维护，最广为人知，工具齐全，基于 Debian 稳定版
+2. **Arch 系（BlackArch 等）** —— 滚动更新，工具库极大，DIY 程度高，适合熟悉 Arch 的用户
+3. **Parrot OS**（Debian 系，独立分支）—— 轻量、注重隐私和开发环境，CTF 场景常见
 
-RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求使用者掌握 Arch Linux 的基本操作。但网安知识本身与发行版无关——即使你使用其他体系，知识点仍然适用。
-
-另外，不一定要装专门的网安系统。**Windows + 合适的工具 + 自己写的脚本**，同样可以完成出色的安全测试工作。选择哪个发行版取决于你的使用习惯和具体场景。
+每个体系各有优劣，但它们都只是「预装了一堆工具的 Linux」。**不装专用系统同样可以**：任何 Linux + 自己获取的工具 + 自己写的脚本，都能完成出色的安全测试工作。工具获取与环境搭建见 [工具获取与环境搭建](red_team/工具获取与环境搭建.md)。
 
 ---
 
@@ -407,7 +407,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | 前端开发 | [前端引导阅读](前端开发/引导阅读.md) | HTML/CSS/JS/TS + Vue/React/Angular + 可视化, 按需路线 (~91篇) |
 | Linux 教程 | [Linux 百科全书式教程](linux/README.md) | 66章 + 4发行版 + WSL专项 + Shell编程 + 服务器运维 + 虚拟机与环境变量实战 |
 | Lua | [Lua 教程](lua-tutorial/00-lua简介.md) | 基础→进阶→C/C++集成→Neovim/Love2D (7篇) |
-| 渗透测试工程师 | [红队知识库总目录](red_team/总目录与快速查询.md) | ArchStrike渗透体系, ~148篇, 职业路径 |
+| 渗透测试工程师 | [红队知识库总目录](red_team/总目录与快速查询.md) | Linux 通用渗透体系, ~186篇, 职业路径 |
 | 自制安全工具箱 | [missercatos/tools](https://github.com/missercatos/tools) (本地 ~/hackingtools) | SQL注入自动化 sqlinject 等自研工具; CTF 教程见红队知识库 |
 
 ---

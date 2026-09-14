@@ -14,7 +14,7 @@
 
 ****`thumbv7em-none-eabi` (ARM Cortex-M4), `riscv32imac-unknown-none-elf` (RISC-V) `cargo build --target <triple>` 
 
-[[../../red_team/archstrike-exploit/03-IoT|: ]]
+[[../../red_team/漏洞利用/03-IoT|: ]]
 
 ---
 

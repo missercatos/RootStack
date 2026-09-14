@@ -169,7 +169,7 @@ curl -s "http://目标/.svn/pristine/aa/aae9bea229cf7fe9085c2556bb9f39adc5ad0b4d
 
 - [[Git泄露|Git 泄露]] -- .git 与 .svn 同属版本控制泄露，但对象模型不同
 - [[HG泄露|HG 泄露]] -- .hg 与 .svn 同属版本控制泄露，但格式不同（SQLite vs 明文 revlog）
-- [[../../../../../git.md#nav-17|git.md 17 章内部原理与文件存储]] -- git 对象模型与 svn pristine 的类比
+- [[../../../../git.md#nav-17|git.md 17 章内部原理与文件存储]] -- git 对象模型与 svn pristine 的类比
 - [[../备份文件下载/bak文件|bak文件]] -- 单文件备份直接泄露源码
 - [[../备份文件下载/vim缓存|vim缓存]] -- .swp 文件泄露源码
 - [[../备份文件下载/DS_Store|DS_Store]] -- macOS 目录元数据泄露

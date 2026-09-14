@@ -6,7 +6,7 @@
 
 - [[../../../../网安基础知识/02-Web技术基础|Web 技术基础]] -- HTTP 协议完整解析（请求/响应/缓存/认证/Cookie/Session）
 - [[../../../../网安基础知识/01-计算机网络基础|计算机网络基础]] -- OSI 模型与 TCP/IP 协议栈中的 HTTP 定位
-- [[../../../../archstrike-web教学/01-Web基础与HTTP协议|Web 基础与 HTTP 协议]] -- ArchStrike 环境下的 HTTP 安全实战场景
+- [[../../../../Web渗透/01-Web基础与HTTP协议|Web 基础与 HTTP 协议]] -- HTTP 安全实战场景
 
 ### HTTP 协议概述
 
@@ -58,7 +58,7 @@ sequenceDiagram
 - **netcat** -- 手动构造原始 HTTP 请求
 - **Postman** -- 图形化 API 调试工具
 
-参考本知识库的 [[../../../../archstrike-web教学/01-Web基础与HTTP协议|archstrike-web教学]] 模块获取上述工具的深入教程。
+参考本知识库的 [[../../../../Web渗透/01-Web基础与HTTP协议|Web渗透]] 模块获取上述工具的深入教程。
 
 ### 相关文章
 

@@ -26,7 +26,7 @@ flowchart LR
 ├── requires ← 格式特性标志（明文，必存在）
 ├── dirstate ← 工作副本跟踪状态（明文）
 ├── store/
-│ ├── fncache ← ★ 文件清单（明文，列出所有存储路径）
+│   ├── fncache ← 文件清单（明文，列出所有存储路径）
 │ ├── 00changelog.i ← 提交历史 revlog
 │ ├── 00manifest.i ← 目录树 revlog（文件名→node 映射）
 │ └── data/
@@ -222,7 +222,7 @@ print(zlib.decompress(d[64:64+zlen]).decode())
 
 - [[Git泄露|Git 泄露]] -- .hg 与 .git 同属版本控制泄露，但对象模型不同
 - [[SVN泄露|SVN 泄露]] -- .svn 与 .hg 都泄露文件清单，但格式不同（SQLite vs 明文 revlog）
-- [[../../../../../git.md#nav-17|git.md 17 章内部原理与文件存储]] -- git 对象模型与 hg revlog 的类比
+- [[../../../../git.md#nav-17|git.md 17 章内部原理与文件存储]] -- git 对象模型与 hg revlog 的类比
 - [[../备份文件下载/bak文件|bak文件]] -- 单文件备份直接泄露源码
 - [[../备份文件下载/DS_Store|DS_Store]] -- macOS 目录元数据泄露
 - [[../../Web|Web 方向总览]] -- Web CTF 方向入口

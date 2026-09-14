@@ -43,9 +43,9 @@ sudo dnf install java-21-openjdk-devel
 sudo dnf search openjdk   # 查看所有版本
 ```
 
-### 2.3 Arch / ArchStrike（pacman）
+### 2.3 Arch Linux（pacman）
 
-本库读者多在 ArchStrike 体系下，Arch 的 OpenJDK 包更新最快：
+Arch 的 OpenJDK 包更新最快：
 
 ```bash
 # 官方仓库中的 JDK(版本号固定为当前大版本)

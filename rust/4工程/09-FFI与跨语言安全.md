@@ -18,7 +18,7 @@ FFI  unsafe Rust
 
 `cbindgen`  C `bindgen`  C  Rust FFI 
 
-[[../../red_team/archstrike-malware/01-|: FFI]]
+[[../../red_team/恶意软件分析/01-|: FFI]]
 [[../2/09-Unsafe-Rust|Rust: Unsafe]]
 
 ---

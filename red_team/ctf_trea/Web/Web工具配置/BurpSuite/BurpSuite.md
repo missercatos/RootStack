@@ -5,10 +5,8 @@
 ### 安装与启动
 
 ```bash
-# Arch Linux / ArchStrike
-sudo pacman -S burpsuite
-
-# 或通过 yay 安装社区版
+# Linux 安装
+# 安装 burpsuite：用包管理器或从 GitHub 获取（或通过 yay 安装社区版）
 yay -S burpsuite
 
 # 启动（终端）
@@ -61,5 +59,5 @@ Proxy → Intercept 标签 → "Intercept is on/off" 按钮控制拦截
 
 - [[../Chrome/Chrome|Chrome 配置]] -- 浏览器配合 Burp 的完整配置
 - [[../../Web前置技能/HTTP协议/HTTP协议|HTTP 协议总览]] -- HTTP 协议基础
-- [[../../../../archstrike-web教学/01-Web基础与HTTP协议|01-Web基础与HTTP协议]] -- ArchStrike Web 安全实战
+- [[../../../../Web渗透/01-Web基础与HTTP协议|01-Web基础与HTTP协议]] -- Web 安全实战
 - [[../../../使用习惯|使用习惯]] -- 终端习惯与图形化习惯说明

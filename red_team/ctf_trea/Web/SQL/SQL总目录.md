@@ -100,7 +100,7 @@ flowchart TD
 ## 关联知识
 
 - [[../Web前置技能/数据库/数据库|数据库前置]] -- MySQL 基础语法、information_schema 结构、常用函数
-- [[../../../archstrike-web教学/04-SQL注入攻击|SQL注入实战]] -- sqlmap 自动化、DVWA 实战、tamper 绕过
+- [[../../../Web渗透/04-SQL注入攻击|SQL注入实战]] -- sqlmap 自动化、DVWA 实战、tamper 绕过
 - [[../Web前置技能/HTTP协议/HTTP协议|HTTP协议]] -- GET/POST 区别、URL 编码（注释符 %23 等）
 - [[../信息泄露/Git泄露/Git泄露|Git泄露]] -- 同属 Web 入门必刷考点
 
