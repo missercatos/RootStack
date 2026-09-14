@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "数据库/mysql/01-安装与配置.md",
+                "file": "数据库/mysql/02-SQL基础语法.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "01-安装与配置"
+              "title": "02-SQL基础语法"
             }
           },
           {
@@ -230,6 +230,9 @@
   },
   "active": "155961fdf30b0b5a",
   "lastOpenFiles": [
+    "数据库/mysql/09-高级主题与性能诊断.md",
+    "数据库/mysql/08-与后端语言集成.md",
+    "数据库/mysql/01-安装与配置.md",
     "数据库/mysql/02-SQL基础语法.md",
     "数据结构/B_字符串_String.md",
     "vim教程.md",
@@ -256,9 +259,6 @@
     "emacs教程/6扩展应用/05_文件管理与笔记系统.md",
     "emacs教程/1入门/00_认识Emacs.md",
     "emacs教程/4插件开发/03_编写MajorMode与语法高亮.md",
-    "emacs教程/5开发环境集成/01_补全与LSP.md",
-    "emacs教程/6扩展应用/02_媒体播放器EMMS与MPV.md",
-    "emacs教程/5开发环境集成/06_终端Shell与远程开发.md",
     "src-bongo/bongo-20201002.1020/images/uri-track-icon.png",
     "src-bongo/bongo-20201002.1020/images/unknown-local-file-track-icon.png",
     "src-bongo/bongo-20201002.1020/images/track-mark-icon.png",

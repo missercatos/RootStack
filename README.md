@@ -234,11 +234,11 @@ RootStack/ ├ v0.21.0
 │ ├── 汇编目录.md
 │ ├── 1基础/ (4篇) 2硬件操作/ (11篇)
 │
-├── 数据库/ (12篇) 多数据库教学: MySQL深入 + 全主流数据库
+├── 数据库/ (17篇) 多数据库教学: MySQL深入9章 + 全主流数据库
 │ ├── 数据库目录.md
-│ ├── mysql/ (5篇) 安装配置/SQL语法/查询进阶/索引事务/权限备份
+│ ├── mysql/ (9篇) 安装配置/SQL语法/查询进阶/索引事务/权限备份/存储过程/主从复制/后端集成/性能诊断
 │ ├── postgresql/ sqlite/ sqlserver/ oracle/
-│ └── mongodb/ redis/
+│ └── mongodb/ redis/ elasticsearch/
 │
 ├── red_team/ (~186篇) 网络安全红队职业路径 (ArchStrike体系)
 │ ├── 网安基础知识/ (10篇) 渗透测试方法论
@@ -400,7 +400,7 @@ RootStack 的网安部分基于 **ArchStrike（Arch 体系）**，因此要求�
 | 考研408统一入口 | [路径-考研408方向](路径-考研408方向.md) | 四科阅读方向 + 章节索引整合 |
 | 内核 | [内核总索引](内核/内核索引.md) | 四种内核 + C与Rust新时代 |
 | 汇编 | [汇编基础教程](汇编基础/汇编目录.md) | 基础入门 → 硬件直接操作 (16篇) |
-| 数据库 | [数据库教学目录](数据库/数据库目录.md) | MySQL深入 + PostgreSQL/SQLite/MSSQL/Oracle/MongoDB/Redis (12篇) |
+| 数据库 | [数据库教学目录](数据库/数据库目录.md) | MySQL深入9章 + PostgreSQL/SQLite/MSSQL/Oracle/MongoDB/Redis/Elasticsearch (17篇) |
 | Java 全栈 | [Java 教程目录](java/java目录.md) | 入门 → 深入 → 工程化/Spring全家桶 (48篇), 路径G |
 | Dart/Flutter | [Dart 教程目录](dart/dart目录.md) | 入门 → 深入 → 框架(Flutter/服务端/游戏/Web) → 工程化 (34篇) |
 | 多语言工程化 | [多语言工程化目录](多语言工程化/多语言工程化目录.md) | 多人多语言项目统筹: 协作/构建/协议/测试/K8s/交付 (30篇) |

@@ -4,6 +4,47 @@ SQL（Structured Query Language）是与关系型数据库交互的标准语言�
 
 ---
 
+## 零、从零跑通：本章统一示例库
+
+本章所有示例都基于 `demo` 库的两张表。**建议先完整执行下面的脚本**，后续每一段代码都可以直接复制运行：
+
+```sql
+-- 1. 建库（指定 utf8mb4 防止中文乱码）
+CREATE DATABASE IF NOT EXISTS demo CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE demo;
+
+-- 2. 先建父表 classes
+CREATE TABLE IF NOT EXISTS classes (
+    id   INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL
+);
+
+-- 3. 再建子表 students（外键引用 classes，所以必须在 classes 之后创建）
+CREATE TABLE IF NOT EXISTS students (
+    id          BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
+    name        VARCHAR(50)  NOT NULL                COMMENT '姓名',
+    student_no  CHAR(10)     NOT NULL UNIQUE         COMMENT '学号',
+    gender      ENUM('M','F') NOT NULL DEFAULT 'M'   COMMENT '性别',
+    age         TINYINT UNSIGNED CHECK (age BETWEEN 6 AND 120),
+    class_id    INT UNSIGNED                          COMMENT '班级ID',
+    email       VARCHAR(100) UNIQUE                   COMMENT '邮箱',
+    score       DECIMAL(5,2),
+    created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (class_id) REFERENCES classes(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='学生表';
+
+-- 4. 初始化班级数据
+INSERT INTO classes (name) VALUES ('一班'), ('二班');
+```
+
+> **新手提示**：
+> - 在 `mysql` 客户端里，每条 SQL 以分号 `;` 结尾才会执行；输入过程中按回车只是换行。
+> - 写错了想放弃这条语句，输入 `\c` 回车即可。
+> - 常见报错 `You have an error in your SQL syntax` 基本都是拼写或标点问题（中文分号、缺少逗号、引号不配对）。
+> - 报 `Cannot add or update a child row: a foreign key constraint fails` 说明外键引用的父表数据不存在。
+
+---
+
 ## 一、常用数据类型
 
 ### 1.1 整数类型
@@ -91,7 +132,9 @@ DROP DATABASE shop;
 ### 3.1 创建表的完整示例
 
 ```sql
-CREATE TABLE students (
+-- 完整建表语句（与章首初始化脚本一致）
+-- 注意：classes 必须先存在，外键才有引用目标
+CREATE TABLE IF NOT EXISTS students (
     id          BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键',
     name        VARCHAR(50)  NOT NULL                COMMENT '姓名',
     student_no  CHAR(10)     NOT NULL UNIQUE         COMMENT '学号',
@@ -134,7 +177,7 @@ ALTER TABLE stu RENAME TO students;
 
 ```sql
 DROP TABLE IF EXISTS students;   -- 整张表连同结构与数据删除
-TRUNCATE TABLE students;         -- 清空数据保留结构（见 5.5）
+TRUNCATE TABLE students;         -- 清空数据保留结构（见 5.3）
 ```
 
 ---
@@ -168,45 +211,35 @@ ON DELETE SET NULL   -- 子行该字段置 NULL
 
 ## 五、CRUD 增删改查
 
-以下示例基于两张演示表：
+以下示例基于章首初始化脚本创建的两张表 `classes` 与 `students`（完整字段版）。若尚未执行，先回到章首运行初始化脚本。
 
 ```sql
-CREATE TABLE classes (
-    id   INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50) NOT NULL
-);
-
-CREATE TABLE students (
-    id       BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    name     VARCHAR(50) NOT NULL,
-    age      TINYINT UNSIGNED,
-    score    DECIMAL(5,2),
-    class_id INT UNSIGNED
-);
-
-INSERT INTO classes (name) VALUES ('一班'), ('二班');
+-- 确认数据就绪
+SELECT * FROM classes;
+SELECT * FROM students;
 ```
 
 ### 5.1 INSERT 插入
 
 ```sql
 -- 单条插入
-INSERT INTO students (name, age, score, class_id)
-VALUES ('Alice', 18, 92.50, 1);
+INSERT INTO students (name, student_no, gender, age, score, class_id)
+VALUES ('Alice', 'S20260001', 'F', 18, 92.50, 1);
 
 -- 批量插入（一条语句多行，效率远高于逐条）
-INSERT INTO students (name, age, score, class_id)
+INSERT INTO students (name, student_no, gender, age, score, class_id)
 VALUES
-    ('Bob',   19, 85.00, 1),
-    ('Carol', 17, 78.50, 2),
-    ('Dave',  18, NULL,  2);
+    ('Bob',   'S20260002', 'M', 19, 85.00, 1),
+    ('Carol', 'S20260003', 'F', 17, 78.50, 2),
+    ('Dave',  'S20260004', 'M', 18, NULL,  2);
 
--- 全列插入可省略列名（不推荐，表结构变了就崩）
-INSERT INTO students VALUES (NULL, 'Eve', 20, 66.00, 1);
+-- 未指定的列使用默认值：gender 默认 'M'，created_at 默认当前时间
+INSERT INTO students (name, student_no, age, class_id)
+VALUES ('Eve', 'S20260005', 20, 1);
 
 -- 插入时若唯一键冲突则更新（UPSERT）
-INSERT INTO students (id, name, age)
-VALUES (1, 'Alice', 19)
+INSERT INTO students (student_no, name, age)
+VALUES ('S20260001', 'Alice', 19)
 ON DUPLICATE KEY UPDATE age = 19;
 ```
 
