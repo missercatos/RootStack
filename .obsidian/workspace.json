@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "数据库/mysql/02-SQL基础语法.md",
+                "file": "linux/distro/arch/01-安装指南.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "02-SQL基础语法"
+              "title": "01-安装指南"
             }
           },
           {
@@ -228,8 +228,10 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "c8e2d7c1de62bbc2",
+  "active": "155961fdf30b0b5a",
   "lastOpenFiles": [
+    "git.md",
+    "数据库/mysql/02-SQL基础语法.md",
     "red_team/实战教程/02-渗透测试工作环境搭建.md",
     "red_team/工具获取与环境搭建.md",
     "red_team/恶意软件分析/02-YARA规则编写与检测.md",
@@ -261,8 +263,6 @@
     "red_team/密码攻击/02-离线密码破解大师课.md",
     "red_team/密码攻击/01-在线密码攻击大师课.md",
     "red_team/密码攻击",
-    "red_team/Web渗透/09-WAF绕过与高级技巧.md",
-    "red_team/Web渗透/08-Web渗透综合实战.md",
     "red_team/Web渗透",
     "red_team/漏洞利用",
     "red_team/扫描与枚举",
