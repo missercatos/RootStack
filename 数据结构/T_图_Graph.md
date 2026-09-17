@@ -1,6 +1,6 @@
 
 
-建议先阅读: [[F_栈_Stack|F 栈 Stack]], [[G_队列_Queue|G 队列 Queue]]
+建议先阅读: [[G_栈_Stack|G 栈 Stack]], [[H_队列_Queue|H 队列 Queue]]
 
 ---
 

@@ -1,6 +1,6 @@
 
 
-建议先阅读: [[Q_线段树_SegmentTree|Q 线段树 SegmentTree]]
+建议先阅读: [[R_线段树_SegmentTree|R 线段树 SegmentTree]]
 
 ---
 

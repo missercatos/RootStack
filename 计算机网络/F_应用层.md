@@ -49,7 +49,7 @@ graph TD
  N0 -.->|"finger[3]=N14"| N14
 ```
 
-Chord 环：节点 ID 和 key 都用 SHA-1 散列到 m-bit 空间。查找 key 时沿环顺时针传递，finger table 实现 O(log N) 跳查找。[[../数据结构/D_容器_Container|散列表与一致性哈希]] 是 DHT 的核心数据结构。
+Chord 环：节点 ID 和 key 都用 SHA-1 散列到 m-bit 空间。查找 key 时沿环顺时针传递，finger table 实现 O(log N) 跳查找。[[../数据结构/E_容器_Container|散列表与一致性哈希]] 是 DHT 的核心数据结构。
 
 **混合 P2P (BitTorrent)**：
 - **Tracker**：跟踪参与节点列表（集中式）。
