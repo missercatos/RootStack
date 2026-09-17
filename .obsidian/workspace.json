@@ -202,6 +202,7 @@
   },
   "active": "37f9a2e26b05484b",
   "lastOpenFiles": [
+    "linux/71-libvirt与QEMU-KVM.md",
     "数据结构/E_链表_LinkedList.md",
     "数据结构/D_稀疏矩阵_SparseMatrix.md",
     "数据结构/E_容器_Container.md",
@@ -227,7 +228,6 @@
     "数据结构/B_字符串_String.md",
     "数据结构/A_数组_Array.md",
     "linux/distro/arch/01-安装指南.md",
-    "git.md",
     "red_team/恶意软件分析",
     "red_team/模糊测试",
     "red_team/数字取证",

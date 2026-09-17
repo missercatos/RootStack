@@ -36,7 +36,7 @@ Linux 是一个自由开源的操作系统内核，由 [Linus Torvalds](https://
 - [kernel.org](https://kernel.org) — Linux 内核官方站点
 - [Arch Wiki](https://wiki.archlinux.org/) — 几乎所有 Linux 问题都能在这里找到答案，不仅限于 Arch 用户
 
-> **本教程体系包含完整的 Linux 百科全书式教程** — 66 章从入门到系统底层，涵盖 Shell 编程、系统管理、操作系统原理、服务器运维、容器技术、新型技术栈，以及 Arch/Debian/RedHat/Nix 四大发行版的完整指南。**[这是通识路径之一，推荐所有学习者修读。](linux/)**
+> **本教程体系包含完整的 Linux 百科全书式教程** — 72 章从入门到系统底层，涵盖 Shell 编程、系统管理、操作系统原理、服务器运维、容器技术、新型技术栈，以及 Arch/Debian/RedHat/Nix 四大发行版的完整指南。**[这是通识路径之一，推荐所有学习者修读。](linux/)**
 
 ### 新手推荐：Linux Mint
 
@@ -53,7 +53,7 @@ Linux 是一个自由开源的操作系统内核，由 [Linus Torvalds](https://
 
 - [Linux Mint 官网](https://linuxmint.com/) — 下载安装、查看文档
 - [Linux Mint 中文社区](https://linuxmint.com.cn/) — 中文资料与交流
-- [RootStack Linux 教程](linux/README.md) — 从零到精通的完整学习路径 (66章 + 4发行版 + WSL 8章)
+- [RootStack Linux 教程](linux/README.md) — 从零到精通的完整学习路径 (72章 + 4发行版 + WSL 8章)
 
 ---
 
@@ -97,7 +97,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/ ├ v0.23.0
+RootStack/ ├ v0.24.0
 ├── README.md ← 你在这里
 │
 ├── 路径-C开发.md C 开发: 从零到内核
@@ -108,9 +108,9 @@ RootStack/ ├ v0.23.0
 ├── 路径-考研.md 408考研统一入口（四科阅读方向 + 章节索引整合）
 ├── 路径-渗透测试.md 渗透测试工程师职业路径 (含CTF→SRC/比赛分化)
 │
-├── linux/ Linux 百科全书式教程 (66章 + 4发行版 + WSL 8章)
+├── linux/ Linux 百科全书式教程 (72章 + 4发行版 + WSL 8章)
 │ ├── README.md Linux 教程总览与学习路线
-│ ├── 01-Linux概述与历史.md → 63-包管理器崩溃恢复与驱动管理通用指南.md (63章主线)
+│ ├── 01-Linux概述与历史.md → 71-libvirt与QEMU-KVM.md (72章主线)
 │ ├── distro/
 │ │ ├── arch/ Arch Linux 完整指南（含 NVIDIA Legacy 驱动迁移与故障恢复）
 │ │ ├── debian/ Debian/Ubuntu 完整指南
@@ -268,7 +268,7 @@ RootStack/ ├ v0.23.0
 │ ├── 3实战开发/ (9篇) 源码导读 + 插件全流程 + 发布
 │ └── 4设计自己的Harness/ (7篇) 用Cordis从零造框架(含200行骨架源码)
 ├── npm.md npm 使用教程 (安装配置+版本管理+npx+进阶+排障)
-├── VERSION                      项目版本号: 0.23.0
+├── VERSION                      项目版本号: 0.24.0
 └── ISSUES.md 问题讨论与贡献指南
 ```
 
@@ -406,7 +406,7 @@ Linux 6.1 开始正式支持 Rust 内核模块。未来的趋势不是 C vs Rust
 | Dart/Flutter | [Dart 教程目录](dart/dart目录.md) | 入门 → 深入 → 框架(Flutter/服务端/游戏/Web) → 工程化 (34篇) |
 | 多语言工程化 | [多语言工程化目录](多语言工程化/多语言工程化目录.md) | 多人多语言项目统筹: 协作/构建/协议/测试/K8s/交付 (30篇) |
 | 前端开发 | [前端引导阅读](前端开发/引导阅读.md) | HTML/CSS/JS/TS + Vue/React/Angular + 可视化, 按需路线 (~91篇) |
-| Linux 教程 | [Linux 百科全书式教程](linux/README.md) | 66章 + 4发行版 + WSL专项 + Shell编程 + 服务器运维 + 虚拟机与环境变量实战 |
+| Linux 教程 | [Linux 百科全书式教程](linux/README.md) | 72章 + 4发行版 + WSL专项 + Shell编程 + 服务器运维 + 存储与虚拟化专题 |
 | Lua | [Lua 教程](lua-tutorial/00-lua简介.md) | 基础→进阶→C/C++集成→Neovim/Love2D (7篇) |
 | 渗透测试工程师 | [红队知识库总目录](red_team/总目录与快速查询.md) | Linux 通用渗透体系, ~186篇, 职业路径 |
 | 自制安全工具箱 | [missercatos/tools](https://github.com/missercatos/tools) (本地 ~/hackingtools) | SQL注入自动化 sqlinject 等自研工具; CTF 教程见红队知识库 |

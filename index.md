@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/版本-0.23.0-blue?style=flat-square" alt="version"/>
+  <img src="https://img.shields.io/badge/版本-0.24.0-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
@@ -99,7 +99,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/ ├ v0.23.0
+RootStack/ ├ v0.24.0
 ├── README.md ← 你在这里
 │
 ├── 路径-C开发.md C 开发: 从零到内核
@@ -110,9 +110,9 @@ RootStack/ ├ v0.23.0
 ├── 路径-考研.md 408考研统一入口（四科阅读方向 + 章节索引整合）
 ├── 路径-渗透测试.md 渗透测试工程师职业路径 (含CTF→SRC/比赛分化)
 │
-├── linux/ Linux 百科全书式教程 (66章 + 4发行版 + WSL 8章)
+├── linux/ Linux 百科全书式教程 (72章 + 4发行版 + WSL 8章)
 │ ├── README.md Linux 教程总览与学习路线
-│ ├── 01-Linux概述与历史.md → 63-包管理器崩溃恢复与驱动管理通用指南.md (63章主线)
+│ ├── 01-Linux概述与历史.md → 71-libvirt与QEMU-KVM.md (72章主线)
 │ ├── distro/
 │ │ ├── arch/ Arch Linux 完整指南（含 NVIDIA Legacy 驱动迁移与故障恢复）
 │ │ ├── debian/ Debian/Ubuntu 完整指南
@@ -270,7 +270,7 @@ RootStack/ ├ v0.23.0
 │ ├── 3实战开发/ (9篇) 源码导读 + 插件全流程 + 发布
 │ └── 4设计自己的Harness/ (7篇) 用Cordis从零造框架(含200行骨架源码)
 ├── npm.md npm 使用教程 (安装配置+版本管理+npx+进阶+排障)
-├── VERSION                      项目版本号: 0.23.0
+├── VERSION                      项目版本号: 0.24.0
 └── ISSUES.md 问题讨论与贡献指南
 ```
 
