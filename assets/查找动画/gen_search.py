@@ -1,7 +1,7 @@
 import os
 import matplotlib
 matplotlib.use('Agg')
-from gif_common import (render, cell, ptrbox, label, canvas, rect, PTR)
+from gif_common import (render, cell, ptrbox, canvas, rect, PTR)
 
 BLOCK_SEARCH_CODE = [
     "#define BS 3",
@@ -67,9 +67,6 @@ def draw_search(ax, s):
         line_x = AX0 + b * BS * AW
         rect(ax, line_x - 0.02, AY - 0.12, 0.04, AH + 0.24, fc='#888888',
              ec='#888888')
-    if s.get('res') is not None:
-        cell(ax, 3.1, 5.62, 2.35, 0.85, "return %d" % s['res'], fc='#ffffff',
-             ec='#2ecc71', lw=2, fs=13)
 
 
 def block_frames():
@@ -95,14 +92,14 @@ def block_frames():
         snap(11, b=b, cursor=('arr', i), sel=b)
         if ARR[i] == KEY:
             snap(12, b=b, cursor=None, sel=b, hit=i, exam=i)
-            snap(16, b=b, cursor=None, sel=b, hit=i, res=i)
+            snap(16, b=b, cursor=None, sel=b, hit=i)
             return fr
         snap(12, b=b, cursor=('arr', i), sel=b, exam=i)
         if ARR[i] > KEY:
             snap(13, b=b, cursor=('arr', i), sel=b, exam=i)
             break
         snap(13, b=b, cursor=('arr', i), sel=b, exam=i)
-    snap(15, b=b, cursor=None, sel=b, res=-1)
+    snap(15, b=b, cursor=None, sel=b)
     return fr
 
 

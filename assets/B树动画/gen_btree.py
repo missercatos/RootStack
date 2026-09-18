@@ -60,8 +60,6 @@ def draw(ax, s):
             ec, lw = PTR[0], 3.4
         if nid == s.get('new'):
             ec, lw = PTR[2], 3.4
-        if nid == s.get('target'):
-            ec, lw = PTR[1], 3.2
         if nid == s.get('hl_node'):
             hl = (s.get('hl_key'),)
         w = bnode(ax, cx, cy, keys, ec=ec, lw=lw, hl=hl)
@@ -70,9 +68,7 @@ def draw(ax, s):
                    KH + 0.24, PTR[0], lw=2.2, pad=0.02)
             label(ax, cx, cy - KH / 2 - 0.38, 'r', color=PTR[0], fs=12)
         if nid == s.get('new'):
-            label(ax, cx, cy + KH / 2 + 0.32, 's', color=PTR[2], fs=12)
-        if nid == s.get('target'):
-            label(ax, cx, cy + KH / 2 + 0.32, 'r', color=PTR[1], fs=12)
+            label(ax, cx, cy + KH / 2 + 0.26, 's', color=PTR[2], fs=12)
 
 
 def st(nodes, edges, k, **kw):
@@ -84,22 +80,22 @@ def st(nodes, edges, k, **kw):
 
 def gen(path):
     frames = []
-    A = (7.0, 4.6)
+    A = (7.0, 4.15)
     ROOT_TOP = (7.0, 5.15)
-    LEFT = (4.5, 3.1)
-    RIGHT = (9.5, 3.1)
+    LEFT = (4.5, 2.85)
+    RIGHT = (9.5, 2.85)
 
     frames.append((1, st({0: (A[0], A[1], [])}, [], 10)))
     frames.append((2, st({0: (A[0], A[1], [])}, [], 10, cur=0)))
     frames.append((3, st({0: (A[0], A[1], [])}, [], 10, cur=0)))
     frames.append((10, st({0: (A[0], A[1], [10])}, [], 10, cur=0,
-                          target=0, hl_node=0, hl_key=0)))
+                          hl_node=0, hl_key=0)))
 
     frames.append((1, st({0: (A[0], A[1], [10])}, [], 20)))
     frames.append((2, st({0: (A[0], A[1], [10])}, [], 20, cur=0)))
     frames.append((3, st({0: (A[0], A[1], [10])}, [], 20, cur=0)))
     frames.append((10, st({0: (A[0], A[1], [10, 20])}, [], 20, cur=0,
-                          target=0, hl_node=0, hl_key=1)))
+                          hl_node=0, hl_key=1)))
 
     frames.append((1, st({0: (A[0], A[1], [10, 20])}, [], 30)))
     frames.append((2, st({0: (A[0], A[1], [10, 20])}, [], 30, cur=0)))
@@ -122,11 +118,11 @@ def gen(path):
     frames.append((8, st({1: (ROOT_TOP[0], ROOT_TOP[1], [20]),
                           0: (LEFT[0], LEFT[1], [10]),
                           2: (RIGHT[0], RIGHT[1], [])}, [(1, 0), (1, 2)], 30,
-                          new=1, target=1)))
+                          cur=1)))
     frames.append((10, st({1: (ROOT_TOP[0], ROOT_TOP[1], [20]),
                            0: (LEFT[0], LEFT[1], [10]),
                            2: (RIGHT[0], RIGHT[1], [30])}, [(1, 0), (1, 2)], 30,
-                           target=2, hl_node=2, hl_key=0)))
+                           cur=1, hl_node=2, hl_key=0)))
     render(path, CODE, frames, draw)
 
 
