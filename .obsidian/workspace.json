@@ -202,6 +202,7 @@
   },
   "active": "37f9a2e26b05484b",
   "lastOpenFiles": [
+    "assets/红黑树动画/__pycache__/gen_rb.cpython-314.pyc",
     "assets/红黑树动画/rb_insert_fix.gif",
     "assets/红黑树动画/__pycache__/gif_common.cpython-314.pyc",
     "assets/红黑树动画/__pycache__",
@@ -222,7 +223,6 @@
     "assets/排序动画/bubble_sort.gif",
     "assets/链表动画/cycle_detect.gif",
     "assets/链表动画/list_reverse.gif",
-    "assets/堆动画/heap_insert.gif",
     "docker/04-镜像原理与管理.md",
     "docker/03-命令速查.md",
     "docker/01-安装与配置.md",
