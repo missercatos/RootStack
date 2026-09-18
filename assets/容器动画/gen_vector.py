@@ -76,7 +76,7 @@ def gen(path):
         f.append((7, snap(vals, x=v, size=size, writing=size, **kw)))
 
     def size_frame(v, **kw):
-        f.append((8, snap(vals, x=v, size=size + 1, **kw)))
+        f.append((8, snap(vals, x=v, size=size, **kw)))
 
     for v in (10, 20, 30, 40):
         f.append((1, snap(vals, x=v, size=size)))

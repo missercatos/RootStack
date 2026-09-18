@@ -183,7 +183,7 @@ DIJ_CODE = [
     "                u = i;",
     "        vis[u] = 1;",
     "        for (int v = 0; v < n; v++)",
-    "            if (g[u][v] < INF && dist[u] + g[u][v] < dist[v])",
+    "            if (g[u][v]<INF && dist[u]+g[u][v]<dist[v])",
     "                dist[v] = dist[u] + g[u][v];",
     "    }",
     "}",

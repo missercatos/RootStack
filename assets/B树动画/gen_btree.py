@@ -54,19 +54,21 @@ def draw(ax, s):
     for nid in sorted(nodes):
         cx, cy, keys = nodes[nid]
         ec, lw, hl = NODE_COLOR, 2.2, ()
+        box = None
         if nid == s.get('full'):
             ec, lw = PTR[4], 3.0
         if nid == s.get('cur'):
-            ec, lw = PTR[0], 3.4
-        if nid == s.get('new'):
-            ec, lw = PTR[2], 3.4
+            box = PTR[0]
+        elif nid == s.get('new'):
+            box = PTR[2]
         if nid == s.get('hl_node'):
             hl = (s.get('hl_key'),)
         w = bnode(ax, cx, cy, keys, ec=ec, lw=lw, hl=hl)
+        if box is not None:
+            ptrbox(ax, cx - w / 2 - 0.1, cy - KH / 2 - 0.1, w + 0.2,
+                   KH + 0.2, box, lw=2.6, pad=0.02)
         if nid == s.get('cur'):
-            ptrbox(ax, cx - w / 2 - 0.12, cy - KH / 2 - 0.12, w + 0.24,
-                   KH + 0.24, PTR[0], lw=2.2, pad=0.02)
-            label(ax, cx, cy - KH / 2 - 0.38, 'r', color=PTR[0], fs=12)
+            label(ax, cx, cy - KH / 2 - 0.34, 'r', color=PTR[0], fs=12)
         if nid == s.get('new'):
             label(ax, cx, cy + KH / 2 + 0.26, 's', color=PTR[2], fs=12)
 
@@ -80,10 +82,10 @@ def st(nodes, edges, k, **kw):
 
 def gen(path):
     frames = []
-    A = (7.0, 4.15)
+    A = (7.0, 4.05)
     ROOT_TOP = (7.0, 5.15)
-    LEFT = (4.5, 2.85)
-    RIGHT = (9.5, 2.85)
+    LEFT = (4.5, 2.75)
+    RIGHT = (9.5, 2.75)
 
     frames.append((1, st({0: (A[0], A[1], [])}, [], 10)))
     frames.append((2, st({0: (A[0], A[1], [])}, [], 10, cur=0)))
