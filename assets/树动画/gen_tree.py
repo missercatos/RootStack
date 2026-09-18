@@ -30,6 +30,10 @@ def by(v):
     return 5.9 - BD[v] * 1.45
 
 
+def byd(d):
+    return 5.9 - d * 1.45
+
+
 def bst_dir_arrow(ax, v, d):
     x, y = bx(v), by(v)
     dx = -1.15 if d == 'L' else 1.15
@@ -63,7 +67,7 @@ def draw_bst(ax, s):
     if new is not None:
         label(ax, bx(new), by(new) + BR + 0.3, 'new', color=PTR[2], fs=12)
     if s.get('slot') is not None and new is None:
-        ax.add_patch(mpatches.Circle((bx(s['x']), by(BD[s['x']])), BR,
+        ax.add_patch(mpatches.Circle((bx(s['x']), byd(BD[s['x']])), BR,
                                      facecolor='none', edgecolor='#bbbbbb',
                                      linewidth=2, linestyle='--', zorder=1))
     if cur is not None and s.get('dir'):
