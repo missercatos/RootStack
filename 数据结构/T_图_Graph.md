@@ -57,6 +57,9 @@
 
 ### BFS 与 DFS
 
+![[graph_bfs.gif]]
+
+
 ![[../assets/images/图遍历算法对比.png]]
 
 BFS 和 DFS 是图遍历的两条基本路径：
@@ -163,6 +166,9 @@ void wgraph_add_edge(WeightedGraph* g, int u, int v, int w, int directed) {
 
 ### BFS / DFS 遍历（无权图）
 
+![[graph_dfs.gif]]
+
+
 ```c
 typedef struct AdjNode { int vertex; struct AdjNode* next; } AdjNode;
 
@@ -200,6 +206,9 @@ void graph_dfs(AdjNode** adj, int V, int start) {
 ```
 
 ### Dijkstra 最短路径
+
+![[dijkstra.gif]]
+
 
 ![[../assets/images/Dijkstra算法.png]]
 

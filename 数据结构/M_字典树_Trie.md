@@ -120,6 +120,9 @@ AC 自动机是多模式匹配的标准算法——网络入侵检测系统（Sn
 
 ### 字母表版 Trie（小写字母）
 
+![[trie_insert.gif]]
+
+
 ```c
 #include <stdlib.h>
 

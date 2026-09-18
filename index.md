@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/版本-0.24.0-blue?style=flat-square" alt="version"/>
+  <img src="https://img.shields.io/badge/版本-0.25.0-blue?style=flat-square" alt="version"/>
 </p>
 
 <p align="center">
@@ -99,7 +99,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/ ├ v0.24.0
+RootStack/ ├ v0.25.0
 ├── README.md ← 你在这里
 │
 ├── 路径-C开发.md C 开发: 从零到内核
@@ -270,7 +270,7 @@ RootStack/ ├ v0.24.0
 │ ├── 3实战开发/ (9篇) 源码导读 + 插件全流程 + 发布
 │ └── 4设计自己的Harness/ (7篇) 用Cordis从零造框架(含200行骨架源码)
 ├── npm.md npm 使用教程 (安装配置+版本管理+npx+进阶+排障)
-├── VERSION                      项目版本号: 0.24.0
+├── VERSION                      项目版本号: 0.25.0
 └── ISSUES.md 问题讨论与贡献指南
 ```
 

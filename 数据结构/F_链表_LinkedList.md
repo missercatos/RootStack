@@ -93,6 +93,9 @@ SNode* create_node(int value) {
 
 ### 插入节点
 
+![[list_insert.gif]]
+
+
 在节点 `p` 之后插入新节点 `new`：
 
 ```c
@@ -527,6 +530,8 @@ void sll_reverse(SinglyLinkedList* list) {
 }
 ```
 
+![[list_reverse.gif]]
+
 #### 递归版反转
 
 ```c
@@ -686,6 +691,9 @@ void josephus(int n, int m) {
 > ③ **能，且这正是循环链表的招牌技巧**：把新节点插到 p 之后（O(1)），然后交换两节点的 data 字段——新数据落位表头语义，原 p 的数据顺移到新节点。数据换位代替指针重排，无需遍历找前驱。
 
 ### 快慢指针 --- 环检测与中点查找
+
+![[cycle_detect.gif]]
+
 
 ```c
 typedef struct ListNode {

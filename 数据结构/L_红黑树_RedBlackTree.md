@@ -208,6 +208,9 @@ flowchart TD
 
 ### 红黑树插入（含修复）
 
+![[rb_insert_fix.gif]]
+
+
 ```c
 #include <stdlib.h>
 

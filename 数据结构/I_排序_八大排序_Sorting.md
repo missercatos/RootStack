@@ -77,6 +77,9 @@ $$
 
 ### 冒泡排序
 
+![[bubble_sort.gif]]
+
+
 ```mermaid
 graph TD
  A["开始 arr[0..n-1]"] --> B["i ← 0"]
@@ -348,6 +351,9 @@ gap=4 后结果: `[2, 3, 1, 4, 5, 7, 8, 6]`
 
 ### 归并排序
 
+![[merge_sort.gif]]
+
+
 ![[../assets/images/归并排序与分治全过程.png]]
 ![[../assets/images/分治算法分类.png]]
 
@@ -445,6 +451,9 @@ void merge_sort(int* arr, int l, int r) {
 ![[../assets/images/归并排序如何统计逆排序.png]]
 
 ### 快速排序
+
+![[quick_sort_partition.gif]]
+
 
 ![[../assets/images/双路快速排序.png]]
 

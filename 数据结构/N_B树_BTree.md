@@ -268,6 +268,9 @@ void bt_destroy(BTree* tree) {
 
 ### 节点分裂可视化
 
+![[btree_insert.gif]]
+
+
 以 3 阶 B 树（t=2, 每个节点最多 4 个键）为例，在 [3, 5, 7, 9] 中插入 6：
 
 ```mermaid

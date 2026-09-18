@@ -166,6 +166,9 @@ vector 扩容时，`realloc` 通过 `sbrk` 或 `mmap` 获取新内存：
 
 ### vector 扩容机制
 
+![[vector_grow.gif]]
+
+
 vector 内部维护三个指针：`_start`（起始）、`_finish`（已用末尾）、`_end_of_storage`（容量末尾）。当 `_finish == _end_of_storage` 时触发扩容：
 
 ```mermaid

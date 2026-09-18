@@ -366,6 +366,9 @@ Linux 内核的 `kfifo`（kernel FIFO buffer）和 DPDK 的 `rte_ring` 是典型
 
 ### 循环队列（数组版）
 
+![[circular_queue.gif]]
+
+
 ```c
 #include <stdlib.h>
 

@@ -273,6 +273,9 @@ CSC（Compressed Sparse Column）是 CSR 的列优先镜像——将 `row_ptr` �
 
 #### 方法一：顺序转置（按列扫描），O(n·k)
 
+![[triplet_transpose.gif]]
+
+
 最直接的想法：转置后的第 0 行来自原矩阵第 0 列，第 1 行来自第 1 列……于是对每一列扫一遍全表：
 
 ```c

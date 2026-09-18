@@ -45,6 +45,9 @@ graph TD
 
 ### 查找路径分析
 
+![[skip_search.gif]]
+
+
 在跳表中查找元素 $x$：
 
 1. 从最高层的 `head` 开始
