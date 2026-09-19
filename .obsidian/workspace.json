@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "c44673548a5cbfb4",
+        "id": "0755aa1adf309464",
         "type": "tabs",
         "children": [
           {
-            "id": "37f9a2e26b05484b",
+            "id": "41142e4463295a0f",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docker/03-命令速查.md",
+                "file": "数据结构/0 基本知识.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "03-命令速查"
+              "title": "0 基本知识"
             }
           }
         ]
@@ -200,8 +200,10 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "37f9a2e26b05484b",
+  "active": "41142e4463295a0f",
   "lastOpenFiles": [
+    "数据结构/F_链表_LinkedList.md",
+    "docker/03-命令速查.md",
     "assets/稀疏矩阵动画/__pycache__/gen_triplet.cpython-314.pyc",
     "assets/树状数组动画/sedEQzjGA",
     "assets/容器动画/vector_grow.gif",
@@ -214,7 +216,6 @@
     "assets/__pycache__",
     "assets/容器动画/gen_vector.py",
     "assets/树状数组动画/bit_update_query.gif",
-    "assets/树状数组动画/__pycache__/gif_common.cpython-314.pyc",
     "assets/线段树动画/segtree_build_query.gif",
     "assets/图高级动画/topo_sort.gif",
     "assets/稀疏矩阵动画/triplet_transpose.gif",
@@ -224,7 +225,6 @@
     "assets/哈希表动画/hash_chaining.gif",
     "assets/图动画/dijkstra.gif",
     "docker/04-镜像原理与管理.md",
-    "docker/03-命令速查.md",
     "docker/01-安装与配置.md",
     "linux/03-FHS文件系统层次标准.md",
     "linux/02-多发行版安装指南.md",
@@ -235,7 +235,6 @@
     "数据结构/E_链表_LinkedList.md",
     "数据结构/D_稀疏矩阵_SparseMatrix.md",
     "数据结构/E_容器_Container.md",
-    "数据结构/F_链表_LinkedList.md",
     "数据结构/G_栈_Stack.md",
     "数据结构/H_队列_Queue.md",
     "数据结构/I_排序_八大排序_Sorting.md",
