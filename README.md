@@ -97,7 +97,7 @@ brew install --cask obsidian
 ## 教程体系结构
 
 ```
-RootStack/ ├ v0.28.0
+RootStack/ ├ v0.29.0
 ├── README.md ← 你在这里
 │
 ├── 路径-C开发.md C 开发: 从零到内核
@@ -268,7 +268,7 @@ RootStack/ ├ v0.28.0
 │ ├── 3实战开发/ (9篇) 源码导读 + 插件全流程 + 发布
 │ └── 4设计自己的Harness/ (7篇) 用Cordis从零造框架(含200行骨架源码)
 ├── npm.md npm 使用教程 (安装配置+版本管理+npx+进阶+排障)
-├── VERSION                      项目版本号: 0.28.0
+├── VERSION                      项目版本号: 0.29.0
 └── ISSUES.md 问题讨论与贡献指南
 ```
 

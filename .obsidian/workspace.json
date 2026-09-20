@@ -20,8 +20,23 @@
               "icon": "lucide-file",
               "title": "C_顺序表_SequentialList"
             }
+          },
+          {
+            "id": "0d79ae3b4df77728",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "数据结构/D_链表_LinkedList.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "D_链表_LinkedList"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -200,10 +215,10 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "b289056bc29bdf16",
+  "active": "0d79ae3b4df77728",
   "lastOpenFiles": [
-    "数据结构/D_链表_LinkedList.md",
     "数据结构/C_顺序表_SequentialList.md",
+    "数据结构/D_链表_LinkedList.md",
     "数据结构/E_栈_Stack.md",
     "数据结构/A_数组_Array.md",
     "数据结构/_perm_14.md",
