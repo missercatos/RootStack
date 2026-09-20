@@ -1,6 +1,6 @@
 
 
-建议先阅读: [[A_数组_Array|A 数组]], [[K_树_Tree_BST_AVL|K 树 BST AVL]], [[O_哈希表_HashTable|O 哈希表]]
+建议先阅读: [[A_数组_Array|A 数组]], [[L_树_Tree_BST_AVL|K 树 BST AVL]], [[P_哈希表_HashTable|O 哈希表]]
 
 ---
 

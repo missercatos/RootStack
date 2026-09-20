@@ -55,32 +55,32 @@
 **Phase 0 — 数组与字符串基础:**
 - [[数据结构/A_数组_Array|数组 Array]]
 - [[数据结构/B_字符串_String|字符串 String]]
-- [[数据结构/D_稀疏矩阵_SparseMatrix|稀疏矩阵 SparseMatrix]]
+- [[数据结构/H_稀疏矩阵_SparseMatrix|稀疏矩阵 SparseMatrix]]
 
 **Phase 1 — 线性结构与排序:**
-- [[数据结构/E_容器_Container|容器 Container]]
-- [[数据结构/F_链表_LinkedList|链表 LinkedList]]
-- [[数据结构/G_栈_Stack|栈 Stack]]
-- [[数据结构/H_队列_Queue|队列 Queue]]
+- [[数据结构/G_容器_Container|容器 Container]]
+- [[数据结构/D_链表_LinkedList|链表 LinkedList]]
+- [[数据结构/E_栈_Stack|栈 Stack]]
+- [[数据结构/F_队列_Queue|队列 Queue]]
 - [[数据结构/I_排序_八大排序_Sorting|八大排序 Sorting]]
 
 **Phase 2 — 核心数据结构:**
-- [[数据结构/O_哈希表_HashTable|哈希表 HashTable]]
-- [[数据结构/J_堆_Heap|堆 Heap]]
-- [[数据结构/K_树_Tree_BST_AVL|树 / BST / AVL]]
-- [[数据结构/M_字典树_Trie|字典树 Trie]]
+- [[数据结构/P_哈希表_HashTable|哈希表 HashTable]]
+- [[数据结构/K_堆_Heap|堆 Heap]]
+- [[数据结构/L_树_Tree_BST_AVL|树 / BST / AVL]]
+- [[数据结构/O_字典树_Trie|字典树 Trie]]
 
 **Phase 3 — 进阶:**
-- [[数据结构/P_并查集_UnionFind|并查集 UnionFind]]
-- [[数据结构/T_图_Graph|图 Graph]]
-- [[数据结构/U_图的高级算法_AdvancedGraph|图高级算法]]
+- [[数据结构/Q_并查集_UnionFind|并查集 UnionFind]]
+- [[数据结构/U_图_Graph|图 Graph]]
+- [[数据结构/V_图的高级算法_AdvancedGraph|图高级算法]]
 
 **选学:**
-- [[数据结构/R_线段树_SegmentTree|线段树]]
-- [[数据结构/S_树状数组_BIT|树状数组 BIT]]
-- [[数据结构/L_红黑树_RedBlackTree|红黑树]]
+- [[数据结构/S_线段树_SegmentTree|线段树]]
+- [[数据结构/T_树状数组_BIT|树状数组 BIT]]
+- [[数据结构/M_红黑树_RedBlackTree|红黑树]]
 - [[数据结构/N_B树_BTree|B树]]
-- [[数据结构/Q_跳表_SkipList|跳表]]
+- [[数据结构/R_跳表_SkipList|跳表]]
 
 **C 语言底层参考 (手写实现):**
 - [[c语言教程/3数据结构/01_动态数组|01 动态数组]]

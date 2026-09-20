@@ -1,6 +1,6 @@
 
 
-建议先阅读: [[K_树_Tree_BST_AVL|树 BST AVL]], [[B_字符串_String|字符串]] — KMP 的自动机思想在 Trie 和 Aho-Corasick 中有直接应用。
+建议先阅读: [[L_树_Tree_BST_AVL|树 BST AVL]], [[B_字符串_String|字符串]] — KMP 的自动机思想在 Trie 和 Aho-Corasick 中有直接应用。
 
 ---
 

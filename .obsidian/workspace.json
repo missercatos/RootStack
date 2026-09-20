@@ -8,31 +8,13 @@
         "type": "tabs",
         "children": [
           {
-            "id": "41142e4463295a0f",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "数据结构/C_线性表_LinearList.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "C_线性表_LinearList"
-            }
-          },
-          {
             "id": "d498e391505c513f",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "数据结构/F_链表_LinkedList.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "F_链表_LinkedList"
+              "title": "新标签页"
             }
           }
         ]
@@ -214,16 +196,34 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "41142e4463295a0f",
+  "active": "d498e391505c513f",
   "lastOpenFiles": [
-    "数据结构/F_链表_LinkedList.md",
-    "数据结构/D_稀疏矩阵_SparseMatrix.md",
-    "数据结构/C_线性表_LinearList.md",
-    "数据结构/DSA学习路线.md",
-    "数据结构/0 基本知识.md",
-    "java/写在教程之前.md",
-    "java/java目录.md",
-    "docker/03-命令速查.md",
+    "数据结构/_perm_14.md",
+    "数据结构/_perm_12.md",
+    "数据结构/_perm_6.md",
+    "数据结构/_perm_5.md",
+    "数据结构/_perm_4.md",
+    "数据结构/_perm_3.md",
+    "数据结构/_perm_2.md",
+    "数据结构/_perm_1.md",
+    "数据结构/_perm_0.md",
+    "数据结构/V_图的高级算法_AdvancedGraph.md",
+    "数据结构/U_图_Graph.md",
+    "数据结构/T_树状数组_BIT.md",
+    "数据结构/S_线段树_SegmentTree.md",
+    "数据结构/R_跳表_SkipList.md",
+    "数据结构/Q_并查集_UnionFind.md",
+    "数据结构/P_哈希表_HashTable.md",
+    "数据结构/O_字典树_Trie.md",
+    "数据结构/N_B树_BTree.md",
+    "数据结构/M_红黑树_RedBlackTree.md",
+    "数据结构/L_树_Tree_BST_AVL.md",
+    "数据结构/K_堆_Heap.md",
+    "数据结构/J_查找_Search.md",
+    "数据结构/I_排序_八大排序_Sorting.md",
+    "数据结构/H_稀疏矩阵_SparseMatrix.md",
+    "数据结构/G_容器_Container.md",
+    "数据结构/F_队列_Queue.md",
     "assets/稀疏矩阵动画/__pycache__/gen_triplet.cpython-314.pyc",
     "assets/树状数组动画/sedEQzjGA",
     "assets/容器动画/vector_grow.gif",
@@ -244,24 +244,6 @@
     "assets/哈希表动画/hash_probing.gif",
     "assets/哈希表动画/hash_chaining.gif",
     "assets/图动画/dijkstra.gif",
-    "docker/04-镜像原理与管理.md",
-    "docker/01-安装与配置.md",
-    "linux/03-FHS文件系统层次标准.md",
-    "linux/02-多发行版安装指南.md",
-    "linux/00-Linux快速上手.md",
-    "linux/01-Linux概述与历史.md",
-    "linux/25-DNS与域名系统.md",
-    "linux/71-libvirt与QEMU-KVM.md",
-    "数据结构/E_链表_LinkedList.md",
-    "数据结构/E_容器_Container.md",
-    "数据结构/G_栈_Stack.md",
-    "数据结构/H_队列_Queue.md",
-    "数据结构/I_排序_八大排序_Sorting.md",
-    "数据结构/J_堆_Heap.md",
-    "数据结构/K_树_Tree_BST_AVL.md",
-    "数据结构/L_红黑树_RedBlackTree.md",
-    "数据结构/M_字典树_Trie.md",
-    "数据结构/N_B树_BTree.md",
     "docs/Canvas.canvas",
     "密码学/未命名.canvas",
     "未命名.canvas"

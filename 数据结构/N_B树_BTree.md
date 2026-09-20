@@ -1,6 +1,6 @@
 # O B树 B-Tree / B+ Tree
 
-建议先阅读: [[K_树_Tree_BST_AVL|K 树 BST AVL]]
+建议先阅读: [[L_树_Tree_BST_AVL|K 树 BST AVL]]
 
 ---
 

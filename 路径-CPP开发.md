@@ -137,22 +137,22 @@
 按 [[数据结构/DSA学习路线|DSA 学习路线]] 推进：
 
 **线形结构与排序:**
-- [[数据结构/E_容器_Container|E 容器 Container]]
-- [[数据结构/F_链表_LinkedList|F 链表 LinkedList]]
-- [[数据结构/G_栈_Stack|G 栈 Stack]]
-- [[数据结构/H_队列_Queue|H 队列 Queue]]
+- [[数据结构/G_容器_Container|G 容器 Container]]
+- [[数据结构/D_链表_LinkedList|D 链表 LinkedList]]
+- [[数据结构/E_栈_Stack|E 栈 Stack]]
+- [[数据结构/F_队列_Queue|F 队列 Queue]]
 - [[数据结构/I_排序_八大排序_Sorting|I 八大排序 Sorting]]
 
 **核心数据结构:**
-- [[数据结构/O_哈希表_HashTable|O 哈希表 HashTable]]
-- [[数据结构/J_堆_Heap|J 堆 Heap]]
-- [[数据结构/K_树_Tree_BST_AVL|K 树 / BST / AVL]]
-- [[数据结构/M_字典树_Trie|M 字典树 Trie]]
+- [[数据结构/P_哈希表_HashTable|P 哈希表 HashTable]]
+- [[数据结构/K_堆_Heap|K 堆 Heap]]
+- [[数据结构/L_树_Tree_BST_AVL|L 树 / BST / AVL]]
+- [[数据结构/O_字典树_Trie|O 字典树 Trie]]
 
 **图论:**
-- [[数据结构/T_图_Graph|T 图 Graph]]
-- [[数据结构/P_并查集_UnionFind|P 并查集 UnionFind]]
-- [[数据结构/U_图的高级算法_AdvancedGraph|U 图高级算法]]
+- [[数据结构/U_图_Graph|U 图 Graph]]
+- [[数据结构/Q_并查集_UnionFind|Q 并查集 UnionFind]]
+- [[数据结构/V_图的高级算法_AdvancedGraph|V 图高级算法]]
 
 **算法技巧核心:**
 - [[算法/算法技巧/二分查找|二分查找]]
@@ -165,11 +165,11 @@
 - [[算法/算法技巧/动态规划|动态规划]]
 
 **选学进阶:**
-- [[数据结构/R_线段树_SegmentTree|R 线段树]]
-- [[数据结构/S_树状数组_BIT|S 树状数组 BIT]]
-- [[数据结构/L_红黑树_RedBlackTree|L 红黑树]]
+- [[数据结构/S_线段树_SegmentTree|S 线段树]]
+- [[数据结构/T_树状数组_BIT|T 树状数组 BIT]]
+- [[数据结构/M_红黑树_RedBlackTree|M 红黑树]]
 - [[数据结构/N_B树_BTree|N B树]]
-- [[数据结构/Q_跳表_SkipList|Q 跳表]]
+- [[数据结构/R_跳表_SkipList|R 跳表]]
 
 ---
 

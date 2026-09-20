@@ -1,6 +1,6 @@
 
 
-建议先阅读: [[T_图_Graph|T 图 Graph]]
+建议先阅读: [[U_图_Graph|T 图 Graph]]
 
 ---
 

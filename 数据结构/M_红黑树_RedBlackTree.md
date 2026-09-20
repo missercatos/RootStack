@@ -1,6 +1,6 @@
 
 
-建议先阅读: [[K_树_Tree_BST_AVL|树 BST AVL]]
+建议先阅读: [[L_树_Tree_BST_AVL|树 BST AVL]]
 
 ---
 

@@ -198,5 +198,5 @@ for (auto& [k, v] : m) {
 
 ## 相关链接
 
-- [[../../../数据结构/K_树_Tree_BST_AVL]]
+- [[../../../数据结构/L_树_Tree_BST_AVL]]
 - [[../无序容器/unordered_map]] | [[../其他/pair]]
