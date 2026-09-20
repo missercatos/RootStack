@@ -2,6 +2,8 @@
 
 建议先阅读: [[C_顺序表_SequentialList|线性表与顺序表]] — 建立线性表 ADT 与两种存储实现的全局观；[[G_容器_Container|容器概览]] — 理解连续存储 vs 节点存储的本质分歧。
 
+本章正文按考纲和通用教材的口径讲实现；标注【延伸】的小节（数学视角、深入底层）属于拓展内容，只准备考研或期末的同学可以先跳过，第二遍再回来看。
+
 
 
 ---
@@ -217,6 +219,103 @@ int main() {
 }
 ```
 
+### 按位查找与按值查找
+
+**按位查找（第 k 个结点，k 从 1 起算）**：链表不能像顺序表那样"算地址"，只能从头一格一格走。
+
+```c
+SNode* get_node(SNode* head, int k) {
+    SNode* cur = head;
+    int i = 1;
+    while (cur != NULL && i < k) {
+        cur = cur->next;
+        i++;
+    }
+    return cur;          /* 越界时返回 NULL */
+}
+```
+
+为什么这样写：循环条件是"没走到头且还没数到 k"，返回的 `cur` 要么是第 k 个结点，要么是 `NULL`（表长不足）。时间复杂度 $O(k)$，最坏 $O(n)$——这是链表相对顺序表最大的劣势，也是选择题常考的对比点。
+
+**按值查找（返回第一个值为 x 的结点）**：
+
+```c
+SNode* locate_node(SNode* head, int x) {
+    SNode* cur = head;
+    while (cur != NULL && cur->data != x)
+        cur = cur->next;
+    return cur;          /* 找不到返回 NULL */
+}
+```
+
+为什么返回结点指针而不是位序：链表的插入、删除都要用到"结点地址"，返回指针调用者可以直接接着操作；如果只需要判断存在性，检查是否为 `NULL` 即可。等概率下查找成功的平均比较次数同样是 $\frac{n+1}{2}$。
+
+### 修改结点
+
+```c
+int set_node(SNode* head, int k, int value) {
+    SNode* p = get_node(head, k);
+    if (p == NULL) return -1;    /* 第 k 个不存在 */
+    p->data = value;
+    return 0;
+}
+```
+
+修改本身是 $O(1)$，但要先花 $O(k)$ 找到结点——**"操作本身快"和"整个操作快"是两回事**，这是链表题里最容易搞混的地方。
+
+### 销毁整条链表
+
+```c
+void destroy_list(SNode** head) {
+    SNode* cur = *head;
+    while (cur != NULL) {
+        SNode* nxt = cur->next;   /* 先记住下一个 */
+        free(cur);                /* 再释放当前 */
+        cur = nxt;
+    }
+    *head = NULL;                 /* 头指针置空，防止悬空 */
+}
+```
+
+为什么参数是 `SNode**`：函数里要把头指针改成 `NULL`，C 按值传递改不了调用者的变量，必须传"头指针的地址"。释放顺序必须是"先存 `next`，再 `free` 当前"——和删除结点时先记住 `victim` 是同一个道理。
+
+### 头插与尾插：两种建表方式
+
+```c
+SNode* push_front(SNode* head, int value) {   /* 头插 */
+    SNode* node = create_node(value);
+    node->next = head;
+    return node;                              /* 返回新的头指针 */
+}
+
+SNode* push_back(SNode* head, int value) {    /* 尾插（无尾指针，O(n)） */
+    SNode* node = create_node(value);
+    if (head == NULL) return node;
+    SNode* cur = head;
+    while (cur->next != NULL) cur = cur->next;
+    cur->next = node;
+    return head;
+}
+```
+
+两种方式的选择：
+
+- **头插**：$O(1)$，但得到的是输入顺序的**逆序**。给一个序列建链表时，头插天然适合造逆序；
+- **尾插**：不破坏顺序，但每次都要走到表尾，$O(n)$；建整条表就是 $O(n^2)$。改进办法是额外维护一个**尾指针**，每次插入 $O(1)$。
+
+> **考点**：头插法得到的序列与输入相反，这个性质常和"就地逆置""链表重排"一起考。
+
+### C 语言书写注意事项
+
+写链表代码，出错的地方往往不是算法，而是下面这些细节：
+
+1. `malloc` 之后先判空再使用：内存不足时直接写 `node->data` 会崩溃；
+2. `free` 之后不要再访问，也不要把指针留着不置 `NULL`（悬空指针与重复释放都是未定义行为）；
+3. 删除**首元结点**要修改头指针：函数内改不了调用者的 `head`，要么返回新头指针，要么用 `SNode**`，要么干脆带头结点；
+4. `malloc(sizeof(SNode))` 而不是写死字节数，结构体改字段时这里不用动；
+5. 结构体自引用必须写 `struct SNode*`：`typedef` 的名字在结构体内部还不可见；
+6. 函数参数里的 `head` 是指针的**值传递**：函数内写 `head = head->next` 只改局部变量，不影响调用者。
+
 ---
 
 ## 原理
@@ -265,7 +364,7 @@ graph LR
 > - 频繁"第一个结点之前插入 / 删除第一个结点" → 考试常选**带头结点双循环链表**，因为头指针不变、空表与非空表的边界统一；
 > - 若只考表头操作，**带头结点单链表**也能做到 $O(1)$——"带头结点"的意义正在于简化首元结点的插删与统一空表处理。
 
-### 数学视角：链表的归纳定义
+### 数学视角：链表的归纳定义【延伸·数学】
 
 抛开指针与内存，链表在数学上是一个**递归定义**的序列：
 
@@ -395,7 +494,7 @@ graph TD
 
 ---
 
-## 深入底层
+## 深入底层【延伸·底层视角】
 
 ### 硬件层面的指针追踪（Pointer Chasing）
 
@@ -864,9 +963,16 @@ Floyd 算法的数学保证基于模运算：设非环部分长度为 $a$，环�
 
 ## 高频手写题型专练
 
-四个固定模板，每个都值得默写到肌肉记忆。
+下面这些是历年统考和面试反复出现的模板，值得默写到肌肉记忆。先看真题索引：
 
-### 倒数第 k 个节点
+| 年份 | 题号 | 题目 | 本题解位置 |
+|:----:|:----:|------|-----------|
+| 2009 | 42 | 单链表倒数第 k 个结点 | [[#倒数第 k 个节点（2009 年 408 第 42 题）]] |
+| 2012 | 42 | 两个单词链表的共同后缀 | [[#两个链表的共同后缀（2012 年 408 第 42 题）]] |
+| 2015 | 41 | 删除单链表中绝对值重复的结点 | [[#删除绝对值重复的节点（2015 年 408 第 41 题）]] |
+| 2019 | 41 | 重排链表 $a_1, a_n, a_2, a_{n-1}, \dots$ | [[#链表重排（2019 年 408 第 41 题）]] |
+
+### 倒数第 k 个节点（2009 年 408 第 42 题）
 
 快慢指针拉开 k 的间隔，fast 到达末尾时 slow 恰在倒数第 k：
 
@@ -889,7 +995,7 @@ ListNode* kth_from_end(ListNode* head, int k) {
 
 > 答案：预备阶段 fast 先走 2 步停在 3；随后同步前进——fast=4/slow=2 → fast=5/slow=3 → fast=NULL/slow=4。slow 停在 **4**，正是倒数第 2 个。
 
-### 合并两个有序链表
+### 合并两个有序链表（教材经典题）
 
 归并排序 merge 在链表上的翻版；哑结点让结果首节点不再特判：
 
@@ -913,7 +1019,7 @@ ListNode* merge_sorted(ListNode* a, ListNode* b) {
 
 > 答案：1≤2 取 1；3>2 取 2；3≤4 取 3；5>4 取 4；此时 a 剩 5、b 为空 → 接上整段 5。结果 **1→2→3→4→5**。
 
-### 回文链表
+### 回文链表（与 2019 年 41 题同套路）
 
 三步模板：找中点 → 逆转后半段 → 双向比对，全程 O(1) 额外空间：
 
@@ -951,7 +1057,7 @@ int is_palindrome(ListNode* head) {
 
 > 答案：slow 最终停在中间的 **3**（fast 被条件挡在末节点）；前半 1→2→3，后半逆转后 1→2；逐对比较 1=1、2=2 全部相等 → **是回文**。
 
-### 分隔链表
+### 分隔链表（模板题）
 
 保持相对次序地把 < x 与 ≥ x 分成两条链再拼接：
 
@@ -975,6 +1081,97 @@ ListNode* partition(ListNode* head, int x) {
 **自测**：把 1→4→3→2→5→2 按 x=3 分隔，写出两条临时链的形成过程与最终结果。
 
 > 答案：<3 链依次收集 **1、2、2**；≥3 链依次收集 **4、3、5**。拼接得 **1→2→2→4→3→5**——两组内部各自保持原有相对次序。
+
+### 两个链表的共同后缀（2012 年 408 第 42 题）
+
+**题目**：两个单链表分别存一个单词，若它们有相同的后缀（共享一段尾部），求共同后缀的起始位置。要求时间 $O(m+n)$。
+
+**思路**：共享后缀只可能是"Y 形"而不是"X 形"——两个链表一旦在某个结点重合，之后所有结点都相同。所以先求两个链表的长度差，让长链表先走差值步，再同步前进，第一次指针相同的位置就是答案。
+
+```c
+ListNode* common_suffix(ListNode* a, ListNode* b) {
+    int la = 0, lb = 0;
+    for (ListNode* p = a; p; p = p->next) la++;
+    for (ListNode* p = b; p; p = p->next) lb++;
+    ListNode *p = a, *q = b;
+    while (la > lb) { p = p->next; la--; }   /* 长表先走差值步 */
+    while (lb > la) { q = q->next; lb--; }
+    while (p != q) { p = p->next; q = q->next; }
+    return p;                                 /* 同步走到重合点 */
+}
+```
+
+时间 $O(m+n)$，空间 $O(1)$。
+
+> 常见错误：想用"逆序后比较"或双重循环——前者会改动链表结构，后者是 $O(m \cdot n)$。
+
+### 删除绝对值重复的节点（2015 年 408 第 41 题）
+
+**题目**：用单链表保存 $m$ 个整数（每个元素满足 $|data| \le n$），删除绝对值重复的结点，只保留第一次出现的。
+
+**思路**：因为值域有限（$\le n$），开一个大小为 $n+1$ 的标记数组——出现过的绝对值打标记，再次出现就删除。典型的"用空间换时间"。
+
+```c
+void delete_abs_dup(ListNode** head, int n) {
+    int* seen = calloc(n + 1, sizeof(int));   /* 全 0 */
+    ListNode dummy = {0, *head};              /* 哑结点，统一处理首元结点 */
+    ListNode* prev = &dummy;
+    while (prev->next) {
+        ListNode* cur = prev->next;
+        int v = cur->data < 0 ? -cur->data : cur->data;
+        if (seen[v]) {
+            prev->next = cur->next;           /* 删除 cur */
+            free(cur);
+        } else {
+            seen[v] = 1;
+            prev = cur;
+        }
+    }
+    *head = dummy.next;
+    free(seen);
+}
+```
+
+时间 $O(m)$，空间 $O(n)$。如果没有值域限制，就得改用哈希表，思路完全一样。
+
+### 链表重排（2019 年 408 第 41 题）
+
+**题目**：将链表 $a_1 \to a_2 \to \dots \to a_n$ 重排为 $a_1 \to a_n \to a_2 \to a_{n-1} \to \dots$。
+
+**思路**：三步走，全部是练过的基础操作——**找中点、逆置后半、交替合并**。
+
+```c
+void reorder(ListNode* head) {
+    if (!head || !head->next) return;
+    ListNode *slow = head, *fast = head;       /* 1. 找中点 */
+    while (fast->next && fast->next->next) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    ListNode* mid = slow->next;
+    slow->next = NULL;                         /* 切成前后两段 */
+
+    ListNode* prev = NULL;                     /* 2. 逆置后半段 */
+    while (mid) {
+        ListNode* nxt = mid->next;
+        mid->next = prev;
+        prev = mid;
+        mid = nxt;
+    }
+
+    ListNode *p = head, *q = prev;             /* 3. 交替合并 */
+    while (q) {
+        ListNode* pn = p->next;
+        ListNode* qn = q->next;
+        p->next = q;
+        q->next = pn;
+        p = pn;
+        q = qn;
+    }
+}
+```
+
+时间 $O(n)$，空间 $O(1)$。回文链表和重排链表共用同一套三步模板，把其中一个背熟即可。
 
 ---
 
