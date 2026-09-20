@@ -4,17 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "0755aa1adf309464",
+        "id": "d897373fa3aba5f0",
         "type": "tabs",
         "children": [
           {
-            "id": "d498e391505c513f",
+            "id": "b289056bc29bdf16",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "数据结构/C_顺序表_SequentialList.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "新标签页"
+              "title": "C_顺序表_SequentialList"
             }
           }
         ]
@@ -196,8 +200,12 @@
       "markdown-importer:打开 Markdown 格式转换器": false
     }
   },
-  "active": "d498e391505c513f",
+  "active": "b289056bc29bdf16",
   "lastOpenFiles": [
+    "数据结构/D_链表_LinkedList.md",
+    "数据结构/C_顺序表_SequentialList.md",
+    "数据结构/E_栈_Stack.md",
+    "数据结构/A_数组_Array.md",
     "数据结构/_perm_14.md",
     "数据结构/_perm_12.md",
     "数据结构/_perm_6.md",
@@ -220,10 +228,6 @@
     "数据结构/L_树_Tree_BST_AVL.md",
     "数据结构/K_堆_Heap.md",
     "数据结构/J_查找_Search.md",
-    "数据结构/I_排序_八大排序_Sorting.md",
-    "数据结构/H_稀疏矩阵_SparseMatrix.md",
-    "数据结构/G_容器_Container.md",
-    "数据结构/F_队列_Queue.md",
     "assets/稀疏矩阵动画/__pycache__/gen_triplet.cpython-314.pyc",
     "assets/树状数组动画/sedEQzjGA",
     "assets/容器动画/vector_grow.gif",
