@@ -150,7 +150,9 @@ graph LR
 
 ```c
 void insert_core(Node *p, int x) {
-    Node *s = newNode(x);
+    Node *s = newNode(x);        //newNode()是创建节点
+    
+    并分配数据的函数
     s->next = p->next;
     p->next = s;
 }
@@ -877,93 +879,171 @@ flowchart TB
 
 迭代版 vs 递归版：时间同为 $O(n)$；空间 $O(1)$ vs $O(n)$——递归的隐藏代价是调用栈深度等于链长，长链表可能栈溢出。这正呼应容器章的论断：所有递归都可改写为迭代 + 显式栈。
 
-### 双向链表（含哨兵节点）
+### 双向链表
 
-哨兵节点（sentinel node / dummy node）是一个不存数据、只作为链表头尾标志的节点。使用哨兵可以消除大量 `NULL` 检查，将边界情况统一化：
+#### 与单向链表的核心区别
+
+双向链表的每个结点多一个 `prev` 指针，换来的是"两个方向都能走、已知结点删除不必先找前驱"：
+
+| 对比点 | 单向链表 | 双向链表 |
+|--------|---------|---------|
+| 结点结构 | `data + next` | `data + prev + next` |
+| 已知结点删除 | 要前驱，$O(n)$（除非用 `**head`） | 直接改两根指针，$O(1)$ |
+| 遍历方向 | 只能正向 | 正向 + 反向 |
+| 尾部操作 | 找前驱麻烦 | 有 `prev`，尾插/尾删方便 |
+| 存储密度 | 较低 | 更低（多一个指针） |
+| 代码复杂度 | 简单 | 每次插删要维护两个方向 |
+
+差别落到代码上其实只有几行——插入从两行变四行，删除从"找前驱"变两根指针：
+
+```c
+/* 在 p 之后插入 s */
+s->next = p->next;          /* 单链表到这里只差下面两行 */
+s->prev = p;                /* 新增：新结点指回 p */
+p->next->prev = s;          /* 新增：原后继指回新结点 */
+p->next = s;
+
+/* 删除 p */
+p->prev->next = p->next;    /* 单链表要先花 O(n) 找到 p->prev */
+p->next->prev = p->prev;
+free(p);
+```
+
+![[doubly_insert_delete.gif]]
+
+图中先演示在结点 2 之后插入结点 3（四条指针依次变化），再演示删除结点 3（两根指针改线后释放）。
+
+#### 带头结点（哨兵）的实现
+
+双向链表最常用的工程写法是**带哨兵**——一个不存数据、让首尾自动成环的隐藏结点：
 
 > **教材术语**：哨兵节点通常就称为**头结点**。头结点不存放有效数据（或只存表长等辅助信息），其作用可以概括为三条：
 > 1. **方便首元结点的插入和删除**——头指针永远指向头结点，不会因首元结点变化而需要修改头指针；
-> 2. **统一空表和非空表的处理**——空表也总有一个头结点，`head->next == NULL` 即可判空；
+> 2. **统一空表和非空表的处理**——空表也总有一个头结点，`head->next == head` 即可判空；
 > 3. **简化边界条件**——在表头、表尾、中间插入/删除都能用同一段代码完成。
 >
 > 注意区分**头指针**与**头结点**：头指针是指向链表第一个结点的指针，是链表的必要入口；头结点是附加的哑结点。带头结点时头指针指向头结点；不带头结点时头指针直接指向首元结点。
 
-![[doubly_insert_delete.gif]]
+有了哨兵，空表就是"哨兵自己指向自己"，插入删除不用再区分表头、表尾、空表。
 
-图中先演示在结点 2 之后插入结点 3（四条指针依次变化），再演示删除结点 3（两条指针变化后释放）。双向链表多出来的 `prev` 指针，换来的就是"已知结点时删除也是 $O(1)$"。
+#### 需要的函数
+
+**结点与链表结构**：
 
 ```c
-#include <stdlib.h>
-
 typedef struct DNode {
- int data;
- struct DNode* prev;
- struct DNode* next;
+    int data;
+    struct DNode *prev, *next;
 } DNode;
 
 typedef struct {
- DNode sentinel; // 哨兵：sentinel.next = 真头，sentinel.prev = 真尾
- size_t size;
-} DoublyLinkedList;
+    DNode sentinel;      /* 哨兵：next 是真头，prev 是真尾 */
+    int size;
+} DList;
+```
 
-void dll_init(DoublyLinkedList* list) {
- list->sentinel.prev = &list->sentinel;
- list->sentinel.next = &list->sentinel;
- list->size = 0;
-}
+**初始化**——让哨兵自环：
 
-// 哨兵链表无需区分空/非空——统一在哨兵后插入
-// 在 node 之前插入 new_node
-static void dll_insert_before(DNode* node, DNode* new_node) {
- new_node->next = node;
- new_node->prev = node->prev;
- node->prev->next = new_node;
- node->prev = new_node;
-}
-
-int dll_push_back(DoublyLinkedList* list, int value) {
- DNode* node = malloc(sizeof(DNode));
- if (!node) return -1;
- node->data = value;
- dll_insert_before(&list->sentinel, node); // 插到哨兵前 = 尾部
- list->size++;
- return 0;
-}
-
-int dll_push_front(DoublyLinkedList* list, int value) {
- DNode* node = malloc(sizeof(DNode));
- if (!node) return -1;
- node->data = value;
- dll_insert_before(list->sentinel.next, node); // 插到真头前 = 头部
- list->size++;
- return 0;
-}
-
-// 从链表中摘除节点（不释放内存）
-static void dll_unlink(DNode* node) {
- node->prev->next = node->next;
- node->next->prev = node->prev;
-}
-
-int dll_remove(DoublyLinkedList* list, DNode* node) {
- if (node == &list->sentinel) return -1; // 不能删除哨兵
- dll_unlink(node);
- free(node);
- list->size--;
- return 0;
-}
-
-void dll_destroy(DoublyLinkedList* list) {
- while (list->sentinel.next != &list->sentinel)
- dll_remove(list, list->sentinel.next);
+```c
+void dlist_init(DList *L) {
+    L->sentinel.prev = &L->sentinel;
+    L->sentinel.next = &L->sentinel;
+    L->size = 0;
 }
 ```
 
-哨兵设计的核心收益：`dll_init` 后链表就处于"空但结构完备"状态（哨兵自环），`dll_insert_before` 对所有情况（空链表、头、尾、中间）使用同一段代码——没有 if-else 分支。
+**插入**——统一写成"在 node 之前插入"，表头和表尾都是它：
 
-### 循环链表与约瑟夫问题
+```c
+static void insert_before(DNode *node, DNode *s) {
+    s->next = node;
+    s->prev = node->prev;
+    node->prev->next = s;
+    node->prev = s;
+}
 
-把尾节点的 next 指回头节点（或哨兵），链表首尾相接成环。判空条件随形态不同：
+/* 尾插：插到哨兵之前 */
+insert_before(&L->sentinel, s);
+/* 头插：插到哨兵的下一个之前 */
+insert_before(L->sentinel.next, s);
+```
+
+**删除**——摘掉结点，再交给调用方释放：
+
+```c
+static void unlink_node(DNode *node) {
+    node->prev->next = node->next;
+    node->next->prev = node->prev;
+}
+/* 调用方 free(node) 并把 size 减一 */
+```
+
+**遍历**——两个方向各一个，都从哨兵出发、回到哨兵结束：
+
+```c
+void dlist_forward(DList *L) {
+    for (DNode *p = L->sentinel.next; p != &L->sentinel; p = p->next)
+        printf("%d ", p->data);
+}
+
+void dlist_backward(DList *L) {
+    for (DNode *p = L->sentinel.prev; p != &L->sentinel; p = p->prev)
+        printf("%d ", p->data);
+}
+```
+
+**销毁**——反复摘掉哨兵的后继，直到只剩哨兵：
+
+```c
+void dlist_destroy(DList *L) {
+    DNode *p = L->sentinel.next;
+    while (p != &L->sentinel) {
+        DNode *nxt = p->next;
+        free(p);
+        p = nxt;
+    }
+    dlist_init(L);
+}
+```
+
+哨兵设计的核心收益：`dlist_init` 后链表就处于"空但结构完备"状态（哨兵自环），`insert_before` 对空表、表头、表尾、中间使用同一段代码——没有 if-else 分支；代价是多一个结点、多一层间接。
+
+### 循环链表
+
+#### 与单向链表的核心区别
+
+把尾结点的 `next` 指回头结点（而不是 `NULL`），链表就首尾相接成环。所有区别都来自这一处改动：
+
+| 对比点 | 单向链表 | 循环链表 |
+|--------|---------|---------|
+| 尾结点 next | `NULL` | 指回 `head`（或哨兵） |
+| 遍历终点 | `p == NULL` | 回到起点（`p == head`） |
+| 遍历写法 | `while (p != NULL)` | `do { ... } while (p != head)` |
+| 判空 | `head == NULL` / `head->next == NULL` | 见下面判空表 |
+| 从任意结点出发 | 只能向前走到尾 | 能绕行全表 |
+
+核心代码差异就是"把 NULL 换成 head"：
+
+```c
+/* 单向链表遍历 */
+for (Node *p = head; p != NULL; p = p->next) visit(p);
+
+/* 循环链表遍历：先做一次，回到 head 才停 */
+if (head == NULL) return;
+Node *p = head;
+do {
+    visit(p);
+    p = p->next;
+} while (p != head);
+```
+
+![[circular_list.gif]]
+
+图中的 `p` 依次走过 1→2→3→4，回到 1 才停止——循环链表没有 NULL 终点，只能"绕一圈回到起点"来终止。
+
+#### 判空与单元素条件
+
+判空条件随形态不同：
 
 | 形态 | 判空 | 特点 |
 |------|------|------|
@@ -971,9 +1051,36 @@ void dll_destroy(DoublyLinkedList* list) {
 | 循环单链表（带哨兵） | `head->next == head` | 从任意节点出发可达全表 |
 | 循环双链表（带哨兵） | `head->next == head` | `sentinel.prev` 即尾节点，头尾操作全 $O(1)$ |
 
-![[circular_list.gif]]
+#### 需要的函数
 
-图中的 `p` 依次走过 1→2→3→4，然后回到 1 才停止——这正是 `do { ... } while (p != head)` 与普通 `while (p != NULL)` 的区别：循环链表没有 NULL 终点，只能"绕一圈回到起点"来终止。
+**成环**——普通尾插的最后加一行即可：
+
+```c
+tail->next = head;      /* 尾接首，成环 */
+```
+
+**在 p 之后插入**——写法和单链表一样；如果 p 是原来的尾结点，插入后 s 自动成为新的尾结点，链表依然成环：
+
+```c
+void insert_after(Node *p, Node *s) {
+    s->next = p->next;
+    p->next = s;
+}
+```
+
+**删除 p 的后继**——需要前驱；循环链表有个招牌技巧，可以做到"只给 p 也能 $O(1)$ 删除 p"：
+
+```c
+void delete_after(Node *p) {
+    Node *q = p->next;
+    p->next = q->next;
+    free(q);
+}
+/* 只给 p、要删除 p 本身时：删 p 的后继 q，
+   再把 q 的 data 拷回 p——用数据换位代替指针重排 */
+```
+
+**遍历**就是上面的 `do-while`；**销毁**时终止条件同样要写成"回到 head"，不能等 `NULL`。
 
 循环双链表正是深入底层节 Linux 内核 `list_head` 的形态——知道任何一个节点就能 $O(1)$ 到达头、尾并自删，这就是"对称性允许在不知道容器头部的情况下执行删除"的结构基础。
 
