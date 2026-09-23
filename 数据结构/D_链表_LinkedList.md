@@ -97,10 +97,17 @@ SNode* create_node(int value) {
 
 ### 插入节点
 
-
+```c
+void insert_after(Node* p,int x){
+  Node* s = malloc(sizeof(Node)); //直接插入节点还是要创建节点，因此要分配内存
+  s->data=x;         //设置数据
+  s->next=p->next;  //因为链表只知道后位节点，因此只能将该节点的后位节点设置为要插入的那个节点的后位
+  p->next=s;      //再将原先被插入位置的节点后位节点改为指向插入位置
+}
+```
 
 ![[list_insert.gif]]
-
+如图所示，你会看见，先创建一个节点，先让新节点指向原先的顺序指向的后一位节点，然后再将前一位节点指向新节点。
 
 在节点 `p` 之后插入新节点 `new`：
 
