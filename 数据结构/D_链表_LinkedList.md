@@ -97,6 +97,8 @@ SNode* create_node(int value) {
 
 ### 插入节点
 
+
+
 ![[list_insert.gif]]
 
 
