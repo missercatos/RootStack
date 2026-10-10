@@ -22,6 +22,8 @@
 | `back()` | 读取队尾 | $O(1)$ |
 | `empty()` | 是否为空 | $O(1)$ |
 
+![[queue_enqueue_dequeue.gif]]
+
 ### 队列的抽象数据类型、逻辑结构与存储结构
 
 | 维度 | 队列 |
@@ -84,6 +86,8 @@ pop: head = (head + 1) % capacity;
 实际上，大多数编译器的 `-O2` 优化可以在常量 capacity 时自动将取模转为位与，但若 capacity 是运行时变量，这一优化无法生效。因此高性能循环队列实现中，常显式使用 `capacity` 为 2 的幂并手动 `& (capacity - 1)`。
 
 #### 满队列的判定：浪费一个槽位
+
+![[circular_queue_full_empty.gif]]
 
 当 head == tail 时，可能是空队列也可能是满队列。两种区分策略：
 
@@ -278,6 +282,8 @@ int sd_size(const SimpleDeque* dq) {
 
 #### 双端队列的受限类型：输入受限 / 输出受限
 
+![[deque_restricted.gif]]
+
 双端队列（Deque）允许两端插入、两端删除。考试常考它的两种**受限变体**（2010 年、2021 年 408 都考过，见 [[#408 真题精选]]）：
 
 | 类型 | 允许的操作 | 等价于 |
@@ -456,6 +462,8 @@ int cq_front(const CircularQueue* q, int* out) {
 ```
 
 ### 链表队列
+
+![[linked_queue.gif]]
 
 ```c
 #include <stdlib.h>
