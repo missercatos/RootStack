@@ -35,6 +35,20 @@
               "icon": "lucide-file",
               "title": "E_栈_Stack"
             }
+          },
+          {
+            "id": "d8e30a9158bb261b",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "git.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "git"
+            }
           }
         ],
         "currentTab": 1
@@ -50,12 +64,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "数据结构/0 基本知识.md",
+                "file": "数据结构/F_队列_Queue.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "0 基本知识"
+              "title": "F_队列_Queue"
             }
           }
         ]
@@ -238,6 +252,13 @@
   },
   "active": "62a742abe5f7b44f",
   "lastOpenFiles": [
+    "数据结构/F_队列_Queue.md",
+    "数据结构/0 基本知识.md",
+    "数据结构/E_栈_Stack.md",
+    "d7aede532892b71ee610d249c12f1df1.jpg",
+    "dsh.md",
+    "d7aede532892b71ee610d249c12f1df1 1.jpg",
+    "git.md",
     "assets/队列动画/deque_restricted.gif",
     "assets/队列动画/linked_queue.gif",
     "assets/队列动画/circular_queue_full_empty.gif",
@@ -246,12 +267,10 @@
     "assets/栈动画/stack_monotonic.gif",
     "assets/栈动画/stack_two_shared.gif",
     "assets/栈动画/stack_valid_sequence.gif",
-    "assets/栈动画/stack_push_pop.gif",
     "数据结构/D_链表_LinkedList.md",
     "数据结构/C_顺序表_SequentialList.md",
     "计算机硬件基础/05_单板机与特种计算机.md",
     "text.md",
-    "数据结构/0 基本知识.md",
     "计算机硬件基础/外部存储/02_网络存储/01_NAS/05_安全加固与备份.md",
     "计算机硬件基础/外部存储/02_网络存储/01_NAS/04_应用与影音服务.md",
     "计算机硬件基础/外部存储/01_移动存储/02_移动硬盘/04_使用保养与数据安全.md",
@@ -270,9 +289,6 @@
     "计算机硬件基础/外部存储/07_设备内与嵌入式存储/README.md",
     "计算机硬件基础/外部存储/07_设备内与嵌入式存储/01_嵌入式存储介质.md",
     "计算机硬件基础/外部存储/07_设备内与嵌入式存储",
-    "计算机硬件基础/外部存储/06_去中心化与边缘存储/02_边缘存储与CDN.md",
-    "计算机硬件基础/外部存储/06_去中心化与边缘存储/01_去中心化存储.md",
-    "计算机硬件基础/外部存储/05_存储架构与范式/03_存储虚拟化与软件定义存储.md",
     "计算机硬件基础/外部存储/06_去中心化与边缘存储",
     "计算机硬件基础/外部存储/05_存储架构与范式",
     "计算机硬件基础/外部存储/04_备份归档与容灾",
@@ -282,8 +298,6 @@
     "计算机硬件基础/外部存储/03_云端存储",
     "计算机硬件基础/外部存储/02_网络存储/04_分布式与集群存储",
     "计算机硬件基础/外部存储/02_网络存储/03_DAS",
-    "assets/链表动画/circular_list.gif",
-    "assets/链表动画/doubly_insert_delete.gif",
     "docs/Canvas.canvas",
     "密码学/未命名.canvas",
     "未命名.canvas"
