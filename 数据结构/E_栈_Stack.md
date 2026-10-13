@@ -467,6 +467,7 @@ int as_top(const ArrayStack* s, int* out) {
 
 简单的说，链栈就是单向链表，且只在顶部（也就是链表的尾部）进行操作，自然分出有无头结点的区别。具体在出栈还有初始化上
 #### 一，创建与初始化
+
 其实可以参照[[D_链表_LinkedList]]里的相关知识，这里简单引述：
 
 首先定义链表类型的结构体。
@@ -523,7 +524,6 @@ void pop(SNode **top,int *out){
 ```c
 void push(Snode *head, int val) {
     Snode *newNode = (Snode *)malloc(sizeof(Snode)); //创建新节点
-
     newNode->data = val;
     newNode->next = head->next;   // 新结点指向原栈顶,记住是head->next,head是空节点
     head->next = newNode;         // 头结点指向新栈顶
@@ -538,7 +538,37 @@ void pop(Snode *head, int *out) {
     free(tmp);                       //销毁指针
 }
 ```
+#### 三，清理和销毁栈
 
+不带头指针的：
+```c
+void clearStack(Snode **top) {
+    int tmp;
+    while (pop(top, &tmp) == 0) {
+        // 不断出栈，直到空
+    }
+}
+```
+带头指针的:
+```c
+void destroyStack(Snode *head) {
+    if (head == NULL) {
+        return;
+    }
+
+    Snode *p = head->next;
+    while (p != NULL) {
+        Snode *tmp = p;
+        p = p->next;
+        free(tmp);
+    }
+
+    free(head);
+}
+```
+
+
+#### 具体实现(不带头结点):
 ```c
 #include <stdlib.h>
 
