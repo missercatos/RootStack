@@ -467,7 +467,7 @@ int as_top(const ArrayStack* s, int* out) {
 
 简单的说，链栈就是单向链表，且只在顶部（也就是链表的尾部）进行操作，自然分出有无头结点的区别。具体在出栈还有初始化上
 #### 一，创建与初始化
-其实可以参照[[D_链表_LinkedList]]里的有关创建的知识，这里简单引述：
+其实可以参照[[D_链表_LinkedList]]里的相关知识，这里简单引述：
 
 首先定义链表类型的结构体。
 ```c
@@ -482,11 +482,15 @@ SNode *top=NULL;
 ```
 带头节点的初始化。
 ```c
-
+Snode *initStack(void) {
+    Snode *head = (Snode *)malloc(sizeof(Snode));
+    head->next = NULL;
+    return head;
+}
 ```
 #### 二，入栈还有出栈
 
-不带头结点的：
+*不带头结点的：*
 简单来说，链栈有一个头指针，始终指向顶部，要想入栈，就需要新增加节点，然后让头指针指向它，做到更新顶部。
 ```c
 void push(SNode **top,int val){
@@ -504,7 +508,7 @@ SNode** top就是那个顶部的头指针
 void pop(SNode **top,int *out){
   SNode *tmp=*top; //创建指针指向顶部
   *out=tmp->data; //获取顶部值
-  *top=tmp->next; //头指针又移
+  *top=tmp->next; //头指针右移
   free(tmp);  //销毁指针
 }
 ```
@@ -512,6 +516,28 @@ void pop(SNode **top,int *out){
 更具体一点的例子:
 假如你有一个指针p,一个链表的某个节点Q，p指向Q(p=Q)，因为你只能得到Q的下一位，也就是Q->next，而不能得到Q的上一位，所以要想变换指针p，只能做到p=p->next，或者更加往后的p=p->next->next，而做不到往前。
 因此使用头插还有头删。
+可以尝试使用尾插法的链表变体来模仿链栈。但是相对麻烦，除了示例，或一些特殊场景，否则很少使用。
+
+*带头结点:*
+入栈操作和单向链表的头插是一样的:
+```c
+void push(Snode *head, int val) {
+    Snode *newNode = (Snode *)malloc(sizeof(Snode)); //创建新节点
+
+    newNode->data = val;
+    newNode->next = head->next;   // 新结点指向原栈顶,记住是head->next,head是空节点
+    head->next = newNode;         // 头结点指向新栈顶
+}
+```
+同理出栈操作也是一样的:
+```c
+void pop(Snode *head, int *out) {
+    Snode *tmp = head->next;          //创建指针指向顶部位置
+    *out = tmp->data;                  //存储值
+    head->next = tmp->next;         //头指针指向原顶部下一位
+    free(tmp);                       //销毁指针
+}
+```
 
 ```c
 #include <stdlib.h>
