@@ -465,6 +465,54 @@ int as_top(const ArrayStack* s, int* out) {
 
 链表版栈所有操作均在头部——单向链表的 `push_front` + `pop_front`：
 
+简单的说，链栈就是单向链表，且只在顶部（也就是链表的尾部）进行操作，自然分出有无头结点的区别。具体在出栈还有初始化上
+#### 一，创建与初始化
+其实可以参照[[D_链表_LinkedList]]里的有关创建的知识，这里简单引述：
+
+首先定义链表类型的结构体。
+```c
+typedef struct SNode{
+  int data;
+  struct SNode* next;
+}SNode;
+```
+不带头结点的初始化。
+```c
+SNode *top=NULL;
+```
+带头节点的初始化。
+```c
+
+```
+#### 二，入栈还有出栈
+
+不带头结点的：
+简单来说，链栈有一个头指针，始终指向顶部，要想入栈，就需要新增加节点，然后让头指针指向它，做到更新顶部。
+```c
+void push(SNode **top,int val){
+  SNode *newNode=(SNode*)malloc(sizeof(SNode));
+  newNode->data=val;
+  newNode->next=*top;
+  *top=newNode;
+}
+```
+SNode** top就是那个顶部的头指针
+让新节点指向这个头指针位置，然后更新头指针指向这个新节点。和不带头结点的单链表使用头插是一样的思路。
+
+同理，出栈的话需要保存栈顶节点，然后让指针右移，从而做到去掉顶部。
+```c
+void pop(SNode **top,int *out){
+  SNode *tmp=*top; //创建指针指向顶部
+  *out=tmp->data; //获取顶部值
+  *top=tmp->next; //头指针又移
+  free(tmp);  //销毁指针
+}
+```
+从这里就可以知道为什么要使用头插单链表来模拟栈而不是尾插了。单链表里每个节点只能获知后一位节点的信息，同样，在只有一个节点的情况下，只能通过后移来进行跳跃，更新指针。
+更具体一点的例子:
+假如你有一个指针p,一个链表的某个节点Q，p指向Q(p=Q)，因为你只能得到Q的下一位，也就是Q->next，而不能得到Q的上一位，所以要想变换指针p，只能做到p=p->next，或者更加往后的p=p->next->next，而做不到往前。
+因此使用头插还有头删。
+
 ```c
 #include <stdlib.h>
 
