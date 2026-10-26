@@ -13,12 +13,26 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "数据结构/C_顺序表_SequentialList.md",
+                "file": "数据结构/B_字符串_String.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "C_顺序表_SequentialList"
+              "title": "B_字符串_String"
+            }
+          },
+          {
+            "id": "0f39c49db7abb037",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "数据结构/F_队列_Queue.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "F_队列_Queue"
             }
           },
           {
@@ -27,12 +41,26 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "数据结构/B_字符串_String.md",
+                "file": "数据结构/0 基本知识.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "B_字符串_String"
+              "title": "0 基本知识"
+            }
+          },
+          {
+            "id": "ef0d2faa1f612078",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "算法/算法技巧/动态规划.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "动态规划"
             }
           },
           {
@@ -125,11 +153,11 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "数据结构/B_字符串_String.md",
+                "file": "数据结构/F_队列_Queue.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
-                "showSearch": false,
+                "showSearch": true,
                 "searchQuery": "",
                 "backlinkCollapsed": false,
                 "unlinkedCollapsed": true
@@ -228,19 +256,21 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "62a742abe5f7b44f",
+  "active": "0f39c49db7abb037",
   "lastOpenFiles": [
-    "数据结构/A_数组_Array.md",
     "数据结构/B_字符串_String.md",
+    "数据结构/0 基本知识.md",
+    "算法/算法技巧/动态规划.md",
+    "数据结构/C_顺序表_SequentialList.md",
+    "git.md",
+    "数据结构/A_数组_Array.md",
     "数据结构/E_栈_Stack.md",
     "数据结构/F_队列_Queue.md",
     "数据结构/D_链表_LinkedList.md",
     "c语言教程/库大全/容器类库/链表/单向链表.md",
-    "数据结构/0 基本知识.md",
     "d7aede532892b71ee610d249c12f1df1.jpg",
     "dsh.md",
     "d7aede532892b71ee610d249c12f1df1 1.jpg",
-    "git.md",
     "assets/队列动画/deque_restricted.gif",
     "assets/队列动画/linked_queue.gif",
     "assets/队列动画/circular_queue_full_empty.gif",
@@ -249,7 +279,6 @@
     "assets/栈动画/stack_monotonic.gif",
     "assets/栈动画/stack_two_shared.gif",
     "assets/栈动画/stack_valid_sequence.gif",
-    "数据结构/C_顺序表_SequentialList.md",
     "计算机硬件基础/05_单板机与特种计算机.md",
     "text.md",
     "计算机硬件基础/外部存储/02_网络存储/01_NAS/05_安全加固与备份.md",
@@ -265,7 +294,6 @@
     "计算机硬件基础/外部存储/01_移动存储/07_软盘与其他历史介质/02_老电脑与复古计算.md",
     "计算机硬件基础/外部存储/01_移动存储/06_手机与便携设备存储/02_手机数据备份策略.md",
     "计算机硬件基础/外部存储/01_移动存储/05_磁带/02_磁带库与LTFS实战.md",
-    "计算机硬件基础/外部存储/01_移动存储/04_光盘/02_刻录实践与工具.md",
     "计算机硬件基础/外部存储/07_设备内与嵌入式存储",
     "计算机硬件基础/外部存储/06_去中心化与边缘存储",
     "计算机硬件基础/外部存储/05_存储架构与范式",
