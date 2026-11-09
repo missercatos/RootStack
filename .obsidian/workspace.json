@@ -27,26 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "数据结构/E_栈_Stack.md",
+                "file": "red_team/网安基础知识/02-Web技术基础.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "E_栈_Stack"
-            }
-          },
-          {
-            "id": "62a742abe5f7b44f",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "数据结构/0 基本知识.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "0 基本知识"
+              "title": "02-Web技术基础"
             }
           },
           {
@@ -55,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "算法/算法技巧/动态规划.md",
+                "file": "一些会用到的计算机基础知识/正则表达式.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "动态规划"
+              "title": "正则表达式"
             }
           },
           {
@@ -76,9 +62,23 @@
               "icon": "lucide-file",
               "title": "git"
             }
+          },
+          {
+            "id": "6f8a9d862975db13",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "汇编基础/1基础/01_寄存器与指令基础.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "01_寄存器与指令基础"
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -137,7 +137,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 218.5
+    "width": 234.33984375
   },
   "right": {
     "id": "615884291dd41d79",
@@ -153,7 +153,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "数据结构/E_栈_Stack.md",
+                "file": "一些会用到的计算机基础知识/正则表达式.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -238,7 +238,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -256,16 +257,28 @@
       "zk-prefixer:创建时间戳笔记": false
     }
   },
-  "active": "0f39c49db7abb037",
+  "active": "ef0d2faa1f612078",
   "lastOpenFiles": [
+    "assets/regexp-assertions-runoob-scaled-1.png",
+    "一些会用到的计算机基础知识/正则表达式.md",
+    "汇编基础/1基础/01_寄存器与指令基础.md",
+    "路径-Java开发.md",
+    "正则表达式.md",
+    "算法/算法技巧/动态规划.md",
+    "red_team/ctf_trea/竞赛模式.md",
+    "red_team/ctf_trea/Web/信息泄露/备份文件下载/vim缓存.md",
+    "red_team/ctf_trea/Web/信息泄露/目录遍历.md",
+    "数据结构/0 基本知识.md",
+    "red_team/ctf_trea/CTF简介.md",
+    "red_team/网安基础知识/02-Web技术基础.md",
+    "一些会用到的计算机基础知识",
+    "red_team/网安基础知识/01-计算机网络基础.md",
+    "数据结构/E_栈_Stack.md",
     "数据结构/F_队列_Queue.md",
     "数据结构/B_字符串_String.md",
-    "数据结构/0 基本知识.md",
-    "算法/算法技巧/动态规划.md",
     "数据结构/C_顺序表_SequentialList.md",
     "git.md",
     "数据结构/A_数组_Array.md",
-    "数据结构/E_栈_Stack.md",
     "数据结构/D_链表_LinkedList.md",
     "c语言教程/库大全/容器类库/链表/单向链表.md",
     "d7aede532892b71ee610d249c12f1df1.jpg",
@@ -278,22 +291,10 @@
     "assets/栈动画/stack_recursion.gif",
     "assets/栈动画/stack_monotonic.gif",
     "assets/栈动画/stack_two_shared.gif",
-    "assets/栈动画/stack_valid_sequence.gif",
     "计算机硬件基础/05_单板机与特种计算机.md",
     "text.md",
     "计算机硬件基础/外部存储/02_网络存储/01_NAS/05_安全加固与备份.md",
     "计算机硬件基础/外部存储/02_网络存储/01_NAS/04_应用与影音服务.md",
-    "计算机硬件基础/外部存储/01_移动存储/02_移动硬盘/04_使用保养与数据安全.md",
-    "计算机硬件基础/外部存储/01_移动存储/01_U盘/07_选购指南与工具速查.md",
-    "计算机硬件基础/外部存储/03_云端存储/03_云备份与归档/02_备份工具与恢复演练.md",
-    "计算机硬件基础/外部存储/03_云端存储/02_对象存储/02_S3实战与成本优化.md",
-    "计算机硬件基础/外部存储/03_云端存储/01_网盘与同步盘/02_主流网盘对比与安全加密.md",
-    "计算机硬件基础/外部存储/02_网络存储/04_分布式与集群存储/02_Ceph与MinIO实战.md",
-    "计算机硬件基础/外部存储/02_网络存储/02_SAN/02_多路径与高可用.md",
-    "计算机硬件基础/外部存储/02_网络存储/03_DAS/02_RAID卡与ZFS实践.md",
-    "计算机硬件基础/外部存储/01_移动存储/07_软盘与其他历史介质/02_老电脑与复古计算.md",
-    "计算机硬件基础/外部存储/01_移动存储/06_手机与便携设备存储/02_手机数据备份策略.md",
-    "计算机硬件基础/外部存储/01_移动存储/05_磁带/02_磁带库与LTFS实战.md",
     "计算机硬件基础/外部存储/07_设备内与嵌入式存储",
     "计算机硬件基础/外部存储/06_去中心化与边缘存储",
     "计算机硬件基础/外部存储/05_存储架构与范式",
@@ -303,7 +304,6 @@
     "计算机硬件基础/外部存储/03_云端存储/01_网盘与同步盘",
     "计算机硬件基础/外部存储/03_云端存储",
     "计算机硬件基础/外部存储/02_网络存储/04_分布式与集群存储",
-    "计算机硬件基础/外部存储/02_网络存储/03_DAS",
     "docs/Canvas.canvas",
     "密码学/未命名.canvas",
     "未命名.canvas"
