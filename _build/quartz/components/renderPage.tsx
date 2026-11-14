@@ -370,6 +370,7 @@ export function renderPage(
         .filter((resource) => resource.loadTime === "afterDOMReady")
         .map((res) => JSResourceToScriptElement(res, true))}
       <script type="module" src={joinSegments("..", basePath, "static/lightbox.js")} />
+      <script type="module" src={joinSegments("..", basePath, "static/quiz.js")} />
     </html>
   )
 
